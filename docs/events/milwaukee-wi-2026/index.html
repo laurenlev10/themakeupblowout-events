@@ -158,10 +158,7 @@
 
   <section class="sms-section">
     <div class="gift-media">
-      <video autoplay loop muted playsinline poster="/_assets/shared/75-OFF-1-.png">
-        <source src="/_assets/shared/Free%20Glitter%20Gift.mp4" type="video/mp4">
-        <img src="/_assets/shared/Free%20Glitter%20Gift.gif" alt="Free Glitter Gift">
-      </video>
+      <img src="/_assets/shared/New%20Free%20Glitter%20Gift.png" alt="Free Glitter Gift">
     </div>
     <h2>&#x1F381; Claim Your Free Gift!</h2>
     <p class="sub">Sign up by SMS and get a FREE glitter voucher</p>
