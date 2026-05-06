@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Makeup Blowout Sale — {{CITY}} {{YEAR}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Josefin Sans', Helvetica, sans-serif; background: #000; color: #fff; min-height: 100vh; }
+    .hero {
+      background: linear-gradient(135deg, #1a0030 0%, #2d0050 50%, #1a1060 100%);
+      padding: 40px 20px 30px; text-align: center;
+    }
+    .hero h1 { font-size: clamp(28px, 6vw, 52px); font-weight: 700; color: #f5e45b; line-height: 1.2; margin-bottom: 10px; }
+    .hero .tagline { font-size: clamp(16px, 3vw, 22px); color: #f01070; margin-bottom: 8px; }
+    .hero .free-entry { font-size: clamp(18px, 3.5vw, 26px); font-weight: 700; color: #fff; margin-top: 10px; }
+    .live-counter {
+      background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 12px 20px;
+      margin: 20px auto; max-width: 500px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .live-counter .lc-live { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+    .live-counter .lc-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 1s infinite; flex-shrink: 0; }
+    .live-counter .lc-right { text-align: right; }
+    .live-counter .lc-num { font-size: 26px; font-weight: 700; display: block; line-height: 1.1; }
+    .live-counter .lc-text { font-size: 12px; color: #aaa; margin-top: 2px; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.3;transform:scale(1.4);} }
+    .event-details { background: #111; padding: 30px 20px; }
+    .event-details ul { list-style: none; max-width: 600px; margin: 0 auto; }
+    .event-details ul li { font-size: clamp(16px, 3vw, 20px); color: #ffcfd2; margin-top: 16px; line-height: 1.5; display: flex; align-items: flex-start; gap: 12px; }
+    .event-details ul li i { color: #f01070; margin-top: 3px; flex-shrink: 0; }
+    .sms-section { padding: 30px 20px; background: #000; }
+    .sms-section h2 { text-align: center; font-size: clamp(20px, 4vw, 32px); color: #fff; margin-bottom: 6px; }
+    .sms-section .sub { text-align: center; font-size: 15px; color: #aaa; margin-bottom: 20px; }
+    .st-signupform {
+      font-family: 'Josefin Sans', sans-serif; background: #f01070; max-width: 420px; border-radius: 8px;
+      padding: 24px; margin: 0 auto; box-shadow: 0 8px 32px rgba(240,16,112,0.3);
+    }
+    .st-signupform input[type="text"] {
+      width: 100%; background: #fff; border: 1px solid rgba(0,27,72,0.32); border-radius: 4px;
+      padding: 10px 12px; font-size: 15px; font-family: inherit; margin-bottom: 14px; outline: none;
+    }
+    .st-signupform input[type="submit"] {
+      width: 100%; background: linear-gradient(to bottom, #4527A0, #432D85); color: #fff; border: none;
+      border-radius: 4px; padding: 12px; font-size: 16px; font-family: inherit; font-weight: 700; cursor: pointer; margin-top: 8px;
+    }
+    .st-signupform input[type="submit"]:hover { opacity: .9; }
+    .st-font-caption { font-size: 11px; color: rgba(255,255,255,0.85); line-height: 1.5; display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+    .st-font-caption input[type="checkbox"] { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; }
+    .st-font-caption a { color: #fff; }
+    .st-hidden { display: none; }
+    .st-color-red { color: #ff6b6b; font-size: 12px; }
+    .step2-singleOptIn p { color: #fff; font-size: 20px; text-align: center; font-weight: 700; }
+    .step2-doubleOptIn p { color: #fff; font-size: 15px; text-align: center; }
+    .share-section { padding: 30px 20px; background: #0a0a0a; text-align: center; }
+    .share-section h3 { font-size: clamp(18px, 3.5vw, 26px); color: #4267b2; margin-bottom: 16px; }
+    .ig-btn {
+      display: block; max-width: 420px; margin: 0 auto; background: #f01070; color: #fff !important;
+      font-size: 18px; font-weight: 700; font-family: 'Josefin Sans', sans-serif; padding: 16px 28px;
+      border-radius: 8px; text-decoration: none; box-shadow: 0 8px 24px rgba(240,16,112,0.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .ig-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(240,16,112,0.5); }
+    .ig-btn i { margin-right: 8px; }
+    .countdown-section { padding: 24px 20px; background: #000; text-align: center; }
+    .countdown-section .cd-label { font-size: clamp(16px, 3vw, 22px); color: #f01070; margin-bottom: 12px; }
+    .countdown { display: flex; justify-content: center; gap: 20px; }
+    .cd-block { text-align: center; min-width: 60px; }
+    .cd-num { font-size: clamp(32px, 7vw, 48px); font-weight: 700; color: #fff; line-height: 1; }
+    .cd-unit { font-size: 11px; color: #888; text-transform: uppercase; margin-top: 4px; }
+    footer { text-align: center; padding: 20px; font-size: 12px; color: #444; background: #000; }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <h1>Get Your Free Fabulous Glitter! &#x2728;<br>{{CITY}}</h1>
+    <p class="tagline">Get ready for a fabulous weekend of beauty and savings!<br>40+ amazing brands at unbeatable prices!</p>
+    <p class="free-entry">&#x1F389; FREE ENTRY &amp; PARKING</p>
+  </section>
+
+  <div style="padding: 0 20px;">
+    <div class="live-counter">
+      <div class="lc-live"><span class="lc-dot"></span>LIVE</div>
+      <div class="lc-right">
+        <span class="lc-num" id="lc-num">1,247</span>
+        <div class="lc-text">Beauties signed up for this event</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="event-details">
+    <ul>
+      <li>
+        <i class="fas fa-calendar-alt"></i>
+        <span>Friday - Sunday,<br>{{MONTH}} {{START_DAY}} &#x2013; {{MONTH}} {{END_DAY}}, {{YEAR}}<br><strong>10am &#x2013; 5pm</strong></span>
+      </li>
+      <li>
+        <i class="fas fa-map-marker-alt"></i>
+        <span>{{STREET}}<br>At {{HOTEL}}</span>
+      </li>
+      <li>
+        <i class="fas fa-tag"></i>
+        <span>FREE ENTRY &amp; PARKING &#x2014; No tickets needed!</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="sms-section">
+    <h2>&#x1F381; Claim Your Free Gift!</h2>
+    <p class="sub">Sign up by SMS and get a FREE glitter voucher</p>
+
+    <script>
+    (function(win,doc,formId,DPE,DEE,CFVE){
+      var XHR=('onload' in new win.XMLHttpRequest())?win.XMLHttpRequest:win.XDomainRequest;
+      var form,fSrvErr,fTermErr;
+      var fecn='st-err-field';
+      function setErr(m){fSrvErr.innerText=m;}
+      function isTerm(){return form.querySelector('input[name="terms-agreed"]').checked;}
+      function clearErr(){[].slice.call(form.querySelectorAll('.'+fecn)).forEach(function(f){f.classList.remove(fecn);});setErr('');fTermErr.style.display='none';}
+      function collectData(){var d={};[].slice.call(form).forEach(function(f){d[f.name]=f.value;});return d;}
+      function parseErr(r){var res={};try{var e=JSON.parse(r);if(e.code===DPE){res.fieldName='phone';res.errorMessage='Phone number already exists.';}else if(e.code===DEE){res.fieldName='email';res.errorMessage='Email already exists.';}else if(e.code===CFVE){res.fieldName=e.reasons[0].field;res.errorMessage=e.reasons[0].reason;}else{res.fieldName=e.field;res.errorMessage=e.reason;}}catch(x){}return{fieldName:res.fieldName||'',errorMessage:res.errorMessage||'Validation error.'};}
+      function onLoad(){
+        if(this.status===200){
+          form.querySelector('.step1-form').style.display='none';
+          document.location.href='{{SHARE_URL}}';
+          form.reset();
+        }else if(this.status===418){var v=parseErr(this.responseText);if(v.fieldName){var f=form.querySelector('input[name="'+v.fieldName+'"]');if(f)f.classList.add(fecn);}setErr(v.errorMessage);}
+        else{setErr('Internal Error. Please try again.');}
+      }
+      function onErr(){setErr('Internal Error. Please try again.');}
+      function sendForm(){var d=collectData();var req=new XHR();req.open('POST','https://app2.simpletexting.com/join/joinContact?r='+Date.now());req.onload=onLoad;req.onerror=onErr;req.ontimeout=onErr;try{req.setRequestHeader('Content-Type','application/json; charset=UTF-8');}catch(x){}req.send(JSON.stringify(d));}
+      function fmtPhone(v){var n=v.replace(/\D/g,'');var a=n.substring(0,3),b=n.substring(3,6),c=n.substring(6,10),r='';if(a)r+='('+a;if(b)r+=') '+b;if(c)r+='-'+c;return r;}
+      document.addEventListener('DOMContentLoaded',function(){
+        form=doc.getElementById('sms-form-{{FORM_ID}}');
+        fSrvErr=form.querySelector('.srv-err');
+        fTermErr=form.querySelector('.term-err');
+        form.querySelector('input[data-type="phone"]').addEventListener('input',function(e){e.target.value=fmtPhone(e.target.value);});
+        form.addEventListener('submit',function(e){e.preventDefault();clearErr();if(!isTerm()){fTermErr.style.display='block';}else{sendForm();}});
+      });
+    })(window,document,'{{FORM_ID}}','DuplicateContactPhoneException','DuplicateContactEmailException','CustomFieldsValidationException');
+    </script>
+
+    <form id="sms-form-{{FORM_ID}}" class="st-signupform" action="https://app2.simpletexting.com/join/joinContact" method="POST">
+      <div class="step1-form">
+        <input type="hidden" name="webFormId" value="{{FORM_ID}}">
+        <input type="hidden" name="country" value="USA">
+        <input type="text" name="phone" placeholder="Your Phone Number" maxlength="1600" data-type="phone" class="phoneNumber" required>
+        <div class="st-font-caption">
+          <input type="checkbox" name="terms-agreed" checked>
+          <label>By subscribing you agree to receive autodialed marketing text messages. Consent not required for purchase. Msg &amp; data rates may apply. Reply STOP to cancel. <a href="https://app2.simpletexting.com/web-forms/terms/654d65258f51cb55a9016540" target="_blank">Terms</a></label>
+        </div>
+        <p class="term-err st-color-red st-hidden">Please agree to terms to continue.</p>
+        <input type="submit" value="&#x2709;&#xFE0F; TEXT ME MY VOUCHER">
+        <p class="srv-err st-color-red"></p>
+      </div>
+      <div class="step2-singleOptIn st-hidden">
+        <p>&#x1F389; Your voucher is on the way! Share on your story &amp; get a FREE Eyeshadow too!</p>
+      </div>
+    </form>
+  </section>
+
+  <section class="share-section">
+    <h3>&quot;SHARE&quot; &amp; Receive a Free Fabulous Glitter! &#x2728;</h3>
+    <a href="{{IG_URL}}" class="ig-btn" target="_blank" rel="noopener noreferrer">
+      <i class="fab fa-instagram"></i> Share On Instagram
+    </a>
+  </section>
+
+  <section class="countdown-section">
+    <p class="cd-label">&#x26A1; Quick! Your offer expires in:</p>
+    <div class="countdown">
+      <div class="cd-block"><div class="cd-num" id="cd-h">00</div><div class="cd-unit">Hours</div></div>
+      <div class="cd-block"><div class="cd-num" id="cd-m">15</div><div class="cd-unit">Minutes</div></div>
+      <div class="cd-block"><div class="cd-num" id="cd-s">00</div><div class="cd-unit">Seconds</div></div>
+    </div>
+  </section>
+
+  <footer>
+    &copy; {{YEAR}} The Makeup Blowout Sale Group. All rights reserved.
+  </footer>
+
+  <script>
+    (function(){
+      var total=15*60;
+      function pad(n){return n<10?'0'+n:''+n;}
+      function tick(){
+        var h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
+        document.getElementById('cd-h').textContent=pad(h);
+        document.getElementById('cd-m').textContent=pad(m);
+        document.getElementById('cd-s').textContent=pad(s);
+        total=total>0?total-1:15*60;
+        setTimeout(tick,1000);
+      }
+      tick();
+    })();
+    (function(){
+      var sc=1200+Math.floor(Math.random()*80);
+      function fmt(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+      var el=document.getElementById('lc-num');
+      if(el){el.textContent=fmt(sc);}
+      function bump(){sc+=Math.floor(Math.random()*3)+1;if(el){el.textContent=fmt(sc);}setTimeout(bump,8000+Math.floor(Math.random()*5000));}
+      setTimeout(bump,8000+Math.floor(Math.random()*5000));
+    })();
+  </script>
+
+</body>
+</html>
