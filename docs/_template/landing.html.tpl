@@ -160,10 +160,7 @@
 
   <section class="sms-section">
     <div class="gift-media">
-      <video autoplay loop muted playsinline poster="/_assets/shared/Canva-Glitter-Gift.gif" preload="auto">
-        <source src="/_assets/shared/Canva-Glitter-Gift.mp4" type="video/mp4">
-        <img src="/_assets/shared/Canva-Glitter-Gift.gif" alt="Free Glitter Gift">
-      </video>
+      <img src="/_assets/shared/NEW%20GIF.gif" alt="Free Glitter Gift">
     </div>
     <h2>&#x1F381; Claim Your Free Gift!</h2>
     <p class="sub">Sign up by SMS and get a FREE glitter voucher</p>
