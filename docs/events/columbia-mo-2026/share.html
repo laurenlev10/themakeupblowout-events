@@ -120,9 +120,6 @@
   </a>
 
   <section class="moved-countdown-section">
-    <div class="limited-badge-wrap">
-      <img src="/_assets/shared/Untitled%20design.png" alt="Limited Edition">
-    </div>
     <p class="cd-label">&#x26A1; Quick! Your offer expires in:</p>
     <div class="countdown">
       <div class="cd-block"><div class="cd-num" id="cd-h">00</div><div class="cd-unit">Hours</div></div>
