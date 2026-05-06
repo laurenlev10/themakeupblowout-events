@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-05-06T17:57:34Z",
+  "_updated_at": "2026-05-06T20:42:33Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -23,10 +23,10 @@
       "subscribe_url": "/events/columbia-mo-2026/",
       "cta_label": "Subscribe",
       "slug": "columbia-mo-2026",
-      "venue_name": "(Columbia venue — please update)",
-      "venue_address": "(Columbia address — please update)",
-      "form_id": "TODO_COLUMBIA_FORM_ID",
-      "ig_url": "https://www.instagram.com/themakeupblowoutsale/"
+      "venue_name": "Courtyard by Marriott",
+      "venue_address": "3301 Lemone Industrial Blvd, Columbia, MO 65201",
+      "form_id": "6930ece15c4c2f0a2f7af97d",
+      "ig_url": "https://www.instagram.com/reel/DXxbbJhRHEE/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
     },
     {
       "city": "Milwaukee",
