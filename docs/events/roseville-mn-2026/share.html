@@ -187,6 +187,10 @@
         <p class="faq-q"><span class="faq-q-mark">Q:</span>Can I bring my pets?</p>
         <p class="faq-a">No problem! Pets are welcome.</p>
       </div>
+      <div class="faq-item">
+        <p class="faq-q"><span class="faq-q-mark">Q:</span>Is the venue accessible?</p>
+        <p class="faq-a">Yes! The venue is fully accessible &mdash; wheelchair-friendly and stroller-friendly.</p>
+      </div>
     </div>
   </section>
 
