@@ -173,7 +173,7 @@
       </div>
       <div class="faq-item">
         <p class="faq-q"><span class="faq-q-mark">Q:</span>When will you be back?</p>
-        <p class="faq-a">Next year! We only come to your city once a year &mdash; don&#39;t miss out!</p>
+        <p class="faq-a">Every two years! We only come to your city once every couple of years &mdash; don&#39;t miss out!</p>
       </div>
     </div>
   </section>
