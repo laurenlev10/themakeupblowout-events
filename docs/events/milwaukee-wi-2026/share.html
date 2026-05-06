@@ -196,6 +196,12 @@
 
   <div style="width: 100%; max-width: 700px; margin: 28px auto 0; text-align: center;">
     <img src="/_assets/shared/Box.gif" alt="Mystery Box" style="max-width: 360px; width: 80%; height: auto; border-radius: 12px;">
+    <div style="margin-top: 18px; padding: 16px 20px; background: linear-gradient(135deg, #1a0030 0%, #2d0050 100%); border-radius: 12px; color: #fff;">
+      <div style="font-size: clamp(14px, 3vw, 18px); font-weight: 600; color: #f5e45b; letter-spacing: 0.5px;">DON&#39;T MISS OUT ON THE</div>
+      <div style="font-size: clamp(28px, 6vw, 42px); font-weight: 800; letter-spacing: 1px; margin: 6px 0; color: #f01070;">MYSTERY BOX</div>
+      <div style="font-size: clamp(14px, 3vw, 18px); font-weight: 700; letter-spacing: 0.6px; opacity: 0.95;">&#11088; BEST SELLER &#11088;</div>
+    </div>
+    <img src="/_assets/shared/Gif_Ladies.webp" alt="Ladies enjoying the event" style="max-width: 480px; width: 100%; height: auto; border-radius: 12px; margin-top: 18px;">
   </div>
 
 </body>
