@@ -114,6 +114,12 @@
   </style>
 </head>
 <body>
+  <div style="position:fixed;top:10px;right:12px;z-index:1000;display:flex;gap:6px;background:rgba(0,0,0,0.6);padding:6px 10px;border-radius:999px;backdrop-filter:blur(4px);">
+    <a href="index.html" style="color:#fff;text-decoration:none;font-size:13px;font-weight:700;">EN</a>
+    <span style="color:rgba(255,255,255,0.3);">|</span>
+    <a href="index-es.html" style="color:rgba(255,255,255,0.55);text-decoration:none;font-size:13px;font-weight:700;">ES</a>
+  </div>
+
 
   <section class="hero">
     <div class="hero-img-wrap">
@@ -161,48 +167,133 @@
     <p class="sub">Sign up by SMS and get a FREE glitter voucher</p>
 
     <script>
-    (function(win,doc,formId,DPE,DEE,CFVE){
-      var XHR=('onload' in new win.XMLHttpRequest())?win.XMLHttpRequest:win.XDomainRequest;
-      var form,fSrvErr,fTermErr;
-      var fecn='st-err-field';
-      function setErr(m){fSrvErr.innerText=m;}
-      function isTerm(){return form.querySelector('input[name="terms-agreed"]').checked;}
-      function clearErr(){[].slice.call(form.querySelectorAll('.'+fecn)).forEach(function(f){f.classList.remove(fecn);});setErr('');fTermErr.style.display='none';}
-      function collectData(){var d={};[].slice.call(form).forEach(function(f){d[f.name]=f.value;});return d;}
-      function parseErr(r){var res={};try{var e=JSON.parse(r);if(e.code===DPE){res.fieldName='phone';res.errorMessage='Phone number already exists.';}else if(e.code===DEE){res.fieldName='email';res.errorMessage='Email already exists.';}else if(e.code===CFVE){res.fieldName=e.reasons[0].field;res.errorMessage=e.reasons[0].reason;}else{res.fieldName=e.field;res.errorMessage=e.reason;}}catch(x){}return{fieldName:res.fieldName||'',errorMessage:res.errorMessage||'Validation error.'};}
-      function onLoad(){
-        if(this.status===200){
-          form.querySelector('.step1-form').style.display='none';
-          document.location.href='{{SHARE_URL}}';
-          form.reset();
-        }else if(this.status===418){var v=parseErr(this.responseText);if(v.fieldName){var f=form.querySelector('input[name="'+v.fieldName+'"]');if(f)f.classList.add(fecn);}setErr(v.errorMessage);}
-        else{setErr('Internal Error. Please try again.');}
+    (function joinWebForm(
+      win, doc, formId,
+      DUPLICATE_PHONE_EXCEPTION, DUPLICATE_EMAIL_EXCEPTION, CUSTOM_FIELDS_VALIDATION_EXCEPTION,
+      doubleOptIn
+    ) {
+      var XHR = ('onload' in new win.XMLHttpRequest()) ? win.XMLHttpRequest : win.XDomainRequest;
+      var form;
+      var formServerErrorMessage;
+      var formTermsAgreedError;
+      var fieldErrorClassName = 'st-signupform-validation-error';
+      function setServerErrorMessage(message){ formServerErrorMessage.innerText = message; }
+      function isTermsAgreedAccepted(){ return form.querySelector('input[name="terms-agreed"]').checked; }
+      function showTermsAgreedError(){ formTermsAgreedError.style.display = 'block'; }
+      function hideTermsAgreedError(){ formTermsAgreedError.style.display = 'none'; }
+      function clearFormErrors(){
+        var fields = form.querySelectorAll('.' + fieldErrorClassName);
+        Array.prototype.slice.call(fields).forEach(function(field){
+          field.className = field.className.split(/\s/).filter(function(c){return c !== fieldErrorClassName && c;}).join(' ');
+        });
+        setServerErrorMessage('');
+        hideTermsAgreedError();
       }
-      function onErr(){setErr('Internal Error. Please try again.');}
-      function sendForm(){var d=collectData();var req=new XHR();req.open('POST','https://app2.simpletexting.com/join/joinContact?r='+Date.now());req.onload=onLoad;req.onerror=onErr;req.ontimeout=onErr;try{req.setRequestHeader('Content-Type','application/json; charset=UTF-8');}catch(x){}req.send(JSON.stringify(d));}
-      function fmtPhone(v){var n=v.replace(/\D/g,'');var a=n.substring(0,3),b=n.substring(3,6),c=n.substring(6,10),r='';if(a)r+='('+a;if(b)r+=') '+b;if(c)r+='-'+c;return r;}
-      document.addEventListener('DOMContentLoaded',function(){
-        form=doc.getElementById('sms-form-{{FORM_ID}}');
-        fSrvErr=form.querySelector('.srv-err');
-        fTermErr=form.querySelector('.term-err');
-        form.querySelector('input[data-type="phone"]').addEventListener('input',function(e){e.target.value=fmtPhone(e.target.value);});
-        form.addEventListener('submit',function(e){e.preventDefault();clearErr();if(!isTerm()){fTermErr.style.display='block';}else{sendForm();}});
-      });
-    })(window,document,'{{FORM_ID}}','DuplicateContactPhoneException','DuplicateContactEmailException','CustomFieldsValidationException');
+      function collectFormData(){
+        var data = {};
+        Array.prototype.slice.call(form).forEach(function(field){ data[field.name] = field.value; });
+        return data;
+      }
+      function parseServerValidationError(response){
+        var result = {};
+        try {
+          var error = win.JSON.parse(response);
+          if (error.code === DUPLICATE_PHONE_EXCEPTION) { result.fieldName = 'phone'; result.errorMessage = 'Phone number already exists.'; }
+          else if (error.code === DUPLICATE_EMAIL_EXCEPTION) { result.fieldName = 'email'; result.errorMessage = 'Email already exists.'; }
+          else if (error.code === CUSTOM_FIELDS_VALIDATION_EXCEPTION) { result.fieldName = error.reasons[0].field; result.errorMessage = error.reasons[0].reason; }
+          else { result.fieldName = error.field; result.errorMessage = error.reason; }
+        } catch(_){}
+        result.fieldName = result.fieldName || '';
+        result.errorMessage = result.errorMessage || 'Validation error.';
+        return result;
+      }
+      function handleLoadForm(){
+        var validation, field;
+        if (this.status === 200) {
+          form.querySelector('.step1-form').style.display = 'none';
+          // Redirect to per-event share/thank-you page
+          document.location.href = '{{SHARE_URL}}';
+          form.reset();
+        } else if (this.status === 418) {
+          validation = parseServerValidationError(this.responseText);
+          if (validation.fieldName) {
+            field = form.querySelector('input[name="' + validation.fieldName + '"]');
+            if (field) field.className += ' ' + fieldErrorClassName;
+          }
+          setServerErrorMessage(validation.errorMessage);
+        } else {
+          setServerErrorMessage('Internal Error. Please, try later.');
+        }
+      }
+      function handleErrorForm(){ setServerErrorMessage('Internal Error. Please, try later.'); }
+      function sendForm(){
+        var data = collectFormData();
+        var url = 'https://app2.simpletexting.com/join/joinContact?r=' + Date.now();
+        var request = new XHR();
+        request.open(form.method, url);
+        request.onload = handleLoadForm;
+        request.onerror = handleErrorForm;
+        request.ontimeout = handleErrorForm;
+        try { request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8'); } catch(_){}
+        request.send(win.JSON.stringify(data));
+      }
+      function handleSubmitForm(event){
+        event.preventDefault();
+        clearFormErrors();
+        if (!isTermsAgreedAccepted()) { showTermsAgreedError(); }
+        else { sendForm(); }
+        return false;
+      }
+      function formatPhone(value){
+        var numbers = value.replace(/\D/g, '');
+        var firstPart = numbers.substring(0, 3);
+        var secondPart = numbers.substring(3, 6);
+        var thirdPart = numbers.substring(6, 10);
+        var result = '';
+        if (firstPart) { result += '(' + firstPart; }
+        if (secondPart) { result += ') ' + secondPart; }
+        if (thirdPart) { result += '-' + thirdPart; }
+        return result;
+      }
+      function handleChangePhoneField(event){ var f = event.currentTarget; f.value = formatPhone(f.value); }
+      function handleLoad(){
+        form = doc.getElementById(formId);
+        if (!form) return;
+        formServerErrorMessage = form.querySelector('.st-signupform-server-error-message');
+        formTermsAgreedError = form.querySelector('.st-signupform-terms-agreed-error');
+        var phoneFields = form.querySelectorAll('input[data-type="phone"]');
+        form.addEventListener('submit', handleSubmitForm);
+        Array.prototype.slice.call(phoneFields).forEach(function(field){
+          field.addEventListener('input', handleChangePhoneField);
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', handleLoad);
+      } else {
+        handleLoad();
+      }
+    })(
+      window, document, 'st-join-web-form-{{FORM_ID}}',
+      'DuplicateContactPhoneException', 'DuplicateContactEmailException', 'CustomFieldsValidationException'
+    );
     </script>
 
-    <form id="sms-form-{{FORM_ID}}" class="st-signupform" action="https://app2.simpletexting.com/join/joinContact" method="POST">
+    <form id="st-join-web-form-{{FORM_ID}}" class="st-signupform" action="https://app2.simpletexting.com/join/joinContact" method="POST">
       <div class="step1-form">
-        <input type="hidden" name="webFormId" value="{{FORM_ID}}">
-        <input type="hidden" name="country" value="USA">
-        <input type="text" name="phone" placeholder="Your Phone Number" maxlength="1600" data-type="phone" class="phoneNumber" required>
-        <div class="st-font-caption">
-          <input type="checkbox" name="terms-agreed" checked>
-          <label>By subscribing you agree to receive autodialed marketing text messages. Consent not required for purchase. Msg &amp; data rates may apply. Reply STOP to cancel. <a href="https://app2.simpletexting.com/web-forms/terms/654d65258f51cb55a9016540" target="_blank">Terms</a></label>
+        <input type="hidden" name="webFormId" value="{{FORM_ID}}" id="webFormId-{{FORM_ID}}">
+        <input type="hidden" name="country" value="USA" id="country-{{FORM_ID}}">
+        <div class="required" style="text-align: center">
+          <input id="phone-{{FORM_ID}}" name="phone" type="text" placeholder="Your Phone Number" maxlength="1600" data-type="phone" class="phoneNumber" required>
         </div>
-        <p class="term-err st-color-red st-hidden">Please agree to terms to continue.</p>
-        <input type="submit" value="&#x2709;&#xFE0F; TEXT ME MY VOUCHER">
-        <p class="srv-err st-color-red"></p>
+        <div class="st-font-caption">
+          <input id="terms-agreed-checkbox-{{FORM_ID}}" type="checkbox" name="terms-agreed" checked>
+          <label for="terms-agreed-checkbox-{{FORM_ID}}">By subscribing you agree to receive autodialed marketing text messages. Consent not required for purchase. Msg &amp; data rates may apply. Reply STOP to cancel. <a href="https://app2.simpletexting.com/web-forms/terms/654d65258f51cb55a9016540" target="_blank">Terms</a></label>
+        </div>
+        <p class="st-signupform-terms-agreed-error st-color-red st-hidden">Please agree to terms to continue.</p>
+        <div class="st-join-web-form-submit-button-box">
+          <input type="submit" value="&#x2709;&#xFE0F; TEXT ME MY VOUCHER" name="subscribe">
+          <p class="st-signupform-server-error-message st-color-red">&nbsp;</p>
+        </div>
       </div>
       <div class="step2-singleOptIn st-hidden">
         <p>&#x1F389; Your voucher is on the way! Share on your story &amp; get a FREE Eyeshadow too!</p>

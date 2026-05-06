@@ -131,6 +131,12 @@
   </style>
 </head>
 <body>
+  <div style="position:fixed;top:10px;right:12px;z-index:1000;display:flex;gap:6px;background:rgba(0,0,0,0.6);padding:6px 10px;border-radius:999px;backdrop-filter:blur(4px);">
+    <a href="share.html" style="color:#fff;text-decoration:none;font-size:13px;font-weight:700;">EN</a>
+    <span style="color:rgba(255,255,255,0.3);">|</span>
+    <a href="share-es.html" style="color:rgba(255,255,255,0.55);text-decoration:none;font-size:13px;font-weight:700;">ES</a>
+  </div>
+
 
   <h1>Thank You! &#x1F389;</h1>
   <h2>We can&#39;t wait to see you!</h2>
