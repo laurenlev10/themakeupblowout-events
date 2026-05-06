@@ -158,7 +158,7 @@
 
   <section class="sms-section">
     <div class="gift-media">
-      <img src="/_assets/shared/New%20Free%20Glitter%20Gift.png" alt="Free Glitter Gift">
+      <img src="/_assets/shared/GIF%20New%20Free%20Glitter%20Gift.gif" alt="Free Glitter Gift">
     </div>
     <h2>&#x1F381; Claim Your Free Gift!</h2>
     <p class="sub">Sign up by SMS and get a FREE glitter voucher</p>
