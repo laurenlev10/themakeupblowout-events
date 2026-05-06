@@ -98,11 +98,15 @@
       margin-top: 10px; text-transform: uppercase;
     }
     .gift-media {
-      max-width: 360px; width: 100%; margin: 0 auto 18px; display: block;
+      max-width: 250px; width: 100%; margin: 0 auto 18px; display: block;
       border-radius: 12px; overflow: hidden;
       box-shadow: 0 8px 28px rgba(240,16,112,0.35);
     }
-    .gift-media video, .gift-media img { width: 100%; height: auto; display: block; }
+    .gift-media video, .gift-media img {
+      width: 100%; height: auto; display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
     .share-pic-wrap {
       max-width: 380px; margin: 0 auto 16px;
     }
