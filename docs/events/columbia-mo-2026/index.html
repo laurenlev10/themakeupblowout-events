@@ -218,27 +218,9 @@
 
 
 
-  <section class="share-section">
-    <div class="share-pic-wrap">
-      <img src="/_assets/shared/Free%20Gift%20Pic.png" alt="Add our reel to your IG story and get a free eyeshadow">
-    </div>
-    <h3>&quot;SHARE&quot; &amp; Receive a Free Fabulous Glitter! &#x2728;</h3>
-    <a href="https://www.instagram.com/themakeupblowoutsale/" class="ig-btn" target="_blank" rel="noopener noreferrer">
-      <i class="fab fa-instagram"></i> Share On Instagram
-    </a>
-  </section>
 
-  <section class="countdown-section">
-    <div class="limited-badge-wrap">
-      <img src="/_assets/shared/Untitled%20design.png" alt="Limited Edition">
-    </div>
-    <p class="cd-label">&#x26A1; Quick! Your offer expires in:</p>
-    <div class="countdown">
-      <div class="cd-block"><div class="cd-num" id="cd-h">00</div><div class="cd-unit">Hours</div></div>
-      <div class="cd-block"><div class="cd-num" id="cd-m">15</div><div class="cd-unit">Minutes</div></div>
-      <div class="cd-block"><div class="cd-num" id="cd-s">00</div><div class="cd-unit">Seconds</div></div>
-    </div>
-  </section>
+
+
 
   <section class="promo-collage" style="background:#fdf2f8;padding:24px 16px;text-align:center;">
     <img src="/_assets/shared/75-OFF-1-.png" alt="75% off Makeup, Skincare &amp; Hair Care" style="max-width:480px;width:100%;height:auto;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.08);">
@@ -250,19 +232,6 @@
   </footer>
 
   <script>
-    (function(){
-      var total=15*60;
-      function pad(n){return n<10?'0'+n:''+n;}
-      function tick(){
-        var h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
-        document.getElementById('cd-h').textContent=pad(h);
-        document.getElementById('cd-m').textContent=pad(m);
-        document.getElementById('cd-s').textContent=pad(s);
-        total=total>0?total-1:15*60;
-        setTimeout(tick,1000);
-      }
-      tick();
-    })();
     (function(){
       var sc=1200+Math.floor(Math.random()*80);
       function fmt(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');}

@@ -31,6 +31,36 @@
     }
     .btn-white:hover, .btn-pink:hover { transform: translateY(-2px); }
     .share-img { max-width: 420px; width: 100%; border-radius: 12px; margin-top: 10px; }
+
+    /* === Sections moved from landing.html (added 2026-05-06) === */
+    .moved-share-section {
+      padding: 30px 20px; background: #0a0a0a; text-align: center; margin-top: 30px;
+      width: 100%; max-width: 700px; margin-left: auto; margin-right: auto;
+      border-radius: 12px;
+    }
+    .moved-share-section h3 { font-size: clamp(18px, 3.5vw, 26px); color: #4267b2; margin-bottom: 16px; }
+    .ig-btn {
+      display: block; max-width: 420px; margin: 0 auto;
+      background: #f01070; color: #fff !important;
+      font-size: 18px; font-weight: 700; font-family: 'Josefin Sans', sans-serif;
+      padding: 16px 28px; border-radius: 8px; text-decoration: none;
+      box-shadow: 0 8px 24px rgba(240,16,112,0.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .ig-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(240,16,112,0.5); }
+    .ig-btn i { margin-right: 8px; }
+    .moved-countdown-section {
+      padding: 24px 20px; background: #000; text-align: center; margin-top: 18px;
+      width: 100%; max-width: 700px; margin-left: auto; margin-right: auto;
+      border-radius: 12px;
+    }
+    .moved-countdown-section .cd-label { font-size: clamp(16px, 3vw, 22px); color: #f01070; margin-bottom: 12px; }
+    .countdown { display: flex; justify-content: center; gap: 20px; }
+    .cd-block { text-align: center; min-width: 60px; }
+    .cd-num { font-size: clamp(32px, 7vw, 48px); font-weight: 700; color: #fff; line-height: 1; }
+    .cd-unit { font-size: 11px; color: #888; text-transform: uppercase; margin-top: 4px; }
+    .limited-badge-wrap { text-align: center; margin-bottom: 8px; }
+    .limited-badge-wrap img { max-width: 200px; width: 60%; height: auto; }
   </style>
 </head>
 <body>
@@ -50,6 +80,45 @@
 
   <img src="https://www.themakeupblowoutsale-group.com/hosted/images/07/92ec56eb11401bad5e72be8ebbb7d0/Screenshot-2025-05-20-092912.png"
        class="share-img" alt="Makeup Blowout Sale">
+
+  <!-- Share Reel + Countdown (moved from landing.html — added 2026-05-06) -->
+  <section class="moved-share-section">
+    <h3>"SHARE" &amp; Receive a Free Fabulous Glitter! &#x2728;</h3>
+    <a href="https://www.instagram.com/themakeupblowoutsale/" class="ig-btn" target="_blank" rel="noopener noreferrer">
+      <i class="fab fa-instagram"></i> Share Our Reel On Instagram
+    </a>
+  </section>
+
+  <section class="moved-countdown-section">
+    <div class="limited-badge-wrap">
+      <img src="/_assets/shared/Untitled%20design.png" alt="Limited Edition">
+    </div>
+    <p class="cd-label">&#x26A1; Quick! Your offer expires in:</p>
+    <div class="countdown">
+      <div class="cd-block"><div class="cd-num" id="cd-h">00</div><div class="cd-unit">Hours</div></div>
+      <div class="cd-block"><div class="cd-num" id="cd-m">15</div><div class="cd-unit">Minutes</div></div>
+      <div class="cd-block"><div class="cd-num" id="cd-s">00</div><div class="cd-unit">Seconds</div></div>
+    </div>
+  </section>
+
+  <script>
+  (function(){
+    var total=15*60;
+    function pad(n){return n<10?'0'+n:''+n;}
+    function tick(){
+      var h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
+      var hEl=document.getElementById('cd-h');
+      var mEl=document.getElementById('cd-m');
+      var sEl=document.getElementById('cd-s');
+      if(hEl) hEl.textContent=pad(h);
+      if(mEl) mEl.textContent=pad(m);
+      if(sEl) sEl.textContent=pad(s);
+      total=total>0?total-1:15*60;
+      setTimeout(tick,1000);
+    }
+    tick();
+  })();
+  </script>
 
 </body>
 </html>
