@@ -148,14 +148,6 @@
     </div>
   </section>
 
-  <!-- Share Reel + Countdown (moved from landing.html — added 2026-05-06) -->
-  <section class="moved-share-section">
-    <h3>"SHARE" &amp; Receive a Free Fabulous Glitter! &#x2728;</h3>
-    <a href="{{IG_URL}}" class="ig-btn" target="_blank" rel="noopener noreferrer">
-      <i class="fab fa-instagram"></i> Share Our Reel On Instagram
-    </a>
-  </section>
-
   <section class="moved-countdown-section">
     <div class="limited-badge-wrap">
       <img src="/_assets/shared/Untitled%20design.png" alt="Limited Edition">
