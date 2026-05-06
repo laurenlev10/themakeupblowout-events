@@ -119,35 +119,6 @@
     <i class="fab fa-instagram"></i> SHARE NOW
   </a>
 
-  <img src="https://www.themakeupblowoutsale-group.com/hosted/images/07/92ec56eb11401bad5e72be8ebbb7d0/Screenshot-2025-05-20-092912.png"
-       class="share-img" alt="Makeup Blowout Sale">
-
-
-  <!-- Tagline + quick-info + FAQ (added 2026-05-06 to match the old ClickFunnels share page) -->
-  <div class="thanks-tagline">
-    Bring your friends and join us for a weekend of makeup magic! &#x1F484;&#x2728;
-  </div>
-
-  <div class="quick-info">
-    <div class="qi-item"><span class="qi-icon">&#x1F39F;&#xFE0F;</span> Free Entrance</div>
-    <div class="qi-item"><span class="qi-icon">&#x1F4B3;</span> Cash &amp; Card Accepted</div>
-    <div class="qi-item"><span class="qi-icon">&#x1F476;</span> Kids Are Welcome</div>
-  </div>
-
-  <section class="faq-section">
-    <h3>FAQ&#39;s</h3>
-    <div class="faq-list">
-      <div class="faq-item">
-        <p class="faq-q"><span class="faq-q-mark">Q:</span>Do you guys restock?</p>
-        <p class="faq-a">Yes! Every day of our events!</p>
-      </div>
-      <div class="faq-item">
-        <p class="faq-q"><span class="faq-q-mark">Q:</span>When will you be back?</p>
-        <p class="faq-a">Next year! We only come to your city once a year &mdash; don&#39;t miss out!</p>
-      </div>
-    </div>
-  </section>
-
   <section class="moved-countdown-section">
     <div class="limited-badge-wrap">
       <img src="/_assets/shared/Untitled%20design.png" alt="Limited Edition">
@@ -178,6 +149,34 @@
     tick();
   })();
   </script>
+
+  <img src="https://www.themakeupblowoutsale-group.com/hosted/images/07/92ec56eb11401bad5e72be8ebbb7d0/Screenshot-2025-05-20-092912.png"
+       class="share-img" alt="Makeup Blowout Sale">
+
+  <!-- Tagline + quick-info + FAQ (added 2026-05-06 to match the old ClickFunnels share page) -->
+  <div class="thanks-tagline">
+    Bring your friends and join us for a weekend of makeup magic! &#x1F484;&#x2728;
+  </div>
+
+  <div class="quick-info">
+    <div class="qi-item"><span class="qi-icon">&#x1F39F;&#xFE0F;</span> Free Entrance</div>
+    <div class="qi-item"><span class="qi-icon">&#x1F4B3;</span> Cash &amp; Card Accepted</div>
+    <div class="qi-item"><span class="qi-icon">&#x1F476;</span> Kids Are Welcome</div>
+  </div>
+
+  <section class="faq-section">
+    <h3>FAQ&#39;s</h3>
+    <div class="faq-list">
+      <div class="faq-item">
+        <p class="faq-q"><span class="faq-q-mark">Q:</span>Do you guys restock?</p>
+        <p class="faq-a">Yes! Every day of our events!</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q"><span class="faq-q-mark">Q:</span>When will you be back?</p>
+        <p class="faq-a">Next year! We only come to your city once a year &mdash; don&#39;t miss out!</p>
+      </div>
+    </div>
+  </section>
 
   <div style="width: 100%; max-width: 700px; margin: 28px auto 0; text-align: center;">
     <img src="/_assets/shared/Box.gif" alt="Mystery Box" style="max-width: 360px; width: 80%; height: auto; border-radius: 12px;">
