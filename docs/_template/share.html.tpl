@@ -103,6 +103,31 @@
     .faq-list .faq-a {
       font-size: 15px; color: #ffcfd2; margin: 0; line-height: 1.5;
     }
+
+    /* Facebook + TikTok share buttons (added 2026-05-06) */
+    .btn-fb {
+      display: block; width: 100%; max-width: 420px; background: #1877f2;
+      color: #fff !important; font-size: clamp(16px, 3.5vw, 20px); font-weight: 700;
+      font-family: inherit; padding: 16px 24px; border-radius: 8px; text-decoration: none;
+      margin-bottom: 12px; box-shadow: 0 6px 20px rgba(24,119,242,0.35);
+      transition: transform .2s; text-align: center;
+    }
+    .btn-fb:hover { transform: translateY(-2px); }
+    .btn-fb i { margin-right: 8px; }
+    .btn-tiktok {
+      display: block; width: 100%; max-width: 420px;
+      background: #000; color: #fff !important;
+      border: 1.5px solid rgba(255,255,255,0.18);
+      font-size: clamp(16px, 3.5vw, 20px); font-weight: 700;
+      font-family: inherit; padding: 16px 24px; border-radius: 8px; text-decoration: none;
+      margin-bottom: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      transition: transform .2s, border-color .2s; text-align: center;
+      position: relative;
+    }
+    .btn-tiktok:hover { transform: translateY(-2px); border-color: #25F4EE; }
+    .btn-tiktok i { margin-right: 8px; }
+    .btn-tiktok .tt-accent-1 { color: #25F4EE; }
+    .btn-tiktok .tt-accent-2 { color: #FE2C55; }
   </style>
 </head>
 <body>
@@ -117,6 +142,14 @@
 
   <a href="{{IG_URL}}" class="btn-pink" target="_blank" rel="noopener noreferrer">
     <i class="fab fa-instagram"></i> SHARE NOW
+  </a>
+
+  <a href="{{FB_URL}}" class="btn-fb" target="_blank" rel="noopener noreferrer">
+    <i class="fab fa-facebook-f"></i> SHARE ON FACEBOOK
+  </a>
+
+  <a href="{{TIKTOK_URL}}" class="btn-tiktok" target="_blank" rel="noopener noreferrer">
+    <i class="fab fa-tiktok"></i> SHARE ON <span class="tt-accent-1">TIK</span><span class="tt-accent-2">TOK</span>
   </a>
 
   <section class="moved-countdown-section">
