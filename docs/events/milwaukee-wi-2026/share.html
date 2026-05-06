@@ -175,6 +175,18 @@
         <p class="faq-q"><span class="faq-q-mark">Q:</span>When will you be back?</p>
         <p class="faq-a">Every two years! We only come to your city once every couple of years &mdash; don&#39;t miss out!</p>
       </div>
+      <div class="faq-item">
+        <p class="faq-q"><span class="faq-q-mark">Q:</span>Do I need to buy tickets?</p>
+        <p class="faq-a">No tickets needed &mdash; entry is completely free!</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q"><span class="faq-q-mark">Q:</span>Can kids join?</p>
+        <p class="faq-a">Yes! Kids are welcome.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q"><span class="faq-q-mark">Q:</span>Can I bring my pets?</p>
+        <p class="faq-a">No problem! Pets are welcome.</p>
+      </div>
     </div>
   </section>
 
