@@ -61,6 +61,48 @@
     .cd-unit { font-size: 11px; color: #888; text-transform: uppercase; margin-top: 4px; }
     .limited-badge-wrap { text-align: center; margin-bottom: 8px; }
     .limited-badge-wrap img { max-width: 200px; width: 60%; height: auto; }
+
+    /* === FAQ + tagline + info bullets (added 2026-05-06) === */
+    .thanks-tagline {
+      width: 100%; max-width: 700px; margin: 24px auto 0;
+      text-align: center; padding: 18px 20px;
+      background: linear-gradient(135deg, #1a0030 0%, #2d0050 100%);
+      border-radius: 12px;
+      font-size: clamp(17px, 3.5vw, 22px); font-weight: 700;
+      color: #f5e45b; line-height: 1.4;
+    }
+    .quick-info {
+      width: 100%; max-width: 700px; margin: 14px auto 0;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      text-align: center;
+    }
+    @media (max-width: 600px) { .quick-info { grid-template-columns: 1fr; } }
+    .quick-info .qi-item {
+      background: #1a1a1a; border: 1px solid #333; border-radius: 10px;
+      padding: 14px 12px; color: #fff; font-size: 14px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 56px;
+    }
+    .quick-info .qi-item .qi-icon { font-size: 18px; color: #f01070; }
+    .faq-section {
+      width: 100%; max-width: 700px; margin: 24px auto 0;
+      background: #0a0a0a; border-radius: 12px; padding: 22px 22px 12px;
+      text-align: center;
+    }
+    .faq-section h3 {
+      font-size: clamp(20px, 4vw, 28px); color: #f01070;
+      margin: 0 0 16px 0; letter-spacing: 0.5px;
+    }
+    .faq-list { text-align: right; direction: ltr; }
+    .faq-list .faq-item { padding: 14px 0; border-bottom: 1px solid #1f1f1f; text-align: left; }
+    .faq-list .faq-item:last-child { border-bottom: none; }
+    .faq-list .faq-q {
+      font-size: 16px; font-weight: 700; color: #fff; margin: 0 0 6px;
+    }
+    .faq-list .faq-q .faq-q-mark { color: #f01070; margin-right: 6px; }
+    .faq-list .faq-a {
+      font-size: 15px; color: #ffcfd2; margin: 0; line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -80,6 +122,32 @@
 
   <img src="https://www.themakeupblowoutsale-group.com/hosted/images/07/92ec56eb11401bad5e72be8ebbb7d0/Screenshot-2025-05-20-092912.png"
        class="share-img" alt="Makeup Blowout Sale">
+
+
+  <!-- Tagline + quick-info + FAQ (added 2026-05-06 to match the old ClickFunnels share page) -->
+  <div class="thanks-tagline">
+    Bring your friends and join us for a weekend of makeup magic! &#x1F484;&#x2728;
+  </div>
+
+  <div class="quick-info">
+    <div class="qi-item"><span class="qi-icon">&#x1F39F;&#xFE0F;</span> Free Entrance</div>
+    <div class="qi-item"><span class="qi-icon">&#x1F4B3;</span> Cash &amp; Card Accepted</div>
+    <div class="qi-item"><span class="qi-icon">&#x1F476;</span> Kids Are Welcome</div>
+  </div>
+
+  <section class="faq-section">
+    <h3>FAQ&#39;s</h3>
+    <div class="faq-list">
+      <div class="faq-item">
+        <p class="faq-q"><span class="faq-q-mark">Q:</span>Do you guys restock?</p>
+        <p class="faq-a">Yes! Every day of our events!</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q"><span class="faq-q-mark">Q:</span>When will you be back?</p>
+        <p class="faq-a">Next year! We only come to your city once a year &mdash; don&#39;t miss out!</p>
+      </div>
+    </div>
+  </section>
 
   <!-- Share Reel + Countdown (moved from landing.html — added 2026-05-06) -->
   <section class="moved-share-section">
