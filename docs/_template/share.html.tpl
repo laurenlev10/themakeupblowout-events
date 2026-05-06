@@ -35,6 +35,7 @@
 </head>
 <body>
 
+  <img src="/_assets/shared/Box.gif" alt="Gift box" style="max-width: 280px; width: 70%; height: auto; margin-bottom: 20px;">
   <h1>Thank You! &#x1F389;</h1>
   <h2>We can&#39;t wait to see you!</h2>
 

@@ -71,14 +71,57 @@
     .cd-num { font-size: clamp(32px, 7vw, 48px); font-weight: 700; color: #fff; line-height: 1; }
     .cd-unit { font-size: 11px; color: #888; text-transform: uppercase; margin-top: 4px; }
     footer { text-align: center; padding: 20px; font-size: 12px; color: #444; background: #000; }
+
+    /* === Image-section styling (added when Lauren's assets shipped) === */
+    .hero {
+      padding: 0 !important;
+      background: #000 !important;
+      position: relative;
+    }
+    .hero-img-wrap { position: relative; width: 100%; max-width: 720px; margin: 0 auto; }
+    .hero-img-wrap img {
+      width: 100%; height: auto; display: block;
+    }
+    .hero-text-overlay {
+      padding: 28px 20px 24px;
+      background: linear-gradient(135deg, #1a0030 0%, #2d0050 50%, #1a1060 100%);
+      text-align: center;
+    }
+    .vendors-section {
+      background: #fff;
+      padding: 24px 16px;
+      text-align: center;
+    }
+    .vendors-section img { max-width: 600px; width: 100%; height: auto; display: block; margin: 0 auto; }
+    .vendors-section .vendors-caption {
+      color: #1f2937; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;
+      margin-top: 10px; text-transform: uppercase;
+    }
+    .gift-media {
+      max-width: 360px; width: 100%; margin: 0 auto 18px; display: block;
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 8px 28px rgba(240,16,112,0.35);
+    }
+    .gift-media video, .gift-media img { width: 100%; height: auto; display: block; }
+    .share-pic-wrap {
+      max-width: 380px; margin: 0 auto 16px;
+    }
+    .share-pic-wrap img { width: 100%; height: auto; display: block; border-radius: 12px; }
+    .limited-badge-wrap { text-align: center; margin-bottom: 8px; }
+    .limited-badge-wrap img { max-width: 200px; width: 60%; height: auto; }
   </style>
 </head>
 <body>
 
   <section class="hero">
-    <h1>Get Your Free Fabulous Glitter! &#x2728;<br>{{CITY}}</h1>
-    <p class="tagline">Get ready for a fabulous weekend of beauty and savings!<br>40+ amazing brands at unbeatable prices!</p>
-    <p class="free-entry">&#x1F389; FREE ENTRY &amp; PARKING</p>
+    <div class="hero-img-wrap">
+      <img src="/_assets/shared/75-OFF-1-.png" alt="75% off Makeup, Skincare & Hair Care - The Makeup Blowout Sale">
+    </div>
+    <div class="hero-text-overlay">
+      <h1>Get Your Free Fabulous Glitter! &#x2728;<br>{{CITY}}</h1>
+      <p class="tagline">Get ready for a fabulous weekend of beauty and savings!<br>40+ amazing brands at unbeatable prices!</p>
+      <p class="free-entry">&#x1F389; FREE ENTRY &amp; PARKING</p>
+    </div>
   </section>
 
   <div style="padding: 0 20px;">
@@ -108,7 +151,18 @@
     </ul>
   </section>
 
+  <section class="vendors-section">
+    <img src="/_assets/shared/Vendors-Logos.png" alt="40+ Top Beauty Brands">
+    <div class="vendors-caption">40+ TOP BRANDS &#x2022; UP TO 75% OFF</div>
+  </section>
+
   <section class="sms-section">
+    <div class="gift-media">
+      <video autoplay loop muted playsinline poster="/_assets/shared/75-OFF-1-.png">
+        <source src="/_assets/shared/Free%20Glitter%20Gift.mp4" type="video/mp4">
+        <img src="/_assets/shared/Free%20Glitter%20Gift.gif" alt="Free Glitter Gift">
+      </video>
+    </div>
     <h2>&#x1F381; Claim Your Free Gift!</h2>
     <p class="sub">Sign up by SMS and get a FREE glitter voucher</p>
 
@@ -163,6 +217,9 @@
   </section>
 
   <section class="share-section">
+    <div class="share-pic-wrap">
+      <img src="/_assets/shared/Free%20Gift%20Pic.png" alt="Add our reel to your IG story and get a free eyeshadow">
+    </div>
     <h3>&quot;SHARE&quot; &amp; Receive a Free Fabulous Glitter! &#x2728;</h3>
     <a href="{{IG_URL}}" class="ig-btn" target="_blank" rel="noopener noreferrer">
       <i class="fab fa-instagram"></i> Share On Instagram
@@ -170,6 +227,9 @@
   </section>
 
   <section class="countdown-section">
+    <div class="limited-badge-wrap">
+      <img src="/_assets/shared/Untitled%20design.png" alt="Limited Edition">
+    </div>
     <p class="cd-label">&#x26A1; Quick! Your offer expires in:</p>
     <div class="countdown">
       <div class="cd-block"><div class="cd-num" id="cd-h">00</div><div class="cd-unit">Hours</div></div>
