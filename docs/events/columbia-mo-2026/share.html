@@ -107,7 +107,6 @@
 </head>
 <body>
 
-  <img src="/_assets/shared/Box.gif" alt="Gift box" style="max-width: 280px; width: 70%; height: auto; margin-bottom: 20px;">
   <h1>Thank You! &#x1F389;</h1>
   <h2>We can&#39;t wait to see you!</h2>
 
@@ -187,6 +186,10 @@
     tick();
   })();
   </script>
+
+  <div style="width: 100%; max-width: 700px; margin: 28px auto 0; text-align: center;">
+    <img src="/_assets/shared/Box.gif" alt="Mystery Box" style="max-width: 360px; width: 80%; height: auto; border-radius: 12px;">
+  </div>
 
 </body>
 </html>
