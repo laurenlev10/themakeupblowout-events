@@ -6,6 +6,87 @@
   <title>Thank You! &#x2014; Makeup Blowout Columbia, MO</title>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
+  <!-- ============ ANALYTICS — added 2026-05-07 ============ -->
+<!-- Replaced at build time by scripts/build.py from GitHub Secrets:
+     G-NOT-SET-YET → GA4_MEASUREMENT_ID
+     0000000000000000      → META_PIXEL_ID
+     C00000000000    → TIKTOK_PIXEL_ID  -->
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NOT-SET-YET"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NOT-SET-YET', { page_path: window.location.pathname + window.location.search });
+  // Custom dimensions for cross-event reporting
+  (function(){
+    var slugMatch = window.location.pathname.match(/\/events\/([^\/]+)\//);
+    var slug = slugMatch ? slugMatch[1] : 'unknown';
+    var path = window.location.pathname;
+    var variant = path.indexOf('tiktok') !== -1 ? 'tiktok'
+                : path.indexOf('share') !== -1 ? 'share'
+                : path.indexOf('-es.html') !== -1 ? 'landing-es' : 'landing-en';
+    var lang = (variant.indexOf('es') !== -1) ? 'es' : 'en';
+    gtag('event', 'page_load', { event_slug: slug, page_variant: variant, language: lang });
+  })();
+</script>
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '0000000000000000');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=0000000000000000&ev=PageView&noscript=1"/></noscript>
+
+<!-- TikTok Pixel -->
+<script>
+!function (w, d, t) {
+  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+  ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+  for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+  ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
+  ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript";o.async=!0;o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+  ttq.load('C00000000000');
+  ttq.page();
+}(window, document, 'ttq');
+</script>
+
+<!-- Helper: fire conversion + share events -->
+<script>
+window.trackEvent = function(name, params) {
+  params = params || {};
+  try { if (window.gtag) gtag('event', name, params); } catch(e){}
+  try { if (window.fbq && name === 'form_submit') fbq('track', 'Lead', params); } catch(e){}
+  try { if (window.fbq && name === 'share_click') fbq('track', 'ClickButton', params); } catch(e){}
+  try { if (window.ttq && name === 'form_submit') ttq.track('SubmitForm', params); } catch(e){}
+  try { if (window.ttq && name === 'share_click') ttq.track('ClickButton', params); } catch(e){}
+  try { if (window.ttq && name === 'tiktok_arrival') ttq.track('CompleteRegistration', params); } catch(e){}
+};
+// Auto-attach to share buttons
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a[href*="instagram.com"]').forEach(function(a){
+    a.addEventListener('click', function(){ trackEvent('share_click', {platform:'instagram'}); });
+  });
+  document.querySelectorAll('a[href*="facebook.com"]').forEach(function(a){
+    a.addEventListener('click', function(){ trackEvent('share_click', {platform:'facebook'}); });
+  });
+  document.querySelectorAll('a[href*="tiktok.com"]').forEach(function(a){
+    a.addEventListener('click', function(){ trackEvent('share_click', {platform:'tiktok'}); });
+  });
+  // TikTok-variant page = arrival from TikTok lead form (already converted)
+  if (window.location.pathname.indexOf('tiktok') !== -1) {
+    trackEvent('tiktok_arrival', {});
+  }
+});
+</script>
+<!-- ========================================================== -->
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {

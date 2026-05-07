@@ -24,6 +24,7 @@ TPL_LANDING_ES = (DOCS / "_template" / "landing-es.html.tpl").read_text(encoding
 TPL_SHARE_ES   = (DOCS / "_template" / "share-es.html.tpl").read_text(encoding="utf-8") if (DOCS / "_template" / "share-es.html.tpl").exists() else None
 TPL_TIKTOK     = (DOCS / "_template" / "tiktok.html.tpl").read_text(encoding="utf-8") if (DOCS / "_template" / "tiktok.html.tpl").exists() else None
 TPL_TIKTOK_ES  = (DOCS / "_template" / "tiktok-es.html.tpl").read_text(encoding="utf-8") if (DOCS / "_template" / "tiktok-es.html.tpl").exists() else None
+TPL_STATS      = (DOCS / "_template" / "stats.html.tpl").read_text(encoding="utf-8") if (DOCS / "_template" / "stats.html.tpl").exists() else None
 DATA        = json.loads((DOCS / "upcoming-events.json").read_text(encoding="utf-8"))
 
 MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"]
@@ -59,10 +60,24 @@ def render_event(ev):
         "HERO_IMAGE": f"/_assets/events/{slug}/hero.png",
     }, slug
 
+import os as _os
+
+# Pixel IDs from env (GitHub Secrets in workflow). When unset, leave the placeholder
+# so missing-pixel runs are detectable. Empty string substitutes are NOT used —
+# we want the page to render even if a pixel isn't configured yet.
+_PIXEL_VARS = {
+    "__GA4_MEASUREMENT_ID__": _os.environ.get("GA4_MEASUREMENT_ID", "G-NOT-SET-YET"),
+    "__META_PIXEL_ID__":      _os.environ.get("META_PIXEL_ID",      "0000000000000000"),
+    "__TIKTOK_PIXEL_ID__":    _os.environ.get("TIKTOK_PIXEL_ID",    "C00000000000"),
+}
+
 def fill(template, vars):
     out = template
     for k, v in vars.items():
         out = out.replace("{{" + k + "}}", v)
+    # Apply pixel substitutions on every render
+    for placeholder, value in _PIXEL_VARS.items():
+        out = out.replace(placeholder, value)
     return out
 
 def main():
@@ -89,6 +104,8 @@ def main():
             (target_dir / "tiktok.html").write_text(fill(TPL_TIKTOK, vars), encoding="utf-8")
         if TPL_TIKTOK_ES:
             (target_dir / "tiktok-es.html").write_text(fill(TPL_TIKTOK_ES, vars), encoding="utf-8")
+        if TPL_STATS:
+            (target_dir / "stats.html").write_text(fill(TPL_STATS, vars), encoding="utf-8")
         # Also store metadata next to the page for the agent to inspect
         (target_dir / "_meta.json").write_text(json.dumps({"slug": slug, **vars}, indent=2), encoding="utf-8")
         written.append((slug, vars["CITY"]))

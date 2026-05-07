@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 Stats — Makeup Blowout {{CITY}} {{YEAR}}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Josefin Sans',Helvetica,sans-serif;background:#0a0a14;color:#fff;
+         min-height:100vh;padding:30px 20px;line-height:1.5}
+    .wrap{max-width:1100px;margin:0 auto}
+    h1{font-size:clamp(26px,5vw,40px);color:#f5e45b;margin-bottom:6px}
+    .sub{color:#aaa;font-size:14px;margin-bottom:6px}
+    .pulled{color:#666;font-size:11px;margin-bottom:24px;font-family:ui-monospace,monospace}
+    .nodata{background:linear-gradient(135deg,#1a1a2a,#2a1a3a);border:1px solid #3a3a4a;
+            border-radius:14px;padding:34px 22px;text-align:center;margin:30px 0}
+    .nodata h2{color:#fbbf24;margin-bottom:8px;font-size:22px}
+    .nodata p{color:#aaa;font-size:14px}
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+               gap:14px;margin-bottom:26px}
+    .stat-card{background:#1a1a2a;border-left:4px solid #f01070;border-radius:10px;
+               padding:18px 20px}
+    .stat-card .label{color:#aaa;font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+    .stat-card .num{font-size:30px;color:#f5e45b;font-weight:800;line-height:1}
+    .stat-card .extra{color:#888;font-size:13px;margin-top:6px}
+    h2{color:#f01070;font-size:20px;margin:26px 0 12px}
+    .breakdown{background:#15151f;border-radius:12px;padding:18px 22px;margin-bottom:18px}
+    .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;
+         border-bottom:1px dashed #2a2a3a;gap:14px;flex-wrap:wrap}
+    .row:last-child{border-bottom:none}
+    .row .lbl{font-weight:700;color:#fff;flex:0 0 auto}
+    .row .bar-track{flex:1 1 auto;height:8px;background:#2a2a3a;border-radius:4px;overflow:hidden;min-width:120px}
+    .row .bar-fill{height:100%;background:linear-gradient(90deg,#f01070,#f5e45b)}
+    .row .val{font-weight:700;color:#f5e45b;flex:0 0 auto;text-align:right;min-width:90px}
+    .anomaly-box{background:#2a1010;border:1px solid #d97706;border-radius:10px;
+                 padding:14px 18px;margin:18px 0}
+    .anomaly-box .a-title{color:#fbbf24;font-weight:700;margin-bottom:6px}
+    .anomaly-box .a-item{color:#fde68a;font-size:14px;margin:4px 0}
+    a.back{color:#aaa;text-decoration:none;font-size:13px}
+    a.back:hover{color:#fff}
+    @media (max-width: 600px) {
+      .stat-grid{grid-template-columns:repeat(2,1fr)}
+      .stat-card .num{font-size:24px}
+      .breakdown{padding:14px 16px}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./">&larr; Back to {{CITY}} {{YEAR}}</a>
+  <h1>📊 Live stats — {{CITY}} {{YEAR}}</h1>
+  <div class="sub">{{MONTH}} {{START_DAY}}–{{END_DAY}} · {{HOTEL}}</div>
+  <div class="pulled" id="pulled-at">loading…</div>
+
+  <div id="nodata" class="nodata" style="display:none;">
+    <h2>⏳ Data hasn't started flowing yet</h2>
+    <p>Pixels are installed — once Lauren provides the GA4 / Meta / TikTok pixel IDs and the @stats agent runs its first pull, this dashboard fills with real numbers.</p>
+    <p style="margin-top:10px;font-size:12px;color:#666">Check <code>docs/state/event_analytics.json</code> for the latest pull.</p>
+  </div>
+
+  <div id="content" style="display:none;">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="label">Total views</div><div class="num" id="m-views">—</div><div class="extra" id="x-views">—</div></div>
+      <div class="stat-card"><div class="label">Conversions</div><div class="num" id="m-conv">—</div><div class="extra" id="x-conv">—</div></div>
+      <div class="stat-card"><div class="label">Conversion rate</div><div class="num" id="m-rate">—</div><div class="extra" id="x-rate">vs baseline</div></div>
+      <div class="stat-card"><div class="label">Share clicks</div><div class="num" id="m-shares">—</div><div class="extra" id="x-shares">—</div></div>
+    </div>
+
+    <h2>By language</h2>
+    <div class="breakdown" id="by-lang"></div>
+
+    <h2>By source</h2>
+    <div class="breakdown" id="by-source"></div>
+
+    <h2>By campaign (UTM)</h2>
+    <div class="breakdown" id="by-campaign"></div>
+
+    <h2>ROAS by platform</h2>
+    <div class="breakdown" id="by-roas"></div>
+
+    <h2>Share clicks by platform</h2>
+    <div class="breakdown" id="by-shares"></div>
+
+    <div id="anomaly-wrap"></div>
+  </div>
+</div>
+
+<script>
+(async function(){
+  const slug = "{{EVENT_SLUG}}";
+  let data;
+  try {
+    const r = await fetch("/state/event_analytics.json", { cache: "no-store" });
+    data = r.ok ? await r.json() : null;
+  } catch(e) { data = null; }
+  const ev = data && data.events && data.events[slug];
+  if (!ev) {
+    document.getElementById("nodata").style.display = "block";
+    document.getElementById("pulled-at").textContent = "Last pull: not yet";
+    return;
+  }
+  document.getElementById("content").style.display = "block";
+  document.getElementById("pulled-at").textContent = "Last pulled: " + new Date(ev.last_pulled || data._updated_at).toLocaleString();
+
+  // top-line stats
+  const v = ev.views || {};
+  const c = ev.conversions || {};
+  const sh = ev.share_clicks || {};
+  const totalShares = Object.values(sh).reduce((a,b)=>a+b,0);
+  document.getElementById("m-views").textContent  = (v.total||0).toLocaleString();
+  document.getElementById("m-conv").textContent   = (c.total||0).toLocaleString();
+  const rate = v.total ? (c.total / v.total * 100) : 0;
+  document.getElementById("m-rate").textContent   = rate.toFixed(1) + "%";
+  document.getElementById("m-shares").textContent = totalShares.toLocaleString();
+
+  function renderRows(elId, obj, formatter){
+    const el = document.getElementById(elId);
+    el.innerHTML = "";
+    const entries = Object.entries(obj || {}).sort((a,b)=>b[1]-a[1]);
+    if (!entries.length) { el.innerHTML = '<div style="color:#666;text-align:center;padding:14px">no data yet</div>'; return; }
+    const max = entries[0][1] || 1;
+    entries.forEach(([k,v])=>{
+      const pct = (v/max*100).toFixed(0);
+      const row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML = `<span class="lbl">${k.replace(/_/g," ")}</span>
+                       <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+                       <span class="val">${formatter ? formatter(v) : v.toLocaleString()}</span>`;
+      el.appendChild(row);
+    });
+  }
+  renderRows("by-lang",     v.by_lang);
+  renderRows("by-source",   v.by_source);
+  renderRows("by-campaign", v.by_campaign);
+  renderRows("by-roas",     ev.roas_by_source, x => x.toFixed(1) + "x");
+  renderRows("by-shares",   sh);
+
+  // anomalies
+  const aw = document.getElementById("anomaly-wrap");
+  aw.innerHTML = "";
+  if (ev.anomalies && ev.anomalies.length) {
+    const box = document.createElement("div");
+    box.className = "anomaly-box";
+    box.innerHTML = '<div class="a-title">⚠ Anomalies</div>' +
+      ev.anomalies.map(a => `<div class="a-item">${a.severity || ''} ${a.metric}: observed ${a.observed}, expected ${a.expected}</div>`).join('');
+    aw.appendChild(box);
+  }
+})();
+</script>
+</body>
+</html>

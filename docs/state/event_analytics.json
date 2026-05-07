@@ -1,0 +1,11 @@
+{
+  "_doc": "Per-event marketing analytics aggregated by @stats from GA4 + Meta Pixel + TikTok Pixel. Updated by .github/workflows/marketing-stats.yml every 6h during active campaigns, daily otherwise.",
+  "_schema_version": 1,
+  "_updated_at": "2026-05-07T06:00:00Z",
+  "events": {},
+  "rolling_baselines": {
+    "_doc": "30-day rolling baselines for anomaly detection",
+    "median_conv_rate_by_lang": {"en": 0.121, "es": 0.214, "tt": null},
+    "median_roas_by_source": {"meta": 4.0, "tiktok": 3.2}
+  }
+}
