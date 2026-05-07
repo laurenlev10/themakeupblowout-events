@@ -1,0 +1,52 @@
+name: Build landing pages
+
+# Auto-rebuilds docs/events/<slug>/{index.html,share.html} whenever upcoming-events.json
+# (or any docs/_template/* file) changes. This means: as soon as @setup or @campaigns
+# pushes new event data into upcoming-events.json, the landing pages refresh automatically
+# — Lauren no longer needs to manually run @landing for every new event.
+#
+# Also runs on a daily cron as a safety net (catches manual edits via the GitHub web UI).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/upcoming-events.json'
+      - 'docs/_template/**'
+      - 'scripts/build.py'
+      - '.github/workflows/build-landing-pages.yml'
+  schedule:
+    - cron: '15 3 * * *'   # 03:15 UTC daily — refresh pages even if no recent push
+  workflow_dispatch: {}
+
+# Avoid loops: this workflow MAY commit, but the commit message starts with
+# "[build]" and the trigger excludes its own paths effectively. Still, we add
+# a guard below.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: ${{ !contains(github.event.head_commit.message, '[skip-build]') }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run build.py
+        run: |
+          python3 --version
+          python3 scripts/build.py "$(pwd)"
+
+      - name: Commit + push if anything changed
+        run: |
+          git config user.email "lauren@noreply.github.com"
+          git config user.name "Lauren (via build-landing-pages)"
+          git add docs/events/
+          if ! git diff --cached --quiet; then
+            git commit -m "build: regenerate landing pages [skip-build]"
+            git pull --rebase origin main || true
+            git push origin main
+            echo "✓ pushed regenerated pages"
+          else
+            echo "no changes to commit"
+          fi
