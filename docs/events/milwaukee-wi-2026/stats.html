@@ -120,10 +120,10 @@
 
     <!-- Top-line stats -->
     <div class="stat-grid">
-      <div class="stat-card"><div class="label">Total views</div><div class="num" id="m-views">—</div><div class="extra" id="x-views">on landing page</div></div>
-      <div class="stat-card"><div class="label">Form submits</div><div class="num" id="m-conv">—</div><div class="extra" id="x-conv">webform completions</div></div>
-      <div class="stat-card success"><div class="label">SMS subscribers</div><div class="num" id="m-sms">—</div><div class="extra" id="x-sms">on the SimpleTexting list</div></div>
-      <div class="stat-card"><div class="label">Conversion rate</div><div class="num" id="m-rate">—</div><div class="extra" id="x-rate">forms / views</div></div>
+      <div class="stat-card"><div class="label">Page views</div><div class="num" id="m-views">—</div><div class="extra" id="x-views">on landing page</div></div>
+      <div class="stat-card success"><div class="label">Eventbrite RSVPs</div><div class="num" id="m-eb">—</div><div class="extra" id="x-eb">— / 250 capacity</div></div>
+      <div class="stat-card"><div class="label">Form submits</div><div class="num" id="m-conv">—</div><div class="extra" id="x-conv">via landing page form</div></div>
+      <div class="stat-card warn"><div class="label">SMS marketing reach</div><div class="num" id="m-sms">—</div><div class="extra" id="x-sms">total subscribers (multi-event)</div></div>
     </div>
 
     <h2>By source</h2>
@@ -165,10 +165,10 @@
   const f = ev.funnel || {};
   const rates = ev.rates || {};
   const stages = [
-    { name: "Ad Impressions",       icon: "📣", val: f.impressions       || 0, prevField: null,            rate: null },
-    { name: "Page Views",            icon: "👀", val: f.page_views        || 0, prevField: "impressions",   rateLabel: "CTR",              rate: rates.ctr },
-    { name: "Form Submits",          icon: "📝", val: f.form_submits      || 0, prevField: "page_views",    rateLabel: "Form conv",         rate: rates.form_conversion },
-    { name: "SMS Registered",        icon: "📲", val: f.sms_registered    || 0, prevField: "form_submits",  rateLabel: "Capture",           rate: rates.sms_capture }
+    { name: "Ad Impressions",   icon: "📣", val: f.impressions       || 0, rate: null },
+    { name: "Page Views",        icon: "👀", val: f.page_views        || 0, rateLabel: "CTR",     rate: rates.ctr },
+    { name: "Form Submits",      icon: "📝", val: f.form_submits      || 0, rateLabel: "Form %",  rate: rates.form_conversion },
+    { name: "Eventbrite RSVPs",  icon: "🎟️", val: f.eventbrite_registered || 0, rateLabel: "Final %", rate: f.page_views ? (f.eventbrite_registered/f.page_views*100) : null }
   ];
   const maxStageVal = Math.max(...stages.map(s => s.val), 1);
   const fc = document.getElementById("funnel-stages");
@@ -205,14 +205,17 @@
     const fcst = ev.forecast;
     const target = fcst.target || 250;
     const projected = fcst.projected_total || 0;
+    const current = fcst.current || 0;
+    const dailyRate = fcst.daily_rate || 0;
     const pct = Math.min(100, projected / target * 100);
     const status = fcst.status === "on_track";
     fw.innerHTML = `
       <div class="forecast-box ${status ? 'on-track' : 'behind'}">
         <div class="forecast-icon">${status ? '🎯' : '⚠️'}</div>
         <div class="forecast-text">
-          <div class="h">Forecast for event day</div>
-          <div class="v">${status ? 'On track!' : 'Behind target'} — ${fcst.days_remaining} days to go</div>
+          <div class="h">Eventbrite RSVP forecast</div>
+          <div class="v">${status ? 'On track!' : 'Behind target'} — ${fcst.days_remaining} days to event</div>
+          <div style="font-size:11px;color:#888;margin-top:4px">Current: ${current} · Rate: ${dailyRate}/day · Projected: ${projected}</div>
         </div>
         <div class="forecast-progress">
           <div class="progress-bar-wrap">
@@ -231,8 +234,10 @@
   document.getElementById("m-views").textContent  = (v.total||0).toLocaleString();
   document.getElementById("m-conv").textContent   = (c.total||0).toLocaleString();
   document.getElementById("m-sms").textContent    = sms.toLocaleString();
-  const rate = v.total ? (c.total / v.total * 100) : 0;
-  document.getElementById("m-rate").textContent   = rate.toFixed(1) + "%";
+  const ebReg = ev.eventbrite_registered || (f.eventbrite_registered) || 0;
+  const ebCap = ev.eventbrite_capacity || 250;
+  document.getElementById("m-eb").textContent     = ebReg.toLocaleString();
+  document.getElementById("x-eb").textContent     = ebReg + " / " + ebCap + " capacity (" + (ebCap > 0 ? Math.round(ebReg/ebCap*100) : 0) + "%)";
 
   function renderRows(elId, obj, formatter){
     const el = document.getElementById(elId);
