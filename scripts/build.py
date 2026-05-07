@@ -66,9 +66,9 @@ import os as _os
 # so missing-pixel runs are detectable. Empty string substitutes are NOT used —
 # we want the page to render even if a pixel isn't configured yet.
 _PIXEL_VARS = {
-    "__GA4_MEASUREMENT_ID__": _os.environ.get("GA4_MEASUREMENT_ID", "G-NOT-SET-YET"),
-    "__META_PIXEL_ID__":      _os.environ.get("META_PIXEL_ID",      "0000000000000000"),
-    "__TIKTOK_PIXEL_ID__":    _os.environ.get("TIKTOK_PIXEL_ID",    "C00000000000"),
+    "__GA4_MEASUREMENT_ID__": _os.environ.get("GA4_MEASUREMENT_ID") or "G-NOT-SET-YET",
+    "__META_PIXEL_ID__":      _os.environ.get("META_PIXEL_ID")      or "0000000000000000",
+    "__TIKTOK_PIXEL_ID__":    _os.environ.get("TIKTOK_PIXEL_ID")    or "C00000000000",
 }
 
 def fill(template, vars):

@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-05-07T05:46:18Z",
+  "_updated_at": "2026-05-07T06:26:09Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
