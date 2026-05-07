@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-05-07T05:42:46Z",
+  "_updated_at": "2026-05-07T05:46:18Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -12,7 +12,8 @@
       "image_url": "https://lh3.googleusercontent.com/sitesv/AA5AbUCc6MD4VLgAScrPERzakJZwsazAqcl4IxnbNVUJB3ueBtiWwL-frtB4fwjmw0jsH9s2Xkz8rEp_oZbfbYHCQJL9Ob-6z0kA9Eq-8zkqWrZLVBB9Nx2wEX-e_SAgthnh4CqE0Jtzo1tw3fHi09-9KkNd0pN24zAYtVHmikIXUp-X5H4edxoSabgbqiL_nV0s_mq=w16383",
       "subscribe_url": "https://www.themakeupblowout.com/",
       "cta_label": "Subscribe",
-      "_note": "Past event — will be removed by the next site-updater run after 2026-05-03 (Sunday post-event)."
+      "_note": "Past event — will be removed by the next site-updater run after 2026-05-03 (Sunday post-event).",
+      "ig_url": "https://www.instagram.com/reel/DXcnk6LERPJ/"
     },
     {
       "city": "Columbia",
@@ -37,10 +38,10 @@
       "subscribe_url": "/events/milwaukee-wi-2026/",
       "cta_label": "Subscribe",
       "slug": "milwaukee-wi-2026",
-      "venue_name": "(Milwaukee venue — please update)",
-      "venue_address": "(Milwaukee address — please update)",
+      "venue_name": "Holiday Inn Milwaukee Riverfront",
+      "venue_address": "4700 N Port Washington Rd, Milwaukee, WI 53212",
       "form_id": "TODO_MILWAUKEE_FORM_ID",
-      "ig_url": "https://www.instagram.com/themakeupblowoutsale/"
+      "ig_url": "https://www.instagram.com/reel/DXzUUs9xTuz/"
     },
     {
       "city": "Roseville",
@@ -51,10 +52,10 @@
       "subscribe_url": "/events/roseville-mn-2026/",
       "cta_label": "Subscribe",
       "slug": "roseville-mn-2026",
-      "venue_name": "(Roseville venue — please update)",
-      "venue_address": "(Roseville address — please update)",
+      "venue_name": "DoubleTree by Hilton Roseville Minneapolis",
+      "venue_address": "2540 N Cleveland Ave, Roseville, MN 55113",
       "form_id": "TODO_ROSEVILLE_FORM_ID",
-      "ig_url": "https://www.instagram.com/themakeupblowoutsale/"
+      "ig_url": "https://www.instagram.com/reel/DX7z4srxAGk/"
     }
   ],
   "_field_doc": {

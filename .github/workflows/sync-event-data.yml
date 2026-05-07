@@ -1,0 +1,50 @@
+name: Sync event data from lauren-agent-hub-data
+
+# Pulls authoritative event data from the cross-repo sources:
+#   - event_form_ids.json   (form_id per event, written by @campaigns)
+#   - venue_details.md      (per-event venue + address)
+#   - recent_meta_posts.json (recent IG reels, for ig_url city-match)
+#
+# Updates docs/upcoming-events.json with whatever is more current upstream.
+# The downstream build-landing-pages.yml workflow then auto-rebuilds
+# the affected docs/events/<slug>/index.html files.
+#
+# Result: when @campaigns or @setup or canva-reel pushes new data into
+# lauren-agent-hub-data, this workflow picks it up within ~hours and
+# the landing pages refresh — no manual intervention.
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # 03:00 UTC — runs BEFORE build-landing-pages.yml's 03:15 cron
+  workflow_dispatch: {}
+  # Also runs after build-landing-pages so we have a tight loop on form-id arrival
+  workflow_run:
+    workflows: ["Build landing pages"]
+    types: [completed]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run sync script
+        run: |
+          python3 --version
+          python3 scripts/sync_event_data.py
+
+      - name: Commit + push if anything changed
+        run: |
+          git config user.email "lauren@noreply.github.com"
+          git config user.name "Lauren (via sync-event-data)"
+          git add docs/upcoming-events.json
+          if ! git diff --cached --quiet; then
+            git commit -m "sync: update event data from lauren-agent-hub-data sources"
+            git pull --rebase origin main || true
+            git push origin main
+            echo "✓ pushed updates"
+          else
+            echo "no changes"
+          fi
