@@ -22,6 +22,8 @@ TPL_LANDING = (DOCS / "_template" / "landing.html.tpl").read_text(encoding="utf-
 TPL_SHARE   = (DOCS / "_template" / "share.html.tpl").read_text(encoding="utf-8")
 TPL_LANDING_ES = (DOCS / "_template" / "landing-es.html.tpl").read_text(encoding="utf-8") if (DOCS / "_template" / "landing-es.html.tpl").exists() else None
 TPL_SHARE_ES   = (DOCS / "_template" / "share-es.html.tpl").read_text(encoding="utf-8") if (DOCS / "_template" / "share-es.html.tpl").exists() else None
+TPL_TIKTOK     = (DOCS / "_template" / "tiktok.html.tpl").read_text(encoding="utf-8") if (DOCS / "_template" / "tiktok.html.tpl").exists() else None
+TPL_TIKTOK_ES  = (DOCS / "_template" / "tiktok-es.html.tpl").read_text(encoding="utf-8") if (DOCS / "_template" / "tiktok-es.html.tpl").exists() else None
 DATA        = json.loads((DOCS / "upcoming-events.json").read_text(encoding="utf-8"))
 
 MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"]
@@ -80,6 +82,13 @@ def main():
             (target_dir / "index-es.html").write_text(fill(TPL_LANDING_ES, vars), encoding="utf-8")
         if TPL_SHARE_ES:
             (target_dir / "share-es.html").write_text(fill(TPL_SHARE_ES, vars), encoding="utf-8")
+        # TikTok variants — same look as landing, but sign-up form replaced with thank-you/share.
+        # Lead is captured upstream via TikTok's lead form + Zapier; this page's job is to
+        # convert the new SMS subscriber into a social share.
+        if TPL_TIKTOK:
+            (target_dir / "tiktok.html").write_text(fill(TPL_TIKTOK, vars), encoding="utf-8")
+        if TPL_TIKTOK_ES:
+            (target_dir / "tiktok-es.html").write_text(fill(TPL_TIKTOK_ES, vars), encoding="utf-8")
         # Also store metadata next to the page for the agent to inspect
         (target_dir / "_meta.json").write_text(json.dumps({"slug": slug, **vars}, indent=2), encoding="utf-8")
         written.append((slug, vars["CITY"]))
