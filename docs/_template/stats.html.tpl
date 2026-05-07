@@ -96,7 +96,7 @@
 </head>
 <body>
 <div class="wrap">
-  <a class="back" href="./">&larr; Back to {{CITY}} {{YEAR}}</a>
+  <a class="back" href="https://laurenlev10.github.io/lauren-agent-hub-data/launch/">&larr; Back to launch dashboard</a>
   <h1>📊 Live stats — {{CITY}} {{YEAR}}</h1>
   <div class="sub">{{MONTH}} {{START_DAY}}–{{END_DAY}} · {{HOTEL}}</div>
   <div class="pulled" id="pulled-at">loading…</div>
@@ -123,7 +123,7 @@
       <div class="stat-card"><div class="label">Page views</div><div class="num" id="m-views">—</div><div class="extra" id="x-views">on landing page</div></div>
       <div class="stat-card success"><div class="label">Eventbrite RSVPs</div><div class="num" id="m-eb">—</div><div class="extra" id="x-eb">— / 250 capacity</div></div>
       <div class="stat-card"><div class="label">Form submits</div><div class="num" id="m-conv">—</div><div class="extra" id="x-conv">via landing page form</div></div>
-      <div class="stat-card warn"><div class="label">SMS marketing reach</div><div class="num" id="m-sms">—</div><div class="extra" id="x-sms">total subscribers (multi-event)</div></div>
+      <div class="stat-card warn"><div class="label">SMS reach <span style="font-size:10px;font-weight:normal;opacity:0.7" id="x-sms-year">{{CITY}} {{YEAR}}</span></div><div class="num" id="m-sms">—</div><div class="extra" id="x-sms">on year-specific list</div></div>
     </div>
 
     <h2>By source</h2>
@@ -234,6 +234,10 @@
   document.getElementById("m-views").textContent  = (v.total||0).toLocaleString();
   document.getElementById("m-conv").textContent   = (c.total||0).toLocaleString();
   document.getElementById("m-sms").textContent    = sms.toLocaleString();
+  // Show list name explicitly so Lauren can verify it's the year-specific list
+  const listName = ev.sms_list_name || "";
+  const listSubtitle = listName ? `on "${listName}" list` : "year-specific list";
+  document.getElementById("x-sms").textContent = listSubtitle;
   const ebReg = ev.eventbrite_registered || (f.eventbrite_registered) || 0;
   const ebCap = ev.eventbrite_capacity || 250;
   document.getElementById("m-eb").textContent     = ebReg.toLocaleString();
