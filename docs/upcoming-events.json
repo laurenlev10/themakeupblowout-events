@@ -56,6 +56,21 @@
       "venue_address": "2540 N Cleveland Ave, Roseville, MN 55113",
       "form_id": "TODO_ROSEVILLE_FORM_ID",
       "ig_url": "https://www.instagram.com/reel/DX7z4srxAGk/"
+    },
+    {
+      "city": "Omaha",
+      "state": "NE",
+      "start_date": "2026-06-05",
+      "end_date": "2026-06-07",
+      "subscribe_url": "/events/omaha-ne-2026/",
+      "cta_label": "Subscribe",
+      "slug": "omaha-ne-2026",
+      "venue_name": "Courtyard Marriott",
+      "venue_address": "3730 Raynor Parkway, Bellevue, NE 68123",
+      "form_id": "6930edb84da0131a2656212f",
+      "ig_url": "https://www.instagram.com/reel/DX7zIyoxv83/",
+      "fb_url": "https://fb.watch/G-sa0IxOUh/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638025213283749150"
     }
   ],
   "_field_doc": {

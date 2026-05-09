@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Makeup Blowout Sale — Roseville, MN 2026</title>
+  <title>The Makeup Blowout Sale — Omaha, NE 2026 — Español</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
@@ -196,29 +196,29 @@ document.addEventListener('DOMContentLoaded', function() {
 </head>
 <body>
   <div style="position:fixed;top:10px;right:12px;z-index:1000;display:flex;gap:6px;background:rgba(0,0,0,0.6);padding:6px 10px;border-radius:999px;backdrop-filter:blur(4px);">
-    <a href="index.html" style="color:#fff;text-decoration:none;font-size:13px;font-weight:700;">EN</a>
+    <a href="index.html" style="color:rgba(255,255,255,0.55);text-decoration:none;font-size:13px;font-weight:700;">EN</a>
     <span style="color:rgba(255,255,255,0.3);">|</span>
-    <a href="index-es.html" style="color:rgba(255,255,255,0.55);text-decoration:none;font-size:13px;font-weight:700;">ES</a>
+    <a href="index-es.html" style="color:#fff;text-decoration:none;font-size:13px;font-weight:700;">ES</a>
   </div>
 
 
   <section class="hero">
     <div class="hero-img-wrap">
-      <img src="/_assets/events/roseville-mn-2026/hero.png" alt="The Makeup Blowout Sale - Roseville, MN - May 22nd-24th, 2026">
+      <img src="/_assets/events/omaha-ne-2026/hero.png" alt="The Makeup Blowout Sale - Omaha, NE - June 5th-7th, 2026">
     </div>
     <div class="hero-text-overlay">
-      <h1>Get Your Free Fabulous Glitter! &#x2728;<br>Roseville, MN</h1>
-      <p class="tagline">Get ready for a fabulous weekend of beauty and savings!<br>40+ amazing brands at unbeatable prices!</p>
-      <p class="free-entry">&#x1F389; FREE ENTRY &amp; PARKING</p>
+      <h1>&iexcl;Recibe Tu Glitter Fabuloso GRATIS! &#x2728;<br>Omaha, NE</h1>
+      <p class="tagline">&iexcl;Prep&aacute;rate para un fin de semana fabuloso de belleza y ahorros!<br>&iexcl;40+ marcas incre&iacute;bles a precios imbatibles!</p>
+      <p class="free-entry">&#x1F389; ENTRADA Y ESTACIONAMIENTO GRATIS</p>
     </div>
   </section>
 
   <div style="padding: 0 20px;">
     <div class="live-counter">
-      <div class="lc-live"><span class="lc-dot"></span>LIVE</div>
+      <div class="lc-live"><span class="lc-dot"></span>EN VIVO</div>
       <div class="lc-right">
         <span class="lc-num" id="lc-num">1,247</span>
-        <div class="lc-text">Beauties signed up for this event</div>
+        <div class="lc-text">Bellezas registradas para este evento</div>
       </div>
     </div>
   </div>
@@ -227,15 +227,15 @@ document.addEventListener('DOMContentLoaded', function() {
     <ul>
       <li>
         <i class="fas fa-calendar-alt"></i>
-        <span>Friday - Sunday,<br>May 22nd &#x2013; May 24th, 2026<br><strong>10am &#x2013; 5pm</strong></span>
+        <span>Viernes - Domingo,<br>June 5th &#x2013; June 7th, 2026<br><strong>10am &#x2013; 5pm</strong></span>
       </li>
       <li>
         <i class="fas fa-map-marker-alt"></i>
-        <span>2540 N Cleveland Ave, Roseville, MN 55113<br>At DoubleTree by Hilton Roseville Minneapolis</span>
+        <span>3730 Raynor Parkway, Bellevue, NE 68123<br>At Courtyard Marriott</span>
       </li>
       <li>
         <i class="fas fa-tag"></i>
-        <span>FREE ENTRY &amp; PARKING &#x2014; No tickets needed!</span>
+        <span>&iexcl;ENTRADA Y ESTACIONAMIENTO GRATIS &#x2014; No se necesitan boletos!</span>
       </li>
     </ul>
   </section>
@@ -244,8 +244,8 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="gift-media">
       <img src="/_assets/shared/NEW%20GIF.gif" alt="Free Glitter Gift">
     </div>
-    <h2>&#x1F381; Claim Your Free Gift!</h2>
-    <p class="sub">Sign up by SMS and get a FREE glitter voucher</p>
+    <h2>&#x1F381; &iexcl;Reclama Tu Regalo GRATIS!</h2>
+    <p class="sub">Reg&iacute;strate por SMS y recibe un cup&oacute;n de glitter GRATIS</p>
 
     <script>
     (function joinWebForm(
@@ -279,13 +279,13 @@ document.addEventListener('DOMContentLoaded', function() {
         var result = {};
         try {
           var error = win.JSON.parse(response);
-          if (error.code === DUPLICATE_PHONE_EXCEPTION) { result.fieldName = 'phone'; result.errorMessage = 'Phone number already exists.'; }
-          else if (error.code === DUPLICATE_EMAIL_EXCEPTION) { result.fieldName = 'email'; result.errorMessage = 'Email already exists.'; }
+          if (error.code === DUPLICATE_PHONE_EXCEPTION) { result.fieldName = 'phone'; result.errorMessage = 'El n&uacute;mero ya existe.'; }
+          else if (error.code === DUPLICATE_EMAIL_EXCEPTION) { result.fieldName = 'email'; result.errorMessage = 'El correo ya existe.'; }
           else if (error.code === CUSTOM_FIELDS_VALIDATION_EXCEPTION) { result.fieldName = error.reasons[0].field; result.errorMessage = error.reasons[0].reason; }
           else { result.fieldName = error.field; result.errorMessage = error.reason; }
         } catch(_){}
         result.fieldName = result.fieldName || '';
-        result.errorMessage = result.errorMessage || 'Validation error.';
+        result.errorMessage = result.errorMessage || 'Error de validaci&oacute;n.';
         return result;
       }
       function handleLoadForm(){
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (this.status === 200) {
           form.querySelector('.step1-form').style.display = 'none';
           // Redirect to per-event share/thank-you page
-          document.location.href = 'share.html';
+          document.location.href = 'share-es.html';
           form.reset();
         } else if (this.status === 418) {
           validation = parseServerValidationError(this.responseText);
@@ -303,10 +303,10 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           setServerErrorMessage(validation.errorMessage);
         } else {
-          setServerErrorMessage('Internal Error. Please, try later.');
+          setServerErrorMessage('Error interno. Int&eacute;ntalo m&aacute;s tarde.');
         }
       }
-      function handleErrorForm(){ setServerErrorMessage('Internal Error. Please, try later.'); }
+      function handleErrorForm(){ setServerErrorMessage('Error interno. Int&eacute;ntalo m&aacute;s tarde.'); }
       function sendForm(){
         var data = collectFormData();
         var url = 'https://app2.simpletexting.com/join/joinContact?r=' + Date.now();
@@ -354,30 +354,30 @@ document.addEventListener('DOMContentLoaded', function() {
         handleLoad();
       }
     })(
-      window, document, 'st-join-web-form-TODO_ROSEVILLE_FORM_ID',
+      window, document, 'st-join-web-form-6930edb84da0131a2656212f',
       'DuplicateContactPhoneException', 'DuplicateContactEmailException', 'CustomFieldsValidationException'
     );
     </script>
 
-    <form id="st-join-web-form-TODO_ROSEVILLE_FORM_ID" class="st-signupform" action="https://app2.simpletexting.com/join/joinContact" method="POST">
+    <form id="st-join-web-form-6930edb84da0131a2656212f" class="st-signupform" action="https://app2.simpletexting.com/join/joinContact" method="POST">
       <div class="step1-form">
-        <input type="hidden" name="webFormId" value="TODO_ROSEVILLE_FORM_ID" id="webFormId-TODO_ROSEVILLE_FORM_ID">
-        <input type="hidden" name="country" value="USA" id="country-TODO_ROSEVILLE_FORM_ID">
+        <input type="hidden" name="webFormId" value="6930edb84da0131a2656212f" id="webFormId-6930edb84da0131a2656212f">
+        <input type="hidden" name="country" value="USA" id="country-6930edb84da0131a2656212f">
         <div class="required" style="text-align: center">
-          <input id="phone-TODO_ROSEVILLE_FORM_ID" name="phone" type="text" placeholder="Your Phone Number" maxlength="1600" data-type="phone" class="phoneNumber" required>
+          <input id="phone-6930edb84da0131a2656212f" name="phone" type="text" placeholder="Tu N&uacute;mero de Tel&eacute;fono" maxlength="1600" data-type="phone" class="phoneNumber" required>
         </div>
         <div class="st-font-caption">
-          <input id="terms-agreed-checkbox-TODO_ROSEVILLE_FORM_ID" type="checkbox" name="terms-agreed" checked>
-          <label for="terms-agreed-checkbox-TODO_ROSEVILLE_FORM_ID">By subscribing you agree to receive autodialed marketing text messages. Consent not required for purchase. Msg &amp; data rates may apply. Reply STOP to cancel. <a href="https://app2.simpletexting.com/web-forms/terms/654d65258f51cb55a9016540" target="_blank">Terms</a></label>
+          <input id="terms-agreed-checkbox-6930edb84da0131a2656212f" type="checkbox" name="terms-agreed" checked>
+          <label for="terms-agreed-checkbox-6930edb84da0131a2656212f">Al suscribirte aceptas recibir mensajes de texto de marketing automatizados. El consentimiento no es requerido para la compra. Pueden aplicar tarifas de mensajes y datos. Responde STOP para cancelar. <a href="https://app2.simpletexting.com/web-forms/terms/654d65258f51cb55a9016540" target="_blank">T&eacute;rminos</a></label>
         </div>
-        <p class="st-signupform-terms-agreed-error st-color-red st-hidden">Please agree to terms to continue.</p>
+        <p class="st-signupform-terms-agreed-error st-color-red st-hidden">Acepta los t&eacute;rminos para continuar.</p>
         <div class="st-join-web-form-submit-button-box">
-          <input type="submit" value="&#x2709;&#xFE0F; TEXT ME MY VOUCHER" name="subscribe">
+          <input type="submit" value="&#x2709;&#xFE0F; ENV&Iacute;AME MI CUP&Oacute;N" name="subscribe">
           <p class="st-signupform-server-error-message st-color-red">&nbsp;</p>
         </div>
       </div>
       <div class="step2-singleOptIn st-hidden">
-        <p>&#x1F389; Your voucher is on the way! Share on your story &amp; get a FREE Eyeshadow too!</p>
+        <p>&#x1F389; &iexcl;Tu cup&oacute;n viene en camino! &iexcl;Comp&aacute;rtelo en tu historia y recibe una sombra GRATIS!</p>
       </div>
     </form>
   </section>
@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <section class="vendors-section">
     <img src="/_assets/shared/Vendors-Logos.png" alt="40+ Top Beauty Brands">
-    <div class="vendors-caption">40+ TOP BRANDS &#x2022; UP TO 75% OFF</div>
+    <div class="vendors-caption">40+ MARCAS TOP &#x2022; HASTA 75% DE DESCUENTO</div>
   </section>
 
 
@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <section class="promo-collage" style="background:#fdf2f8;padding:24px 16px;text-align:center;">
     <img src="/_assets/shared/75-OFF-1-.png" alt="75% off Makeup, Skincare &amp; Hair Care" style="max-width:480px;width:100%;height:auto;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.08);">
-    <p style="margin:14px 0 0;color:#1f2937;font-weight:700;font-size:14px;letter-spacing:0.5px;text-transform:uppercase;">UP TO 75% OFF &mdash; YOU DON&#39;T WANT TO MISS THIS!</p>
+    <p style="margin:14px 0 0;color:#1f2937;font-weight:700;font-size:14px;letter-spacing:0.5px;text-transform:uppercase;">&iexcl;HASTA 75% DE DESCUENTO &mdash; NO TE LO PUEDES PERDER!</p>
   </section>
 
   <footer>
