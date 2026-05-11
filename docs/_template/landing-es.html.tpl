@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
       margin-top: 10px; text-transform: uppercase;
     }
     .gift-media {
-      max-width: 380px; width: 100%; margin: 0 auto 18px; display: block;
+      max-width: 380px; width: 100%; margin: 32px auto 18px; display: block;
       border-radius: 12px; overflow: hidden;
       box-shadow: 0 8px 28px rgba(240,16,112,0.35);
     }

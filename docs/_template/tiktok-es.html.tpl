@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
       margin-top: 10px; text-transform: uppercase;
     }
     .gift-media {
-      max-width: 380px; width: 100%; margin: 0 auto 18px; display: block;
+      max-width: 380px; width: 100%; margin: 32px auto 18px; display: block;
       border-radius: 12px; overflow: hidden;
       box-shadow: 0 8px 28px rgba(240,16,112,0.35);
     }
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         &#xA1;Nos vemos {{MONTH}} {{START_DAY}} - {{END_DAY}} en {{HOTEL}}!
       </p>
 
-      <div class="gift-media" style="margin-top: 24px;">
+      <div class="gift-media" style="margin-top: 32px;">
         <img src="/_assets/shared/NEW%20GIF.gif" alt="Regalo de Glitter Gratis" style="max-width: 250px;">
       </div>
     </div>
