@@ -249,6 +249,10 @@ document.addEventListener('DOMContentLoaded', function() {
         Ya est&#xE1;s en nuestra lista de SMS desde tu registro en TikTok &#x2713; <br>
         &#xA1;Nos vemos {{MONTH}} {{START_DAY}} - {{END_DAY}} en {{HOTEL}}!
       </p>
+
+      <div class="gift-media" style="margin-top: 24px;">
+        <img src="/_assets/shared/NEW%20GIF.gif" alt="Regalo de Glitter Gratis" style="max-width: 250px;">
+      </div>
     </div>
   </section>
 

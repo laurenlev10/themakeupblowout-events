@@ -360,6 +360,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <p>&#x1F389; &iexcl;Tu cup&oacute;n viene en camino! &iexcl;Comp&aacute;rtelo en tu historia y recibe una sombra GRATIS!</p>
       </div>
     </form>
+    <div class="gift-media">
+      <img src="/_assets/shared/NEW%20GIF.gif" alt="Free Glitter Gift">
+    </div>
   </section>
 
   <section class="event-details">

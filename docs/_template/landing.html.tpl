@@ -360,6 +360,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <p>&#x1F389; Your voucher is on the way! Share on your story &amp; get a FREE Eyeshadow too!</p>
       </div>
     </form>
+    <div class="gift-media">
+      <img src="/_assets/shared/NEW%20GIF.gif" alt="Free Glitter Gift">
+    </div>
   </section>
 
   <section class="event-details">
