@@ -399,6 +399,13 @@ document.addEventListener('DOMContentLoaded', function() {
     <p style="margin:14px 0 0;color:#1f2937;font-weight:700;font-size:14px;letter-spacing:0.5px;text-transform:uppercase;">UP TO 75% OFF &mdash; YOU DON&#39;T WANT TO MISS THIS!</p>
   </section>
 
+  <section class="bottom-gif" style="background:#000;padding:24px 16px;text-align:center;">
+    <video autoplay muted loop playsinline style="max-width:480px;width:100%;height:auto;border-radius:12px;display:inline-block;">
+      <source src="/_assets/shared/women-bags.mp4" type="video/mp4">
+      <img src="/_assets/shared/women-bags.gif" alt="Shop the Makeup Blowout Sale" style="max-width:480px;width:100%;height:auto;">
+    </video>
+  </section>
+
   <footer>
     &copy; {{YEAR}} The Makeup Blowout Sale Group. All rights reserved.
   </footer>
