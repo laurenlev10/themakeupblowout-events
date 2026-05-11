@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Makeup Blowout Sale — Overland, KS 2026</title>
+  <title>The Makeup Blowout Sale — Overland, KS 2026 — Español</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
@@ -196,9 +196,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </head>
 <body>
   <div style="position:fixed;top:10px;right:12px;z-index:1000;display:flex;gap:6px;background:rgba(0,0,0,0.6);padding:6px 10px;border-radius:999px;backdrop-filter:blur(4px);">
-    <a href="index.html" style="color:#fff;text-decoration:none;font-size:13px;font-weight:700;">EN</a>
+    <a href="index.html" style="color:rgba(255,255,255,0.55);text-decoration:none;font-size:13px;font-weight:700;">EN</a>
     <span style="color:rgba(255,255,255,0.3);">|</span>
-    <a href="index-es.html" style="color:rgba(255,255,255,0.55);text-decoration:none;font-size:13px;font-weight:700;">ES</a>
+    <a href="index-es.html" style="color:#fff;text-decoration:none;font-size:13px;font-weight:700;">ES</a>
   </div>
 
 
@@ -207,161 +207,52 @@ document.addEventListener('DOMContentLoaded', function() {
       <img src="/_assets/events/overland-ks-2026/hero.png" alt="The Makeup Blowout Sale - Overland, KS - June 12th-14th, 2026">
     </div>
     <div class="hero-text-overlay">
-      <h1>Get Your Free Fabulous Glitter! &#x2728;<br>Overland, KS</h1>
-      <p class="tagline">Get ready for a fabulous weekend of beauty and savings!<br>40+ amazing brands at unbeatable prices!</p>
-      <p class="free-entry">&#x1F389; FREE ENTRY &amp; PARKING</p>
+      <h1>&iexcl;Recibe Tu Glitter Fabuloso GRATIS! &#x2728;<br>Overland, KS</h1>
+      <p class="tagline">&iexcl;Prep&aacute;rate para un fin de semana fabuloso de belleza y ahorros!<br>&iexcl;40+ marcas incre&iacute;bles a precios imbatibles!</p>
+      <p class="free-entry">&#x1F389; ENTRADA Y ESTACIONAMIENTO GRATIS</p>
     </div>
   </section>
 
   <div style="padding: 0 20px;">
     <div class="live-counter">
-      <div class="lc-live"><span class="lc-dot"></span>LIVE</div>
+      <div class="lc-live"><span class="lc-dot"></span>EN VIVO</div>
       <div class="lc-right">
         <span class="lc-num" id="lc-num">1,247</span>
-        <div class="lc-text">Beauties signed up for this event</div>
+        <div class="lc-text">Bellezas registradas para este evento</div>
       </div>
     </div>
   </div>
 
-  <section class="sms-section">
-    <h2>&#x1F381; Claim Your Free Gift!</h2>
-    <p class="sub">Sign up by SMS and get a FREE glitter voucher</p>
+  <section class="sms-section" style="background:#000;">
+    <div style="max-width: 540px; margin: 0 auto; text-align: center;">
+      <h2 style="font-size: clamp(28px, 6vw, 44px); color: #f5e45b; line-height: 1.2; margin-bottom: 10px;">
+        &#x1F389; &#xA1;Gracias!
+      </h2>
+      <p style="font-size: clamp(17px, 3.5vw, 22px); color: #fff; margin-bottom: 6px;">
+        &#xA1;Tu cup&#xF3;n de glitter GRATIS est&#xE1; en camino! &#x1F484;&#x2728;
+      </p>
+      <p style="font-size: clamp(15px, 3vw, 18px); color: #ffcfd2; margin-bottom: 26px;">
+        &#xA1;Comparte con tu amiga y obt&#xE9;n una <strong>sombra GRATIS</strong> tambi&#xE9;n!
+      </p>
 
-    <script>
-    (function joinWebForm(
-      win, doc, formId,
-      DUPLICATE_PHONE_EXCEPTION, DUPLICATE_EMAIL_EXCEPTION, CUSTOM_FIELDS_VALIDATION_EXCEPTION,
-      doubleOptIn
-    ) {
-      var XHR = ('onload' in new win.XMLHttpRequest()) ? win.XMLHttpRequest : win.XDomainRequest;
-      var form;
-      var formServerErrorMessage;
-      var formTermsAgreedError;
-      var fieldErrorClassName = 'st-signupform-validation-error';
-      function setServerErrorMessage(message){ formServerErrorMessage.innerText = message; }
-      function isTermsAgreedAccepted(){ return form.querySelector('input[name="terms-agreed"]').checked; }
-      function showTermsAgreedError(){ formTermsAgreedError.style.display = 'block'; }
-      function hideTermsAgreedError(){ formTermsAgreedError.style.display = 'none'; }
-      function clearFormErrors(){
-        var fields = form.querySelectorAll('.' + fieldErrorClassName);
-        Array.prototype.slice.call(fields).forEach(function(field){
-          field.className = field.className.split(/\s/).filter(function(c){return c !== fieldErrorClassName && c;}).join(' ');
-        });
-        setServerErrorMessage('');
-        hideTermsAgreedError();
-      }
-      function collectFormData(){
-        var data = {};
-        Array.prototype.slice.call(form).forEach(function(field){ data[field.name] = field.value; });
-        return data;
-      }
-      function parseServerValidationError(response){
-        var result = {};
-        try {
-          var error = win.JSON.parse(response);
-          if (error.code === DUPLICATE_PHONE_EXCEPTION) { result.fieldName = 'phone'; result.errorMessage = 'Phone number already exists.'; }
-          else if (error.code === DUPLICATE_EMAIL_EXCEPTION) { result.fieldName = 'email'; result.errorMessage = 'Email already exists.'; }
-          else if (error.code === CUSTOM_FIELDS_VALIDATION_EXCEPTION) { result.fieldName = error.reasons[0].field; result.errorMessage = error.reasons[0].reason; }
-          else { result.fieldName = error.field; result.errorMessage = error.reason; }
-        } catch(_){}
-        result.fieldName = result.fieldName || '';
-        result.errorMessage = result.errorMessage || 'Validation error.';
-        return result;
-      }
-      function handleLoadForm(){
-        var validation, field;
-        if (this.status === 200) {
-          form.querySelector('.step1-form').style.display = 'none';
-          // Redirect to per-event share/thank-you page
-          document.location.href = 'share.html';
-          form.reset();
-        } else if (this.status === 418) {
-          validation = parseServerValidationError(this.responseText);
-          if (validation.fieldName) {
-            field = form.querySelector('input[name="' + validation.fieldName + '"]');
-            if (field) field.className += ' ' + fieldErrorClassName;
-          }
-          setServerErrorMessage(validation.errorMessage);
-        } else {
-          setServerErrorMessage('Internal Error. Please, try later.');
-        }
-      }
-      function handleErrorForm(){ setServerErrorMessage('Internal Error. Please, try later.'); }
-      function sendForm(){
-        var data = collectFormData();
-        var url = 'https://app2.simpletexting.com/join/joinContact?r=' + Date.now();
-        var request = new XHR();
-        request.open(form.method, url);
-        request.onload = handleLoadForm;
-        request.onerror = handleErrorForm;
-        request.ontimeout = handleErrorForm;
-        try { request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8'); } catch(_){}
-        request.send(win.JSON.stringify(data));
-      }
-      function handleSubmitForm(event){
-        event.preventDefault();
-        clearFormErrors();
-        if (!isTermsAgreedAccepted()) { showTermsAgreedError(); }
-        else { sendForm(); }
-        return false;
-      }
-      function formatPhone(value){
-        var numbers = value.replace(/\D/g, '');
-        var firstPart = numbers.substring(0, 3);
-        var secondPart = numbers.substring(3, 6);
-        var thirdPart = numbers.substring(6, 10);
-        var result = '';
-        if (firstPart) { result += '(' + firstPart; }
-        if (secondPart) { result += ') ' + secondPart; }
-        if (thirdPart) { result += '-' + thirdPart; }
-        return result;
-      }
-      function handleChangePhoneField(event){ var f = event.currentTarget; f.value = formatPhone(f.value); }
-      function handleLoad(){
-        form = doc.getElementById(formId);
-        if (!form) return;
-        formServerErrorMessage = form.querySelector('.st-signupform-server-error-message');
-        formTermsAgreedError = form.querySelector('.st-signupform-terms-agreed-error');
-        var phoneFields = form.querySelectorAll('input[data-type="phone"]');
-        form.addEventListener('submit', handleSubmitForm);
-        Array.prototype.slice.call(phoneFields).forEach(function(field){
-          field.addEventListener('input', handleChangePhoneField);
-        });
-      }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', handleLoad);
-      } else {
-        handleLoad();
-      }
-    })(
-      window, document, 'st-join-web-form-6930edcf4da0131a26562362',
-      'DuplicateContactPhoneException', 'DuplicateContactEmailException', 'CustomFieldsValidationException'
-    );
-    </script>
+      <a href="https://www.instagram.com/reel/DYM2Z63x3Xx/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer" style="display:block;max-width:420px;margin:10px auto;padding:16px 28px;background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);color:#fff;text-decoration:none;font-weight:700;font-size:17px;border-radius:8px;box-shadow:0 8px 24px rgba(220,39,67,0.4);">
+        &#x1F4F7; Compartir en Instagram
+      </a>
+      <a href="https://fb.watch/H1CNptjKot/" target="_blank" rel="noopener noreferrer" style="display:block;max-width:420px;margin:10px auto;padding:16px 28px;background:#1877F2;color:#fff;text-decoration:none;font-weight:700;font-size:17px;border-radius:8px;box-shadow:0 8px 24px rgba(24,119,242,0.4);">
+        &#x1F44D; Compartir en Facebook
+      </a>
+      <a href="https://www.tiktok.com/@makeupblowoutsale/video/7637225148696759582" target="_blank" rel="noopener noreferrer" style="display:block;max-width:420px;margin:10px auto;padding:16px 28px;background:#000;color:#fff;text-decoration:none;font-weight:700;font-size:17px;border-radius:8px;box-shadow:0 8px 24px rgba(255,255,255,0.15);border:2px solid #25F4EE;">
+        &#x1F3B5; Compartir en <span style="color:#25F4EE">Tik</span><span style="color:#FE2C55">Tok</span>
+      </a>
 
-    <form id="st-join-web-form-6930edcf4da0131a26562362" class="st-signupform" action="https://app2.simpletexting.com/join/joinContact" method="POST">
-      <div class="step1-form">
-        <input type="hidden" name="webFormId" value="6930edcf4da0131a26562362" id="webFormId-6930edcf4da0131a26562362">
-        <input type="hidden" name="country" value="USA" id="country-6930edcf4da0131a26562362">
-        <div class="required" style="text-align: center">
-          <input id="phone-6930edcf4da0131a26562362" name="phone" type="text" placeholder="Your Phone Number" maxlength="1600" data-type="phone" class="phoneNumber" required>
-        </div>
-        <div class="st-font-caption">
-          <input id="terms-agreed-checkbox-6930edcf4da0131a26562362" type="checkbox" name="terms-agreed" checked>
-          <label for="terms-agreed-checkbox-6930edcf4da0131a26562362">By subscribing you agree to receive autodialed marketing text messages. Consent not required for purchase. Msg &amp; data rates may apply. Reply STOP to cancel. <a href="https://app2.simpletexting.com/web-forms/terms/654d65258f51cb55a9016540" target="_blank">Terms</a></label>
-        </div>
-        <p class="st-signupform-terms-agreed-error st-color-red st-hidden">Please agree to terms to continue.</p>
-        <div class="st-join-web-form-submit-button-box">
-          <input type="submit" value="&#x2709;&#xFE0F; TEXT ME MY VOUCHER" name="subscribe">
-          <p class="st-signupform-server-error-message st-color-red">&nbsp;</p>
-        </div>
+      <p style="margin-top: 30px; font-size: 13px; color: #888; line-height: 1.5;">
+        Ya est&#xE1;s en nuestra lista de SMS desde tu registro en TikTok &#x2713; <br>
+        &#xA1;Nos vemos June 12th - 14th en Holiday Inn & Suites Overland Park!
+      </p>
+
+      <div class="gift-media" style="margin-top: 32px;">
+        <img src="/_assets/shared/NEW%20GIF.gif" alt="Regalo de Glitter Gratis" style="max-width: 250px;">
       </div>
-      <div class="step2-singleOptIn st-hidden">
-        <p>&#x1F389; Your voucher is on the way! Share on your story &amp; get a FREE Eyeshadow too!</p>
-      </div>
-    </form>
-    <div class="gift-media">
-      <img src="/_assets/shared/NEW%20GIF.gif" alt="Free Glitter Gift">
     </div>
   </section>
 
@@ -369,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <ul>
       <li>
         <i class="fas fa-calendar-alt"></i>
-        <span>Friday - Sunday,<br>June 12th &#x2013; June 14th, 2026<br><strong>10am &#x2013; 5pm</strong></span>
+        <span>Viernes - Domingo,<br>June 12th &#x2013; June 14th, 2026<br><strong>10am &#x2013; 5pm</strong></span>
       </li>
       <li>
         <i class="fas fa-map-marker-alt"></i>
@@ -377,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </li>
       <li>
         <i class="fas fa-tag"></i>
-        <span>FREE ENTRY &amp; PARKING &#x2014; No tickets needed!</span>
+        <span>&iexcl;ENTRADA Y ESTACIONAMIENTO GRATIS &#x2014; No se necesitan boletos!</span>
       </li>
     </ul>
   </section>
@@ -385,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <section class="vendors-section">
     <img src="/_assets/shared/Vendors-Logos.png" alt="40+ Top Beauty Brands">
-    <div class="vendors-caption">40+ TOP BRANDS &#x2022; UP TO 75% OFF</div>
+    <div class="vendors-caption">40+ MARCAS TOP &#x2022; HASTA 75% DE DESCUENTO</div>
   </section>
 
 
@@ -396,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <section class="promo-collage" style="background:#fdf2f8;padding:24px 16px;text-align:center;">
     <img src="/_assets/shared/75-OFF-1-.png" alt="75% off Makeup, Skincare &amp; Hair Care" style="max-width:480px;width:100%;height:auto;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.08);">
-    <p style="margin:14px 0 0;color:#1f2937;font-weight:700;font-size:14px;letter-spacing:0.5px;text-transform:uppercase;">UP TO 75% OFF &mdash; YOU DON&#39;T WANT TO MISS THIS!</p>
+    <p style="margin:14px 0 0;color:#1f2937;font-weight:700;font-size:14px;letter-spacing:0.5px;text-transform:uppercase;">&iexcl;HASTA 75% DE DESCUENTO &mdash; NO TE LO PUEDES PERDER!</p>
   </section>
 
   <section class="bottom-gif" style="background:#000;padding:24px 16px;text-align:center;">
