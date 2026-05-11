@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-05-10T09:14:58Z",
+  "_updated_at": "2026-05-11T14:23:02Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -71,6 +71,21 @@
       "ig_url": "https://www.instagram.com/reel/DX7zIyoxv83/",
       "fb_url": "https://fb.watch/G-sa0IxOUh/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638025213283749150"
+    },
+    {
+      "city": "Overland",
+      "state": "KS",
+      "start_date": "2026-06-12",
+      "end_date": "2026-06-14",
+      "subscribe_url": "/events/overland-ks-2026/",
+      "cta_label": "Subscribe",
+      "slug": "overland-ks-2026",
+      "venue_name": "Holiday Inn & Suites Overland Park",
+      "venue_address": "8787 Reeder St, Overland Park, KS 66214",
+      "form_id": "6930edcf4da0131a26562362",
+      "ig_url": "https://www.instagram.com/reel/DYM2Z63x3Xx/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/H1CNptjKot/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7637225148696759582"
     }
   ],
   "_field_doc": {
