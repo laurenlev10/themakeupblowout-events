@@ -223,23 +223,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 
-  <section class="event-details">
-    <ul>
-      <li>
-        <i class="fas fa-calendar-alt"></i>
-        <span>Friday - Sunday,<br>{{MONTH}} {{START_DAY}} &#x2013; {{MONTH}} {{END_DAY}}, {{YEAR}}<br><strong>10am &#x2013; 5pm</strong></span>
-      </li>
-      <li>
-        <i class="fas fa-map-marker-alt"></i>
-        <span>{{STREET}}<br>At {{HOTEL}}</span>
-      </li>
-      <li>
-        <i class="fas fa-tag"></i>
-        <span>FREE ENTRY &amp; PARKING &#x2014; No tickets needed!</span>
-      </li>
-    </ul>
-  </section>
-
   <section class="sms-section" style="background:#000;">
     <div style="max-width: 540px; margin: 0 auto; text-align: center;">
       <div class="gift-media" style="margin-bottom: 18px;">
@@ -270,6 +253,23 @@ document.addEventListener('DOMContentLoaded', function() {
         See you {{MONTH}} {{START_DAY}} - {{END_DAY}} at {{HOTEL}}!
       </p>
     </div>
+  </section>
+
+  <section class="event-details">
+    <ul>
+      <li>
+        <i class="fas fa-calendar-alt"></i>
+        <span>Friday - Sunday,<br>{{MONTH}} {{START_DAY}} &#x2013; {{MONTH}} {{END_DAY}}, {{YEAR}}<br><strong>10am &#x2013; 5pm</strong></span>
+      </li>
+      <li>
+        <i class="fas fa-map-marker-alt"></i>
+        <span>{{STREET}}<br>At {{HOTEL}}</span>
+      </li>
+      <li>
+        <i class="fas fa-tag"></i>
+        <span>FREE ENTRY &amp; PARKING &#x2014; No tickets needed!</span>
+      </li>
+    </ul>
   </section>
 
 

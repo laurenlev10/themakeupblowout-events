@@ -223,23 +223,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 
-  <section class="event-details">
-    <ul>
-      <li>
-        <i class="fas fa-calendar-alt"></i>
-        <span>Friday - Sunday,<br>{{MONTH}} {{START_DAY}} &#x2013; {{MONTH}} {{END_DAY}}, {{YEAR}}<br><strong>10am &#x2013; 5pm</strong></span>
-      </li>
-      <li>
-        <i class="fas fa-map-marker-alt"></i>
-        <span>{{STREET}}<br>At {{HOTEL}}</span>
-      </li>
-      <li>
-        <i class="fas fa-tag"></i>
-        <span>FREE ENTRY &amp; PARKING &#x2014; No tickets needed!</span>
-      </li>
-    </ul>
-  </section>
-
   <section class="sms-section">
     <div class="gift-media">
       <img src="/_assets/shared/NEW%20GIF.gif" alt="Free Glitter Gift">
@@ -380,6 +363,23 @@ document.addEventListener('DOMContentLoaded', function() {
         <p>&#x1F389; Your voucher is on the way! Share on your story &amp; get a FREE Eyeshadow too!</p>
       </div>
     </form>
+  </section>
+
+  <section class="event-details">
+    <ul>
+      <li>
+        <i class="fas fa-calendar-alt"></i>
+        <span>Friday - Sunday,<br>{{MONTH}} {{START_DAY}} &#x2013; {{MONTH}} {{END_DAY}}, {{YEAR}}<br><strong>10am &#x2013; 5pm</strong></span>
+      </li>
+      <li>
+        <i class="fas fa-map-marker-alt"></i>
+        <span>{{STREET}}<br>At {{HOTEL}}</span>
+      </li>
+      <li>
+        <i class="fas fa-tag"></i>
+        <span>FREE ENTRY &amp; PARKING &#x2014; No tickets needed!</span>
+      </li>
+    </ul>
   </section>
 
 
