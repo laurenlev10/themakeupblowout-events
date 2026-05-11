@@ -225,9 +225,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <section class="sms-section" style="background:#000;">
     <div style="max-width: 540px; margin: 0 auto; text-align: center;">
-      <div class="gift-media" style="margin-bottom: 18px;">
-        <img src="/_assets/shared/NEW%20GIF.gif" alt="Regalo de Glitter Gratis" style="max-width: 250px;">
-      </div>
       <h2 style="font-size: clamp(28px, 6vw, 44px); color: #f5e45b; line-height: 1.2; margin-bottom: 10px;">
         &#x1F389; &#xA1;Gracias!
       </h2>

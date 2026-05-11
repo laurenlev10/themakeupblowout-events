@@ -224,9 +224,6 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 
   <section class="sms-section">
-    <div class="gift-media">
-      <img src="/_assets/shared/NEW%20GIF.gif" alt="Free Glitter Gift">
-    </div>
     <h2>&#x1F381; &iexcl;Reclama Tu Regalo GRATIS!</h2>
     <p class="sub">Reg&iacute;strate por SMS y recibe un cup&oacute;n de glitter GRATIS</p>
 
