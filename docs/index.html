@@ -41,8 +41,8 @@
   .hero {
     position: relative;
     background:
-      radial-gradient(circle at 20% 20%, rgba(240,16,112,0.35), transparent 55%),
-      radial-gradient(circle at 80% 30%, rgba(69,39,160,0.55), transparent 60%),
+      linear-gradient(rgba(8,2,14,0.55), rgba(8,2,14,0.85)),
+      url('/_assets/shared/hero-popart.jpg') center/cover no-repeat,
       linear-gradient(135deg, #1a0030 0%, #2d0050 50%, #1a1060 100%);
     padding: 70px 22px 60px;
     text-align: center;
@@ -232,10 +232,10 @@
   .ev-card.has-img .ev-cta,
   .ev-card.has-img .ev-eb { padding-left: 22px; padding-right: 22px; }
 
-  /* Vendors / brands logo strip */
-  .vendors-section { padding: 50px 22px; background: #fff; text-align: center; }
-  .vendors-section .vendors-title { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 22px; font-weight: 700; }
-  .vendors-section img { max-width: 880px; width: 100%; height: auto; display: block; margin: 0 auto; }
+  /* Vendors / brands — pop-art frame (Lauren's brand-list image) */
+  .vendors-section { padding: 50px 22px; background: var(--bg); text-align: center; }
+  .vendors-section .vendors-title { font-size: 14px; color: var(--yellow); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 22px; font-weight: 700; }
+  .vendors-section img { max-width: 760px; width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 14px; box-shadow: 0 18px 50px rgba(0,0,0,0.4); }
 
   /* Photo gallery (real-event photos Lauren can swap in) */
   .gallery-section { background: var(--bg); }
@@ -471,7 +471,7 @@
 
     <!-- ============ GIFT CALLOUT (uses existing shared asset) ============ -->
   <section class="gift-callout">
-    <img src="/_assets/shared/New%20Free%20Glitter%20Gift.png" alt="Free Glitter Gift at the Event!" loading="lazy" onerror="this.style.display='none'">
+    <img src="/_assets/shared/gift-customers.jpg" alt="Free Glitter Gift at the Event!" loading="lazy" onerror="this.style.display='none'">
     <p class="gift-text">Subscribe and claim your <strong>FREE Glitter Gift</strong> at the event!</p>
     <p class="gift-sub">No purchase required · Just bring your subscription confirmation text</p>
   </section>
@@ -479,7 +479,7 @@
   <!-- ============ VENDORS / BRANDS LOGOS ============ -->
   <section class="vendors-section">
     <p class="vendors-title">Featured Brands at Every Event</p>
-    <img src="/_assets/shared/Vendors-Logos.png" alt="Featured beauty brands at The Makeup Blowout Sale events" loading="lazy" onerror="this.parentNode.style.display='none'">
+    <img src="/_assets/shared/brands-popart.png" alt="Featured beauty brands at The Makeup Blowout Sale events" loading="lazy" onerror="this.parentNode.style.display='none'">
   </section>
 
   <!-- ============ BRANDS STRIP ============ -->
@@ -499,9 +499,9 @@
     <h2 class="section-title">Inside Our Events</h2>
     <p class="section-sub">Real shots from past events — vendors, products, and customers</p>
     <div class="gallery-grid">
-      <div class="gallery-tile" style="background-image: url('/_assets/shared/Gif_Ladies.webp');"></div>
-      <div class="gallery-tile" style="background-image: url('/_assets/shared/Free%20Gift%20Pic.png');"></div>
-      <div class="gallery-tile" style="background-image: url('/_assets/shared/75-OFF-1-.png'); background-color:#f01070;"></div>
+      <div class="gallery-tile" style="background-image: url('/_assets/shared/gallery-event.jpg');"></div>
+      <div class="gallery-tile" style="background-image: url('/_assets/shared/gallery-products.jpg');"></div>
+      <div class="gallery-tile" style="background-image: url('/_assets/shared/gift-customers.jpg');"></div>
     </div>
   </section>
 
