@@ -8,17 +8,17 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
   <!-- ============ ANALYTICS — added 2026-05-07 ============ -->
 <!-- Replaced at build time by scripts/build.py from GitHub Secrets:
-     __GA4_MEASUREMENT_ID__ → GA4_MEASUREMENT_ID
-     __META_PIXEL_ID__      → META_PIXEL_ID
-     __TIKTOK_PIXEL_ID__    → TIKTOK_PIXEL_ID  -->
+     G-NOT-SET-YET → GA4_MEASUREMENT_ID
+     0000000000000000      → META_PIXEL_ID
+     C00000000000    → TIKTOK_PIXEL_ID  -->
 
 <!-- Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=__GA4_MEASUREMENT_ID__"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NOT-SET-YET"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', '__GA4_MEASUREMENT_ID__', { page_path: window.location.pathname + window.location.search });
+  gtag('config', 'G-NOT-SET-YET', { page_path: window.location.pathname + window.location.search });
   // Custom dimensions for cross-event reporting
   (function(){
     var slugMatch = window.location.pathname.match(/\/events\/([^\/]+)\//);
@@ -39,10 +39,10 @@ n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '__META_PIXEL_ID__');
+fbq('init', '0000000000000000');
 fbq('track', 'PageView');
 </script>
-<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=__META_PIXEL_ID__&ev=PageView&noscript=1"/></noscript>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=0000000000000000&ev=PageView&noscript=1"/></noscript>
 
 <!-- TikTok Pixel -->
 <script>
@@ -52,7 +52,7 @@ fbq('track', 'PageView');
   for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
   ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
   ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript";o.async=!0;o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
-  ttq.load('__TIKTOK_PIXEL_ID__');
+  ttq.load('C00000000000');
   ttq.page();
 }(window, document, 'ttq');
 </script>
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <i class="fab fa-facebook-f"></i> SHARE ON FACEBOOK
   </a>
 
-  <a href="https://www.tiktok.com/@makeupblowoutsale" class="btn-tiktok" target="_blank" rel="noopener noreferrer">
+  <a href="https://www.tiktok.com/@themakeupblowoutsale" class="btn-tiktok" target="_blank" rel="noopener noreferrer">
     <i class="fab fa-tiktok"></i> SHARE ON <span class="tt-accent-1">TIK</span><span class="tt-accent-2">TOK</span>
   </a>
 
