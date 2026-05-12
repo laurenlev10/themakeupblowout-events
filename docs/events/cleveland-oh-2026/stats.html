@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📊 Stats — Makeup Blowout Cleveland, OH 2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Josefin Sans',Helvetica,sans-serif;background:#0a0a14;color:#fff;
@@ -17,6 +18,45 @@
             border-radius:14px;padding:34px 22px;text-align:center;margin:30px 0}
     .nodata h2{color:#fbbf24;margin-bottom:8px;font-size:22px}
     .nodata p{color:#aaa;font-size:14px}
+
+    /* ====== Registrations section (always-on signup tracker) ====== */
+    .reg-wrap{background:linear-gradient(135deg,#15151f,#1a1a2a);border-radius:14px;
+              padding:24px;margin-bottom:26px;border:1px solid #2a2a3a}
+    .reg-title{color:#22c55e;font-size:18px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px;
+               display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .reg-sub{color:#888;font-size:12px;margin-bottom:16px;font-family:ui-monospace,monospace}
+    .reg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+              gap:14px;margin-bottom:20px}
+    .reg-tile{background:rgba(255,255,255,0.04);border-radius:12px;padding:18px 20px;
+              border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden}
+    .reg-tile.eb{border-left:4px solid #22c55e}
+    .reg-tile.sms{border-left:4px solid #f01070}
+    .reg-tile .reg-label{color:#aaa;font-size:11px;letter-spacing:1.2px;
+                         text-transform:uppercase;font-weight:700;margin-bottom:4px}
+    .reg-tile .reg-num{font-size:36px;color:#f5e45b;font-weight:800;line-height:1}
+    .reg-tile .reg-extra{color:#bbb;font-size:13px;margin-top:8px}
+    .reg-tile .reg-delta{display:inline-block;margin-top:8px;padding:3px 10px;
+                         border-radius:14px;font-size:12px;font-weight:700;letter-spacing:0.3px}
+    .reg-tile .reg-delta.up{background:rgba(34,197,94,0.18);color:#4ade80}
+    .reg-tile .reg-delta.flat{background:rgba(148,163,184,0.18);color:#cbd5e1}
+    .reg-tile .reg-delta.down{background:rgba(239,68,68,0.18);color:#fca5a5}
+    .reg-tile .reg-cap-wrap{margin-top:10px;height:6px;background:#2a2a3a;
+                            border-radius:3px;overflow:hidden}
+    .reg-tile .reg-cap-bar{height:100%;background:linear-gradient(90deg,#22c55e,#10b981)}
+    .reg-chart-wrap{background:rgba(0,0,0,0.2);border-radius:10px;padding:14px;
+                    border:1px solid rgba(255,255,255,0.04);position:relative}
+    .reg-chart-title{color:#aaa;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;
+                     font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;
+                     align-items:center;flex-wrap:wrap;gap:8px}
+    .reg-chart-legend{display:flex;gap:14px;font-size:11px;color:#aaa}
+    .reg-chart-legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;
+                           margin-right:4px;vertical-align:middle}
+    .reg-chart-legend .dot.eb{background:#22c55e}
+    .reg-chart-legend .dot.sms{background:#f01070}
+    #reg-chart{width:100%!important;height:260px!important}
+    .reg-empty{text-align:center;padding:30px 14px;color:#666;font-size:13px}
+    .reg-refresh-pill{font-size:11px;color:#888;background:rgba(255,255,255,0.04);
+                      padding:3px 10px;border-radius:10px;letter-spacing:0.3px}
 
     /* Funnel visualization */
     .funnel-wrap{background:linear-gradient(135deg,#15151f,#1a1a2a);border-radius:14px;
@@ -84,13 +124,19 @@
     .anomaly-box .a-title{color:#fbbf24;font-weight:700;margin-bottom:6px;font-size:14px}
     .anomaly-box .a-item{color:#fde68a;font-size:13px;margin:4px 0}
     .anomaly-box .a-item.critical{color:#fecaca}
+    .pixel-hint{background:rgba(124,58,237,0.08);border:1px dashed rgba(124,58,237,0.4);
+                border-radius:12px;padding:16px 20px;margin:20px 0;color:#c4b5fd;font-size:13px;
+                display:flex;align-items:center;gap:12px}
+    .pixel-hint .ico{font-size:22px;flex-shrink:0}
     a.back{color:#aaa;text-decoration:none;font-size:13px}
     a.back:hover{color:#fff}
     @media (max-width: 600px) {
       .stat-grid{grid-template-columns:repeat(2,1fr)}
       .stat-card .num{font-size:24px}
+      .reg-tile .reg-num{font-size:28px}
       .breakdown{padding:14px 16px}
       .funnel-num{font-size:18px}
+      #reg-chart{height:220px!important}
     }
   </style>
 </head>
@@ -101,24 +147,77 @@
   <div class="sub">May 29th–31st · Holiday Inn Conference Center</div>
   <div class="pulled" id="pulled-at">loading…</div>
 
+  <!-- ============================================================
+       Registrations section — always renders when SMS/Eventbrite
+       data is available, independent of Meta/TikTok pixel.
+       ============================================================ -->
+  <div id="reg-section" class="reg-wrap" style="display:none;">
+    <div class="reg-title">
+      <span>📋 הרשמות לאירוע</span>
+      <span class="reg-refresh-pill" id="reg-refresh-pill">refreshes every 6 hours</span>
+    </div>
+    <div class="reg-sub" id="reg-sub">loading…</div>
+
+    <div class="reg-grid">
+      <div class="reg-tile eb">
+        <div class="reg-label">🎟️ Eventbrite RSVPs</div>
+        <div class="reg-num" id="reg-eb-num">—</div>
+        <div class="reg-extra" id="reg-eb-extra">— / — capacity</div>
+        <div class="reg-cap-wrap"><div class="reg-cap-bar" id="reg-eb-cap" style="width:0%"></div></div>
+        <span class="reg-delta flat" id="reg-eb-delta">— today</span>
+      </div>
+      <div class="reg-tile sms">
+        <div class="reg-label">📱 SMS subscribers</div>
+        <div class="reg-num" id="reg-sms-num">—</div>
+        <div class="reg-extra" id="reg-sms-extra">on year-specific list</div>
+        <span class="reg-delta flat" id="reg-sms-delta">— today</span>
+      </div>
+    </div>
+
+    <div class="reg-chart-wrap">
+      <div class="reg-chart-title">
+        <span>📈 Growth over time</span>
+        <div class="reg-chart-legend">
+          <span><span class="dot eb"></span>Eventbrite</span>
+          <span><span class="dot sms"></span>SMS subscribers</span>
+        </div>
+      </div>
+      <div id="reg-chart-host"><canvas id="reg-chart"></canvas></div>
+      <div class="reg-empty" id="reg-chart-empty" style="display:none;">
+        Not enough history yet — chart will populate after the next 6-hour refresh.
+      </div>
+    </div>
+  </div>
+
+  <!-- Pixel hint -->
+  <div id="pixel-hint" class="pixel-hint" style="display:none;">
+    <span class="ico">🔍</span>
+    <div>
+      <div style="font-weight:700;color:#ddd6fe;margin-bottom:2px">Pixel data not flowing yet</div>
+      <div style="font-size:12px;color:#a78bfa">
+        Meta + TikTok + GA4 pixels are installed on the landing pages — once your ads start running,
+        the funnel, ROAS and traffic-source breakdowns will appear below automatically.
+      </div>
+    </div>
+  </div>
+
+  <!-- Fallback nothing-yet card -->
   <div id="nodata" class="nodata" style="display:none;">
     <h2>⏳ Data hasn't started flowing yet</h2>
     <p>Pixels are installed on this landing page. Once visitors come, this dashboard fills with real numbers (refreshed every 6 hours).</p>
     <p style="margin-top:10px;font-size:12px;color:#666">If you have a Meta Ads campaign running for this event, expect first data within 24 hours.</p>
   </div>
 
-  <div id="content" style="display:none;">
+  <!-- Pixel content (Meta + TikTok + GA4) -->
+  <div id="pixel-content" style="display:none;">
 
-    <!-- Forecast -->
     <div id="forecast-wrap"></div>
 
-    <!-- Funnel visualization -->
     <div class="funnel-wrap">
       <div class="funnel-title">🎯 The Funnel — from ad to SMS subscriber</div>
       <div id="funnel-stages"></div>
     </div>
 
-    <!-- Top-line stats -->
     <div class="stat-grid">
       <div class="stat-card"><div class="label">Page views</div><div class="num" id="m-views">—</div><div class="extra" id="x-views">on landing page</div></div>
       <div class="stat-card success"><div class="label">Eventbrite RSVPs</div><div class="num" id="m-eb">—</div><div class="extra" id="x-eb">— / 250 capacity</div></div>
@@ -145,138 +244,240 @@
 <script>
 (async function(){
   const slug = "cleveland-oh-2026";
-  let data;
-  try {
-    const r = await fetch("/state/event_analytics.json", { cache: "no-store" });
-    data = r.ok ? await r.json() : null;
-  } catch(e) { data = null; }
-  const ev = data && data.events && data.events[slug];
 
-  if (!ev) {
-    document.getElementById("nodata").style.display = "block";
-    document.getElementById("pulled-at").textContent = "Last pull: not yet";
-    return;
+  async function fetchJson(path){
+    try {
+      const r = await fetch(path + "?t=" + Date.now(), { cache: "no-store" });
+      return r.ok ? await r.json() : null;
+    } catch(e) { return null; }
   }
 
-  document.getElementById("content").style.display = "block";
-  document.getElementById("pulled-at").textContent = "Last pulled: " + new Date(ev.last_pulled || data._updated_at).toLocaleString();
+  const [analytics, regStats, timeseries] = await Promise.all([
+    fetchJson("/state/event_analytics.json"),
+    fetchJson("/state/registration_stats.json"),
+    fetchJson("/state/event_timeseries.json"),
+  ]);
 
-  // ===== Funnel visualization =====
-  const f = ev.funnel || {};
-  const rates = ev.rates || {};
-  const stages = [
-    { name: "Ad Impressions",   icon: "📣", val: f.impressions       || 0, rate: null },
-    { name: "Page Views",        icon: "👀", val: f.page_views        || 0, rateLabel: "CTR",     rate: rates.ctr },
-    { name: "Form Submits",      icon: "📝", val: f.form_submits      || 0, rateLabel: "Form %",  rate: rates.form_conversion },
-    { name: "Eventbrite RSVPs",  icon: "🎟️", val: f.eventbrite_registered || 0, rateLabel: "Final %", rate: f.page_views ? (f.eventbrite_registered/f.page_views*100) : null }
-  ];
-  const maxStageVal = Math.max(...stages.map(s => s.val), 1);
-  const fc = document.getElementById("funnel-stages");
-  fc.innerHTML = "";
-  stages.forEach((s, i) => {
-    const widthPct = Math.max(8, (s.val / maxStageVal * 100));
-    let rateClass = "";
-    let rateText = "";
-    if (s.rate !== null && s.rate !== undefined && !isNaN(s.rate)) {
-      rateText = s.rateLabel + ": " + s.rate.toFixed(1) + "%";
-      if (s.rate < 1) rateClass = "bad";
-      else if (s.rate < 3) rateClass = "weak";
-    }
-    const stage = document.createElement("div");
-    stage.className = "funnel-stage";
-    stage.innerHTML = `
-      <div class="funnel-bar-wrap">
-        <div class="funnel-icon">${s.icon}</div>
-        <div class="funnel-info">
-          <div class="funnel-name">${s.name}</div>
-          <div class="funnel-num">${s.val.toLocaleString()}</div>
-          ${rateText ? `<div class="funnel-rate ${rateClass}">${rateText}</div>` : ""}
-        </div>
-        <div class="funnel-bar" style="width:${widthPct}%"></div>
-      </div>
-      ${i < stages.length - 1 ? '<div class="funnel-arrow">▼</div>' : ""}
-    `;
-    fc.appendChild(stage);
-  });
+  const evPixel = analytics && analytics.events && analytics.events[slug];
+  const evReg   = regStats  && regStats.events   && regStats.events[slug];
+  const evSeries = timeseries && timeseries.events && timeseries.events[slug];
 
-  // ===== Forecast =====
-  if (ev.forecast) {
-    const fw = document.getElementById("forecast-wrap");
-    const fcst = ev.forecast;
-    const target = fcst.target || 250;
-    const projected = fcst.projected_total || 0;
-    const current = fcst.current || 0;
-    const dailyRate = fcst.daily_rate || 0;
-    const pct = Math.min(100, projected / target * 100);
-    const status = fcst.status === "on_track";
-    fw.innerHTML = `
-      <div class="forecast-box ${status ? 'on-track' : 'behind'}">
-        <div class="forecast-icon">${status ? '🎯' : '⚠️'}</div>
-        <div class="forecast-text">
-          <div class="h">Eventbrite RSVP forecast</div>
-          <div class="v">${status ? 'On track!' : 'Behind target'} — ${fcst.days_remaining} days to event</div>
-          <div style="font-size:11px;color:#888;margin-top:4px">Current: ${current} · Rate: ${dailyRate}/day · Projected: ${projected}</div>
-        </div>
-        <div class="forecast-progress">
-          <div class="progress-bar-wrap">
-            <div class="progress-bar ${status ? '' : 'behind'}" style="width:${pct}%"></div>
-          </div>
-          <div class="progress-label">Projected ${projected.toLocaleString()} / Target ${target.toLocaleString()}${fcst.gap > 0 ? ` (gap: ${fcst.gap})` : ''}</div>
-        </div>
-      </div>
-    `;
-  }
+  // Header: most-recent pull
+  const latestPull = [
+    evReg && evReg.updated_at,
+    evPixel && (evPixel.last_pulled || (analytics && analytics._updated_at)),
+    timeseries && timeseries._updated_at,
+  ].filter(Boolean).sort().pop();
+  document.getElementById("pulled-at").textContent =
+    latestPull ? ("Last pulled: " + new Date(latestPull).toLocaleString()) : "Last pull: not yet";
 
-  // ===== Top-line stats =====
-  const v = ev.views || {};
-  const c = ev.conversions || {};
-  const sms = ev.sms_registered || (f.sms_registered) || 0;
-  document.getElementById("m-views").textContent  = (v.total||0).toLocaleString();
-  document.getElementById("m-conv").textContent   = (c.total||0).toLocaleString();
-  document.getElementById("m-sms").textContent    = sms.toLocaleString();
-  // Show list name explicitly so Lauren can verify it's the year-specific list
-  const listName = ev.sms_list_name || "";
-  const listSubtitle = listName ? `on "${listName}" list` : "year-specific list";
-  document.getElementById("x-sms").textContent = listSubtitle;
-  const ebReg = ev.eventbrite_registered || (f.eventbrite_registered) || 0;
-  const ebCap = ev.eventbrite_capacity || 250;
-  document.getElementById("m-eb").textContent     = ebReg.toLocaleString();
-  document.getElementById("x-eb").textContent     = ebReg + " / " + ebCap + " capacity (" + (ebCap > 0 ? Math.round(ebReg/ebCap*100) : 0) + "%)";
-
-  function renderRows(elId, obj, formatter){
+  // ============================================================
+  // 1) REGISTRATIONS SECTION
+  // ============================================================
+  function renderDelta(elId, n, suffix){
     const el = document.getElementById(elId);
-    if (!el) return;
-    el.innerHTML = "";
-    const entries = Object.entries(obj || {}).sort((a,b)=>b[1]-a[1]);
-    if (!entries.length) { el.innerHTML = '<div style="color:#666;text-align:center;padding:14px">no data yet</div>'; return; }
-    const max = entries[0][1] || 1;
-    entries.forEach(([k,vv])=>{
-      const pct = (vv/max*100).toFixed(0);
-      const row = document.createElement("div");
-      row.className = "row";
-      row.innerHTML = `<span class="lbl">${k.replace(/_/g," ")}</span>
-                       <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-                       <span class="val">${formatter ? formatter(vv) : vv.toLocaleString()}</span>`;
-      el.appendChild(row);
-    });
+    if (n === null || n === undefined) { el.textContent = "— today"; return; }
+    let cls = "flat", sign = "±";
+    if (n > 0)      { cls = "up";   sign = "+"; }
+    else if (n < 0) { cls = "down"; sign = "";  }
+    el.className = "reg-delta " + cls;
+    el.textContent = sign + Number(n).toLocaleString() + " " + (suffix || "today");
   }
-  renderRows("by-lang",     v.by_lang);
-  renderRows("by-source",   v.by_source);
-  renderRows("by-campaign", v.by_campaign);
-  renderRows("by-roas",     ev.roas_by_source, x => x.toFixed(1) + "x");
 
-  // ===== Anomalies =====
-  const aw = document.getElementById("anomaly-wrap");
-  aw.innerHTML = "";
-  if (ev.anomalies && ev.anomalies.length) {
-    const box = document.createElement("div");
-    box.className = "anomaly-box";
-    box.innerHTML = '<div class="a-title">⚠ Anomalies detected</div>' +
-      ev.anomalies.map(a => {
-        const cls = a.severity === 'critical' ? 'critical' : '';
-        return `<div class="a-item ${cls}"><b>${a.metric}:</b> ${a.hypothesis || ''} (observed: ${a.observed})</div>`;
-      }).join('');
-    aw.appendChild(box);
+  if (evReg) {
+    document.getElementById("reg-section").style.display = "block";
+    const eb = evReg.eventbrite || {};
+    const sm = evReg.sms || {};
+    document.getElementById("reg-eb-num").textContent = (eb.registrations || 0).toLocaleString();
+    const cap = eb.capacity || 0;
+    const fillPct = cap > 0 ? Math.min(100, eb.registrations / cap * 100) : 0;
+    document.getElementById("reg-eb-extra").textContent =
+      (eb.registrations || 0).toLocaleString() + " / " + (cap || "—") + " capacity" +
+      (cap > 0 ? " (" + Math.round(fillPct) + "%)" : "");
+    document.getElementById("reg-eb-cap").style.width = fillPct + "%";
+    renderDelta("reg-eb-delta", eb.today_delta, "today");
+
+    document.getElementById("reg-sms-num").textContent = (sm.active || sm.total || 0).toLocaleString();
+    document.getElementById("reg-sms-extra").textContent =
+      sm.list_name ? ('on "' + sm.list_name + '" list') : "on year-specific list";
+    renderDelta("reg-sms-delta", sm.daily_delta, "today");
+
+    document.getElementById("reg-sub").textContent =
+      "Updated " + (evReg.updated_at ? new Date(evReg.updated_at).toLocaleString() : "—") +
+      " · refreshes every 6 hours from Eventbrite + SimpleTexting";
+
+    // Chart
+    const snaps = (evSeries && evSeries.snapshots) || [];
+    if (snaps.length >= 2 && typeof Chart !== "undefined") {
+      const labels = snaps.map(s => {
+        const d = new Date(s.ts);
+        return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+               " " + d.getHours().toString().padStart(2, "0") + ":00";
+      });
+      const ebData  = snaps.map(s => s.eb);
+      const smsData = snaps.map(s => s.sms);
+      const ctx = document.getElementById("reg-chart").getContext("2d");
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            { label: "Eventbrite RSVPs", data: ebData,
+              borderColor: "#22c55e", backgroundColor: "rgba(34,197,94,0.15)",
+              tension: 0.3, yAxisID: "yEb", borderWidth: 2, pointRadius: 3, pointHoverRadius: 5 },
+            { label: "SMS subscribers", data: smsData,
+              borderColor: "#f01070", backgroundColor: "rgba(240,16,112,0.15)",
+              tension: 0.3, yAxisID: "ySms", borderWidth: 2, pointRadius: 3, pointHoverRadius: 5 },
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: function(ctx){ return ctx.dataset.label + ": " + ctx.parsed.y.toLocaleString(); } } }
+          },
+          scales: {
+            x:    { ticks: { color: "#888", maxTicksLimit: 8, font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.04)" } },
+            yEb:  { position: "left",  ticks: { color: "#22c55e", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.04)" }, title: { display: true, text: "Eventbrite", color: "#22c55e", font: { size: 10 } } },
+            ySms: { position: "right", ticks: { color: "#f01070", font: { size: 10 } }, grid: { display: false },                  title: { display: true, text: "SMS",        color: "#f01070", font: { size: 10 } } },
+          }
+        }
+      });
+    } else {
+      document.getElementById("reg-chart-host").style.display = "none";
+      document.getElementById("reg-chart-empty").style.display = "block";
+    }
+  }
+
+  // ============================================================
+  // 2) PIXEL SECTION (only when data has actually flowed)
+  // ============================================================
+  const hasPixelData = evPixel && (
+    (evPixel.views && (evPixel.views.total || 0) > 0) ||
+    (evPixel.conversions && (evPixel.conversions.total || 0) > 0) ||
+    (evPixel.funnel && (evPixel.funnel.page_views || evPixel.funnel.impressions || evPixel.funnel.form_submits))
+  );
+
+  if (hasPixelData) {
+    document.getElementById("pixel-content").style.display = "block";
+
+    const f = evPixel.funnel || {};
+    const rates = evPixel.rates || {};
+    const stages = [
+      { name: "Ad Impressions",   icon: "📣", val: f.impressions       || 0, rate: null },
+      { name: "Page Views",        icon: "👀", val: f.page_views        || 0, rateLabel: "CTR",     rate: rates.ctr },
+      { name: "Form Submits",      icon: "📝", val: f.form_submits      || 0, rateLabel: "Form %",  rate: rates.form_conversion },
+      { name: "Eventbrite RSVPs",  icon: "🎟️", val: f.eventbrite_registered || 0, rateLabel: "Final %", rate: f.page_views ? (f.eventbrite_registered/f.page_views*100) : null }
+    ];
+    const maxStageVal = Math.max(...stages.map(s => s.val), 1);
+    const fc = document.getElementById("funnel-stages");
+    fc.innerHTML = "";
+    stages.forEach((s, i) => {
+      const widthPct = Math.max(8, (s.val / maxStageVal * 100));
+      let rateClass = "", rateText = "";
+      if (s.rate !== null && s.rate !== undefined && !isNaN(s.rate)) {
+        rateText = s.rateLabel + ": " + s.rate.toFixed(1) + "%";
+        if (s.rate < 1) rateClass = "bad";
+        else if (s.rate < 3) rateClass = "weak";
+      }
+      const stage = document.createElement("div");
+      stage.className = "funnel-stage";
+      stage.innerHTML = `
+        <div class="funnel-bar-wrap">
+          <div class="funnel-icon">${s.icon}</div>
+          <div class="funnel-info">
+            <div class="funnel-name">${s.name}</div>
+            <div class="funnel-num">${s.val.toLocaleString()}</div>
+            ${rateText ? `<div class="funnel-rate ${rateClass}">${rateText}</div>` : ""}
+          </div>
+          <div class="funnel-bar" style="width:${widthPct}%"></div>
+        </div>
+        ${i < stages.length - 1 ? '<div class="funnel-arrow">▼</div>' : ""}
+      `;
+      fc.appendChild(stage);
+    });
+
+    if (evPixel.forecast) {
+      const fw = document.getElementById("forecast-wrap");
+      const fcst = evPixel.forecast;
+      const target = fcst.target || 250;
+      const projected = fcst.projected_total || 0;
+      const current = fcst.current || 0;
+      const dailyRate = fcst.daily_rate || 0;
+      const pct = Math.min(100, projected / target * 100);
+      const status = fcst.status === "on_track";
+      fw.innerHTML = `
+        <div class="forecast-box ${status ? 'on-track' : 'behind'}">
+          <div class="forecast-icon">${status ? '🎯' : '⚠️'}</div>
+          <div class="forecast-text">
+            <div class="h">Eventbrite RSVP forecast</div>
+            <div class="v">${status ? 'On track!' : 'Behind target'} — ${fcst.days_remaining} days to event</div>
+            <div style="font-size:11px;color:#888;margin-top:4px">Current: ${current} · Rate: ${dailyRate}/day · Projected: ${projected}</div>
+          </div>
+          <div class="forecast-progress">
+            <div class="progress-bar-wrap"><div class="progress-bar ${status ? '' : 'behind'}" style="width:${pct}%"></div></div>
+            <div class="progress-label">Projected ${projected.toLocaleString()} / Target ${target.toLocaleString()}${fcst.gap > 0 ? ` (gap: ${fcst.gap})` : ''}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    const v = evPixel.views || {};
+    const c = evPixel.conversions || {};
+    const sms = evPixel.sms_registered || (f.sms_registered) || 0;
+    document.getElementById("m-views").textContent  = (v.total||0).toLocaleString();
+    document.getElementById("m-conv").textContent   = (c.total||0).toLocaleString();
+    document.getElementById("m-sms").textContent    = sms.toLocaleString();
+    const listName = evPixel.sms_list_name || "";
+    document.getElementById("x-sms").textContent = listName ? ('on "' + listName + '" list') : "year-specific list";
+    const ebReg = evPixel.eventbrite_registered || (f.eventbrite_registered) || 0;
+    const ebCap = evPixel.eventbrite_capacity || 250;
+    document.getElementById("m-eb").textContent     = ebReg.toLocaleString();
+    document.getElementById("x-eb").textContent     = ebReg + " / " + ebCap + " capacity (" + (ebCap > 0 ? Math.round(ebReg/ebCap*100) : 0) + "%)";
+
+    function renderRows(elId, obj, formatter){
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.innerHTML = "";
+      const entries = Object.entries(obj || {}).sort((a,b)=>b[1]-a[1]);
+      if (!entries.length) { el.innerHTML = '<div style="color:#666;text-align:center;padding:14px">no data yet</div>'; return; }
+      const max = entries[0][1] || 1;
+      entries.forEach(([k,vv])=>{
+        const pct = (vv/max*100).toFixed(0);
+        const row = document.createElement("div");
+        row.className = "row";
+        row.innerHTML = `<span class="lbl">${k.replace(/_/g," ")}</span>
+                         <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+                         <span class="val">${formatter ? formatter(vv) : vv.toLocaleString()}</span>`;
+        el.appendChild(row);
+      });
+    }
+    renderRows("by-lang",     v.by_lang);
+    renderRows("by-source",   v.by_source);
+    renderRows("by-campaign", v.by_campaign);
+    renderRows("by-roas",     evPixel.roas_by_source, x => x.toFixed(1) + "x");
+
+    const aw = document.getElementById("anomaly-wrap");
+    aw.innerHTML = "";
+    if (evPixel.anomalies && evPixel.anomalies.length) {
+      const box = document.createElement("div");
+      box.className = "anomaly-box";
+      box.innerHTML = '<div class="a-title">⚠ Anomalies detected</div>' +
+        evPixel.anomalies.map(a => {
+          const cls = a.severity === 'critical' ? 'critical' : '';
+          return `<div class="a-item ${cls}"><b>${a.metric}:</b> ${a.hypothesis || ''} (observed: ${a.observed})</div>`;
+        }).join('');
+      aw.appendChild(box);
+    }
+  }
+
+  // ============================================================
+  // 3) Fallback messaging
+  // ============================================================
+  if (!evReg && !hasPixelData) {
+    document.getElementById("nodata").style.display = "block";
+  } else if (evReg && !hasPixelData) {
+    document.getElementById("pixel-hint").style.display = "flex";
   }
 })();
 </script>
