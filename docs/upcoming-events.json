@@ -86,6 +86,20 @@
       "ig_url": "https://www.instagram.com/reel/DYM2Z63x3Xx/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/H1CNptjKot/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638634023014698271"
+    },
+    {
+      "city": "Cleveland",
+      "state": "OH",
+      "start_date": "2026-05-29",
+      "end_date": "2026-05-31",
+      "image_url": "/_assets/events/cleveland-oh-2026/hero.png",
+      "subscribe_url": "/events/cleveland-oh-2026/",
+      "cta_label": "Subscribe",
+      "slug": "cleveland-oh-2026",
+      "venue_name": "Holiday Inn Conference Center",
+      "venue_address": "6001 Rockside Rd, Independence, OH 44131",
+      "form_id": "69406c057e67765257a13998",
+      "ig_url": "https://www.instagram.com/reel/DYM18AwRYV7/"
     }
   ],
   "_field_doc": {
