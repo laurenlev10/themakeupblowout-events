@@ -211,7 +211,64 @@
     margin-right: 6px;
   }
 
-  /* ============ BRAND CALLOUT (between sections) ============ */
+  /* event-card hero image (for the 5 events that have hero.png) */
+  .ev-card.has-img { padding: 0 0 22px; overflow: hidden; }
+  .ev-card.has-img .ev-img {
+    position: relative;
+    width: 100%; height: 200px;
+    background-size: cover; background-position: center;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .ev-card.has-img .ev-img::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.0) 40%, rgba(26,4,32,0.75) 100%);
+  }
+  .ev-card.has-img .ev-state,
+  .ev-card.has-img .ev-city,
+  .ev-card.has-img .ev-dates,
+  .ev-card.has-img .ev-venue,
+  .ev-card.has-img .ev-cta,
+  .ev-card.has-img .ev-eb { padding-left: 22px; padding-right: 22px; }
+
+  /* Vendors / brands logo strip */
+  .vendors-section { padding: 50px 22px; background: #fff; text-align: center; }
+  .vendors-section .vendors-title { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 22px; font-weight: 700; }
+  .vendors-section img { max-width: 880px; width: 100%; height: auto; display: block; margin: 0 auto; }
+
+  /* Photo gallery (real-event photos Lauren can swap in) */
+  .gallery-section { background: var(--bg); }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .gallery-tile {
+    aspect-ratio: 4/5;
+    background: #1a0030 center/cover no-repeat;
+    border-radius: 14px;
+    border: 1px solid var(--hairline);
+    transition: transform .25s, box-shadow .25s;
+  }
+  .gallery-tile:hover { transform: scale(1.02); box-shadow: 0 16px 40px rgba(240,16,112,0.25); }
+
+  /* Free-gift hero callout */
+  .gift-callout {
+    background: linear-gradient(135deg, #1a0030 0%, #2d0050 100%);
+    padding: 40px 22px;
+    text-align: center;
+    border-top: 2px solid var(--pink);
+    border-bottom: 2px solid var(--pink);
+  }
+  .gift-callout img { max-width: 320px; width: 80%; height: auto; display: block; margin: 0 auto 18px; border-radius: 16px; box-shadow: 0 14px 40px rgba(240,16,112,0.45); }
+  .gift-callout .gift-text { font-size: clamp(20px,3.6vw,30px); color: #fff; font-weight: 700; max-width: 600px; margin: 0 auto 6px; }
+  .gift-callout .gift-text strong { color: var(--yellow); }
+  .gift-callout .gift-sub { font-size: 14px; color: var(--muted); }
+
+/* ============ BRAND CALLOUT (between sections) ============ */
   .brands-strip {
     padding: 50px 22px;
     background: linear-gradient(135deg, var(--pink) 0%, #c01060 100%);
@@ -412,6 +469,19 @@
     </div>
   </section>
 
+    <!-- ============ GIFT CALLOUT (uses existing shared asset) ============ -->
+  <section class="gift-callout">
+    <img src="/_assets/shared/New%20Free%20Glitter%20Gift.png" alt="Free Glitter Gift at the Event!" loading="lazy" onerror="this.style.display='none'">
+    <p class="gift-text">Subscribe and claim your <strong>FREE Glitter Gift</strong> at the event!</p>
+    <p class="gift-sub">No purchase required · Just bring your subscription confirmation text</p>
+  </section>
+
+  <!-- ============ VENDORS / BRANDS LOGOS ============ -->
+  <section class="vendors-section">
+    <p class="vendors-title">Featured Brands at Every Event</p>
+    <img src="/_assets/shared/Vendors-Logos.png" alt="Featured beauty brands at The Makeup Blowout Sale events" loading="lazy" onerror="this.parentNode.style.display='none'">
+  </section>
+
   <!-- ============ BRANDS STRIP ============ -->
   <section class="brands-strip">
     <p class="big">40+ Amazing Brands at Discounted Prices.</p>
@@ -421,6 +491,17 @@
       <span>👶 Kids Welcome</span>
       <span>🅿️ Free Parking</span>
       <span>🎫 Free Entry</span>
+    </div>
+  </section>
+
+  <!-- ============ PHOTO GALLERY ============ -->
+  <section class="section gallery-section">
+    <h2 class="section-title">Inside Our Events</h2>
+    <p class="section-sub">Real shots from past events — vendors, products, and customers</p>
+    <div class="gallery-grid">
+      <div class="gallery-tile" style="background-image: url('/_assets/shared/Gif_Ladies.webp');"></div>
+      <div class="gallery-tile" style="background-image: url('/_assets/shared/Free%20Gift%20Pic.png');"></div>
+      <div class="gallery-tile" style="background-image: url('/_assets/shared/75-OFF-1-.png'); background-color:#f01070;"></div>
     </div>
   </section>
 
@@ -568,10 +649,15 @@
       grid.innerHTML = picks.map(function(e){
         var live = isLive(e.start_date, e.end_date);
         var sub = subMap[eventKey(e.city, e.start_date)] || DEFAULT_SUBSCRIBE;
+        // Per-event slug = '<city-slug>-<state-lc>-<year>' (matches /_assets/events/<slug>/hero.png)
+        var slug = (e.city||'').toLowerCase().replace(/\s+/g,'-') + '-' + (e.state||'').toLowerCase() + '-' + e.start_date.slice(0,4);
+        var heroPath = '/_assets/events/' + slug + '/hero.png';
+        var imgHtml = '<div class="ev-img" style="background-image: url(\'' + heroPath + '\');" onerror="this.style.display=\'none\';this.parentNode.classList.remove(\'has-img\');"></div>';
         var ebLink = e.eventbrite_url
           ? '<a class="ev-eb" href="' + escapeHtml(e.eventbrite_url) + '" target="_blank" rel="noopener">View on Eventbrite ↗</a>'
           : '';
-        return '<div class="ev-card' + (live ? ' is-live' : '') + '">'
+        return '<div class="ev-card has-img' + (live ? ' is-live' : '') + '">'
+          +    imgHtml
           +    '<div class="ev-state">' + escapeHtml(e.state || '') + '</div>'
           +    '<div class="ev-city">' + escapeHtml(e.city) + '</div>'
           +    '<div class="ev-dates">' + fmtDateRange(e.start_date, e.end_date) + '</div>'
@@ -580,6 +666,14 @@
           +    ebLink
           + '</div>';
       }).join('');
+      // Hide hero block for cards whose hero.png 404s (gracefully via Image probe)
+      Array.prototype.slice.call(grid.querySelectorAll('.ev-img')).forEach(function(div){
+        var url = (div.style.backgroundImage.match(/url\(["']?([^"')]+)/) || [])[1];
+        if (!url) return;
+        var img = new Image();
+        img.onerror = function(){ div.style.display='none'; div.parentNode.classList.remove('has-img'); };
+        img.src = url;
+      });
     }
 
     function renderSchedule(events, subMap) {
