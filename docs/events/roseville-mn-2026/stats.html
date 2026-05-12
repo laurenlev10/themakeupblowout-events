@@ -110,6 +110,55 @@
     .progress-bar.behind{background:linear-gradient(90deg,#ef4444,#dc2626)}
     .progress-label{font-size:11px;color:#888;text-align:right}
 
+    /* ====== Paid Acquisition section (Meta + TikTok side-by-side) ====== */
+    .paid-wrap{background:linear-gradient(135deg,#15151f,#1a1a2a);border-radius:14px;
+               padding:24px;margin-bottom:26px;border:1px solid #2a2a3a}
+    .paid-title{color:#7c3aed;font-size:18px;font-weight:800;margin-bottom:6px;
+                letter-spacing:-0.3px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .paid-sub{color:#888;font-size:12px;margin-bottom:16px;font-family:ui-monospace,monospace}
+    .paid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+    .platform-card{background:rgba(255,255,255,0.04);border-radius:12px;padding:18px 20px;
+                   border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden}
+    .platform-card.meta{border-left:4px solid #1877f2}
+    .platform-card.tiktok{border-left:4px solid #25f4ee}
+    .platform-head{display:flex;align-items:center;justify-content:space-between;
+                   margin-bottom:14px;gap:8px;flex-wrap:wrap}
+    .platform-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:0.5px;
+                   text-transform:uppercase;display:flex;align-items:center;gap:8px}
+    .platform-pill{font-size:10px;padding:3px 9px;border-radius:10px;letter-spacing:0.5px;
+                   font-weight:700;text-transform:uppercase}
+    .platform-pill.live{background:rgba(34,197,94,0.2);color:#4ade80}
+    .platform-pill.idle{background:rgba(148,163,184,0.15);color:#94a3b8}
+    .platform-pill.pending{background:rgba(251,191,36,0.18);color:#fbbf24}
+    .platform-spend{font-size:30px;color:#f5e45b;font-weight:800;line-height:1;margin-bottom:4px}
+    .platform-spend-sub{color:#888;font-size:11px;margin-bottom:14px}
+    .platform-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+    .platform-metric{background:rgba(0,0,0,0.25);border-radius:8px;padding:10px 12px}
+    .platform-metric .pm-label{color:#888;font-size:10px;letter-spacing:1px;
+                                text-transform:uppercase;font-weight:700;margin-bottom:3px}
+    .platform-metric .pm-val{color:#fff;font-size:16px;font-weight:700;line-height:1.1}
+    .platform-metric .pm-sub{color:#666;font-size:10px;margin-top:2px}
+    .platform-topads{margin-top:10px;padding-top:12px;border-top:1px dashed #2a2a3a}
+    .platform-topads .ta-title{color:#aaa;font-size:11px;letter-spacing:1px;
+                                text-transform:uppercase;font-weight:700;margin-bottom:6px}
+    .platform-topads .ta-row{display:flex;justify-content:space-between;align-items:center;
+                             padding:4px 0;font-size:12px;color:#cbd5e1;gap:8px}
+    .platform-topads .ta-name{flex:1;overflow:hidden;text-overflow:ellipsis;
+                              white-space:nowrap;color:#ddd}
+    .platform-topads .ta-num{color:#f5e45b;font-weight:700;flex-shrink:0;
+                             font-family:ui-monospace,monospace;font-size:11px}
+    .platform-empty{color:#666;font-size:12px;padding:14px 0;text-align:center;
+                    border-top:1px dashed #2a2a3a;margin-top:10px}
+    .platform-cta{display:block;margin-top:12px;padding:9px 14px;background:rgba(124,58,237,0.15);
+                  border:1px solid rgba(124,58,237,0.4);border-radius:8px;color:#c4b5fd;
+                  text-align:center;font-size:12px;font-weight:700;text-decoration:none;
+                  letter-spacing:0.3px;transition:background 0.15s ease}
+    .platform-cta:hover{background:rgba(124,58,237,0.3);color:#fff}
+    .platform-cta.meta{background:rgba(24,119,242,0.12);border-color:rgba(24,119,242,0.35);color:#93c5fd}
+    .platform-cta.meta:hover{background:rgba(24,119,242,0.28);color:#fff}
+    .platform-cta.tiktok{background:rgba(37,244,238,0.10);border-color:rgba(37,244,238,0.3);color:#67e8f9}
+    .platform-cta.tiktok:hover{background:rgba(37,244,238,0.24);color:#fff}
+
     h2{color:#f01070;font-size:20px;margin:26px 0 12px}
     .breakdown{background:#15151f;border-radius:12px;padding:18px 22px;margin-bottom:18px}
     .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;
@@ -212,6 +261,23 @@
   <div id="pixel-content" style="display:none;">
 
     <div id="forecast-wrap"></div>
+
+    <!-- ============================================================
+         Paid Acquisition — Meta + TikTok side-by-side.
+         Renders empty platform cards (with "API pending" / "No data
+         yet" pills) when their respective fetcher returned zero. The
+         data shape comes from lauren_stats.py aggregate_for_events:
+         ev.meta = { spend, impressions, clicks, ctr, cpc, cost_per_lpv, top_ads[] }
+         ev.tiktok = { same shape }
+         ============================================================ -->
+    <div id="paid-section" class="paid-wrap" style="display:none;">
+      <div class="paid-title">
+        <span>🎯 Paid Acquisition</span>
+        <span class="reg-refresh-pill" id="paid-refresh-pill">last 30 days · refreshes every 6h</span>
+      </div>
+      <div class="paid-sub" id="paid-sub">Total ad spend across platforms</div>
+      <div class="paid-grid" id="paid-grid"></div>
+    </div>
 
     <div class="funnel-wrap">
       <div class="funnel-title">🎯 The Funnel — from ad to SMS subscriber</div>
@@ -421,6 +487,87 @@
         </div>
       `;
     }
+
+    // ============================================================
+    // 2a) PAID ACQUISITION (Meta + TikTok side-by-side)
+    // ============================================================
+    function renderPlatform(p, cfg) {
+      // p = data object (evPixel.meta or evPixel.tiktok), cfg = {key, name, icon, adsManagerUrl, pendingLabel}
+      const data = p || {};
+      const spend = data.spend || 0;
+      const imp   = data.impressions || 0;
+      const clk   = data.clicks || 0;
+      const lpv   = data.landing_page_views || 0;
+      const ctr   = data.ctr || (imp ? (clk / imp * 100) : 0);
+      const cpc   = data.cpc || (clk ? (spend / clk) : 0);
+      const cpl   = data.cost_per_lpv || (lpv ? (spend / lpv) : 0);
+      const topAds = data.top_ads || [];
+
+      // Status pill: live (spend > 0), idle (no spend, no token), pending (TikTok API not approved)
+      let pillCls = "idle", pillText = "no data yet";
+      if (spend > 0) { pillCls = "live"; pillText = "live"; }
+      else if (cfg.pendingLabel) { pillCls = "pending"; pillText = cfg.pendingLabel; }
+
+      const fmtCurrency = (n) => "$" + (Number(n) || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
+      const fmtCurrencyF = (n) => "$" + (Number(n) || 0).toFixed(2);
+      const fmtNum = (n) => (Number(n) || 0).toLocaleString();
+      const fmtPct = (n) => (Number(n) || 0).toFixed(2) + "%";
+
+      const metricsHtml = `
+        <div class="platform-metrics">
+          <div class="platform-metric"><div class="pm-label">Impressions</div><div class="pm-val">${fmtNum(imp)}</div></div>
+          <div class="platform-metric"><div class="pm-label">Clicks</div><div class="pm-val">${fmtNum(clk)}</div><div class="pm-sub">CTR ${fmtPct(ctr)}</div></div>
+          <div class="platform-metric"><div class="pm-label">LP Views</div><div class="pm-val">${fmtNum(lpv)}</div><div class="pm-sub">CPL ${fmtCurrencyF(cpl)}</div></div>
+          <div class="platform-metric"><div class="pm-label">CPC</div><div class="pm-val">${fmtCurrencyF(cpc)}</div></div>
+        </div>`;
+
+      let topAdsHtml = "";
+      if (topAds.length > 0) {
+        topAdsHtml = '<div class="platform-topads"><div class="ta-title">🏆 Top ads (by LP views)</div>' +
+          topAds.slice(0, 3).map((a, i) => {
+            const name = (a.ad_name || "ad #" + (a.ad_id || (i+1))).slice(0, 40);
+            return `<div class="ta-row"><span class="ta-name">${i+1}. ${name}</span><span class="ta-num">${fmtNum(a.lpv || a.landing_page_views || 0)} LPV</span></div>`;
+          }).join("") +
+        '</div>';
+      } else if (spend > 0) {
+        topAdsHtml = '<div class="platform-empty">no per-ad breakdown returned yet</div>';
+      }
+
+      return `
+        <div class="platform-card ${cfg.key}">
+          <div class="platform-head">
+            <div class="platform-name">${cfg.icon} ${cfg.name}</div>
+            <span class="platform-pill ${pillCls}">${pillText}</span>
+          </div>
+          <div class="platform-spend">${fmtCurrency(spend)}</div>
+          <div class="platform-spend-sub">ad spend · last 30 days</div>
+          ${metricsHtml}
+          ${topAdsHtml}
+          <a class="platform-cta ${cfg.key}" href="${cfg.adsManagerUrl}" target="_blank" rel="noopener">Open in ${cfg.name} Ads Manager →</a>
+        </div>`;
+    }
+
+    const meta = evPixel.meta || {};
+    const tt = evPixel.tiktok || {};
+    const totalSpend = (meta.spend || 0) + (tt.spend || 0);
+    document.getElementById("paid-section").style.display = "block";
+    document.getElementById("paid-sub").textContent =
+      "Total spend: $" + totalSpend.toLocaleString(undefined, { maximumFractionDigits: 0 }) +
+      " · last 30 days · refreshes every 6 hours";
+
+    const grid = document.getElementById("paid-grid");
+    grid.innerHTML =
+      renderPlatform(meta, {
+        key: "meta", name: "Meta", icon: "📘",
+        adsManagerUrl: "https://adsmanager.facebook.com/adsmanager/manage/campaigns",
+      }) +
+      renderPlatform(tt, {
+        key: "tiktok", name: "TikTok", icon: "🎵",
+        adsManagerUrl: "https://ads.tiktok.com/i18n/perf/campaign",
+        // While Marketing API access is pending (see CLAUDE.md ticket 2026-05-12),
+        // TikTok rows return zero — show that explicitly so Lauren knows why.
+        pendingLabel: "API pending",
+      });
 
     const v = evPixel.views || {};
     const c = evPixel.conversions || {};
