@@ -3,207 +3,662 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upcoming Events | Makeup Blowout Sale</title>
-<meta name="description" content="Upcoming Makeup Blowout Sale events — cities and dates.">
+<title>Upcoming Events | The Makeup Blowout Sale</title>
+<meta name="description" content="Upcoming Makeup Blowout Sale events — 40+ amazing brands at unbeatable prices. Subscribe now to claim your FREE gift at the event!">
+<meta property="og:title" content="The Makeup Blowout Sale — Upcoming Events">
+<meta property="og:description" content="40+ amazing brands at unbeatable prices. Free entry & parking. Subscribe to claim your FREE gift!">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://events.themakeupblowout.com/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #fce7f0;        /* very light pink, matches Google Site theme */
-    --card: #ffffff;
-    --text: #1f2937;
-    --muted: #6b7280;
-    --pink: #ec4899;
-    --pink-dark: #db2777;
-    --hairline: rgba(212, 78, 132, 0.18);
+    --bg: #08020e;
+    --bg-2: #100420;
+    --pink: #f01070;
+    --pink-2: #ff2a85;
+    --yellow: #f5e45b;
+    --purple: #4527a0;
+    --text: #ffffff;
+    --muted: #b5a8c4;
+    --hairline: rgba(245, 228, 91, 0.16);
+    --card: rgba(255, 255, 255, 0.04);
+    --card-hover: rgba(245, 228, 91, 0.07);
   }
-  * { box-sizing: border-box; }
   html, body {
-    margin: 0; padding: 0;
-    font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Josefin Sans', -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
+    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
   }
-  body { padding: 24px 16px; }
-  .events-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1px;
-    background: var(--hairline);
-    max-width: 1180px;
-    margin: 0 auto;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  }
-  @media (max-width: 980px) { .events-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 560px) { .events-grid { grid-template-columns: 1fr; } }
-  .event-card {
-    background: var(--card);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .event-image {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    background: #e5e7eb center/cover no-repeat;
-    background-image: var(--img);
-    display: block;
-  }
-  .event-meta {
-    padding: 22px 18px 10px;
+  a { color: inherit; text-decoration: none; }
+
+  /* ============ HERO ============ */
+  .hero {
+    position: relative;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(240,16,112,0.35), transparent 55%),
+      radial-gradient(circle at 80% 30%, rgba(69,39,160,0.55), transparent 60%),
+      linear-gradient(135deg, #1a0030 0%, #2d0050 50%, #1a1060 100%);
+    padding: 70px 22px 60px;
     text-align: center;
+    overflow: hidden;
   }
-  .event-city {
-    font-size: 17px; font-weight: 400; color: var(--text);
-    margin: 0 0 16px 0; line-height: 1.4; letter-spacing: 0.1px;
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 100%, rgba(8,2,14,0.0) 0%, var(--bg) 100%);
+    pointer-events: none;
   }
-  .event-dates {
-    font-size: 16px; color: var(--text); font-weight: 400;
-    margin: 0 0 20px 0; line-height: 1.4;
+  .hero > * { position: relative; z-index: 1; }
+  .hero .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(245,228,91,0.12);
+    border: 1px solid rgba(245,228,91,0.4);
+    color: var(--yellow);
+    font-weight: 700; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 8px 16px; border-radius: 999px;
+    margin-bottom: 22px;
   }
-  .event-cta {
-    margin: 0 18px 20px 18px;
-    display: block; padding: 13px 14px;
+  .hero .pill::before {
+    content: ""; width: 7px; height: 7px;
+    background: #22c55e; border-radius: 50%;
+    box-shadow: 0 0 8px #22c55e;
+    animation: pulse 1.4s infinite ease-in-out;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.5);opacity:.4;} }
+  .hero h1 {
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 700;
+    color: var(--yellow);
+    line-height: 1.05;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.4);
+  }
+  .hero h1 .l2 {
+    color: #fff; display: block;
+    font-size: 0.6em; margin-top: 10px;
+    letter-spacing: 4px;
+  }
+  .hero .tagline {
+    font-size: clamp(16px, 2.6vw, 22px);
+    color: #ffd6e5;
+    max-width: 720px;
+    margin: 0 auto 32px;
+    line-height: 1.55;
+  }
+  .hero .tagline strong { color: var(--yellow); }
+  .hero .stats {
+    display: flex; justify-content: center; gap: 36px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    font-size: 13px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .hero .stat-num { display: block; font-size: 32px; color: #fff; font-weight: 700; line-height: 1; }
+  .hero .stat-num .yel { color: var(--yellow); }
+
+  /* ============ FEATURED EVENT CARDS ============ */
+  .section { padding: 70px 22px; }
+  .section-title {
+    text-align: center;
+    font-size: clamp(24px, 4vw, 38px);
+    color: var(--yellow);
+    margin-bottom: 8px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .section-sub {
+    text-align: center;
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 22px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .ev-card {
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(240,16,112,0.06) 0%, transparent 30%),
+      linear-gradient(160deg, #1a0030 0%, #1f0a3a 100%);
+    border: 1px solid var(--hairline);
+    border-radius: 18px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .ev-card::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--pink), var(--yellow));
+    opacity: 0; transition: opacity .25s;
+  }
+  .ev-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(245,228,91,0.45);
+    box-shadow: 0 24px 60px rgba(240,16,112,0.18);
+  }
+  .ev-card:hover::before { opacity: 1; }
+  .ev-card .ev-state {
+    font-size: 12px; color: var(--yellow);
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 8px; font-weight: 700;
+    opacity: .85;
+  }
+  .ev-card .ev-city {
+    font-size: 28px; color: #fff;
+    font-weight: 700; margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+  .ev-card .ev-dates {
+    font-size: 17px; color: #ffd6e5;
+    margin-bottom: 14px;
+  }
+  .ev-card .ev-venue {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 22px;
+    line-height: 1.45;
+    min-height: 38px;
+  }
+  .ev-card .ev-cta {
+    display: inline-block;
     background: var(--pink);
     color: #fff !important;
-    text-decoration: none;
+    font-size: 15px; font-weight: 700;
+    padding: 13px 18px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    transition: background .15s, transform .15s, box-shadow .15s;
+    box-shadow: 0 6px 18px rgba(240,16,112,0.3);
+  }
+  .ev-card .ev-cta:hover {
+    background: var(--pink-2);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(240,16,112,0.45);
+  }
+  .ev-card .ev-eb {
+    display: inline-block;
+    font-size: 13px; color: var(--muted);
+    text-decoration: underline;
+    padding: 4px 8px;
+    transition: color .15s;
+  }
+  .ev-card .ev-eb:hover { color: #fff; }
+  .ev-card.is-live {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 1px #22c55e, 0 24px 60px rgba(34,197,94,0.2);
+  }
+  .ev-card.is-live::before { opacity: 1; background: linear-gradient(90deg, #22c55e, var(--yellow)); }
+  .ev-card.is-live .ev-state::before {
+    content: "🔴 LIVE NOW";
+    color: #22c55e;
+    margin-right: 6px;
+  }
+
+  /* ============ BRAND CALLOUT (between sections) ============ */
+  .brands-strip {
+    padding: 50px 22px;
+    background: linear-gradient(135deg, var(--pink) 0%, #c01060 100%);
     text-align: center;
+    color: #fff;
+  }
+  .brands-strip .big {
+    font-size: clamp(22px, 3.6vw, 34px);
     font-weight: 700;
-    font-size: 16px;
-    letter-spacing: 0.2px;
-    border-radius: 0;
-    transition: background 0.15s ease;
+    max-width: 800px;
+    margin: 0 auto 12px;
+    line-height: 1.25;
   }
-  .event-cta:hover { background: var(--pink-dark); }
-  .events-empty {
-    padding: 40px 20px; text-align: center; color: var(--muted);
-    background: var(--card); border-radius: 4px;
-    grid-column: 1 / -1;
+  .brands-strip .small {
+    font-size: 15px;
+    opacity: .9;
+    max-width: 620px;
+    margin: 0 auto;
   }
-  .events-error {
-    padding: 30px 20px; text-align: center;
-    background: #fef2f2; color: #991b1b;
-    border-radius: 4px; font-size: 14px;
-    grid-column: 1 / -1;
+  .perks {
+    display: flex; justify-content: center; gap: 30px;
+    flex-wrap: wrap; margin-top: 20px;
+    font-size: 14px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
   }
-  .events-skeleton {
-    background: linear-gradient(90deg, #f3f4f6, #ffffff, #f3f4f6);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
+  .perks span { background: rgba(0,0,0,0.18); padding: 8px 16px; border-radius: 999px; }
+
+  /* ============ FULL SCHEDULE LIST ============ */
+  .schedule-section { background: var(--bg-2); }
+  .schedule-list {
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
   }
-  @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+  .schedule-row {
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    gap: 20px;
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(245,228,91,0.08);
+    align-items: center;
+    transition: background .15s;
   }
-  .events-footer {
-    text-align: center;
-    margin: 14px auto 6px;
-    font-size: 11px;
+  .schedule-row:last-child { border-bottom: none; }
+  .schedule-row:hover { background: rgba(240,16,112,0.06); }
+  .schedule-row .sr-when {
+    font-size: 14px; color: var(--yellow);
+    font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .schedule-row .sr-where {
+    font-size: 17px; color: #fff;
+    font-weight: 700;
+  }
+  .schedule-row .sr-where small {
+    display: block; font-size: 12px;
     color: var(--muted);
-    max-width: 1180px;
-    opacity: 0.6;
+    margin-top: 3px; font-weight: 400;
+    text-transform: none; letter-spacing: 0;
   }
-  .events-footer a { color: var(--muted); text-decoration: none; }
-  .events-footer a:hover { text-decoration: underline; }
+  .schedule-row .sr-cta a {
+    color: var(--yellow);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 6px 14px;
+    border: 1px solid rgba(245,228,91,0.4);
+    border-radius: 999px;
+    transition: background .15s, color .15s;
+  }
+  .schedule-row .sr-cta a:hover {
+    background: var(--yellow);
+    color: var(--bg);
+  }
+  .schedule-row.is-live { background: rgba(34,197,94,0.08); }
+  .schedule-row.is-live .sr-when { color: #22c55e; }
+  @media (max-width: 580px) {
+    .schedule-row { grid-template-columns: 1fr; gap: 8px; padding: 16px 18px; }
+    .schedule-row .sr-cta { text-align: left; }
+    .schedule-row .sr-cta a { display: inline-block; }
+  }
+
+  /* ============ VIDEOS ============ */
+  .videos-section { background: var(--bg); }
+  .videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .video-wrap {
+    position: relative; padding-top: 56.25%;
+    background: #000; border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--hairline);
+  }
+  .video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  /* ============ FAQ ============ */
+  .faq-section { background: var(--bg-2); }
+  .faq-list { max-width: 760px; margin: 0 auto; }
+  .faq-item {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    padding: 22px 26px;
+    transition: border-color .15s, background .15s;
+  }
+  .faq-item:hover {
+    border-color: rgba(245,228,91,0.35);
+    background: rgba(0,0,0,0.5);
+  }
+  .faq-q {
+    font-size: 18px; color: var(--yellow);
+    font-weight: 700; margin-bottom: 8px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .faq-q::before { content: "?"; flex-shrink: 0; width: 26px; height: 26px; background: var(--pink); color: #fff; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .faq-a {
+    font-size: 15px;
+    color: #ddd;
+    line-height: 1.55;
+    margin-left: 38px;
+  }
+
+  /* ============ FOOTER ============ */
+  .social-strip {
+    padding: 36px 22px 28px;
+    background: var(--bg);
+    text-align: center;
+  }
+  .social-strip a {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: 50px; height: 50px;
+    margin: 0 6px;
+    color: var(--muted);
+    background: rgba(245,228,91,0.06);
+    border: 1px solid var(--hairline);
+    border-radius: 50%;
+    font-size: 22px;
+    transition: all .2s;
+  }
+  .social-strip a:hover {
+    color: var(--bg);
+    background: var(--yellow);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(245,228,91,0.25);
+  }
+
+  footer {
+    text-align: center;
+    padding: 28px 22px 36px;
+    font-size: 13px;
+    color: #555;
+    background: var(--bg);
+    border-top: 1px solid rgba(245,228,91,0.08);
+  }
+  footer a { color: #888; text-decoration: none; transition: color .15s; }
+  footer a:hover { color: var(--yellow); }
+  footer .contact { margin-top: 10px; color: #888; font-size: 13px; }
+
+  .loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 15px;
+  }
 </style>
 </head>
 <body>
 
-<div class="events-grid" id="events-grid">
-  <!-- skeleton placeholders while data loads -->
-  <div class="event-card"><div class="event-image events-skeleton"></div><div class="event-meta"><p class="event-city">&nbsp;</p><p class="event-dates">&nbsp;</p></div></div>
-  <div class="event-card"><div class="event-image events-skeleton"></div><div class="event-meta"><p class="event-city">&nbsp;</p><p class="event-dates">&nbsp;</p></div></div>
-  <div class="event-card"><div class="event-image events-skeleton"></div><div class="event-meta"><p class="event-city">&nbsp;</p><p class="event-dates">&nbsp;</p></div></div>
-  <div class="event-card"><div class="event-image events-skeleton"></div><div class="event-meta"><p class="event-city">&nbsp;</p><p class="event-dates">&nbsp;</p></div></div>
-</div>
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <span class="pill">Live · Updated Daily</span>
+    <h1>UPCOMING EVENTS<span class="l2">THE MAKEUP BLOWOUT SALE</span></h1>
+    <p class="tagline">
+      40+ amazing brands at unbeatable prices.<br>
+      Subscribe to claim your <strong>FREE gift at the event!</strong>
+    </p>
+    <div class="stats" id="hero-stats">
+      <div><span class="stat-num"><span class="yel">14+</span></span> events ahead</div>
+      <div><span class="stat-num">40+</span> brands</div>
+      <div><span class="stat-num">$0</span> entry fee</div>
+    </div>
+  </section>
 
-<div class="events-footer" id="events-footer">
-  <span id="events-updated">&nbsp;</span>
-</div>
+  <!-- ============ FEATURED 4 ============ -->
+  <section class="section" style="padding-top: 60px;">
+    <h2 class="section-title">Coming Soon</h2>
+    <p class="section-sub">Subscribe to claim your free gift at any of these upcoming events</p>
+    <div class="featured-grid" id="featured-grid">
+      <div class="loading">Loading events…</div>
+    </div>
+  </section>
 
-<script>
-(function () {
-  const grid = document.getElementById('events-grid');
-  const updatedEl = document.getElementById('events-updated');
-  // Fetch with cache-buster so Google-Sites-embedded version always sees the latest JSON
-  const URL_ = 'upcoming-events.json?_=' + Date.now();
+  <!-- ============ BRANDS STRIP ============ -->
+  <section class="brands-strip">
+    <p class="big">40+ Amazing Brands at Discounted Prices.</p>
+    <p class="small">Great products, even better prices. We restock every day of every event.</p>
+    <div class="perks">
+      <span>💳 Cash &amp; Card</span>
+      <span>👶 Kids Welcome</span>
+      <span>🅿️ Free Parking</span>
+      <span>🎫 Free Entry</span>
+    </div>
+  </section>
 
-  function fmtDateRange(start, end) {
-    // Inputs are ISO YYYY-MM-DD. Output: "Apr 24th - 26th, 2026" (matches existing site style)
-    const s = parseISO(start), e = parseISO(end);
-    if (!s || !e) return '';
-    const month = s.toLocaleDateString('en-US', { month: 'short' });
-    const dayS = s.getDate(), dayE = e.getDate();
-    const year = e.getFullYear();
-    return month + ' ' + ord(dayS) + ' - ' + ord(dayE) + ', ' + year;
-  }
-  function parseISO(s) {
-    if (!s) return null;
-    const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (!m) return null;
-    return new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
-  }
-  function ord(n) {
-    const s = ['th','st','nd','rd'], v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  }
+  <!-- ============ FULL SCHEDULE ============ -->
+  <section class="section schedule-section">
+    <h2 class="section-title">Full Schedule</h2>
+    <p class="section-sub">All upcoming events for the next 3 months</p>
+    <div class="schedule-list" id="schedule-list">
+      <div class="loading">Loading schedule…</div>
+    </div>
+  </section>
 
-  function escapeHTML(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
-  function safeURL(u) {
-    if (!u) return '#';
-    try { const url = new URL(u); if (url.protocol === 'http:' || url.protocol === 'https:') return u; }
-    catch (e) {}
-    return '#';
-  }
+  <!-- ============ VIDEOS ============ -->
+  <section class="section videos-section">
+    <h2 class="section-title">Inside Our Events</h2>
+    <p class="section-sub">See what to expect when you visit</p>
+    <div class="videos-grid">
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/ISyjfHGpIZc" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/AEdRsH7QQbI" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/uLZBeorhX9U" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/JoLUuegT6Lk" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/rnaIkI9rYU8" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/wT9jyzImLBE" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+    </div>
+  </section>
 
-  function render(events) {
-    if (!Array.isArray(events) || events.length === 0) {
-      grid.innerHTML = '<div class="events-empty">No upcoming events listed yet. Check back soon!</div>';
-      return;
+  <!-- ============ FAQ ============ -->
+  <section class="section faq-section">
+    <h2 class="section-title">FAQ</h2>
+    <p class="section-sub">Questions our shoppers ask most</p>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">Do you guys restock?</div>
+        <div class="faq-a">Yes — every day of every event!</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">When will you be back?</div>
+        <div class="faq-a">Next year! We only come to your city once a year, so don't miss out.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is there an entrance fee?</div>
+        <div class="faq-a">No — entrance and parking are completely FREE!</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How do I get my free gift?</div>
+        <div class="faq-a">Subscribe by phone before or at the event using the Subscribe button on this page, then show your confirmation text at the door.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SOCIAL ============ -->
+  <section class="social-strip">
+    <a href="https://www.facebook.com/themakeupblowoutsale/" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+    <a href="https://www.instagram.com/makeupblowoutsale/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <a href="https://www.tiktok.com/@makeupblowoutsale" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+    <a href="https://www.youtube.com/@themakeupblowoutsalegroup1114" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+  </section>
+
+  <footer>
+    Copyright &copy; 2026 The Makeup Blowout Sale Group. All Rights Reserved. &nbsp;|&nbsp;
+    <a href="https://www.freeprivacypolicy.com/privacy/view/47eed83d5b5c0cbe56a935188c1bc19c" target="_blank" rel="noopener">Privacy Policy</a>
+    &nbsp;|&nbsp;
+    <a href="https://www.freeprivacypolicy.com/terms/view/7f6db9a3367dfec220dab5eec7de07e3" target="_blank" rel="noopener">Terms of Service</a>
+    <div class="contact">📞 (424) 354-7625 &nbsp;·&nbsp; ✉️ info@makeupblowoutsalegroup.com</div>
+  </footer>
+
+  <script>
+  (function(){
+    // Primary source: my new auto-refreshed file in lauren-agent-hub-data (14 events,
+    // updated daily by .github/workflows/update-subscribe-target.yml).
+    var PRIMARY_URL = 'https://laurenlev10.github.io/lauren-agent-hub-data/state/upcoming_events.json';
+    // Enrichment source: the legacy local file in this repo (has per-event image_url,
+    // subscribe_url, ig_url for events with their own landing page). Used only to
+    // override the default subscribe URL when a per-event landing page exists.
+    var LOCAL_URL = 'upcoming-events.json?_=' + Date.now();
+    // Fallback subscribe URL for events without a per-event landing page.
+    var DEFAULT_SUBSCRIBE = 'https://www.themakeupblowoutsale-group.com/subscribe-list/';
+
+    function fmtDateRange(start, end) {
+      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      var d1 = new Date(start + 'T12:00:00');
+      var d2 = new Date(end + 'T12:00:00');
+      var sameMonth = d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
+      if (sameMonth) {
+        return months[d1.getMonth()] + ' ' + d1.getDate() + '–' + d2.getDate() + ', ' + d1.getFullYear();
+      }
+      return months[d1.getMonth()] + ' ' + d1.getDate() + ' – ' + months[d2.getMonth()] + ' ' + d2.getDate() + ', ' + d2.getFullYear();
     }
-    grid.innerHTML = events.map(function (ev) {
-      const img = safeURL(ev.image_url);
-      const city = escapeHTML(ev.city || '');
-      const state = escapeHTML(ev.state || '');
-      const dates = escapeHTML(fmtDateRange(ev.start_date, ev.end_date));
-      const sub = safeURL(ev.subscribe_url);
-      const ctaLabel = escapeHTML(ev.cta_label || 'Subscribe');
-      const cityLine = city + (state ? ', ' + state : '');
-      return ''
-        + '<div class="event-card">'
-        +   '<div class="event-image" style="--img:url(' + JSON.stringify(img) + ')"></div>'
-        +   '<div class="event-meta">'
-        +     '<p class="event-city">' + cityLine + '</p>'
-        +     '<p class="event-dates">' + dates + '</p>'
-        +   '</div>'
-        +   (sub === '#' ? '' : '<a class="event-cta" href="' + sub + '" target="_blank" rel="noopener">' + ctaLabel + '</a>')
-        + '</div>';
-    }).join('');
-  }
+    function fmtMonthShort(start) {
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var d = new Date(start + 'T12:00:00');
+      return months[d.getMonth()] + ' ' + d.getDate();
+    }
+    function todayStr() {
+      var d = new Date(); var p = function(n){return n<10?'0'+n:n;};
+      return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate());
+    }
+    function isFuture(end_date) {
+      // event is "future" if its end_date is today or later (so live events show)
+      return end_date >= todayStr();
+    }
+    function isLive(start_date, end_date) {
+      var t = todayStr();
+      return start_date <= t && t <= end_date;
+    }
+    function withinDays(start, days) {
+      var sd = new Date(start + 'T12:00:00');
+      var diff = (sd - new Date()) / (1000 * 60 * 60 * 24);
+      return diff <= days;
+    }
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, function(c){
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+      });
+    }
+    function shortVenue(v) {
+      if (!v) return '';
+      if (v.length > 60) return escapeHtml(v.slice(0, 57)) + '…';
+      return escapeHtml(v);
+    }
+    function eventKey(city, start_date) {
+      return (city || '').toLowerCase().replace(/\s+/g,'-') + '-' + start_date;
+    }
 
-  function showUpdated(iso) {
-    if (!iso) { updatedEl.textContent = ''; return; }
-    const d = new Date(iso);
-    if (isNaN(d.getTime())) { updatedEl.textContent = ''; return; }
-    updatedEl.textContent = 'Updated ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
+    function buildSubscribeMap(localData) {
+      // Map "<city-slug>-<start_date>" → subscribe_url from the local file.
+      // Per-event landing pages live at /events/<slug>/ on this domain.
+      var map = {};
+      (localData && localData.events || []).forEach(function(e){
+        var key = eventKey(e.city, e.start_date);
+        if (e.subscribe_url && e.subscribe_url.indexOf('/events/') === 0) {
+          map[key] = e.subscribe_url; // per-event landing page
+        }
+      });
+      return map;
+    }
 
-  fetch(URL_, { cache: 'no-store' })
-    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-    .then(function (data) {
-      render(data.events || []);
-      showUpdated(data._updated_at);
-    })
-    .catch(function (err) {
-      grid.innerHTML = '<div class="events-error">Could not load upcoming events (' + escapeHTML(String(err)) + '). Please refresh.</div>';
-    });
-})();
-</script>
+    function renderFeatured(events, subMap) {
+      var picks = events.slice(0, 4);
+      var grid = document.getElementById('featured-grid');
+      if (!picks.length) {
+        grid.innerHTML = '<div class="loading">No upcoming events scheduled. Check back soon!</div>';
+        return;
+      }
+      grid.innerHTML = picks.map(function(e){
+        var live = isLive(e.start_date, e.end_date);
+        var sub = subMap[eventKey(e.city, e.start_date)] || DEFAULT_SUBSCRIBE;
+        var ebLink = e.eventbrite_url
+          ? '<a class="ev-eb" href="' + escapeHtml(e.eventbrite_url) + '" target="_blank" rel="noopener">View on Eventbrite ↗</a>'
+          : '';
+        return '<div class="ev-card' + (live ? ' is-live' : '') + '">'
+          +    '<div class="ev-state">' + escapeHtml(e.state || '') + '</div>'
+          +    '<div class="ev-city">' + escapeHtml(e.city) + '</div>'
+          +    '<div class="ev-dates">' + fmtDateRange(e.start_date, e.end_date) + '</div>'
+          +    '<div class="ev-venue">' + shortVenue(e.venue) + '</div>'
+          +    '<a class="ev-cta" href="' + escapeHtml(sub) + '">🎁 Subscribe &amp; Get Free Gift</a>'
+          +    ebLink
+          + '</div>';
+      }).join('');
+    }
+
+    function renderSchedule(events, subMap) {
+      var list = document.getElementById('schedule-list');
+      // Show all events within ~95 days (3 months window)
+      var filtered = events.filter(function(e){ return withinDays(e.start_date, 95); });
+      if (!filtered.length) filtered = events;
+      if (!filtered.length) {
+        list.innerHTML = '<div class="loading">No upcoming events.</div>';
+        return;
+      }
+      list.innerHTML = filtered.map(function(e){
+        var live = isLive(e.start_date, e.end_date);
+        var sub = subMap[eventKey(e.city, e.start_date)] || DEFAULT_SUBSCRIBE;
+        var label = e.eventbrite_url ? 'Tickets ↗' : 'Subscribe →';
+        var href = e.eventbrite_url || sub;
+        var target = e.eventbrite_url ? ' target="_blank" rel="noopener"' : '';
+        return '<div class="schedule-row' + (live ? ' is-live' : '') + '">'
+          +    '<div class="sr-when">' + (live ? '🔴 LIVE · ' : '') + fmtMonthShort(e.start_date) + '</div>'
+          +    '<div class="sr-where">' + escapeHtml(e.city) + ', ' + escapeHtml(e.state || '') + '<small>' + shortVenue(e.venue) + '</small></div>'
+          +    '<div class="sr-cta"><a href="' + escapeHtml(href) + '"' + target + '>' + label + '</a></div>'
+          + '</div>';
+      }).join('');
+    }
+
+    function updateHeroStats(events) {
+      // Update the "events ahead" count in the hero strip
+      var n = events.length;
+      var stats = document.getElementById('hero-stats');
+      if (stats) {
+        var first = stats.querySelector('.stat-num .yel');
+        if (first) first.textContent = n + '+';
+      }
+    }
+
+    function loadAll() {
+      // Fetch primary + local in parallel; render once we have primary
+      var primaryP = fetch(PRIMARY_URL + '?t=' + Math.floor(Date.now() / 60000), { cache: 'no-cache' })
+        .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+      var localP = fetch(LOCAL_URL, { cache: 'no-store' })
+        .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .catch(function(){ return { events: [] }; }); // local is optional
+
+      Promise.all([primaryP, localP]).then(function(results){
+        var primary = results[0] || {};
+        var local   = results[1] || {};
+        var allEvents = (primary.events || []).filter(function(e){ return isFuture(e.end_date); });
+        var subMap = buildSubscribeMap(local);
+        renderFeatured(allEvents, subMap);
+        renderSchedule(allEvents, subMap);
+        updateHeroStats(allEvents);
+      }).catch(function(err){
+        // If primary fails, fall back to local entirely
+        console.warn('primary upcoming_events fetch failed:', err);
+        fetch(LOCAL_URL, { cache: 'no-store' })
+          .then(function(r){ return r.json(); })
+          .then(function(d){
+            var allEvents = (d.events || []).filter(function(e){ return isFuture(e.end_date); });
+            // Local format has subscribe_url per event already
+            var subMap = {};
+            (d.events || []).forEach(function(e){ subMap[eventKey(e.city, e.start_date)] = e.subscribe_url || DEFAULT_SUBSCRIBE; });
+            renderFeatured(allEvents, subMap);
+            renderSchedule(allEvents, subMap);
+            updateHeroStats(allEvents);
+          })
+          .catch(function(){
+            document.getElementById('featured-grid').innerHTML = '<div class="loading">Unable to load events right now. <a href="' + DEFAULT_SUBSCRIBE + '" style="color:var(--pink);">Subscribe here →</a></div>';
+            document.getElementById('schedule-list').innerHTML = '<div class="loading">Schedule temporarily unavailable.</div>';
+          });
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadAll);
+    } else {
+      loadAll();
+    }
+  })();
+  </script>
 
 </body>
 </html>
