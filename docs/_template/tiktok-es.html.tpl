@@ -192,6 +192,17 @@ document.addEventListener('DOMContentLoaded', function() {
     .share-pic-wrap img { width: 100%; height: auto; display: block; border-radius: 12px; }
     .limited-badge-wrap { text-align: center; margin-bottom: 8px; }
     .limited-badge-wrap img { max-width: 200px; width: 60%; height: auto; }
+
+    /* Celebration GIF — shows above share buttons on the thank-you page (Lauren 2026-05-11) */
+    .celebration-gif {
+      display: block;
+      max-width: 320px;
+      width: 80%;
+      height: auto;
+      margin: 16px auto 24px;
+      border-radius: 16px;
+      box-shadow: 0 12px 36px rgba(240,16,112,0.45);
+    }
   </style>
 </head>
 <body>
@@ -228,6 +239,9 @@ document.addEventListener('DOMContentLoaded', function() {
       <h2 style="font-size: clamp(28px, 6vw, 44px); color: #f5e45b; line-height: 1.2; margin-bottom: 10px;">
         &#x1F389; &#xA1;Gracias!
       </h2>
+  <img src="/_assets/shared/thank-you.gif" class="celebration-gif" alt="Celebrating your free gift!" loading="eager">
+
+
       <p style="font-size: clamp(17px, 3.5vw, 22px); color: #fff; margin-bottom: 6px;">
         &#xA1;Tu cup&#xF3;n de glitter GRATIS est&#xE1; en camino! &#x1F484;&#x2728;
       </p>

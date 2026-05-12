@@ -209,6 +209,17 @@ document.addEventListener('DOMContentLoaded', function() {
     .btn-tiktok i { margin-right: 8px; }
     .btn-tiktok .tt-accent-1 { color: #25F4EE; }
     .btn-tiktok .tt-accent-2 { color: #FE2C55; }
+
+    /* Celebration GIF — shows above share buttons on the thank-you page (Lauren 2026-05-11) */
+    .celebration-gif {
+      display: block;
+      max-width: 320px;
+      width: 80%;
+      height: auto;
+      margin: 16px auto 24px;
+      border-radius: 16px;
+      box-shadow: 0 12px 36px rgba(240,16,112,0.45);
+    }
   </style>
 </head>
 <body>
@@ -221,6 +232,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <h1>&iexcl;Gracias! &#x1F389;</h1>
   <h2>&iexcl;No podemos esperar a verte!</h2>
+  <img src="/_assets/shared/thank-you.gif" class="celebration-gif" alt="Celebrating your free gift!" loading="eager">
+
+
 
   <a href="{{IG_URL}}" class="btn-white" target="_blank" rel="noopener noreferrer">
     Comparte en Tu Historia de Instagram <i class="fas fa-sign-in-alt"></i>
