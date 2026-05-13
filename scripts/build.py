@@ -62,13 +62,42 @@ def render_event(ev):
 
 import os as _os
 
-# Pixel IDs from env (GitHub Secrets in workflow). When unset, leave the placeholder
-# so missing-pixel runs are detectable. Empty string substitutes are NOT used —
-# we want the page to render even if a pixel isn't configured yet.
+# Pixel IDs from env (GitHub Secrets in workflow).
+#
+# IRON RULE (set 2026-05-13 after the silent-zero incident): the build MUST
+# fail loudly when a pixel secret is missing. Falling back to a placeholder
+# ("0000000000000000" etc.) silently ships pages that look correct but never
+# fire the pixel — so Meta/TikTok/GA4 can't see traffic, ad optimization runs
+# blind, and the failure isn't visible until weeks later when someone notices
+# zero events in the pixel dashboard.
+#
+# The previous behavior caused 15,447 landing_page_view events vs 16
+# ViewContent events in the last 7 days (May 6-13) — a 99.9% miss rate.
+# All three secrets were unset in this repo (themakeupblowout-events) and
+# the build had been substituting placeholders since the repo was created.
+#
+# If a secret is legitimately missing during development, set it locally
+# in the env before running build.py. There is no longer a default fallback.
+def _required_secret(name: str, looks_like: str) -> str:
+    v = _os.environ.get(name, "").strip()
+    if not v:
+        raise RuntimeError(
+            f"{name} env var is missing — build refuses to ship pages with "
+            f"placeholder pixel IDs. Set it in GitHub Secrets "
+            f"(Settings > Secrets and variables > Actions) or export locally. "
+            f"Expected format like {looks_like!r}."
+        )
+    # Reject the old placeholder values too, in case someone literally pasted them.
+    if v in ("0000000000000000", "C00000000000", "G-NOT-SET-YET"):
+        raise RuntimeError(
+            f"{name} is set to a placeholder value {v!r} — replace with the real ID."
+        )
+    return v
+
 _PIXEL_VARS = {
-    "__GA4_MEASUREMENT_ID__": _os.environ.get("GA4_MEASUREMENT_ID") or "G-NOT-SET-YET",
-    "__META_PIXEL_ID__":      _os.environ.get("META_PIXEL_ID")      or "0000000000000000",
-    "__TIKTOK_PIXEL_ID__":    _os.environ.get("TIKTOK_PIXEL_ID")    or "C00000000000",
+    "__GA4_MEASUREMENT_ID__": _required_secret("GA4_MEASUREMENT_ID", "G-XXXXXXXXXX"),
+    "__META_PIXEL_ID__":      _required_secret("META_PIXEL_ID",      "149055399513134"),
+    "__TIKTOK_PIXEL_ID__":    _required_secret("TIKTOK_PIXEL_ID",    "C00000000000000000"),
 }
 
 def fill(template, vars):
