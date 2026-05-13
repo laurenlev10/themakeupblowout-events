@@ -421,7 +421,11 @@
   const hasPixelData = evPixel && (
     (evPixel.views && (evPixel.views.total || 0) > 0) ||
     (evPixel.conversions && (evPixel.conversions.total || 0) > 0) ||
-    (evPixel.funnel && (evPixel.funnel.page_views || evPixel.funnel.impressions || evPixel.funnel.form_submits))
+    (evPixel.funnel && (evPixel.funnel.page_views || evPixel.funnel.impressions || evPixel.funnel.form_submits)) ||
+    // 2026-05-13 fix: Meta/TikTok spend is also pixel data — without this check the
+    // page hid \$14,630 of real Meta spend behind the "no data yet" placeholder.
+    (evPixel.meta && (evPixel.meta.spend || 0) > 0) ||
+    (evPixel.tiktok && (evPixel.tiktok.spend || 0) > 0)
   );
 
   if (hasPixelData) {
