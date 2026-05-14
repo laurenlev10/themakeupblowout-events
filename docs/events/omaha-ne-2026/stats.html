@@ -237,6 +237,23 @@
     .insight.positive strong{color:#34d399}
     .insight.negative strong{color:#f87171}
     .insight em{color:#888;font-style:normal;font-size:12px;display:block;margin-top:4px}
+
+    /* ====== Reel Shares — TOP priority (IRON RULE) ====== */
+    .shares-wrap{background:linear-gradient(135deg,#1a0f2e,#2a1a3f);border-radius:14px;
+                 padding:24px;margin:18px 0;color:#e5e5e5;
+                 border:2px solid rgba(236,72,153,0.4)}
+    .shares-title{color:#ec4899;font-size:20px;font-weight:800;margin-bottom:6px}
+    .shares-sub{color:#888;font-size:12px;margin-bottom:18px}
+    .shares-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+    .shares-card{background:rgba(236,72,153,0.08);border:1px solid rgba(236,72,153,0.25);
+                 border-radius:10px;padding:16px;text-align:center}
+    .shares-card.primary{background:rgba(236,72,153,0.15);
+                         box-shadow:0 0 24px rgba(236,72,153,0.2)}
+    .shares-card-label{color:#cbd5e1;font-size:11px;letter-spacing:1px;
+                       text-transform:uppercase;font-weight:700;margin-bottom:8px}
+    .shares-card-val{font-size:36px;font-weight:800;color:#ec4899;line-height:1}
+    .shares-card.primary .shares-card-val{font-size:48px}
+    .shares-card-sub{color:#888;font-size:11px;margin-top:4px}
     .platform-empty{color:#666;font-size:12px;padding:14px 0;text-align:center;
                     border-top:1px dashed #2a2a3a;margin-top:10px}
     .platform-cta{display:block;margin-top:12px;padding:9px 14px;background:rgba(124,58,237,0.15);
@@ -361,6 +378,14 @@
          ev.meta = { spend, impressions, clicks, ctr, cpc, cost_per_lpv, top_ads[] }
          ev.tiktok = { same shape }
          ============================================================ -->
+    <!-- 2026-05-14 PM — Reel Shares (IRON RULE: shares are #1 metric) -->
+    <div id="shares-section" class="shares-wrap" style="display:none;">
+      <div class="shares-title">📸 שיתופי Reel — ה-#1 metric</div>
+      <div class="shares-sub" id="shares-sub">total shares + rate + paid-engagement signal</div>
+      <div class="shares-grid" id="shares-grid"></div>
+      <div id="shares-insight" class="insight" style="display:none"></div>
+    </div>
+
     <div id="paid-section" class="paid-wrap" style="display:none;">
       <div class="paid-title">
         <span>🎯 Paid Acquisition</span>
@@ -696,7 +721,73 @@
         </div>`;
     }
 
-    // 2026-05-14 PM — Insight callouts under each section.
+    // 2026-05-14 PM — Reel Shares prominent block (Lauren's IRON RULE: shares = #1)
+    function renderReelShares(rs) {
+      if (!rs || (!rs.total && !rs.total_shares && !rs.paid_engagement && !rs.url)) return;
+      const total = rs.total_shares || rs.total || 0;
+      const paid = rs.paid_engagement || rs.paid || 0;
+      const delta6 = rs.delta_6h || 0;
+      const delta24 = rs.delta_24h || 0;
+      const rate = rs.rate_per_hour || 0;
+      const scans = rs.scan_count || 0;
+      const fmtNum = (n) => (Number(n)||0).toLocaleString();
+      const fmt$$ = (n) => (Number(n)||0).toFixed(1);
+
+      let html = `
+        <div class="shares-card primary">
+          <div class="shares-card-label">Total Shares (IG)</div>
+          <div class="shares-card-val">${fmtNum(total)}</div>
+          <div class="shares-card-sub">${scans ? scans + ' scan' + (scans>1?'s':'') : 'אין סריקה עדיין'}</div>
+        </div>`;
+      if (delta24) {
+        html += `
+        <div class="shares-card">
+          <div class="shares-card-label">24h Delta</div>
+          <div class="shares-card-val">+${fmtNum(delta24)}</div>
+          <div class="shares-card-sub">in last 24 hours</div>
+        </div>`;
+      }
+      if (delta6 || rate) {
+        html += `
+        <div class="shares-card">
+          <div class="shares-card-label">Rate</div>
+          <div class="shares-card-val">${fmt$$(rate)}<span style="font-size:18px;color:#888"> /hr</span></div>
+          <div class="shares-card-sub">+${fmtNum(delta6)} last 6h</div>
+        </div>`;
+      }
+      if (paid) {
+        html += `
+        <div class="shares-card">
+          <div class="shares-card-label">Paid Engagement (Meta)</div>
+          <div class="shares-card-val" style="color:#a78bfa">${fmtNum(paid)}</div>
+          <div class="shares-card-sub">post-level engagement signal</div>
+        </div>`;
+      }
+      document.getElementById("shares-grid").innerHTML = html;
+      document.getElementById("shares-section").style.display = "block";
+
+      // Insight based on rate + total
+      const insightEl = document.getElementById("shares-insight");
+      if (total === 0 && !rs.url) {
+        insightEl.style.display = "none";
+      } else if (total === 0) {
+        insightEl.className = "insight neutral";
+        insightEl.innerHTML = '<span class="insight-icon">💡</span><strong>אין סריקה עדיין.</strong> <em>סריקות אוטומטיות יורות בסוף השבוע (12:00/14:00/17:00 מקומי). בינתיים, אם תרצי לראות מספר עכשיו, פתחי את ה-Reel ב-IG → Insights → תשלחי לי את המספר.</em>';
+        insightEl.style.display = "block";
+      } else if (rate > 5) {
+        insightEl.className = "insight positive";
+        insightEl.innerHTML = `<span class="insight-icon">💡</span><strong>קצב חזק — ${fmt$$(rate)} shares/שעה.</strong> <em>אם הקצב נשמר, צפי ${Math.round(rate*24)} shares נוספים ביממה הקרובה.</em>`;
+        insightEl.style.display = "block";
+      } else if (total > 100) {
+        insightEl.className = "insight positive";
+        insightEl.innerHTML = `<span class="insight-icon">💡</span><strong>${total} shares — מומנטום חזק.</strong> <em>זה הופך paid spend ל-reach אורגנית בחינם. שווה לדחוף את הצוות באירוע לבקש מאנשים לשתף עוד.</em>`;
+        insightEl.style.display = "block";
+      } else {
+        insightEl.style.display = "none";
+      }
+    }
+
+        // 2026-05-14 PM — Insight callouts under each section.
     // Picks the most actionable observation for each section based on the data.
     function renderInsights(metaData, ttData, avgs) {
       const fmt$  = (n) => "$" + (Number(n)||0).toFixed(2);
@@ -1009,6 +1100,9 @@
 
     // 2026-05-14 — Form Submissions per channel (Meta Lead + TikTok SubmitForm)
     renderFormSubmissions(meta, tt);
+
+    // 2026-05-14 PM — Reel shares (TOP priority per IRON RULE)
+    renderReelShares(evPixel.reel_shares || {});
 
     // 2026-05-14 PM — Daily spend chart + Engage-through cards
     renderDailyChart(meta);
