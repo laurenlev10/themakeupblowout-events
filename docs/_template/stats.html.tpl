@@ -199,6 +199,31 @@
     .forms-count{font-size:32px;font-weight:800;color:#34d399}
     .forms-cpf{font-size:13px;color:#888;margin-top:4px;font-family:ui-monospace,monospace}
     .forms-cpf strong{color:#34d399;font-size:15px}
+
+    /* ====== Daily chart (2026-05-14 PM) ====== */
+    .daily-wrap{background:linear-gradient(135deg,#15151f,#1f1a26);border-radius:14px;
+                padding:20px 22px;margin:18px 0;color:#e5e5e5}
+    .daily-title{color:#f5e45b;font-size:18px;font-weight:800;margin-bottom:6px}
+    .daily-sub{color:#888;font-size:12px;margin-bottom:16px}
+    .daily-canvas-wrap{background:rgba(255,255,255,0.02);border-radius:10px;
+                       padding:12px;min-height:220px;position:relative}
+
+    /* ====== Engage-through breakdown (2026-05-14 PM) ====== */
+    .engage-wrap{background:linear-gradient(135deg,#1a1f26,#1f2530);border-radius:14px;
+                 padding:20px 22px;margin:18px 0;color:#e5e5e5}
+    .engage-title{color:#a78bfa;font-size:18px;font-weight:800;margin-bottom:6px}
+    .engage-sub{color:#888;font-size:12px;margin-bottom:16px}
+    .engage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .engage-card{background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.18);
+                 border-radius:10px;padding:14px}
+    .engage-card.link{border-color:rgba(34,211,238,0.4)}
+    .engage-card.engage{border-color:rgba(251,191,36,0.4)}
+    .engage-name{font-size:13px;color:#cbd5e1;font-weight:700;letter-spacing:0.5px;
+                 text-transform:uppercase;margin-bottom:8px}
+    .engage-count{font-size:28px;font-weight:800;color:#e5e5e5}
+    .engage-pct{font-size:13px;color:#888;margin-top:2px}
+    .engage-cost{font-size:13px;color:#a78bfa;margin-top:8px;font-family:ui-monospace,monospace}
+    .engage-meaning{font-size:11px;color:#666;margin-top:6px;line-height:1.4}
     .platform-empty{color:#666;font-size:12px;padding:14px 0;text-align:center;
                     border-top:1px dashed #2a2a3a;margin-top:10px}
     .platform-cta{display:block;margin-top:12px;padding:9px 14px;background:rgba(124,58,237,0.15);
@@ -240,6 +265,7 @@
       #reg-chart{height:220px!important}
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -343,6 +369,20 @@
       <div class="forms-title">📝 הרשמות טופס — איזה ערוץ מביא טלפונים</div>
       <div class="forms-sub" id="forms-sub">conversion event per platform · last 30d</div>
       <div class="forms-grid" id="forms-grid"></div>
+    </div>
+
+    <!-- 2026-05-14 PM — Daily spend chart (line chart with two series) -->
+    <div id="daily-section" class="daily-wrap" style="display:none;">
+      <div class="daily-title">📈 ספנד יומי × לאנדינג פייג' ויוז</div>
+      <div class="daily-sub" id="daily-sub">Meta — last 30 days · spend (yellow) vs LP views (cyan) per day</div>
+      <div class="daily-canvas-wrap"><canvas id="daily-chart" height="200"></canvas></div>
+    </div>
+
+    <!-- 2026-05-14 PM — Engage-through breakdown (Meta's new attribution model) -->
+    <div id="engage-section" class="engage-wrap" style="display:none;">
+      <div class="engage-title">🔗 פיצול קליקים (Meta New Model — תקף השבוע)</div>
+      <div class="engage-sub" id="engage-sub">link clicks vs social engagements (shares/saves/likes) · last 30d</div>
+      <div class="engage-grid" id="engage-grid"></div>
     </div>
 
     <div class="funnel-wrap">
@@ -637,7 +677,77 @@
         </div>`;
     }
 
-    // 2026-05-14 — Language breakdown card renderer
+    // 2026-05-14 PM — Daily spend × LP views chart
+    function renderDailyChart(metaData) {
+      const ts = metaData.daily_timeseries || [];
+      if (!ts.length) return;
+      const labels = ts.map(r => r.date.slice(5));  // MM-DD
+      const spend = ts.map(r => r.spend || 0);
+      const lpv = ts.map(r => r.lpv || 0);
+      const leads = ts.map(r => r.leads || 0);
+      const canvas = document.getElementById("daily-chart");
+      if (!canvas || typeof Chart === "undefined") return;
+      // eslint-disable-next-line no-new
+      new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Spend ($)', data: spend, borderColor: '#f5e45b',
+              backgroundColor: 'rgba(245,228,91,0.1)', yAxisID: 'y1', tension: 0.3, fill: true },
+            { label: 'LP Views', data: lpv, borderColor: '#22d3ee',
+              backgroundColor: 'rgba(34,211,238,0.1)', yAxisID: 'y2', tension: 0.3, fill: true },
+            { label: 'Form Submits', data: leads, borderColor: '#34d399',
+              backgroundColor: 'rgba(52,211,153,0.1)', yAxisID: 'y2', tension: 0.3, fill: true, hidden: leads.every(v=>!v) },
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#cbd5e1' } } },
+          scales: {
+            x: { ticks: { color: '#888' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            y1: { position: 'left', ticks: { color: '#f5e45b', callback: v => '$' + v }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            y2: { position: 'right', ticks: { color: '#22d3ee' }, grid: { display: false } },
+          }
+        }
+      });
+      document.getElementById("daily-section").style.display = "block";
+    }
+
+    // 2026-05-14 PM — Engage-through breakdown (Meta's new attribution model)
+    function renderEngageThrough(metaData) {
+      const linkClicks = metaData.link_clicks || 0;
+      const totalClicks = metaData.clicks || 0;
+      const engageThrough = metaData.engage_through || 0;
+      const cplc = metaData.cost_per_link_click || 0;
+      const spend = metaData.spend || 0;
+      if (totalClicks === 0) return;
+      const linkPct = totalClicks ? Math.round(linkClicks/totalClicks*100) : 0;
+      const engagePct = 100 - linkPct;
+      const cpEngage = engageThrough ? (spend/engageThrough) : 0;
+      const fmt$ = (n) => "$" + (Number(n)||0).toFixed(2);
+      const fmtNum = (n) => (Number(n)||0).toLocaleString();
+      document.getElementById("engage-grid").innerHTML = `
+        <div class="engage-card link">
+          <div class="engage-name">🔗 Link Clicks</div>
+          <div class="engage-count">${fmtNum(linkClicks)}</div>
+          <div class="engage-pct">${linkPct}% מסה"כ קליקים</div>
+          <div class="engage-cost">CPC ${fmt$(cplc)}</div>
+          <div class="engage-meaning">קליקים ישירים על ה-CTA. אלה ה"קליקים" שיופיעו בעמודת clicks ב-Ads Manager תחת המודל החדש.</div>
+        </div>
+        <div class="engage-card engage">
+          <div class="engage-name">💛 Engage-through</div>
+          <div class="engage-count">${fmtNum(engageThrough)}</div>
+          <div class="engage-pct">${engagePct}% מסה"כ קליקים</div>
+          <div class="engage-cost">cost per engage ${fmt$(cpEngage)}</div>
+          <div class="engage-meaning">likes / shares / saves / כל אינטראקציה לא-לינק. עוברים לעמודת engage-through במודל החדש של Meta.</div>
+        </div>`;
+      document.getElementById("engage-section").style.display = "block";
+      document.getElementById("engage-sub").textContent =
+        `${fmtNum(linkClicks)} link clicks + ${fmtNum(engageThrough)} engage-through = ${fmtNum(totalClicks)} total · ${linkPct}/${engagePct}% split`;
+    }
+
+        // 2026-05-14 — Language breakdown card renderer
     function renderLangBreakdown(metaData) {
       const lang = metaData.by_lang || {};
       const en = lang.english || {};
@@ -757,6 +867,10 @@
 
     // 2026-05-14 — Form Submissions per channel (Meta Lead + TikTok SubmitForm)
     renderFormSubmissions(meta, tt);
+
+    // 2026-05-14 PM — Daily spend chart + Engage-through cards
+    renderDailyChart(meta);
+    renderEngageThrough(meta);
 
     const grid = document.getElementById("paid-grid");
     grid.innerHTML =
