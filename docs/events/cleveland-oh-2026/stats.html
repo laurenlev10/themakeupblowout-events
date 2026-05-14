@@ -159,6 +159,46 @@
                              font-family:ui-monospace,monospace;font-size:12px}
     .platform-topads .ta-num-sub{color:#7a7a8a;font-size:10px;
                                  font-family:ui-monospace,monospace;margin-top:2px}
+
+    /* ====== Language Breakdown (2026-05-14) ====== */
+    .lang-wrap{background:linear-gradient(135deg,#15151f,#1a1a2a);border-radius:14px;
+               padding:20px 22px;margin:18px 0;color:#e5e5e5}
+    .lang-title{color:#22d3ee;font-size:18px;font-weight:800;margin-bottom:6px;
+                display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+    .lang-sub{color:#888;font-size:12px;margin-bottom:16px}
+    .lang-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .lang-card{background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.18);
+               border-radius:10px;padding:14px}
+    .lang-card.winner{border-color:#fbbf24;background:rgba(251,191,36,0.08);
+                      box-shadow:0 0 16px rgba(251,191,36,0.15)}
+    .lang-flag{font-size:24px;margin-bottom:4px}
+    .lang-name{font-size:13px;color:#cbd5e1;font-weight:700;letter-spacing:0.5px;
+               text-transform:uppercase;margin-bottom:10px}
+    .lang-spend{font-size:24px;font-weight:800;color:#22d3ee}
+    .lang-spend-sub{font-size:11px;color:#888;margin-top:2px;margin-bottom:12px}
+    .lang-metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+    .lang-metric{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:6px}
+    .lang-metric-label{color:#888;font-size:10px;letter-spacing:0.5px;text-transform:uppercase}
+    .lang-metric-val{color:#e5e5e5;font-weight:700;font-family:ui-monospace,monospace;font-size:13px}
+    .lang-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;
+                background:#fbbf24;color:#000}
+
+    /* ====== Form Submissions per channel (2026-05-14) ====== */
+    .forms-wrap{background:linear-gradient(135deg,#1a1a26,#1f1f30);border-radius:14px;
+                padding:20px 22px;margin:18px 0;color:#e5e5e5}
+    .forms-title{color:#34d399;font-size:18px;font-weight:800;margin-bottom:6px;
+                 display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+    .forms-sub{color:#888;font-size:12px;margin-bottom:16px}
+    .forms-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .forms-card{background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.18);
+                border-radius:10px;padding:14px}
+    .forms-card.winner{border-color:#fbbf24;background:rgba(251,191,36,0.08)}
+    .forms-card.empty{opacity:0.5}
+    .forms-platform{font-size:13px;color:#cbd5e1;font-weight:700;letter-spacing:0.5px;
+                    text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+    .forms-count{font-size:32px;font-weight:800;color:#34d399}
+    .forms-cpf{font-size:13px;color:#888;margin-top:4px;font-family:ui-monospace,monospace}
+    .forms-cpf strong{color:#34d399;font-size:15px}
     .platform-empty{color:#666;font-size:12px;padding:14px 0;text-align:center;
                     border-top:1px dashed #2a2a3a;margin-top:10px}
     .platform-cta{display:block;margin-top:12px;padding:9px 14px;background:rgba(124,58,237,0.15);
@@ -289,6 +329,20 @@
       </div>
       <div class="paid-sub" id="paid-sub">Total ad spend across platforms</div>
       <div class="paid-grid" id="paid-grid"></div>
+    </div>
+
+    <!-- 2026-05-14 — Language Breakdown (English vs Spanish vs Other ad spend) -->
+    <div id="lang-section" class="lang-wrap" style="display:none;">
+      <div class="lang-title">🌐 פיצול שפה — English vs Spanish (Meta)</div>
+      <div class="lang-sub" id="lang-sub">איזה ניתוב שפה הביא יותר טלפונים ובכמה</div>
+      <div class="lang-grid" id="lang-grid"></div>
+    </div>
+
+    <!-- 2026-05-14 — Form Submissions per channel (Meta Lead + TikTok SubmitForm) -->
+    <div id="forms-section" class="forms-wrap" style="display:none;">
+      <div class="forms-title">📝 הרשמות טופס — איזה ערוץ מביא טלפונים</div>
+      <div class="forms-sub" id="forms-sub">conversion event per platform · last 30d</div>
+      <div class="forms-grid" id="forms-grid"></div>
     </div>
 
     <div class="funnel-wrap">
@@ -583,6 +637,113 @@
         </div>`;
     }
 
+    // 2026-05-14 — Language breakdown card renderer
+    function renderLangBreakdown(metaData) {
+      const lang = metaData.by_lang || {};
+      const en = lang.english || {};
+      const es = lang.spanish || {};
+      const other = lang.other || {};
+      const totalSpend = (en.spend||0) + (es.spend||0) + (other.spend||0);
+      if (!totalSpend) return;
+      // Determine the winner — lowest CPL (cost-per-LPV) of languages with spend>0
+      const candidates = [
+        ['english', en], ['spanish', es], ['other', other]
+      ].filter(([k,v]) => (v.spend||0) > 20 && (v.lpv||0) > 50);
+      let winnerKey = null;
+      if (candidates.length >= 2) {
+        candidates.sort((a,b) => (a[1].cpl||999) - (b[1].cpl||999));
+        winnerKey = candidates[0][0];
+      }
+      const fmt$ = (n) => "$" + (Number(n)||0).toLocaleString(undefined, {maximumFractionDigits:0});
+      const fmt$$ = (n) => "$" + (Number(n)||0).toFixed(2);
+      const fmtNum = (n) => (Number(n)||0).toLocaleString();
+      const card = (key, data, flag, name) => {
+        if (!data.spend) return '';
+        const winnerBadge = key === winnerKey ? '<span class="lang-badge">🏆 BEST</span>' : '';
+        const cls = key === winnerKey ? 'lang-card winner' : 'lang-card';
+        const pct = totalSpend ? (data.spend/totalSpend*100).toFixed(0) : 0;
+        return `
+          <div class="${cls}">
+            <div class="lang-flag">${flag}</div>
+            <div class="lang-name">${name} ${winnerBadge}</div>
+            <div class="lang-spend">${fmt$(data.spend)}</div>
+            <div class="lang-spend-sub">${pct}% of Meta spend · ${data.ad_count||0} ads</div>
+            <div class="lang-metrics">
+              <div class="lang-metric">
+                <div class="lang-metric-label">LP Views</div>
+                <div class="lang-metric-val">${fmtNum(data.lpv)}</div>
+              </div>
+              <div class="lang-metric">
+                <div class="lang-metric-label">Cost/LPV</div>
+                <div class="lang-metric-val">${fmt$$(data.cpl)}</div>
+              </div>
+              <div class="lang-metric">
+                <div class="lang-metric-label">CTR</div>
+                <div class="lang-metric-val">${(data.ctr||0).toFixed(2)}%</div>
+              </div>
+              <div class="lang-metric">
+                <div class="lang-metric-label">Form Subs</div>
+                <div class="lang-metric-val">${fmtNum(data.leads)}</div>
+              </div>
+            </div>
+          </div>`;
+      };
+      document.getElementById("lang-grid").innerHTML =
+        card('english', en, '🇺🇸', 'English') +
+        card('spanish', es, '🇲🇽', 'Spanish') +
+        card('other',   other, '🎬', 'Reel / Other');
+      document.getElementById("lang-section").style.display = "block";
+      const winnerText = winnerKey
+        ? ('הזוכה: ' + (winnerKey === 'english' ? 'English' : winnerKey === 'spanish' ? 'Spanish' : 'Reel/Other') + ' עם CPL הזול ביותר')
+        : 'אין מספיק נתונים להכרזת מנצח (LPV<50 / spend<$20)';
+      document.getElementById("lang-sub").textContent = winnerText;
+    }
+
+    // 2026-05-14 — Form Submissions per channel renderer
+    function renderFormSubmissions(metaData, ttData) {
+      const metaLeads = metaData.leads || 0;
+      const metaSpend = metaData.spend || 0;
+      const ttConvs = ttData.conversions || 0;
+      const ttSpend = ttData.spend || 0;
+      const totalForms = metaLeads + ttConvs;
+      // Show even when 0 — Lauren wants to know "waiting for data" too
+      if (metaSpend === 0 && ttSpend === 0) return;
+      const fmtNum = (n) => (Number(n)||0).toLocaleString();
+      const fmt$ = (n) => "$" + (Number(n)||0).toFixed(2);
+      const metaCpf = metaLeads ? metaSpend/metaLeads : 0;
+      const ttCpf = ttConvs ? ttSpend/ttConvs : 0;
+      const winner = (metaLeads >= 10 && ttConvs >= 10)
+        ? (metaCpf < ttCpf ? 'meta' : 'tt')
+        : null;
+      const card = (key, count, spend, cpf, name, icon) => {
+        const empty = count === 0;
+        const winnerCls = key === winner ? ' winner' : '';
+        const emptyCls = empty ? ' empty' : '';
+        const winnerBadge = key === winner ? '<span class="lang-badge">🏆 BEST</span>' : '';
+        return `
+          <div class="forms-card${winnerCls}${emptyCls}">
+            <div class="forms-platform">
+              <span>${icon} ${name}</span>
+              ${winnerBadge}
+            </div>
+            <div class="forms-count">${fmtNum(count)}</div>
+            <div class="forms-cpf">
+              ${empty
+                ? '<em>אין עדיין נתונים — מחכים ל-form submits</em>'
+                : 'CPF <strong>' + fmt$(cpf) + '</strong> · על $' + spend.toFixed(0) + ' spend'}
+            </div>
+          </div>`;
+      };
+      document.getElementById("forms-grid").innerHTML =
+        card('meta', metaLeads, metaSpend, metaCpf, 'Meta (Pixel Lead)', '📘') +
+        card('tt',   ttConvs,    ttSpend,   ttCpf,   'TikTok (SubmitForm)', '🎵');
+      document.getElementById("forms-section").style.display = "block";
+      const sub = totalForms === 0
+        ? 'הפיקסל זה עתה הותקן ב-Meta. מחכים לטופס ראשון (~24-48 שעות).'
+        : 'סה״כ ' + fmtNum(totalForms) + ' טפסים מולאו · CPF ממוצע ' + (totalForms ? fmt$((metaSpend+ttSpend)/totalForms) : '—');
+      document.getElementById("forms-sub").textContent = sub;
+    }
+
     const meta = evPixel.meta || {};
     const tt = evPixel.tiktok || {};
     const totalSpend = (meta.spend || 0) + (tt.spend || 0);
@@ -590,6 +751,12 @@
     document.getElementById("paid-sub").textContent =
       "Total spend: $" + totalSpend.toLocaleString(undefined, { maximumFractionDigits: 0 }) +
       " · last 30 days · refreshes every 6 hours";
+
+    // 2026-05-14 — Language Breakdown (Meta by_lang.english/spanish/other)
+    renderLangBreakdown(meta);
+
+    // 2026-05-14 — Form Submissions per channel (Meta Lead + TikTok SubmitForm)
+    renderFormSubmissions(meta, tt);
 
     const grid = document.getElementById("paid-grid");
     grid.innerHTML =
