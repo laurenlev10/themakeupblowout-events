@@ -224,6 +224,19 @@
     .engage-pct{font-size:13px;color:#888;margin-top:2px}
     .engage-cost{font-size:13px;color:#a78bfa;margin-top:8px;font-family:ui-monospace,monospace}
     .engage-meaning{font-size:11px;color:#666;margin-top:6px;line-height:1.4}
+
+    /* ====== Insight callout boxes (2026-05-14 PM) ====== */
+    .insight{margin-top:14px;padding:12px 16px;border-radius:10px;
+             background:rgba(245,228,91,0.08);border-left:3px solid #f5e45b;
+             color:#e5e5e5;font-size:13px;line-height:1.5}
+    .insight.positive{background:rgba(52,211,153,0.08);border-left-color:#34d399}
+    .insight.negative{background:rgba(248,113,113,0.08);border-left-color:#f87171}
+    .insight.neutral{background:rgba(124,58,237,0.06);border-left-color:#a78bfa}
+    .insight-icon{font-size:15px;margin-right:6px}
+    .insight strong{color:#f5e45b}
+    .insight.positive strong{color:#34d399}
+    .insight.negative strong{color:#f87171}
+    .insight em{color:#888;font-style:normal;font-size:12px;display:block;margin-top:4px}
     .platform-empty{color:#666;font-size:12px;padding:14px 0;text-align:center;
                     border-top:1px dashed #2a2a3a;margin-top:10px}
     .platform-cta{display:block;margin-top:12px;padding:9px 14px;background:rgba(124,58,237,0.15);
@@ -355,6 +368,7 @@
       </div>
       <div class="paid-sub" id="paid-sub">Total ad spend across platforms</div>
       <div class="paid-grid" id="paid-grid"></div>
+      <div id="paid-insight" class="insight" style="display:none"></div>
     </div>
 
     <!-- 2026-05-14 — Language Breakdown (English vs Spanish vs Other ad spend) -->
@@ -362,6 +376,7 @@
       <div class="lang-title">🌐 פיצול שפה — English vs Spanish (Meta)</div>
       <div class="lang-sub" id="lang-sub">איזה ניתוב שפה הביא יותר טלפונים ובכמה</div>
       <div class="lang-grid" id="lang-grid"></div>
+      <div id="lang-insight" class="insight" style="display:none"></div>
     </div>
 
     <!-- 2026-05-14 — Form Submissions per channel (Meta Lead + TikTok SubmitForm) -->
@@ -369,6 +384,7 @@
       <div class="forms-title">📝 הרשמות טופס — איזה ערוץ מביא טלפונים</div>
       <div class="forms-sub" id="forms-sub">conversion event per platform · last 30d</div>
       <div class="forms-grid" id="forms-grid"></div>
+      <div id="forms-insight" class="insight" style="display:none"></div>
     </div>
 
     <!-- 2026-05-14 PM — Daily spend chart (line chart with two series) -->
@@ -376,6 +392,7 @@
       <div class="daily-title">📈 ספנד יומי × לאנדינג פייג' ויוז</div>
       <div class="daily-sub" id="daily-sub">Meta — last 30 days · spend (yellow) vs LP views (cyan) per day</div>
       <div class="daily-canvas-wrap"><canvas id="daily-chart" height="200"></canvas></div>
+      <div id="daily-insight" class="insight" style="display:none"></div>
     </div>
 
     <!-- 2026-05-14 PM — Engage-through breakdown (Meta's new attribution model) -->
@@ -383,6 +400,7 @@
       <div class="engage-title">🔗 פיצול קליקים (Meta New Model — תקף השבוע)</div>
       <div class="engage-sub" id="engage-sub">link clicks vs social engagements (shares/saves/likes) · last 30d</div>
       <div class="engage-grid" id="engage-grid"></div>
+      <div id="engage-insight" class="insight" style="display:none"></div>
     </div>
 
     <div class="funnel-wrap">
@@ -431,6 +449,7 @@
   ]);
 
   const evPixel = analytics && analytics.events && analytics.events[slug];
+  const evAverages = (analytics && analytics._averages) || {};
   const evReg   = regStats  && regStats.events   && regStats.events[slug];
   const evSeries = timeseries && timeseries.events && timeseries.events[slug];
 
@@ -677,7 +696,130 @@
         </div>`;
     }
 
-    // 2026-05-14 PM — Daily spend × LP views chart
+    // 2026-05-14 PM — Insight callouts under each section.
+    // Picks the most actionable observation for each section based on the data.
+    function renderInsights(metaData, ttData, avgs) {
+      const fmt$  = (n) => "$" + (Number(n)||0).toFixed(2);
+      const fmtPct = (a, b) => b ? Math.round((a-b)/b*100) : 0;
+      const show = (id, cls, html) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.className = "insight " + cls;
+        el.innerHTML = '<span class="insight-icon">💡</span>' + html;
+        el.style.display = "block";
+      };
+
+      // --- Paid Acquisition insight ---
+      const meta_s = metaData.spend || 0;
+      const tt_s   = ttData.spend || 0;
+      const meta_leads = metaData.leads || 0;
+      const tt_convs = ttData.conversions || 0;
+      const totalS = meta_s + tt_s;
+      if (totalS > 0) {
+        const meta_pct = Math.round(meta_s/totalS*100);
+        const tt_pct = Math.round(tt_s/totalS*100);
+        if (tt_convs > 0 && meta_leads === 0 && tt_s > 0) {
+          show("paid-insight", "neutral",
+            `<strong>${meta_pct}% מהתקציב הולך ל-Meta אבל 100% מה-forms מגיעים מ-TikTok.</strong> ` +
+            `<em>הפיקסל של Meta חדש מאתמול — נתוני Leads יצטברו בעוד 24-48 שעות. אז יהיה אפשר להחליט אם להזיז תקציב.</em>`);
+        } else if (avgs.mean_cpl && metaData.cost_per_lpv) {
+          const my = metaData.cost_per_lpv;
+          const diff = fmtPct(my, avgs.mean_cpl);
+          if (my < avgs.mean_cpl * 0.85) {
+            show("paid-insight", "positive",
+              `<strong>CPL ${fmt$(my)} = ${Math.abs(diff)}% מתחת לממוצע ${fmt$(avgs.mean_cpl)} שלך</strong> ` +
+              `<em>(ממוצע על ${avgs.event_count} אירועים פעילים). אירוע יעיל — שווה להגדיל ספנד.</em>`);
+          } else if (my > avgs.mean_cpl * 1.15) {
+            show("paid-insight", "negative",
+              `<strong>CPL ${fmt$(my)} = ${diff}% מעל הממוצע ${fmt$(avgs.mean_cpl)}.</strong> ` +
+              `<em>לבדוק קריאייטיב מיושן או אודיינס מוצה.</em>`);
+          } else {
+            show("paid-insight", "neutral",
+              `<strong>CPL ${fmt$(my)} = ${Math.abs(diff)}% ${diff < 0 ? 'מתחת' : 'מעל'} הממוצע ${fmt$(avgs.mean_cpl)}.</strong>`);
+          }
+        }
+      }
+
+      // --- Language insight ---
+      const en = (metaData.by_lang || {}).english || {};
+      const es = (metaData.by_lang || {}).spanish || {};
+      if (en.cpl && es.cpl && en.lpv >= 100 && es.lpv >= 100) {
+        if (en.cpl < es.cpl * 0.7) {
+          const pct = Math.round((es.cpl - en.cpl) / es.cpl * 100);
+          const saved = Math.round(es.spend * pct/100);
+          show("lang-insight", "positive",
+            `<strong>English זוול ${pct}% מ-Spanish (${fmt$(en.cpl)} vs ${fmt$(es.cpl)}).</strong> ` +
+            `<em>חיסכון פוטנציאלי אם תזיזי תקציב Spanish→English: ~${fmt$(saved)} בחודש.</em>`);
+        } else if (es.cpl < en.cpl * 0.7) {
+          const pct = Math.round((en.cpl - es.cpl) / en.cpl * 100);
+          const saved = Math.round(en.spend * pct/100);
+          show("lang-insight", "positive",
+            `<strong>Spanish זוול ${pct}% מ-English (${fmt$(es.cpl)} vs ${fmt$(en.cpl)}).</strong> ` +
+            `<em>חיסכון פוטנציאלי אם תזיזי תקציב English→Spanish: ~${fmt$(saved)} בחודש.</em>`);
+        } else {
+          show("lang-insight", "neutral",
+            `<strong>English ו-Spanish בעלות דומה (CPL הפרש < 30%).</strong> ` +
+            `<em>אין צורך לשנות חלוקה — לחפש קריאייטיב חדש שיוריד עלות בשתי השפות.</em>`);
+        }
+      }
+
+      // --- Form submissions insight ---
+      if (tt_convs >= 5 || meta_leads >= 5) {
+        const cpf_m = meta_leads ? meta_s/meta_leads : null;
+        const cpf_t = tt_convs ? tt_s/tt_convs : null;
+        if (cpf_t && cpf_t < 5) {
+          show("forms-insight", "positive",
+            `<strong>TikTok CPF ${fmt$(cpf_t)} — מצוין.</strong> ` +
+            `<em>פחות מ-$5 לטלפון זה world-class. שווה לחפש איך לשכפל את הקריאייטיב לאירועים אחרים.</em>`);
+        } else if (cpf_t && cpf_t > 15) {
+          show("forms-insight", "negative",
+            `<strong>TikTok CPF ${fmt$(cpf_t)} גבוה.</strong> ` +
+            `<em>אודיינס מוצה או קריאייטיב חלש. לבדוק רענון Reel או הקטנת ספנד.</em>`);
+        }
+      } else if (totalS > 200 && meta_leads === 0 && tt_convs === 0) {
+        show("forms-insight", "neutral",
+          `<strong>0 הרשמות עדיין.</strong> ` +
+          `<em>הפיקסל של Meta הותקן אתמול (13.5) — אם spend > $200 ועדיין 0 leads בעוד 48 שעות, להתריע על תקלת טופס.</em>`);
+      }
+
+      // --- Daily chart insight ---
+      const ts = metaData.daily_timeseries || [];
+      if (ts.length >= 7) {
+        const recent = ts.slice(-3).reduce((sum,r)=>sum+r.lpv,0)/3;
+        const older  = ts.slice(-7,-4).reduce((sum,r)=>sum+r.lpv,0)/3;
+        if (older > 0) {
+          const change = (recent - older) / older;
+          if (change > 0.2) {
+            show("daily-insight", "positive",
+              `<strong>LPV עלה ב-${Math.round(change*100)}% ב-3 הימים האחרונים.</strong> ` +
+              `<em>מומנטום חזק לקראת האירוע — להמשיך עם הספנד הנוכחי.</em>`);
+          } else if (change < -0.2) {
+            show("daily-insight", "negative",
+              `<strong>LPV ירד ב-${Math.round(-change*100)}% ב-3 הימים האחרונים.</strong> ` +
+              `<em>סימן אפשרי לאודיינס מוצה. לרענן קריאייטיב או להוסיף Lookalike.</em>`);
+          }
+        }
+      }
+
+      // --- Engage-through insight ---
+      const linkClicks = metaData.link_clicks || 0;
+      const engageThrough = metaData.engage_through || 0;
+      const totalClicks = metaData.clicks || 0;
+      if (totalClicks > 0) {
+        const linkPct = Math.round(linkClicks/totalClicks*100);
+        if (engageThrough > 1000) {
+          show("engage-insight", "positive",
+            `<strong>${engageThrough.toLocaleString()} engage-through — אמפליפיקציה חזקה.</strong> ` +
+            `<em>אנשים משתפים/שומרים את ה-Reel = reach אורגנית בחינם. ${100-linkPct}% מהקליקים הם כאלה.</em>`);
+        } else {
+          show("engage-insight", "neutral",
+            `<strong>${linkPct}% link clicks vs ${100-linkPct}% engage-through.</strong> ` +
+            `<em>במודל החדש של Meta (השבוע), הקליקים שנספרים ב-Ads Manager ירדו ב-${100-linkPct}%. זה ויזואלית בלבד — לא ביצועים פחותים.</em>`);
+        }
+      }
+    }
+
+        // 2026-05-14 PM — Daily spend × LP views chart
     function renderDailyChart(metaData) {
       const ts = metaData.daily_timeseries || [];
       if (!ts.length) return;
@@ -871,6 +1013,9 @@
     // 2026-05-14 PM — Daily spend chart + Engage-through cards
     renderDailyChart(meta);
     renderEngageThrough(meta);
+
+    // 2026-05-14 PM — Insight callouts under each section
+    renderInsights(meta, tt, evAverages);
 
     const grid = document.getElementById("paid-grid");
     grid.innerHTML =
