@@ -140,13 +140,25 @@
     .platform-metric .pm-sub{color:#666;font-size:10px;margin-top:2px}
     .platform-topads{margin-top:10px;padding-top:12px;border-top:1px dashed #2a2a3a}
     .platform-topads .ta-title{color:#aaa;font-size:11px;letter-spacing:1px;
-                                text-transform:uppercase;font-weight:700;margin-bottom:6px}
-    .platform-topads .ta-row{display:flex;justify-content:space-between;align-items:center;
-                             padding:4px 0;font-size:12px;color:#cbd5e1;gap:8px}
-    .platform-topads .ta-name{flex:1;overflow:hidden;text-overflow:ellipsis;
-                              white-space:nowrap;color:#ddd}
-    .platform-topads .ta-num{color:#f5e45b;font-weight:700;flex-shrink:0;
-                             font-family:ui-monospace,monospace;font-size:11px}
+                                text-transform:uppercase;font-weight:700;margin-bottom:8px}
+    .platform-topads .ta-row{display:flex;align-items:center;
+                             padding:8px 0;font-size:12px;color:#cbd5e1;gap:10px;
+                             border-bottom:1px solid rgba(255,255,255,0.06)}
+    .platform-topads .ta-row:last-child{border-bottom:0}
+    .platform-topads .ta-rank{flex-shrink:0;font-size:11px;font-weight:700;color:#7a7a8a;
+                              font-family:ui-monospace,monospace;min-width:42px}
+    .platform-topads .ta-rank.winner{color:#fbbf24;font-size:13px;min-width:52px;
+                                     text-shadow:0 0 8px rgba(251,191,36,0.4)}
+    .platform-topads .ta-body{flex:1;min-width:0}
+    .platform-topads .ta-name{overflow:hidden;text-overflow:ellipsis;
+                              white-space:nowrap;color:#e5e5e5;font-weight:600}
+    .platform-topads .ta-camp{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+                              color:#8a8a98;font-size:10.5px;margin-top:1px}
+    .platform-topads .ta-nums{text-align:right;flex-shrink:0}
+    .platform-topads .ta-num{color:#f5e45b;font-weight:700;
+                             font-family:ui-monospace,monospace;font-size:12px}
+    .platform-topads .ta-num-sub{color:#7a7a8a;font-size:10px;
+                                 font-family:ui-monospace,monospace;margin-top:2px}
     .platform-empty{color:#666;font-size:12px;padding:14px 0;text-align:center;
                     border-top:1px dashed #2a2a3a;margin-top:10px}
     .platform-cta{display:block;margin-top:12px;padding:9px 14px;background:rgba(124,58,237,0.15);
@@ -527,10 +539,30 @@
 
       let topAdsHtml = "";
       if (topAds.length > 0) {
-        topAdsHtml = '<div class="platform-topads"><div class="ta-title">🏆 Top ads (by LP views)</div>' +
-          topAds.slice(0, 3).map((a, i) => {
-            const name = (a.ad_name || "ad #" + (a.ad_id || (i+1))).slice(0, 40);
-            return `<div class="ta-row"><span class="ta-name">${i+1}. ${name}</span><span class="ta-num">${fmtNum(a.lpv || a.landing_page_views || 0)} LPV</span></div>`;
+        // 2026-05-13 PM — Lauren wants ads ranked by best converter (lowest CPL first).
+        // The aggregator already sorts top_ads by CPL asc. Show #1 as 🏆 winner;
+        // others numbered #2..#5. Each row shows ad + campaign + spend + LPV + CPL.
+        topAdsHtml = '<div class="platform-topads"><div class="ta-title">דירוג מודעות — מהמצליחה ביותר לפחות (CPL)</div>' +
+          topAds.slice(0, 5).map((a, i) => {
+            const adName = (a.ad_name || "ad #" + (a.ad_id || (i+1))).slice(0, 32);
+            const camp = (a.campaign_name || "").slice(0, 36);
+            const lpv = a.lpv || a.landing_page_views || 0;
+            const adCpl = lpv ? (a.spend / lpv) : 0;
+            const rank = i === 0
+              ? '<span class="ta-rank winner">🏆 #1</span>'
+              : `<span class="ta-rank">#${i+1}</span>`;
+            const campLine = camp ? `<div class="ta-camp">${camp}</div>` : '';
+            return `<div class="ta-row">
+              ${rank}
+              <div class="ta-body">
+                <div class="ta-name">${adName}</div>
+                ${campLine}
+              </div>
+              <div class="ta-nums">
+                <div class="ta-num">${fmtCurrencyF(adCpl)} CPL</div>
+                <div class="ta-num-sub">${fmtNum(lpv)} LPV · ${fmtCurrency(a.spend || 0)}</div>
+              </div>
+            </div>`;
           }).join("") +
         '</div>';
       } else if (spend > 0) {
