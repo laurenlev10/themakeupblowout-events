@@ -772,7 +772,7 @@
         insightEl.style.display = "none";
       } else if (total === 0) {
         insightEl.className = "insight neutral";
-        insightEl.innerHTML = '<span class="insight-icon">💡</span><strong>אין סריקה עדיין.</strong> <em>סריקות אוטומטיות יורות בסוף השבוע (12:00/14:00/17:00 מקומי). בינתיים, אם תרצי לראות מספר עכשיו, פתחי את ה-Reel ב-IG → Insights → תשלחי לי את המספר.</em>';
+        insightEl.innerHTML = '<span class="insight-icon">💡</span><strong>אין סריקה עדיין.</strong> <em>סריקות אוטומטיות: 12:00 מקומי בכל יום Tue/Wed/Thu שלפני האירוע (baseline) + 12:00/14:00/17:00 ב-Fri/Sat/Sun (בזמן האירוע).</em>';
         insightEl.style.display = "block";
       } else if (rate > 5) {
         insightEl.className = "insight positive";
