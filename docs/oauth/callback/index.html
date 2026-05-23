@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OAuth Callback — The Makeup Blowout Sale</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #08020e;
+    --pink: #f01070;
+    --pink-2: #ff2a85;
+    --yellow: #f5e45b;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --text: #ffffff;
+    --muted: #b5a8c4;
+    --hairline: rgba(245, 228, 91, 0.16);
+    --card: rgba(255, 255, 255, 0.04);
+  }
+  html, body {
+    font-family: 'Josefin Sans', -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #08020e 0%, #100420 50%, #1a0030 100%);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .card {
+    width: 100%; max-width: 640px;
+    background: var(--card); border: 1px solid var(--hairline);
+    border-radius: 16px; padding: 36px 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .brand { text-align: center; margin-bottom: 28px; direction: ltr; }
+  .brand .logo { font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--yellow); margin-bottom: 6px; }
+  .brand .sub { font-size: 12px; color: var(--muted); letter-spacing: 1.5px; }
+  .status { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 10px; margin-bottom: 24px; font-weight: 600; font-size: 15px; }
+  .status.ok { background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.35); color: var(--green); }
+  .status.err { background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.35); color: var(--red); }
+  .status .icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+  .status.ok .icon { background: var(--green); color: white; }
+  .status.err .icon { background: var(--red); color: white; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  p.lead { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+  .field { margin-bottom: 18px; }
+  .field-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; direction: ltr; }
+  .field-value { background: rgba(0,0,0,0.35); border: 1px solid var(--hairline); border-radius: 8px; padding: 14px 16px; font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; color: var(--yellow); direction: ltr; text-align: left; word-break: break-all; user-select: all; line-height: 1.5; }
+  .field-value.empty { color: var(--muted); font-style: italic; }
+  .copy-btn { background: var(--pink); color: white; border: none; padding: 6px 14px; border-radius: 6px; font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: background 0.15s; }
+  .copy-btn:hover { background: var(--pink-2); }
+  .copy-btn.copied { background: var(--green); }
+  .next-steps { margin-top: 26px; padding: 18px; background: rgba(245, 228, 91, 0.07); border: 1px solid rgba(245, 228, 91, 0.25); border-radius: 10px; font-size: 13px; line-height: 1.7; color: var(--text); }
+  .next-steps strong { color: var(--yellow); display: block; margin-bottom: 8px; font-size: 14px; }
+  .next-steps ol { margin: 0; padding-right: 18px; color: var(--muted); }
+  .next-steps li { margin-bottom: 4px; }
+  .footnote { margin-top: 22px; font-size: 11px; color: var(--muted); text-align: center; line-height: 1.6; direction: ltr; }
+  .footnote code { background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 10.5px; }
+  code.inline { background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:3px; font-family:'SF Mono', Menlo, monospace; font-size: 12px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <div class="logo">The Makeup Blowout Sale</div>
+      <div class="sub">OAuth Callback Endpoint</div>
+    </div>
+    <div id="status-pill"></div>
+    <h1 id="heading"></h1>
+    <p class="lead" id="lead"></p>
+    <div id="fields"></div>
+    <div id="next-steps-block"></div>
+    <div class="footnote">
+      <code>events.themakeupblowout.com/oauth/callback</code> · internal use only · no server-side handling
+    </div>
+  </div>
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var authCode = params.get('auth_code') || params.get('code') || '';
+  var state = params.get('state') || '';
+  var error = params.get('error') || params.get('error_description') || '';
+
+  var statusEl = document.getElementById('status-pill');
+  var headingEl = document.getElementById('heading');
+  var leadEl = document.getElementById('lead');
+  var fieldsEl = document.getElementById('fields');
+  var nextEl = document.getElementById('next-steps-block');
+
+  function makeField(labelText, value, copyable) {
+    var field = document.createElement('div');
+    field.className = 'field';
+    var label = document.createElement('div');
+    label.className = 'field-label';
+    var labelSpan = document.createElement('span');
+    labelSpan.textContent = labelText;
+    label.appendChild(labelSpan);
+    var valueEl = document.createElement('div');
+    valueEl.className = 'field-value' + (value ? '' : ' empty');
+    valueEl.textContent = value || '(empty)';
+    if (copyable && value) {
+      var btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', function() {
+        navigator.clipboard.writeText(value).then(function() {
+          btn.textContent = '✓ Copied';
+          btn.classList.add('copied');
+          setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+        }).catch(function() {
+          var range = document.createRange();
+          range.selectNodeContents(valueEl);
+          var sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        });
+      });
+      label.appendChild(btn);
+    }
+    field.appendChild(label);
+    field.appendChild(valueEl);
+    return field;
+  }
+
+  if (error) {
+    statusEl.className = 'status err';
+    statusEl.innerHTML = '<div class="icon">✕</div><div>Authorization failed</div>';
+    headingEl.textContent = 'משהו השתבש';
+    leadEl.textContent = 'TikTok החזיר שגיאה במהלך ה-OAuth. הפרטים למטה — תעבירי ל-Claude.';
+    fieldsEl.appendChild(makeField('Error', error, true));
+    if (state) fieldsEl.appendChild(makeField('State', state, false));
+    nextEl.innerHTML = '<div class="next-steps"><strong>צעדים הבאים:</strong><ol>' +
+      '<li>תעתיקי את ערך ה-Error למעלה</li>' +
+      '<li>שלחי ל-Claude בצ\'אט: "@stats OAuth נכשל"</li>' +
+      '<li>הוא יבדוק מה לא תקין ב-app config</li></ol></div>';
+  } else if (authCode) {
+    statusEl.className = 'status ok';
+    statusEl.innerHTML = '<div class="icon">✓</div><div>Authorization successful</div>';
+    headingEl.textContent = 'קיבלנו את ה-auth_code';
+    leadEl.textContent = 'הקוד למטה תקף ל-10 דקות. תעתיקי אותו עכשיו ושלחי לצ\'אט של Claude — הוא יחליף אותו ל-access token.';
+    fieldsEl.appendChild(makeField('auth_code', authCode, true));
+    if (state) fieldsEl.appendChild(makeField('state (verification)', state, false));
+    nextEl.innerHTML = '<div class="next-steps"><strong>צעדים הבאים:</strong><ol>' +
+      '<li>לחצי Copy ליד <code class="inline">auth_code</code></li>' +
+      '<li>חזרי לצ\'אט של Claude</li>' +
+      '<li>הדביקי וכתבי: "הנה ה-auth_code"</li>' +
+      '<li>אל תסגרי את ה-tab עד שהוא מאשר קליטה</li></ol></div>';
+  } else {
+    statusEl.className = 'status err';
+    statusEl.innerHTML = '<div class="icon">!</div><div>No OAuth parameters received</div>';
+    headingEl.textContent = 'דף callback ריק';
+    leadEl.textContent = 'הגעת לדף זה ישירות, בלי OAuth redirect. אם התכוונת להתחיל OAuth — תחזרי ל-business-api.tiktok.com/portal ולחצי על Authorization URL.';
+    fieldsEl.innerHTML = '<div class="field"><div class="field-label">Current URL</div><div class="field-value">' +
+      window.location.href.replace(/[<>&"']/g, function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c];}) +
+      '</div></div>';
+  }
+})();
+</script>
+</body>
+</html>
