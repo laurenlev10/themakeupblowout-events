@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-05-11T17:13:48Z",
+  "_updated_at": "2026-05-23T19:23:47Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -106,6 +106,21 @@
       "ig_url": "https://www.instagram.com/reel/DYM18AwRYV7/",
       "fb_url": "https://www.facebook.com/reel/2245982816143690/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638839259515981087"
+    },
+    {
+      "city": "Wichita",
+      "state": "KS",
+      "start_date": "2026-06-19",
+      "end_date": "2026-06-21",
+      "subscribe_url": "/events/wichita-ks-2026/",
+      "cta_label": "Subscribe",
+      "slug": "wichita-ks-2026",
+      "venue_name": "DoubleTree by Hilton Hotel Wichita Airport",
+      "venue_address": "2098 Airport Road, Wichita, Kansas, 67209",
+      "form_id": "68b74828fad38345cf4bbab3",
+      "ig_url": "https://www.instagram.com/reel/DYqKFx8R1gN/",
+      "fb_url": "https://fb.watch/HhJSEdQEvn/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7643168815244725534"
     }
   ],
   "_field_doc": {
