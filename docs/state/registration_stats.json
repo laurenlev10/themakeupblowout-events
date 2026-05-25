@@ -1,36 +1,20 @@
 {
   "events": {
-    "wichita-ks-2026": {
+    "milwaukee-wi-2026": {
       "eventbrite": {
-        "registrations": 15,
+        "registrations": 182,
         "capacity": 250,
         "today_delta": 0,
         "weekly_delta": 0
       },
       "sms": {
-        "list_id": "68b747dc507c11791233ef77",
-        "list_name": "Wichita, KS 2026",
-        "total": 11,
-        "active": 10,
-        "daily_delta": 11
+        "list_id": "69167653073eba7f4ef96a75",
+        "list_name": "Milwaukee, WI 2026",
+        "total": 2243,
+        "active": 1977,
+        "daily_delta": 766
       },
-      "updated_at": "2026-05-25T10:48:38+00:00"
-    },
-    "roseville-mn-2026": {
-      "eventbrite": {
-        "registrations": 365,
-        "capacity": 500,
-        "today_delta": 0,
-        "weekly_delta": 2
-      },
-      "sms": {
-        "list_id": "6916769a073eba7f4ef9831a",
-        "list_name": "Roseville, MN 2026",
-        "total": 2549,
-        "active": 2238,
-        "daily_delta": 1457
-      },
-      "updated_at": "2026-05-25T10:48:38+00:00"
+      "updated_at": "2026-05-25T15:28:54+00:00"
     },
     "columbia-mo-2026": {
       "eventbrite": {
@@ -46,39 +30,7 @@
         "active": 770,
         "daily_delta": 60
       },
-      "updated_at": "2026-05-25T10:48:38+00:00"
-    },
-    "milwaukee-wi-2026": {
-      "eventbrite": {
-        "registrations": 182,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "69167653073eba7f4ef96a75",
-        "list_name": "Milwaukee, WI 2026",
-        "total": 2243,
-        "active": 1977,
-        "daily_delta": 766
-      },
-      "updated_at": "2026-05-25T10:48:38+00:00"
-    },
-    "overland-ks-2026": {
-      "eventbrite": {
-        "registrations": 53,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "6916850663f88543ee7e9fb6",
-        "list_name": "Overland Park, KS 2026",
-        "total": 495,
-        "active": 453,
-        "daily_delta": 495
-      },
-      "updated_at": "2026-05-25T10:48:38+00:00"
+      "updated_at": "2026-05-25T15:28:54+00:00"
     },
     "omaha-ne-2026": {
       "eventbrite": {
@@ -94,24 +46,72 @@
         "active": 505,
         "daily_delta": 542
       },
-      "updated_at": "2026-05-25T10:48:38+00:00"
+      "updated_at": "2026-05-25T15:28:54+00:00"
+    },
+    "overland-ks-2026": {
+      "eventbrite": {
+        "registrations": 53,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "6916850663f88543ee7e9fb6",
+        "list_name": "Overland Park, KS 2026",
+        "total": 496,
+        "active": 453,
+        "daily_delta": 496
+      },
+      "updated_at": "2026-05-25T15:28:54+00:00"
+    },
+    "roseville-mn-2026": {
+      "eventbrite": {
+        "registrations": 365,
+        "capacity": 500,
+        "today_delta": 0,
+        "weekly_delta": 2
+      },
+      "sms": {
+        "list_id": "6916769a073eba7f4ef9831a",
+        "list_name": "Roseville, MN 2026",
+        "total": 2550,
+        "active": 2238,
+        "daily_delta": 1458
+      },
+      "updated_at": "2026-05-25T15:28:54+00:00"
+    },
+    "wichita-ks-2026": {
+      "eventbrite": {
+        "registrations": 15,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "68b747dc507c11791233ef77",
+        "list_name": "Wichita, KS 2026",
+        "total": 11,
+        "active": 10,
+        "daily_delta": 11
+      },
+      "updated_at": "2026-05-25T15:28:54+00:00"
     },
     "cleveland-oh-2026": {
       "eventbrite": {
-        "registrations": 212,
+        "registrations": 213,
         "capacity": 500,
-        "today_delta": 0,
+        "today_delta": 1,
         "weekly_delta": 0
       },
       "sms": {
         "list_id": "68b7464a52ea05484b1afc44",
         "list_name": "Cleveland, OH 2026",
-        "total": 1363,
-        "active": 1252,
-        "daily_delta": 980
+        "total": 1374,
+        "active": 1262,
+        "daily_delta": 991
       },
-      "updated_at": "2026-05-25T10:48:38+00:00"
+      "updated_at": "2026-05-25T15:28:54+00:00"
     }
   },
-  "_updated_at": "2026-05-25T10:49:17Z"
+  "_updated_at": "2026-05-25T15:29:41Z"
 }
