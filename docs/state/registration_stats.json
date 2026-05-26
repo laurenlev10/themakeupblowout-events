@@ -2,67 +2,35 @@
   "events": {
     "omaha-ne-2026": {
       "eventbrite": {
-        "registrations": 68,
+        "registrations": 81,
         "capacity": 250,
-        "today_delta": 0,
+        "today_delta": 13,
         "weekly_delta": 0
       },
       "sms": {
         "list_id": "691676e2073eba7f4ef99e1d",
         "list_name": "Omaha, NE 2026",
-        "total": 545,
-        "active": 507,
-        "daily_delta": 545
+        "total": 642,
+        "active": 602,
+        "daily_delta": 642
       },
-      "updated_at": "2026-05-25T19:59:05+00:00"
+      "updated_at": "2026-05-26T04:34:26+00:00"
     },
-    "columbia-mo-2026": {
+    "cleveland-oh-2026": {
       "eventbrite": {
-        "registrations": 48,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "691675e163f88543ee7b07c8",
-        "list_name": "Columbia, MO 2026",
-        "total": 920,
-        "active": 770,
-        "daily_delta": 60
-      },
-      "updated_at": "2026-05-25T19:59:05+00:00"
-    },
-    "overland-ks-2026": {
-      "eventbrite": {
-        "registrations": 55,
-        "capacity": 250,
+        "registrations": 217,
+        "capacity": 500,
         "today_delta": 2,
         "weekly_delta": 0
       },
       "sms": {
-        "list_id": "6916850663f88543ee7e9fb6",
-        "list_name": "Overland Park, KS 2026",
-        "total": 505,
-        "active": 460,
-        "daily_delta": 505
+        "list_id": "68b7464a52ea05484b1afc44",
+        "list_name": "Cleveland, OH 2026",
+        "total": 1428,
+        "active": 1309,
+        "daily_delta": 1045
       },
-      "updated_at": "2026-05-25T19:59:05+00:00"
-    },
-    "milwaukee-wi-2026": {
-      "eventbrite": {
-        "registrations": 182,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "69167653073eba7f4ef96a75",
-        "list_name": "Milwaukee, WI 2026",
-        "total": 2243,
-        "active": 1977,
-        "daily_delta": 766
-      },
-      "updated_at": "2026-05-25T19:59:05+00:00"
+      "updated_at": "2026-05-26T04:34:26+00:00"
     },
     "roseville-mn-2026": {
       "eventbrite": {
@@ -78,40 +46,72 @@
         "active": 2238,
         "daily_delta": 1458
       },
-      "updated_at": "2026-05-25T19:59:05+00:00"
+      "updated_at": "2026-05-26T04:34:26+00:00"
     },
     "wichita-ks-2026": {
       "eventbrite": {
-        "registrations": 15,
+        "registrations": 23,
         "capacity": 250,
-        "today_delta": 0,
+        "today_delta": 8,
         "weekly_delta": 0
       },
       "sms": {
         "list_id": "68b747dc507c11791233ef77",
         "list_name": "Wichita, KS 2026",
-        "total": 28,
-        "active": 26,
-        "daily_delta": 28
+        "total": 70,
+        "active": 66,
+        "daily_delta": 70
       },
-      "updated_at": "2026-05-25T19:59:05+00:00"
+      "updated_at": "2026-05-26T04:34:26+00:00"
     },
-    "cleveland-oh-2026": {
+    "overland-ks-2026": {
       "eventbrite": {
-        "registrations": 215,
-        "capacity": 500,
+        "registrations": 57,
+        "capacity": 250,
         "today_delta": 2,
         "weekly_delta": 0
       },
       "sms": {
-        "list_id": "68b7464a52ea05484b1afc44",
-        "list_name": "Cleveland, OH 2026",
-        "total": 1394,
-        "active": 1276,
-        "daily_delta": 1011
+        "list_id": "6916850663f88543ee7e9fb6",
+        "list_name": "Overland Park, KS 2026",
+        "total": 518,
+        "active": 472,
+        "daily_delta": 518
       },
-      "updated_at": "2026-05-25T19:59:05+00:00"
+      "updated_at": "2026-05-26T04:34:26+00:00"
+    },
+    "milwaukee-wi-2026": {
+      "eventbrite": {
+        "registrations": 182,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "69167653073eba7f4ef96a75",
+        "list_name": "Milwaukee, WI 2026",
+        "total": 2243,
+        "active": 1977,
+        "daily_delta": 766
+      },
+      "updated_at": "2026-05-26T04:34:26+00:00"
+    },
+    "columbia-mo-2026": {
+      "eventbrite": {
+        "registrations": 48,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "691675e163f88543ee7b07c8",
+        "list_name": "Columbia, MO 2026",
+        "total": 920,
+        "active": 770,
+        "daily_delta": 60
+      },
+      "updated_at": "2026-05-26T04:34:26+00:00"
     }
   },
-  "_updated_at": "2026-05-25T19:59:32Z"
+  "_updated_at": "2026-05-26T04:35:01Z"
 }
