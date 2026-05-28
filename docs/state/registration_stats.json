@@ -14,71 +14,23 @@
         "active": 2236,
         "daily_delta": 1458
       },
-      "updated_at": "2026-05-27T20:29:07+00:00"
-    },
-    "wichita-ks-2026": {
-      "eventbrite": {
-        "registrations": 31,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "68b747dc507c11791233ef77",
-        "list_name": "Wichita, KS 2026",
-        "total": 156,
-        "active": 144,
-        "daily_delta": 156
-      },
-      "updated_at": "2026-05-27T20:29:07+00:00"
+      "updated_at": "2026-05-28T04:39:45+00:00"
     },
     "omaha-ne-2026": {
       "eventbrite": {
-        "registrations": 92,
+        "registrations": 98,
         "capacity": 250,
-        "today_delta": 3,
+        "today_delta": 6,
         "weekly_delta": 0
       },
       "sms": {
         "list_id": "691676e2073eba7f4ef99e1d",
         "list_name": "Omaha, NE 2026",
-        "total": 822,
-        "active": 771,
-        "daily_delta": 822
+        "total": 856,
+        "active": 805,
+        "daily_delta": 856
       },
-      "updated_at": "2026-05-27T20:29:07+00:00"
-    },
-    "overland-ks-2026": {
-      "eventbrite": {
-        "registrations": 59,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "6916850663f88543ee7e9fb6",
-        "list_name": "Overland Park, KS 2026",
-        "total": 577,
-        "active": 524,
-        "daily_delta": 577
-      },
-      "updated_at": "2026-05-27T20:29:07+00:00"
-    },
-    "columbia-mo-2026": {
-      "eventbrite": {
-        "registrations": 48,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "691675e163f88543ee7b07c8",
-        "list_name": "Columbia, MO 2026",
-        "total": 920,
-        "active": 770,
-        "daily_delta": 60
-      },
-      "updated_at": "2026-05-27T20:29:07+00:00"
+      "updated_at": "2026-05-28T04:39:45+00:00"
     },
     "milwaukee-wi-2026": {
       "eventbrite": {
@@ -94,24 +46,72 @@
         "active": 1976,
         "daily_delta": 766
       },
-      "updated_at": "2026-05-27T20:29:07+00:00"
+      "updated_at": "2026-05-28T04:39:45+00:00"
+    },
+    "wichita-ks-2026": {
+      "eventbrite": {
+        "registrations": 31,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "68b747dc507c11791233ef77",
+        "list_name": "Wichita, KS 2026",
+        "total": 189,
+        "active": 174,
+        "daily_delta": 189
+      },
+      "updated_at": "2026-05-28T04:39:45+00:00"
+    },
+    "columbia-mo-2026": {
+      "eventbrite": {
+        "registrations": 48,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "691675e163f88543ee7b07c8",
+        "list_name": "Columbia, MO 2026",
+        "total": 920,
+        "active": 770,
+        "daily_delta": 60
+      },
+      "updated_at": "2026-05-28T04:39:45+00:00"
+    },
+    "overland-ks-2026": {
+      "eventbrite": {
+        "registrations": 59,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "6916850663f88543ee7e9fb6",
+        "list_name": "Overland Park, KS 2026",
+        "total": 595,
+        "active": 542,
+        "daily_delta": 595
+      },
+      "updated_at": "2026-05-28T04:39:45+00:00"
     },
     "cleveland-oh-2026": {
       "eventbrite": {
-        "registrations": 228,
+        "registrations": 233,
         "capacity": 500,
-        "today_delta": 2,
+        "today_delta": 5,
         "weekly_delta": 0
       },
       "sms": {
         "list_id": "68b7464a52ea05484b1afc44",
         "list_name": "Cleveland, OH 2026",
-        "total": 1575,
-        "active": 1447,
-        "daily_delta": 1192
+        "total": 1595,
+        "active": 1465,
+        "daily_delta": 1212
       },
-      "updated_at": "2026-05-27T20:29:07+00:00"
+      "updated_at": "2026-05-28T04:39:45+00:00"
     }
   },
-  "_updated_at": "2026-05-27T20:29:40Z"
+  "_updated_at": "2026-05-28T04:40:11Z"
 }
