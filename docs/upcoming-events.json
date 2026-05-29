@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-05-29T19:52:42Z",
+  "_updated_at": "2026-05-29T20:10:17Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -121,6 +121,21 @@
       "ig_url": "https://www.instagram.com/reel/DYqKFx8R1gN/",
       "fb_url": "https://fb.watch/HhJSEdQEvn/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7643168815244725534"
+    },
+    {
+      "city": "Topeka",
+      "state": "KS",
+      "start_date": "2026-06-26",
+      "end_date": "2026-06-28",
+      "subscribe_url": "/events/topeka-ks-2026/",
+      "cta_label": "Subscribe",
+      "slug": "topeka-ks-2026",
+      "venue_name": "Hotel Topeka at City Center",
+      "venue_address": "1717 SW Topeka Blvd, Topeka, KS 66612",
+      "form_id": "6930ede94da0131a265625a3",
+      "ig_url": "https://www.instagram.com/reel/DYqLN-4x1AD/",
+      "fb_url": "https://fb.watch/HpGDP2ByrY/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7645407811446246686"
     }
   ],
   "_field_doc": {
