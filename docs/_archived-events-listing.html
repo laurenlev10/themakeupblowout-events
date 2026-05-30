@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upcoming Events | The Makeup Blowout Sale</title>
+<meta name="description" content="Upcoming Makeup Blowout Sale events — 40+ amazing brands at unbeatable prices. Subscribe now to claim your FREE gift at the event!">
+<meta property="og:title" content="The Makeup Blowout Sale — Upcoming Events">
+<meta property="og:description" content="40+ amazing brands at unbeatable prices. Free entry & parking. Subscribe to claim your FREE gift!">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://events.themakeupblowout.com/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #08020e;
+    --bg-2: #100420;
+    --pink: #f01070;
+    --pink-2: #ff2a85;
+    --yellow: #f5e45b;
+    --purple: #4527a0;
+    --text: #ffffff;
+    --muted: #b5a8c4;
+    --hairline: rgba(245, 228, 91, 0.16);
+    --card: rgba(255, 255, 255, 0.04);
+    --card-hover: rgba(245, 228, 91, 0.07);
+  }
+  html, body {
+    font-family: 'Josefin Sans', -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ============ HERO ============ */
+  .hero {
+    position: relative;
+    background:
+      linear-gradient(rgba(8,2,14,0.55), rgba(8,2,14,0.85)),
+      url('/_assets/shared/hero-popart.jpg') center/cover no-repeat,
+      linear-gradient(135deg, #1a0030 0%, #2d0050 50%, #1a1060 100%);
+    padding: 70px 22px 60px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 100%, rgba(8,2,14,0.0) 0%, var(--bg) 100%);
+    pointer-events: none;
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .hero .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(245,228,91,0.12);
+    border: 1px solid rgba(245,228,91,0.4);
+    color: var(--yellow);
+    font-weight: 700; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 8px 16px; border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  .hero .pill::before {
+    content: ""; width: 7px; height: 7px;
+    background: #22c55e; border-radius: 50%;
+    box-shadow: 0 0 8px #22c55e;
+    animation: pulse 1.4s infinite ease-in-out;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.5);opacity:.4;} }
+  .hero h1 {
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 700;
+    color: var(--yellow);
+    line-height: 1.05;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.4);
+  }
+  .hero h1 .l2 {
+    color: #fff; display: block;
+    font-size: 0.6em; margin-top: 10px;
+    letter-spacing: 4px;
+  }
+  .hero .tagline {
+    font-size: clamp(16px, 2.6vw, 22px);
+    color: #ffd6e5;
+    max-width: 720px;
+    margin: 0 auto 32px;
+    line-height: 1.55;
+  }
+  .hero .tagline strong { color: var(--yellow); }
+  .hero .stats {
+    display: flex; justify-content: center; gap: 36px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    font-size: 13px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .hero .stat-num { display: block; font-size: 32px; color: #fff; font-weight: 700; line-height: 1; }
+  .hero .stat-num .yel { color: var(--yellow); }
+
+  /* ============ FEATURED EVENT CARDS ============ */
+  .section { padding: 70px 22px; }
+  .section-title {
+    text-align: center;
+    font-size: clamp(24px, 4vw, 38px);
+    color: var(--yellow);
+    margin-bottom: 8px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .section-sub {
+    text-align: center;
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  @media (max-width: 900px) {
+    .featured-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  }
+  @media (max-width: 520px) {
+    .featured-grid { grid-template-columns: 1fr; }
+  }
+  .ev-card {
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(240,16,112,0.06) 0%, transparent 30%),
+      linear-gradient(160deg, #1a0030 0%, #1f0a3a 100%);
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    padding: 22px 18px;
+    text-align: center;
+    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .ev-card::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--pink), var(--yellow));
+    opacity: 0; transition: opacity .25s;
+  }
+  .ev-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(245,228,91,0.45);
+    box-shadow: 0 24px 60px rgba(240,16,112,0.18);
+  }
+  .ev-card:hover::before { opacity: 1; }
+  .ev-card .ev-state {
+    font-size: 12px; color: var(--yellow);
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 8px; font-weight: 700;
+    opacity: .85;
+  }
+  .ev-card .ev-city {
+    font-size: 24px; color: #fff;
+    font-weight: 700; margin-bottom: 6px;
+    letter-spacing: 0.3px;
+    line-height: 1.15;
+  }
+  .ev-card .ev-dates {
+    font-size: 15px; color: #ffd6e5;
+    margin-bottom: 12px;
+  }
+  .ev-card .ev-venue {
+    font-size: 12px; color: var(--muted);
+    margin-bottom: 18px;
+    line-height: 1.4;
+    min-height: 34px;
+  }
+  .ev-card .ev-cta {
+    display: inline-block;
+    background: var(--pink);
+    color: #fff !important;
+    font-size: 13px; font-weight: 700;
+    padding: 11px 14px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    transition: background .15s, transform .15s, box-shadow .15s;
+    box-shadow: 0 6px 18px rgba(240,16,112,0.3);
+  }
+  .ev-card .ev-cta:hover {
+    background: var(--pink-2);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(240,16,112,0.45);
+  }
+  .ev-card .ev-eb {
+    display: inline-block;
+    font-size: 13px; color: var(--muted);
+    text-decoration: underline;
+    padding: 4px 8px;
+    transition: color .15s;
+  }
+  .ev-card .ev-eb:hover { color: #fff; }
+  .ev-card.is-live {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 1px #22c55e, 0 24px 60px rgba(34,197,94,0.2);
+  }
+  .ev-card.is-live::before { opacity: 1; background: linear-gradient(90deg, #22c55e, var(--yellow)); }
+  .ev-card.is-live .ev-state::before {
+    content: "🔴 LIVE NOW";
+    color: #22c55e;
+    margin-right: 6px;
+  }
+
+  /* event-card hero image (for the 5 events that have hero.png) */
+  .ev-card.has-img { padding: 0 0 22px; overflow: hidden; }
+  .ev-card.has-img .ev-img {
+    position: relative;
+    width: 100%; height: 165px;
+    background-size: cover; background-position: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .ev-card.has-img .ev-img::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.0) 40%, rgba(26,4,32,0.75) 100%);
+  }
+  .ev-card.has-img .ev-state,
+  .ev-card.has-img .ev-city,
+  .ev-card.has-img .ev-dates,
+  .ev-card.has-img .ev-venue,
+  .ev-card.has-img .ev-cta,
+  .ev-card.has-img .ev-eb { padding-left: 18px; padding-right: 18px; }
+
+  /* Vendors / brands — pop-art frame (Lauren's brand-list image) */
+  .vendors-section { padding: 50px 22px; background: var(--bg); text-align: center; }
+  .vendors-section .vendors-title { font-size: 14px; color: var(--yellow); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 22px; font-weight: 700; }
+  .vendors-section img { max-width: 760px; width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 14px; box-shadow: 0 18px 50px rgba(0,0,0,0.4); }
+
+  /* Photo gallery (real-event photos Lauren can swap in) */
+  .gallery-section { background: var(--bg); }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .gallery-tile {
+    aspect-ratio: 4/5;
+    background: #1a0030 center/cover no-repeat;
+    border-radius: 14px;
+    border: 1px solid var(--hairline);
+    transition: transform .25s, box-shadow .25s;
+  }
+  .gallery-tile:hover { transform: scale(1.02); box-shadow: 0 16px 40px rgba(240,16,112,0.25); }
+
+  /* Free-gift hero callout */
+  .gift-callout {
+    background: linear-gradient(135deg, #1a0030 0%, #2d0050 100%);
+    padding: 40px 22px;
+    text-align: center;
+    border-top: 2px solid var(--pink);
+    border-bottom: 2px solid var(--pink);
+  }
+  .gift-callout img { max-width: 320px; width: 80%; height: auto; display: block; margin: 0 auto 18px; border-radius: 16px; box-shadow: 0 14px 40px rgba(240,16,112,0.45); }
+  .gift-callout .gift-text { font-size: clamp(20px,3.6vw,30px); color: #fff; font-weight: 700; max-width: 600px; margin: 0 auto 6px; }
+  .gift-callout .gift-text strong { color: var(--yellow); }
+  .gift-callout .gift-sub { font-size: 14px; color: var(--muted); }
+
+/* ============ BRAND CALLOUT (between sections) ============ */
+  .brands-strip {
+    padding: 50px 22px;
+    background: linear-gradient(135deg, var(--pink) 0%, #c01060 100%);
+    text-align: center;
+    color: #fff;
+  }
+  .brands-strip .big {
+    font-size: clamp(22px, 3.6vw, 34px);
+    font-weight: 700;
+    max-width: 800px;
+    margin: 0 auto 12px;
+    line-height: 1.25;
+  }
+  .brands-strip .small {
+    font-size: 15px;
+    opacity: .9;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+  .perks {
+    display: flex; justify-content: center; gap: 30px;
+    flex-wrap: wrap; margin-top: 20px;
+    font-size: 14px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .perks span { background: rgba(0,0,0,0.18); padding: 8px 16px; border-radius: 999px; }
+
+  /* ============ FULL SCHEDULE LIST ============ */
+  .schedule-section { background: var(--bg-2); }
+  .schedule-list {
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
+  }
+  .schedule-row {
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    gap: 20px;
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(245,228,91,0.08);
+    align-items: center;
+    transition: background .15s;
+  }
+  .schedule-row:last-child { border-bottom: none; }
+  .schedule-row:hover { background: rgba(240,16,112,0.06); }
+  .schedule-row .sr-when {
+    font-size: 14px; color: var(--yellow);
+    font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .schedule-row .sr-where {
+    font-size: 17px; color: #fff;
+    font-weight: 700;
+  }
+  .schedule-row .sr-where small {
+    display: block; font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px; font-weight: 400;
+    text-transform: none; letter-spacing: 0;
+  }
+  .schedule-row .sr-cta a {
+    color: var(--yellow);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 6px 14px;
+    border: 1px solid rgba(245,228,91,0.4);
+    border-radius: 999px;
+    transition: background .15s, color .15s;
+  }
+  .schedule-row .sr-cta a:hover {
+    background: var(--yellow);
+    color: var(--bg);
+  }
+  .schedule-row.is-live { background: rgba(34,197,94,0.08); }
+  .schedule-row.is-live .sr-when { color: #22c55e; }
+  @media (max-width: 580px) {
+    .schedule-row { grid-template-columns: 1fr; gap: 8px; padding: 16px 18px; }
+    .schedule-row .sr-cta { text-align: left; }
+    .schedule-row .sr-cta a { display: inline-block; }
+  }
+
+  /* ============ VIDEOS ============ */
+  .videos-section { background: var(--bg); }
+  .videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .video-wrap {
+    position: relative; padding-top: 56.25%;
+    background: #000; border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--hairline);
+  }
+  .video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  /* ============ FAQ ============ */
+  .faq-section { background: var(--bg-2); }
+  .faq-list { max-width: 760px; margin: 0 auto; }
+  .faq-item {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    padding: 22px 26px;
+    transition: border-color .15s, background .15s;
+  }
+  .faq-item:hover {
+    border-color: rgba(245,228,91,0.35);
+    background: rgba(0,0,0,0.5);
+  }
+  .faq-q {
+    font-size: 18px; color: var(--yellow);
+    font-weight: 700; margin-bottom: 8px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .faq-q::before { content: "?"; flex-shrink: 0; width: 26px; height: 26px; background: var(--pink); color: #fff; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .faq-a {
+    font-size: 15px;
+    color: #ddd;
+    line-height: 1.55;
+    margin-left: 38px;
+  }
+
+  /* ============ FOOTER ============ */
+  .social-strip {
+    padding: 36px 22px 28px;
+    background: var(--bg);
+    text-align: center;
+  }
+  .social-strip a {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: 50px; height: 50px;
+    margin: 0 6px;
+    color: var(--muted);
+    background: rgba(245,228,91,0.06);
+    border: 1px solid var(--hairline);
+    border-radius: 50%;
+    font-size: 22px;
+    transition: all .2s;
+  }
+  .social-strip a:hover {
+    color: var(--bg);
+    background: var(--yellow);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(245,228,91,0.25);
+  }
+
+  footer {
+    text-align: center;
+    padding: 28px 22px 36px;
+    font-size: 13px;
+    color: #555;
+    background: var(--bg);
+    border-top: 1px solid rgba(245,228,91,0.08);
+  }
+  footer a { color: #888; text-decoration: none; transition: color .15s; }
+  footer a:hover { color: var(--yellow); }
+  footer .contact { margin-top: 10px; color: #888; font-size: 13px; }
+
+  .loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 15px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <span class="pill">Live · Updated Daily</span>
+    <h1>UPCOMING EVENTS<span class="l2">THE MAKEUP BLOWOUT SALE</span></h1>
+    <p class="tagline">
+      40+ amazing brands at unbeatable prices.<br>
+      Subscribe to claim your <strong>FREE gift at the event!</strong>
+    </p>
+    <div class="stats" id="hero-stats">
+      <div><span class="stat-num"><span class="yel">14+</span></span> events ahead</div>
+      <div><span class="stat-num">40+</span> brands</div>
+      <div><span class="stat-num">$0</span> entry fee</div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURED 4 ============ -->
+  <section class="section" style="padding-top: 60px;">
+    <h2 class="section-title">Coming Soon</h2>
+    <p class="section-sub">Subscribe to claim your free gift at any of these upcoming events</p>
+    <div class="featured-grid" id="featured-grid">
+      <div class="loading">Loading events…</div>
+    </div>
+  </section>
+
+    <!-- ============ GIFT CALLOUT (uses existing shared asset) ============ -->
+  <section class="gift-callout">
+    <img src="/_assets/shared/GIF%20New%20Free%20Glitter%20Gift.gif" alt="Free Glitter Gift at the Event!" loading="lazy" onerror="this.style.display='none'">
+    <p class="gift-text">Subscribe and claim your <strong>FREE Glitter Gift</strong> at the event!</p>
+    <p class="gift-sub">No purchase required · Just bring your subscription confirmation text</p>
+  </section>
+
+  <!-- ============ VENDORS / BRANDS LOGOS ============ -->
+  <section class="vendors-section">
+    <p class="vendors-title">Featured Brands at Every Event</p>
+    <img src="/_assets/shared/brands-popart.png" alt="Featured beauty brands at The Makeup Blowout Sale events" loading="lazy" onerror="this.parentNode.style.display='none'">
+  </section>
+
+  <!-- ============ BRANDS STRIP ============ -->
+  <section class="brands-strip">
+    <p class="big">40+ Amazing Brands at Discounted Prices.</p>
+    <p class="small">Great products, even better prices. We restock every day of every event.</p>
+    <div class="perks">
+      <span>💳 Cash &amp; Card</span>
+      <span>👶 Kids Welcome</span>
+      <span>🅿️ Free Parking</span>
+      <span>🎫 Free Entry</span>
+    </div>
+  </section>
+
+  <!-- ============ PHOTO GALLERY ============ -->
+  <section class="section gallery-section">
+    <h2 class="section-title">Inside Our Events</h2>
+    <p class="section-sub">Real shots from past events — vendors, products, and customers</p>
+    <div class="gallery-grid">
+      <div class="gallery-tile" style="background-image: url('/_assets/shared/gallery-event.jpg');"></div>
+      <div class="gallery-tile" style="background-image: url('/_assets/shared/gallery-products.jpg');"></div>
+      <div class="gallery-tile" style="background-image: url('/_assets/shared/gift-customers.jpg');"></div>
+    </div>
+  </section>
+
+  <!-- ============ FULL SCHEDULE ============ -->
+  <section class="section schedule-section">
+    <h2 class="section-title">Full Schedule</h2>
+    <p class="section-sub">All upcoming events for the next 3 months</p>
+    <div class="schedule-list" id="schedule-list">
+      <div class="loading">Loading schedule…</div>
+    </div>
+  </section>
+
+  <!-- ============ VIDEOS ============ -->
+  <section class="section videos-section">
+    <h2 class="section-title">Inside Our Events</h2>
+    <p class="section-sub">See what to expect when you visit</p>
+    <div class="videos-grid">
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/ISyjfHGpIZc" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/AEdRsH7QQbI" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/uLZBeorhX9U" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/JoLUuegT6Lk" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/rnaIkI9rYU8" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/wT9jyzImLBE" loading="lazy" title="Makeup Blowout Sale" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/VQOCld9Fcao" loading="lazy" title="Makeup Blowout Sale Short" allowfullscreen></iframe></div>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/QwU9KSqVj_g" loading="lazy" title="Makeup Blowout Sale Short" allowfullscreen></iframe></div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section faq-section">
+    <h2 class="section-title">FAQ</h2>
+    <p class="section-sub">Questions our shoppers ask most</p>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">Do you guys restock?</div>
+        <div class="faq-a">Yes — every day of every event!</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">When will you be back?</div>
+        <div class="faq-a">Next year! We only come to your city once a year, so don't miss out.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is there an entrance fee?</div>
+        <div class="faq-a">No — entrance and parking are completely FREE!</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How do I get my free gift?</div>
+        <div class="faq-a">Subscribe by phone before or at the event using the Subscribe button on this page, then show your confirmation text at the door.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SOCIAL ============ -->
+  <section class="social-strip">
+    <a href="https://www.facebook.com/themakeupblowoutsale/" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+    <a href="https://www.instagram.com/themakeupblowoutsale/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <a href="https://www.tiktok.com/@makeupblowoutsale" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+    <a href="https://www.youtube.com/@themakeupblowoutsalegroup1114" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+  </section>
+
+  <footer>
+    Copyright &copy; 2026 The Makeup Blowout Sale Group. All Rights Reserved. &nbsp;|&nbsp;
+    <a href="https://www.freeprivacypolicy.com/privacy/view/47eed83d5b5c0cbe56a935188c1bc19c" target="_blank" rel="noopener">Privacy Policy</a>
+    &nbsp;|&nbsp;
+    <a href="https://www.freeprivacypolicy.com/terms/view/7f6db9a3367dfec220dab5eec7de07e3" target="_blank" rel="noopener">Terms of Service</a>
+    <div class="contact">📞 (424) 354-7625 &nbsp;·&nbsp; ✉️ info@makeupblowoutsalegroup.com</div>
+  </footer>
+
+  <script>
+  (function(){
+    // Primary source: my new auto-refreshed file in lauren-agent-hub-data (14 events,
+    // updated daily by .github/workflows/update-subscribe-target.yml).
+    var PRIMARY_URL = 'https://raw.githubusercontent.com/laurenlev10/lauren-agent-hub-data/main/docs/state/upcoming_events.json';
+    // Enrichment source: the legacy local file in this repo (has per-event image_url,
+    // subscribe_url, ig_url for events with their own landing page). Used only to
+    // override the default subscribe URL when a per-event landing page exists.
+    var LOCAL_URL = 'upcoming-events.json?_=' + Date.now();
+    // Fallback subscribe URL for events without a per-event landing page.
+    var DEFAULT_SUBSCRIBE = 'https://www.themakeupblowoutsale-group.com/subscribe-list/';
+
+    function fmtDateRange(start, end) {
+      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      var d1 = new Date(start + 'T12:00:00');
+      var d2 = new Date(end + 'T12:00:00');
+      var sameMonth = d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
+      if (sameMonth) {
+        return months[d1.getMonth()] + ' ' + d1.getDate() + '–' + d2.getDate() + ', ' + d1.getFullYear();
+      }
+      return months[d1.getMonth()] + ' ' + d1.getDate() + ' – ' + months[d2.getMonth()] + ' ' + d2.getDate() + ', ' + d2.getFullYear();
+    }
+    function fmtMonthShort(start) {
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var d = new Date(start + 'T12:00:00');
+      return months[d.getMonth()] + ' ' + d.getDate();
+    }
+    function todayStr() {
+      var d = new Date(); var p = function(n){return n<10?'0'+n:n;};
+      return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate());
+    }
+    function isFuture(end_date) {
+      // event is "future" if its end_date is today or later (so live events show)
+      return end_date >= todayStr();
+    }
+    function isLive(start_date, end_date) {
+      var t = todayStr();
+      return start_date <= t && t <= end_date;
+    }
+    function withinDays(start, days) {
+      var sd = new Date(start + 'T12:00:00');
+      var diff = (sd - new Date()) / (1000 * 60 * 60 * 24);
+      return diff <= days;
+    }
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, function(c){
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+      });
+    }
+    function shortVenue(v) {
+      if (!v) return '';
+      if (v.length > 60) return escapeHtml(v.slice(0, 57)) + '…';
+      return escapeHtml(v);
+    }
+    function eventKey(city, start_date) {
+      return (city || '').toLowerCase().replace(/\s+/g,'-') + '-' + start_date;
+    }
+
+    function buildSubscribeMap(localData) {
+      // Map "<city-slug>-<start_date>" → subscribe_url from the local file.
+      // Per-event landing pages live at /events/<slug>/ on this domain.
+      var map = {};
+      (localData && localData.events || []).forEach(function(e){
+        var key = eventKey(e.city, e.start_date);
+        if (e.subscribe_url && e.subscribe_url.indexOf('/events/') === 0) {
+          map[key] = e.subscribe_url; // per-event landing page
+        }
+      });
+      return map;
+    }
+
+    function renderFeatured(events, subMap) {
+      var picks = events.slice(0, 4);
+      var grid = document.getElementById('featured-grid');
+      if (!picks.length) {
+        grid.innerHTML = '<div class="loading">No upcoming events scheduled. Check back soon!</div>';
+        return;
+      }
+      grid.innerHTML = picks.map(function(e){
+        var live = isLive(e.start_date, e.end_date);
+        var sub = subMap[eventKey(e.city, e.start_date)] || DEFAULT_SUBSCRIBE;
+        // Per-event slug = '<city-slug>-<state-lc>-<year>' (matches /_assets/events/<slug>/hero.png)
+        var slug = (e.city||'').toLowerCase().replace(/\s+/g,'-') + '-' + (e.state||'').toLowerCase() + '-' + e.start_date.slice(0,4);
+        var heroPath = '/_assets/events/' + slug + '/hero.png';
+        var imgHtml = '<div class="ev-img" style="background-image: url(\'' + heroPath + '\');" onerror="this.style.display=\'none\';this.parentNode.classList.remove(\'has-img\');"></div>';
+        var ebLink = e.eventbrite_url
+          ? '<a class="ev-eb" href="' + escapeHtml(e.eventbrite_url) + '" target="_blank" rel="noopener">View on Eventbrite ↗</a>'
+          : '';
+        return '<div class="ev-card has-img' + (live ? ' is-live' : '') + '">'
+          +    imgHtml
+          +    '<div class="ev-state">' + escapeHtml(e.state || '') + '</div>'
+          +    '<div class="ev-city">' + escapeHtml(e.city) + '</div>'
+          +    '<div class="ev-dates">' + fmtDateRange(e.start_date, e.end_date) + '</div>'
+          +    '<div class="ev-venue">' + shortVenue(e.venue) + '</div>'
+          +    '<a class="ev-cta" href="' + escapeHtml(sub) + '">🎁 Subscribe &amp; Get Free Gift</a>'
+          +    ebLink
+          + '</div>';
+      }).join('');
+      // Hide hero block for cards whose hero.png 404s (gracefully via Image probe)
+      Array.prototype.slice.call(grid.querySelectorAll('.ev-img')).forEach(function(div){
+        var url = (div.style.backgroundImage.match(/url\(["']?([^"')]+)/) || [])[1];
+        if (!url) return;
+        var img = new Image();
+        img.onerror = function(){ div.style.display='none'; div.parentNode.classList.remove('has-img'); };
+        img.src = url;
+      });
+    }
+
+    function renderSchedule(events, subMap) {
+      var list = document.getElementById('schedule-list');
+      // Show all events within ~95 days (3 months window)
+      var filtered = events.filter(function(e){ return withinDays(e.start_date, 95); });
+      if (!filtered.length) filtered = events;
+      if (!filtered.length) {
+        list.innerHTML = '<div class="loading">No upcoming events.</div>';
+        return;
+      }
+      list.innerHTML = filtered.map(function(e){
+        var live = isLive(e.start_date, e.end_date);
+        var sub = subMap[eventKey(e.city, e.start_date)] || DEFAULT_SUBSCRIBE;
+        var label = e.eventbrite_url ? 'Tickets ↗' : 'Subscribe →';
+        var href = e.eventbrite_url || sub;
+        var target = e.eventbrite_url ? ' target="_blank" rel="noopener"' : '';
+        return '<div class="schedule-row' + (live ? ' is-live' : '') + '">'
+          +    '<div class="sr-when">' + (live ? '🔴 LIVE · ' : '') + fmtMonthShort(e.start_date) + '</div>'
+          +    '<div class="sr-where">' + escapeHtml(e.city) + ', ' + escapeHtml(e.state || '') + '<small>' + shortVenue(e.venue) + '</small></div>'
+          +    '<div class="sr-cta"><a href="' + escapeHtml(href) + '"' + target + '>' + label + '</a></div>'
+          + '</div>';
+      }).join('');
+    }
+
+    function updateHeroStats(events) {
+      // Update the "events ahead" count in the hero strip
+      var n = events.length;
+      var stats = document.getElementById('hero-stats');
+      if (stats) {
+        var first = stats.querySelector('.stat-num .yel');
+        if (first) first.textContent = n + '+';
+      }
+    }
+
+    function loadAll() {
+      // Fetch primary + local in parallel; render once we have primary
+      var primaryP = fetch(PRIMARY_URL + '?t=' + Math.floor(Date.now() / 60000), { cache: 'no-cache' })
+        .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+      var localP = fetch(LOCAL_URL, { cache: 'no-store' })
+        .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .catch(function(){ return { events: [] }; }); // local is optional
+
+      Promise.all([primaryP, localP]).then(function(results){
+        var primary = results[0] || {};
+        var local   = results[1] || {};
+        var allEvents = (primary.events || []).filter(function(e){ return isFuture(e.end_date); });
+        var subMap = buildSubscribeMap(local);
+        renderFeatured(allEvents, subMap);
+        renderSchedule(allEvents, subMap);
+        updateHeroStats(allEvents);
+      }).catch(function(err){
+        // If primary fails, fall back to local entirely
+        console.warn('primary upcoming_events fetch failed:', err);
+        fetch(LOCAL_URL, { cache: 'no-store' })
+          .then(function(r){ return r.json(); })
+          .then(function(d){
+            var allEvents = (d.events || []).filter(function(e){ return isFuture(e.end_date); });
+            // Local format has subscribe_url per event already
+            var subMap = {};
+            (d.events || []).forEach(function(e){ subMap[eventKey(e.city, e.start_date)] = e.subscribe_url || DEFAULT_SUBSCRIBE; });
+            renderFeatured(allEvents, subMap);
+            renderSchedule(allEvents, subMap);
+            updateHeroStats(allEvents);
+          })
+          .catch(function(){
+            document.getElementById('featured-grid').innerHTML = '<div class="loading">Unable to load events right now. <a href="' + DEFAULT_SUBSCRIBE + '" style="color:var(--pink);">Subscribe here →</a></div>';
+            document.getElementById('schedule-list').innerHTML = '<div class="loading">Schedule temporarily unavailable.</div>';
+          });
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadAll);
+    } else {
+      loadAll();
+    }
+  })();
+  </script>
+
+</body>
+</html>
