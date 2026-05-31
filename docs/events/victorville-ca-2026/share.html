@@ -128,7 +128,7 @@ body{font-family:'Poppins',Helvetica,sans-serif;background:var(--cream);color:va
 .st-hidden{display:none;}
 .st-color-red{color:#ffe14d;font-size:12px;font-weight:700;}
 .step2-singleOptIn p{color:#fff;font-size:19px;text-align:center;font-weight:700;}
-.bonus-note{max-width:480px;margin:20px auto 0;background:var(--yellow);border:3px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);padding:16px 18px;text-align:center;}.bonus-note .bn-badge{display:inline-block;background:var(--pink);color:#fff;font-family:'Anton',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:clamp(18px,5vw,26px);padding:5px 18px;border-radius:999px;border:2px solid var(--ink);transform:rotate(-2deg);margin-bottom:8px;box-shadow:2px 2px 0 var(--ink);}.bonus-note .bn-text{font-weight:700;color:var(--ink);font-size:clamp(14px,3.6vw,18px);line-height:1.4;}
+.bonus-note{max-width:420px;margin:22px auto 0;text-align:center;}.bonus-note .bn-gif{display:block;width:100%;max-width:380px;margin:0 auto 10px;border:3px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);background:#000;}.bonus-note .bn-text{font-weight:700;color:var(--ink);font-size:clamp(14px,3.6vw,17px);line-height:1.4;}
 .gift-media{max-width:340px;width:100%;margin:24px auto 0;display:block;border:4px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:6px 6px 0 var(--ink);}
 .gift-media img,.gift-media video{width:100%;height:auto;display:block;}
 /* carousel */
