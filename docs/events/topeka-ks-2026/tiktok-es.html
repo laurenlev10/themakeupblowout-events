@@ -1,26 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Makeup Blowout Sale — Topeka, KS 2026 — Español</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
-  <!-- ============ ANALYTICS — added 2026-05-07 ============ -->
-<!-- Replaced at build time by scripts/build.py from GitHub Secrets:
-     G-JM9XG0ZGJF → GA4_MEASUREMENT_ID
-     149055399513134      → META_PIXEL_ID
-     C93JCTC0G73TF7AJOTU0    → TIKTOK_PIXEL_ID  -->
-
-<!-- Google Analytics 4 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Venta Makeup Blowout — Topeka, KS 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
+<!-- ============ ANALYTICS ============ -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JM9XG0ZGJF"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-JM9XG0ZGJF', { page_path: window.location.pathname + window.location.search });
-  // Custom dimensions for cross-event reporting
   (function(){
     var slugMatch = window.location.pathname.match(/\/events\/([^\/]+)\//);
     var slug = slugMatch ? slugMatch[1] : 'unknown';
@@ -32,7 +23,6 @@
     gtag('event', 'page_load', { event_slug: slug, page_variant: variant, language: lang });
   })();
 </script>
-
 <!-- Meta Pixel -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -44,7 +34,6 @@ fbq('init', '149055399513134');
 fbq('track', 'PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=149055399513134&ev=PageView&noscript=1"/></noscript>
-
 <!-- TikTok Pixel -->
 <script>
 !function (w, d, t) {
@@ -57,8 +46,6 @@ fbq('track', 'PageView');
   ttq.page();
 }(window, document, 'ttq');
 </script>
-
-<!-- Helper: fire conversion + share events -->
 <script>
 window.trackEvent = function(name, params) {
   params = params || {};
@@ -69,262 +56,125 @@ window.trackEvent = function(name, params) {
   try { if (window.ttq && name === 'share_click') ttq.track('ClickButton', params); } catch(e){}
   try { if (window.ttq && name === 'tiktok_arrival') ttq.track('CompleteRegistration', params); } catch(e){}
 };
-// Auto-attach to share buttons
 document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('a[href*="instagram.com"]').forEach(function(a){
-    a.addEventListener('click', function(){ trackEvent('share_click', {platform:'instagram'}); });
-  });
-  document.querySelectorAll('a[href*="facebook.com"]').forEach(function(a){
-    a.addEventListener('click', function(){ trackEvent('share_click', {platform:'facebook'}); });
-  });
-  document.querySelectorAll('a[href*="tiktok.com"]').forEach(function(a){
-    a.addEventListener('click', function(){ trackEvent('share_click', {platform:'tiktok'}); });
-  });
-  // TikTok-variant page = arrival from TikTok lead form (already converted)
-  if (window.location.pathname.indexOf('tiktok') !== -1) {
-    trackEvent('tiktok_arrival', {});
-  }
+  document.querySelectorAll('a[href*="instagram.com"]').forEach(function(a){a.addEventListener('click',function(){trackEvent('share_click',{platform:'instagram'});});});
+  document.querySelectorAll('a[href*="facebook.com"], a[href*="fb.watch"]').forEach(function(a){a.addEventListener('click',function(){trackEvent('share_click',{platform:'facebook'});});});
+  document.querySelectorAll('a[href*="tiktok.com"]').forEach(function(a){a.addEventListener('click',function(){trackEvent('share_click',{platform:'tiktok'});});});
+  if (window.location.pathname.indexOf('tiktok') !== -1) { trackEvent('tiktok_arrival', {}); }
 });
 </script>
-<!-- ========================================================== -->
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Josefin Sans', Helvetica, sans-serif; background: #000; color: #fff; min-height: 100vh; }
-    .hero {
-      background: linear-gradient(135deg, #1a0030 0%, #2d0050 50%, #1a1060 100%);
-      padding: 40px 20px 30px; text-align: center;
-    }
-    .hero h1 { font-size: clamp(28px, 6vw, 52px); font-weight: 700; color: #f5e45b; line-height: 1.2; margin-bottom: 10px; }
-    .hero .tagline { font-size: clamp(16px, 3vw, 22px); color: #f01070; margin-bottom: 8px; }
-    .hero .free-entry { font-size: clamp(18px, 3.5vw, 26px); font-weight: 700; color: #fff; margin-top: 10px; }
-    .live-counter {
-      background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 12px 20px;
-      margin: 20px auto; max-width: 500px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    }
-    .live-counter .lc-live { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
-    .live-counter .lc-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 1s infinite; flex-shrink: 0; }
-    .live-counter .lc-right { text-align: right; }
-    .live-counter .lc-num { font-size: 26px; font-weight: 700; display: block; line-height: 1.1; }
-    .live-counter .lc-text { font-size: 12px; color: #aaa; margin-top: 2px; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.3;transform:scale(1.4);} }
-    .event-details { background: #111; padding: 30px 20px; }
-    .event-details ul { list-style: none; max-width: 600px; margin: 0 auto; }
-    .event-details ul li { font-size: clamp(16px, 3vw, 20px); color: #ffcfd2; margin-top: 16px; line-height: 1.5; display: flex; align-items: flex-start; gap: 12px; }
-    .event-details ul li i { color: #f01070; margin-top: 3px; flex-shrink: 0; }
-    .sms-section { padding: 30px 20px; background: #000; }
-    .sms-section h2 { text-align: center; font-size: clamp(20px, 4vw, 32px); color: #fff; margin-bottom: 6px; }
-    .sms-section .sub { text-align: center; font-size: 15px; color: #aaa; margin-bottom: 20px; }
-    .st-signupform {
-      font-family: 'Josefin Sans', sans-serif; background: #f01070; max-width: 420px; border-radius: 8px;
-      padding: 24px; margin: 0 auto; box-shadow: 0 8px 32px rgba(240,16,112,0.3);
-    }
-    .st-signupform input[type="text"] {
-      width: 100%; background: #fff; border: 1px solid rgba(0,27,72,0.32); border-radius: 4px;
-      padding: 10px 12px; font-size: 15px; font-family: inherit; margin-bottom: 14px; outline: none;
-    }
-    .st-signupform input[type="submit"] {
-      width: 100%; background: linear-gradient(to bottom, #4527A0, #432D85); color: #fff; border: none;
-      border-radius: 4px; padding: 12px; font-size: 16px; font-family: inherit; font-weight: 700; cursor: pointer; margin-top: 8px;
-    }
-    .st-signupform input[type="submit"]:hover { opacity: .9; }
-    .st-font-caption { font-size: 11px; color: rgba(255,255,255,0.85); line-height: 1.5; display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
-    .st-font-caption input[type="checkbox"] { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; }
-    .st-font-caption a { color: #fff; }
-    .st-hidden { display: none; }
-    .st-color-red { color: #ff6b6b; font-size: 12px; }
-    .step2-singleOptIn p { color: #fff; font-size: 20px; text-align: center; font-weight: 700; }
-    .step2-doubleOptIn p { color: #fff; font-size: 15px; text-align: center; }
-    .share-section { padding: 30px 20px; background: #0a0a0a; text-align: center; }
-    .share-section h3 { font-size: clamp(18px, 3.5vw, 26px); color: #4267b2; margin-bottom: 16px; }
-    .ig-btn {
-      display: block; max-width: 420px; margin: 0 auto; background: #f01070; color: #fff !important;
-      font-size: 18px; font-weight: 700; font-family: 'Josefin Sans', sans-serif; padding: 16px 28px;
-      border-radius: 8px; text-decoration: none; box-shadow: 0 8px 24px rgba(240,16,112,0.4);
-      transition: transform .2s, box-shadow .2s;
-    }
-    .ig-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(240,16,112,0.5); }
-    .ig-btn i { margin-right: 8px; }
-    .countdown-section { padding: 24px 20px; background: #000; text-align: center; }
-    .countdown-section .cd-label { font-size: clamp(16px, 3vw, 22px); color: #f01070; margin-bottom: 12px; }
-    .countdown { display: flex; justify-content: center; gap: 20px; }
-    .cd-block { text-align: center; min-width: 60px; }
-    .cd-num { font-size: clamp(32px, 7vw, 48px); font-weight: 700; color: #fff; line-height: 1; }
-    .cd-unit { font-size: 11px; color: #888; text-transform: uppercase; margin-top: 4px; }
-    footer { text-align: center; padding: 20px; font-size: 12px; color: #444; background: #000; }
-
-    /* === Image-section styling (added when Lauren's assets shipped) === */
-    .hero {
-      padding: 0 !important;
-      background: #000 !important;
-      position: relative;
-    }
-    .hero-img-wrap { position: relative; width: 100%; max-width: 720px; margin: 0 auto; }
-    .hero-img-wrap img {
-      width: 100%; height: auto; display: block;
-    }
-    .hero-text-overlay {
-      padding: 28px 20px 24px;
-      background: linear-gradient(135deg, #1a0030 0%, #2d0050 50%, #1a1060 100%);
-      text-align: center;
-    }
-    .vendors-section {
-      background: #fff;
-      padding: 24px 16px;
-      text-align: center;
-    }
-    .vendors-section img { max-width: 600px; width: 100%; height: auto; display: block; margin: 0 auto; }
-    .vendors-section .vendors-caption {
-      color: #1f2937; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;
-      margin-top: 10px; text-transform: uppercase;
-    }
-    .gift-media {
-      max-width: 380px; width: 100%; margin: 32px auto 18px; display: block;
-      border-radius: 12px; overflow: hidden;
-      box-shadow: 0 8px 28px rgba(240,16,112,0.35);
-    }
-    .gift-media video, .gift-media img {
-      width: 100%; height: auto; display: block;
-    }
-    .share-pic-wrap {
-      max-width: 380px; margin: 0 auto 16px;
-    }
-    .share-pic-wrap img { width: 100%; height: auto; display: block; border-radius: 12px; }
-    .limited-badge-wrap { text-align: center; margin-bottom: 8px; }
-    .limited-badge-wrap img { max-width: 200px; width: 60%; height: auto; }
-
-    /* Celebration GIF — shows above share buttons on the thank-you page (Lauren 2026-05-11) */
-    .celebration-gif {
-      display: block;
-      max-width: 320px;
-      width: 80%;
-      height: auto;
-      margin: 16px auto 24px;
-      border-radius: 16px;
-      box-shadow: 0 12px 36px rgba(240,16,112,0.45);
-    }
-  </style>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--pink:#ff2d8e;--pink2:#ff5fae;--pink-deep:#c4006b;--ink:#190512;--cream:#fff3e6;--yellow:#ffd23f;--cyan:#16e0e0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',Helvetica,sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+.wrap{max-width:760px;margin:0 auto;}
+.an{font-family:'Anton',Impact,sans-serif;font-weight:400;letter-spacing:.5px;text-transform:uppercase;line-height:.95;}
+.bang{font-family:'Bangers',cursive;letter-spacing:1.5px;}
+.topbar{position:fixed;top:10px;right:12px;z-index:1000;display:flex;gap:8px;align-items:center;background:var(--ink);padding:7px 12px;border-radius:999px;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--pink);}
+.topbar a{color:#fff;text-decoration:none;font-size:12px;font-weight:700;letter-spacing:.3px;}
+.topbar a.act{color:var(--yellow);}
+.topbar .sep{color:rgba(255,255,255,.35);}
+.hero{position:relative;background:radial-gradient(circle at 18% 18%, rgba(255,255,255,.18) 0 2px, transparent 2.5px),radial-gradient(circle at 68% 60%, rgba(255,255,255,.14) 0 2px, transparent 2.5px);background-color:var(--pink);background-size:22px 22px,22px 22px;padding:64px 20px 38px;text-align:center;border-bottom:5px solid var(--ink);}
+.eyebrow{display:inline-block;background:var(--ink);color:#fff;font-weight:700;font-size:13px;letter-spacing:1.5px;padding:8px 16px;border-radius:999px;text-transform:uppercase;margin-bottom:18px;border:2px solid #fff;box-shadow:3px 3px 0 var(--yellow);}
+.hero h1.an{font-size:clamp(46px,13vw,104px);color:#fff;text-shadow:4px 4px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink);}
+.hero .city-tag{font-family:'Bangers',cursive;font-size:clamp(26px,7vw,46px);color:var(--yellow);-webkit-text-stroke:1.5px var(--ink);margin-top:6px;letter-spacing:2px;}
+.hero .lead{max-width:540px;margin:14px auto 0;font-size:clamp(15px,3.4vw,19px);font-weight:500;color:#fff;line-height:1.5;}
+.stats{display:flex;justify-content:center;gap:10px;margin:24px auto 6px;max-width:560px;flex-wrap:wrap;}
+.stat{background:var(--cream);border:3px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);padding:12px 16px;min-width:90px;}
+.stat b{display:block;font-family:'Anton',sans-serif;font-size:24px;color:var(--pink-deep);line-height:1;}
+.stat span{display:block;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-top:4px;color:var(--ink);}
+.hero-img{max-width:560px;width:100%;margin:26px auto 6px;border:4px solid var(--ink);border-radius:18px;box-shadow:8px 8px 0 var(--ink);display:block;}
+.btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+.popbtn{display:inline-block;background:var(--yellow);color:var(--ink)!important;font-weight:800;font-size:clamp(15px,3.6vw,19px);text-transform:uppercase;letter-spacing:.5px;text-decoration:none;padding:15px 26px;border-radius:999px;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);transition:transform .12s,box-shadow .12s;}
+.popbtn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink);}
+.popbtn.pink{background:var(--pink);color:#fff!important;}
+.popbtn.cyan{background:var(--cyan);color:var(--ink)!important;}
+.marquee{background:var(--ink);overflow:hidden;white-space:nowrap;border-bottom:4px solid var(--pink);}
+.marquee .track{display:inline-block;padding:13px 0;animation:scroll 26s linear infinite;}
+.marquee span{font-family:'Bangers',cursive;font-size:20px;letter-spacing:2px;color:#fff;padding:0 4px;}
+.marquee .st{color:var(--yellow);}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.livebar{max-width:520px;margin:-22px auto 0;position:relative;z-index:5;background:#fff;border:3px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.livebar .ll{display:flex;align-items:center;gap:7px;font-weight:800;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--pink-deep);}
+.livebar .dot{width:9px;height:9px;background:#22c55e;border-radius:50%;animation:pulse 1s infinite;}
+.livebar .lnum{font-family:'Anton',sans-serif;font-size:30px;color:var(--ink);line-height:1;display:block;text-align:right;}
+.livebar .ltxt{font-size:11px;color:#777;margin-top:2px;text-align:right;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(1.4);}}
+.sec{padding:46px 20px;}
+.sec.cream{background:var(--cream);}
+.sec.dots{background:radial-gradient(circle at 20% 25%, rgba(255,45,142,.12) 0 3px, transparent 3.5px),radial-gradient(circle at 70% 70%, rgba(43,184,232,.12) 0 3px, transparent 3.5px);background-color:#fff;background-size:26px 26px,26px 26px;}
+.kicker{display:inline-block;background:var(--ink);color:var(--yellow);font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:999px;margin-bottom:14px;}
+.sec h2.an{font-size:clamp(30px,7vw,52px);color:var(--ink);text-align:center;}
+.sec h2 .hl{color:var(--pink);}
+.center{text-align:center;}
+.lede{max-width:520px;margin:10px auto 0;font-weight:500;color:#444;text-align:center;}
+/* 10-year scarcity band */
+.scarcity{background:var(--ink);color:#fff;padding:40px 20px;text-align:center;border-top:5px solid var(--yellow);border-bottom:5px solid var(--yellow);}
+.scarcity .big{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(30px,8vw,60px);color:var(--yellow);line-height:.98;}
+.scarcity .big .p{color:var(--pink2);}
+.scarcity p{max-width:560px;margin:14px auto 0;font-size:clamp(15px,3.4vw,19px);font-weight:500;color:#fff;line-height:1.55;}
+.scarcity .stamp{display:inline-block;margin-top:18px;background:var(--pink);color:#fff;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:10px 20px;border-radius:999px;border:2px solid #fff;box-shadow:3px 3px 0 var(--yellow);font-size:14px;}
+/* signup */
+.signup-card{max-width:440px;margin:26px auto 0;background:var(--pink);border:4px solid var(--ink);border-radius:20px;box-shadow:8px 8px 0 var(--ink);padding:26px 24px;}
+.signup-card .sc-h{font-family:'Anton',sans-serif;text-transform:uppercase;color:#fff;text-align:center;font-size:clamp(22px,5.4vw,32px);text-shadow:2px 2px 0 var(--ink);}
+.signup-card .sc-sub{text-align:center;color:#fff;font-weight:600;font-size:14px;margin:6px 0 18px;}
+.st-signupform input[type="text"]{width:100%;background:#fff;border:3px solid var(--ink);border-radius:10px;padding:13px 14px;font-size:16px;font-family:inherit;margin-bottom:12px;outline:none;font-weight:600;}
+.st-signupform input[type="submit"]{width:100%;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:999px;padding:15px;font-size:16px;font-family:'Poppins',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;margin-top:6px;box-shadow:4px 4px 0 var(--ink);transition:transform .12s,box-shadow .12s;}
+.st-signupform input[type="submit"]:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink);}
+.st-font-caption{font-size:11px;color:rgba(255,255,255,.92);line-height:1.5;display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;}
+.st-font-caption input[type="checkbox"]{width:16px;height:16px;flex-shrink:0;margin-top:2px;}
+.st-font-caption a{color:#fff;}
+.st-hidden{display:none;}
+.st-color-red{color:#ffe14d;font-size:12px;font-weight:700;}
+.step2-singleOptIn p{color:#fff;font-size:19px;text-align:center;font-weight:700;}
+.bonus-note{max-width:440px;margin:14px auto 0;text-align:center;font-size:13px;font-weight:600;color:var(--pink-deep);}
+.gift-media{max-width:340px;width:100%;margin:24px auto 0;display:block;border:4px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:6px 6px 0 var(--ink);}
+.gift-media img,.gift-media video{width:100%;height:auto;display:block;}
+/* carousel */
+.carousel{overflow:hidden;width:100%;margin-top:24px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);}
+.carousel .ctrack{display:flex;gap:16px;width:max-content;animation:cslide 11s linear infinite;}
+.carousel.rev .ctrack{animation-direction:reverse;animation-duration:13s;}
+.carousel:hover .ctrack{animation-play-state:paused;}
+.carousel img{height:220px;width:auto;border:4px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);object-fit:cover;flex:0 0 auto;background:#fff;}
+@keyframes cslide{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+/* info cards */
+.cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;max-width:720px;margin:26px auto 0;}
+@media(max-width:620px){.cards{grid-template-columns:1fr;}}
+.card{background:#fff;border:3px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);padding:20px 16px;text-align:center;}
+.card .ic{font-size:30px;color:var(--pink);margin-bottom:8px;}
+.card .ct{font-family:'Anton',sans-serif;font-size:15px;letter-spacing:.6px;text-transform:uppercase;color:var(--ink);margin-bottom:6px;}
+.card .cd{font-size:14px;font-weight:500;color:#444;line-height:1.45;}
+.card .cd strong{color:var(--pink-deep);}
+.imgblk{max-width:600px;width:100%;margin:0 auto;border:4px solid var(--ink);border-radius:18px;box-shadow:8px 8px 0 var(--ink);display:block;}
+.cap{text-align:center;font-family:'Anton',sans-serif;text-transform:uppercase;letter-spacing:1px;color:var(--ink);font-size:clamp(15px,3.5vw,20px);margin-top:16px;}
+.cap .hl{color:var(--pink);}
+/* tour */
+.tourwrap{max-width:580px;margin:24px auto 0;background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:8px 8px 0 var(--ink);overflow:hidden;}
+.tourscroll{max-height:420px;overflow-y:auto;}
+.trow{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:2px solid #f0e0e8;}
+.trow:last-child{border-bottom:none;}
+.trow .stt{font-family:'Anton',sans-serif;font-size:18px;color:var(--pink-deep);min-width:38px;text-align:center;}
+.trow .ci{flex:1;font-weight:700;font-size:15px;color:var(--ink);}
+.trow .dt{font-weight:700;font-size:12px;color:#888;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;}
+.trow.here{background:var(--yellow);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);padding:18px 16px;}
+.trow.here .stt{color:var(--ink);font-size:22px;}
+.trow.here .ci{font-family:'Anton',sans-serif;font-size:20px;}
+.trow.here .dt{color:var(--ink);}
+.badge{display:inline-block;background:var(--pink);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;border:2px solid var(--ink);margin-left:8px;text-transform:uppercase;letter-spacing:.5px;vertical-align:middle;}
+.tourhint{text-align:center;font-size:12px;color:#999;font-weight:600;margin-top:10px;}
+/* dark FAQ */
+.faqdark{background:#1a0a1e;padding:48px 20px;}
+.faqdark h2.an{color:var(--yellow);text-align:center;font-size:clamp(30px,7vw,50px);}
+.faqdark .sub{color:#c9a9d6;text-align:center;font-weight:500;margin-top:8px;}
+.fcard{max-width:600px;margin:16px auto 0;background:#26122e;border:2px solid #3a2042;border-radius:16px;padding:18px 20px;display:flex;gap:14px;align-items:flex-start;}
+.fcard .qb{width:34px;height:34px;flex:0 0 auto;background:var(--pink);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;border:2px solid #fff;}
+.fcard .q{font-weight:800;color:var(--yellow);margin-bottom:5px;font-size:16px;}
+.fcard .a{color:#cdb8d6;font-size:14px;line-height:1.55;}
+.fcard .a strong{color:#fff;}
+footer{text-align:center;padding:30px 20px;font-size:12px;color:#fff;background:var(--ink);font-weight:600;}
+footer .ft-h{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:8px;color:var(--yellow);}
+.hl-y{color:var(--yellow);}
+</style>
 </head>
-<body>
-  <div style="position:fixed;top:10px;right:12px;z-index:1000;display:flex;gap:6px;background:rgba(0,0,0,0.6);padding:6px 10px;border-radius:999px;backdrop-filter:blur(4px);">
-    <a href="https://events.themakeupblowout.com/" style="color:#f5e45b;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:0.3px;">📅 Todos los Eventos</a><span style="color:rgba(255,255,255,0.3);">|</span><a href="index.html" style="color:rgba(255,255,255,0.55);text-decoration:none;font-size:13px;font-weight:700;">EN</a>
-    <span style="color:rgba(255,255,255,0.3);">|</span>
-    <a href="index-es.html" style="color:#fff;text-decoration:none;font-size:13px;font-weight:700;">ES</a>
-  </div>
-
-
-  <section class="hero">
-    <div class="hero-img-wrap">
-      <img src="/_assets/events/topeka-ks-2026/hero.png" alt="The Makeup Blowout Sale - Topeka, KS - June 26th-28th, 2026">
-    </div>
-    <div class="hero-text-overlay">
-      <h1>&iexcl;Recibe Tu Glitter Fabuloso GRATIS! &#x2728;<br>Topeka, KS</h1>
-      <p class="tagline">&iexcl;Prep&aacute;rate para un fin de semana fabuloso de belleza y ahorros!<br>&iexcl;40+ marcas incre&iacute;bles a precios imbatibles!</p>
-      <p class="free-entry">&#x1F389; ENTRADA Y ESTACIONAMIENTO GRATIS</p>
-    </div>
-  </section>
-
-  <div style="padding: 0 20px;">
-    <div class="live-counter">
-      <div class="lc-live"><span class="lc-dot"></span>EN VIVO</div>
-      <div class="lc-right">
-        <span class="lc-num" id="lc-num">1,247</span>
-        <div class="lc-text">Bellezas registradas para este evento</div>
-      </div>
-    </div>
-  </div>
-
-  <section class="sms-section" style="background:#000;">
-    <div style="max-width: 540px; margin: 0 auto; text-align: center;">
-      <h2 style="font-size: clamp(28px, 6vw, 44px); color: #f5e45b; line-height: 1.2; margin-bottom: 10px;">
-        &#x1F389; &#xA1;Gracias!
-      </h2>
-  <img src="/_assets/shared/thank-you.gif" class="celebration-gif" alt="Celebrating your free gift!" loading="eager">
-
-
-      <p style="font-size: clamp(17px, 3.5vw, 22px); color: #fff; margin-bottom: 6px;">
-        &#xA1;Tu cup&#xF3;n de glitter GRATIS est&#xE1; en camino! &#x1F484;&#x2728;
-      </p>
-      <p style="font-size: clamp(15px, 3vw, 18px); color: #ffcfd2; margin-bottom: 26px;">
-        &#xA1;Comparte con tu amiga y obt&#xE9;n una <strong>sombra GRATIS</strong> tambi&#xE9;n!
-      </p>
-
-      <a href="https://www.instagram.com/reel/DYqLN-4x1AD/" target="_blank" rel="noopener noreferrer" style="display:block;max-width:420px;margin:10px auto;padding:16px 28px;background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);color:#fff;text-decoration:none;font-weight:700;font-size:17px;border-radius:8px;box-shadow:0 8px 24px rgba(220,39,67,0.4);">
-        &#x1F4F7; Compartir en Instagram
-      </a>
-      <a href="https://fb.watch/HpGDP2ByrY/" target="_blank" rel="noopener noreferrer" style="display:block;max-width:420px;margin:10px auto;padding:16px 28px;background:#1877F2;color:#fff;text-decoration:none;font-weight:700;font-size:17px;border-radius:8px;box-shadow:0 8px 24px rgba(24,119,242,0.4);">
-        &#x1F44D; Compartir en Facebook
-      </a>
-      <a href="https://www.tiktok.com/@makeupblowoutsale/video/7645407811446246686" target="_blank" rel="noopener noreferrer" style="display:block;max-width:420px;margin:10px auto;padding:16px 28px;background:#000;color:#fff;text-decoration:none;font-weight:700;font-size:17px;border-radius:8px;box-shadow:0 8px 24px rgba(255,255,255,0.15);border:2px solid #25F4EE;">
-        &#x1F3B5; Compartir en <span style="color:#25F4EE">Tik</span><span style="color:#FE2C55">Tok</span>
-      </a>
-
-      <p style="margin-top: 30px; font-size: 13px; color: #888; line-height: 1.5;">
-        Ya est&#xE1;s en nuestra lista de SMS desde tu registro en TikTok &#x2713; <br>
-        &#xA1;Nos vemos June 26th - 28th en Hotel Topeka at City Center!
-      </p>
-
-      <div class="gift-media" style="margin-top: 32px;">
-        <img src="/_assets/shared/NEW%20GIF.gif" alt="Regalo de Glitter Gratis" style="max-width: 250px;">
-      </div>
-    </div>
-  </section>
-
-  <section class="event-details">
-    <ul>
-      <li>
-        <i class="fas fa-calendar-alt"></i>
-        <span>Viernes - Domingo,<br>June 26th &#x2013; June 28th, 2026<br><strong>10am &#x2013; 5pm</strong></span>
-      </li>
-      <li>
-        <i class="fas fa-map-marker-alt"></i>
-        <span>1717 SW Topeka Blvd, Topeka, KS 66612<br>At Hotel Topeka at City Center</span>
-      </li>
-      <li>
-        <i class="fas fa-tag"></i>
-        <span>&iexcl;ENTRADA Y ESTACIONAMIENTO GRATIS &#x2014; No se necesitan boletos!</span>
-      </li>
-    </ul>
-  </section>
-
-
-  <section class="vendors-section">
-    <img src="/_assets/shared/Vendors-Logos.png" alt="40+ Top Beauty Brands">
-    <div class="vendors-caption">40+ MARCAS TOP &#x2022; HASTA 75% DE DESCUENTO</div>
-  </section>
-
-
-
-
-
-
-
-  <section class="promo-collage" style="background:#fdf2f8;padding:24px 16px;text-align:center;">
-    <img src="/_assets/shared/75-OFF-1-.png" alt="75% off Makeup, Skincare &amp; Hair Care" style="max-width:480px;width:100%;height:auto;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.08);">
-    <p style="margin:14px 0 0;color:#1f2937;font-weight:700;font-size:14px;letter-spacing:0.5px;text-transform:uppercase;">&iexcl;HASTA 75% DE DESCUENTO &mdash; NO TE LO PUEDES PERDER!</p>
-  </section>
-
-  <section class="bottom-gif" style="background:#000;padding:24px 16px;text-align:center;">
-    <video autoplay muted loop playsinline style="max-width:480px;width:100%;height:auto;border-radius:12px;display:inline-block;">
-      <source src="/_assets/shared/women-bags.mp4" type="video/mp4">
-      <img src="/_assets/shared/women-bags.gif" alt="Shop the Makeup Blowout Sale" style="max-width:480px;width:100%;height:auto;">
-    </video>
-  </section>
-
-  <footer>
-    &copy; 2026 The Makeup Blowout Sale Group. All rights reserved.
-  </footer>
-
-  <script>
-    (function(){
-      var sc=1200+Math.floor(Math.random()*80);
-      function fmt(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');}
-      var el=document.getElementById('lc-num');
-      if(el){el.textContent=fmt(sc);}
-      function bump(){sc+=Math.floor(Math.random()*3)+1;if(el){el.textContent=fmt(sc);}setTimeout(bump,8000+Math.floor(Math.random()*5000));}
-      setTimeout(bump,8000+Math.floor(Math.random()*5000));
-    })();
-  </script>
-
-</body>
-</html>
+<body><script>window.__CUR_CITY="Topeka, KS";</script><div class="topbar"><a href="https://events.themakeupblowout.com/">📅 Todos los Eventos</a><span class="sep">|</span><a  href="tiktok.html">EN</a><span class="sep">|</span><a class="act" href="tiktok-es.html">ES</a></div><section class="hero" style="padding-top:64px;padding-bottom:30px;"><span class="eyebrow">★ ¡Estás Dentro! ★</span><h1 class="an" style="font-size:clamp(44px,12vw,92px)">¡Gracias! 🎉</h1><p class="lead">¡Tu cupón de Sombra GRATIS está en camino! 💄✨ Comparte nuestro reel y desbloquea un delineador glitter de regalo.</p></section><div class="marquee"><div class="track"><span>HASTA 75% DESC.</span><span class="st">★</span><span>40+ MARCAS PRESTIGIO</span><span class="st">★</span><span>ENTRADA GRATIS</span><span class="st">★</span><span>SOMBRA GRATIS AL REGISTRARTE</span><span class="st">★</span><span>10º AÑO</span><span class="st">★</span><span>VIE–DOM · 10AM–5PM</span><span class="st">★</span><span>COMPARTE POR UN DELINEADOR GLITTER</span><span class="st">★</span><span>UNA VEZ CADA 2 AÑOS</span><span class="st">★</span><span>HASTA 75% DESC.</span><span class="st">★</span><span>40+ MARCAS PRESTIGIO</span><span class="st">★</span><span>ENTRADA GRATIS</span><span class="st">★</span><span>SOMBRA GRATIS AL REGISTRARTE</span><span class="st">★</span><span>10º AÑO</span><span class="st">★</span><span>VIE–DOM · 10AM–5PM</span><span class="st">★</span><span>COMPARTE POR UN DELINEADOR GLITTER</span><span class="st">★</span><span>UNA VEZ CADA 2 AÑOS</span><span class="st">★</span></div></div><section class="sec dots center"><img class="gift-media" style="margin:0 auto 8px;max-width:300px" src="/_assets/shared/thank-you.gif" alt="¡Celebrando tu sombra gratis!"><div style="max-width:440px;margin:24px auto 0"><a href="https://www.instagram.com/reel/DYqLN-4x1AD/" class="popbtn pink" style="display:block;margin-bottom:12px" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Comparte en Instagram</a><a href="https://fb.watch/HpGDP2ByrY/" class="popbtn" style="display:block;margin-bottom:12px;background:#1877f2;color:#fff!important" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i> Comparte en Facebook</a><a href="https://www.tiktok.com/@makeupblowoutsale/video/7645407811446246686" class="popbtn" style="display:block;background:var(--ink);color:#fff!important" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok"></i> Comparte en TikTok</a></div><p class="lede" style="font-size:13px;color:#777">Ya estás en nuestra lista SMS desde tu registro en TikTok ✓ · ¡Nos vemos June 26th–28th, 2026 en Hotel Topeka at City Center!</p></section><section class="scarcity"><div class="big">10 <span class="p">Años</span> 🎉</div><p>Somos la venta de belleza itinerante más grande del país — y 2026 marca nuestro <strong>10º año</strong>. Solo llegamos a tu ciudad <strong>una vez cada par de años</strong>. Topeka, KS — <strong>¡este es TU año!</strong> ¡No te lo pierdas!</p><span class="stamp">📍 Una Vez Cada 2 Años · No Te Lo Pierdas</span></section><section class="sec dots"><div class="center"><span class="kicker">Dentro de la Venta</span><h2 class="an">La <span class="hl">experiencia.</span></h2><p class="lede">Momentos reales de nuestros eventos — pasillos llenos, bolsas para llevar y compras felices.</p></div><div class="carousel"><div class="ctrack"><img src="/_assets/shared/gallery-event.jpg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="/_assets/shared/gallery-products.jpg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-1-D47vYkPp.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-2-C1nZ55uU.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-4-Cc9P139d.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-6-CvkOMv6x.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-7-LHKjHAFC.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-9-Cl34DBlz.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="/_assets/shared/gallery-event.jpg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="/_assets/shared/gallery-products.jpg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-1-D47vYkPp.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-2-C1nZ55uU.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-4-Cc9P139d.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-6-CvkOMv6x.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-7-LHKjHAFC.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-9-Cl34DBlz.jpeg" alt="Makeup Blowout Sale event photo" loading="lazy"></div></div></section><section class="sec cream"><div class="center"><span class="kicker">Clientas Reales, Cajas Reales</span><h2 class="an">Clientas <span class="hl">felices!</span></h2><p class="lede" style="max-width:560px">Miles se llevan nuestra famosa <strong>Caja Misteriosa</strong> cada fin de semana — llena de best-sellers que valen mucho más de lo que pagas. ¡Consigue la tuya antes de que se acaben!</p></div><div class="carousel rev"><div class="ctrack"><img src="/_assets/shared/gift-customers.jpg" alt="Happy customer with Mystery Box" loading="lazy"><img src="/_assets/shared/Gif_Ladies.webp" alt="Happy customer with Mystery Box" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-3-OJgSbrKo.jpeg" alt="Happy customer with Mystery Box" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-5-Byt074V2.jpeg" alt="Happy customer with Mystery Box" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-8-BB7XCnfU.jpeg" alt="Happy customer with Mystery Box" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-10-CemW7oGL.jpeg" alt="Happy customer with Mystery Box" loading="lazy"><img src="/_assets/shared/Box.gif" alt="Happy customer with Mystery Box" loading="lazy"><img src="/_assets/shared/gift-customers.jpg" alt="Happy customer with Mystery Box" loading="lazy"><img src="/_assets/shared/Gif_Ladies.webp" alt="Happy customer with Mystery Box" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-3-OJgSbrKo.jpeg" alt="Happy customer with Mystery Box" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-5-Byt074V2.jpeg" alt="Happy customer with Mystery Box" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-8-BB7XCnfU.jpeg" alt="Happy customer with Mystery Box" loading="lazy"><img src="https://beauty-bash-usa.lovable.app/assets/event-10-CemW7oGL.jpeg" alt="Happy customer with Mystery Box" loading="lazy"><img src="/_assets/shared/Box.gif" alt="Happy customer with Mystery Box" loading="lazy"></div></div><p class="cap" style="margin-top:20px">★ LA <span class="hl">CAJA MISTERIOSA</span> · MÁS VENDIDA ★</p></section><section class="sec dots"><div class="center"><span class="kicker">Detalles del Evento</span><h2 class="an">Marca Tu <span class="hl">Calendario</span></h2></div><div class="cards"><div class="card"><div class="ic"><i class="far fa-calendar-alt"></i></div><div class="ct">Cuándo</div><div class="cd">Viernes – Domingo<br><strong>June 26th – 28th, 2026</strong><br>10AM – 5PM</div></div><div class="card"><div class="ic"><i class="fas fa-map-marker-alt"></i></div><div class="ct">Dónde</div><div class="cd">1717 SW Topeka Blvd, Topeka, KS 66612<br>En <strong>Hotel Topeka at City Center</strong></div></div><div class="card"><div class="ic"><i class="fas fa-tag"></i></div><div class="ct">Costo</div><div class="cd"><strong>Entrada y estacionamiento GRATIS</strong><br>¡Sin boletos!</div></div></div></section><section class="sec cream" id="tour"><div class="center"><span class="kicker">El Tour 2026</span><h2 class="an">Una ciudad nueva <span class="hl">cada fin de semana</span></h2><p class="lede">Viajamos por todo el país — encuentra tu ciudad abajo. ¡Tu fin de semana está resaltado! 📍</p></div><div class="tourwrap"><div class="tourscroll"><div class="trow" data-city="Cleveland, OH"><div class="stt">OH</div><div class="ci">Cleveland, OH</div><div class="dt">MAY 29–31</div></div><div class="trow" data-city="Omaha, NE"><div class="stt">NE</div><div class="ci">Omaha, NE</div><div class="dt">JUN 5–7</div></div><div class="trow" data-city="Overland Park, KS"><div class="stt">KS</div><div class="ci">Overland Park, KS</div><div class="dt">JUN 12–14</div></div><div class="trow" data-city="Wichita, KS"><div class="stt">KS</div><div class="ci">Wichita, KS</div><div class="dt">JUN 19–21</div></div><div class="trow" data-city="Topeka, KS"><div class="stt">KS</div><div class="ci">Topeka, KS</div><div class="dt">JUN 26–28</div></div><div class="trow" data-city="Fort Collins, CO"><div class="stt">CO</div><div class="ci">Fort Collins, CO</div><div class="dt">JUL 3–5</div></div><div class="trow" data-city="Mesa, AZ"><div class="stt">AZ</div><div class="ci">Mesa, AZ</div><div class="dt">JUL 10–12</div></div><div class="trow" data-city="Santa Maria, CA"><div class="stt">CA</div><div class="ci">Santa Maria, CA</div><div class="dt">JUL 17–19</div></div><div class="trow" data-city="Modesto, CA"><div class="stt">CA</div><div class="ci">Modesto, CA</div><div class="dt">JUL 24–26</div></div><div class="trow" data-city="Victorville, CA"><div class="stt">CA</div><div class="ci">Victorville, CA</div><div class="dt">JUL 31–AUG 2</div></div><div class="trow" data-city="Richmond, CA"><div class="stt">CA</div><div class="ci">Richmond, CA</div><div class="dt">AUG 7–9</div></div><div class="trow" data-city="Visalia, CA"><div class="stt">CA</div><div class="ci">Visalia, CA</div><div class="dt">AUG 14–16</div></div><div class="trow" data-city="Riverside, CA"><div class="stt">CA</div><div class="ci">Riverside, CA</div><div class="dt">AUG 21–23</div></div><div class="trow" data-city="San Jose, CA"><div class="stt">CA</div><div class="ci">San Jose, CA</div><div class="dt">AUG 28–30</div></div><div class="trow" data-city="Portland, OR"><div class="stt">OR</div><div class="ci">Portland, OR</div><div class="dt">SEP 4–6</div></div><div class="trow" data-city="Boise, ID"><div class="stt">ID</div><div class="ci">Boise, ID</div><div class="dt">SEP 11–13</div></div><div class="trow" data-city="Salt Lake City, UT"><div class="stt">UT</div><div class="ci">Salt Lake City, UT</div><div class="dt">SEP 25–27</div></div><div class="trow" data-city="Bakersfield, CA"><div class="stt">CA</div><div class="ci">Bakersfield, CA</div><div class="dt">OCT 2–4</div></div><div class="trow" data-city="Reno, NV"><div class="stt">NV</div><div class="ci">Reno, NV</div><div class="dt">OCT 9–11</div></div><div class="trow" data-city="Santa Fe, NM"><div class="stt">NM</div><div class="ci">Santa Fe, NM</div><div class="dt">OCT 16–18</div></div><div class="trow" data-city="Albuquerque, NM"><div class="stt">NM</div><div class="ci">Albuquerque, NM</div><div class="dt">OCT 23–25</div></div><div class="trow" data-city="Westminster, CO"><div class="stt">CO</div><div class="ci">Westminster, CO</div><div class="dt">NOV 13–15</div></div><div class="trow" data-city="Tucson, AZ"><div class="stt">AZ</div><div class="ci">Tucson, AZ</div><div class="dt">NOV 20–22</div></div><div class="trow" data-city="Santa Ana, CA"><div class="stt">CA</div><div class="ci">Santa Ana, CA</div><div class="dt">DEC 4–6</div></div><div class="trow" data-city="Anaheim, CA"><div class="stt">CA</div><div class="ci">Anaheim, CA</div><div class="dt">DEC 18–20</div></div></div></div><p class="tourhint">Desliza la lista — cada parada del tour 👆</p></section><section class="sec dots"><div class="center"><span class="kicker">Las Marcas</span><h2 class="an">¿Qué <span class="hl">encontrarás</span>?</h2></div><img class="imgblk" style="margin-top:24px" src="/_assets/shared/brands-popart.png" alt="40+ Top Beauty Brands"><p class="cap">40+ MARCAS TOP · <span class="hl">HASTA 75% DESC.</span></p></section><section class="faqdark"><div class="center"><h2 class="an">Preguntas Frecuentes</h2><p class="sub">Lo que más preguntan nuestras clientas</p></div><div class="fcard"><div class="qb">?</div><div><div class="q">¿Reabastecen productos?</div><div class="a">¡Sí — todos los días de cada evento!</div></div></div><div class="fcard"><div class="qb">?</div><div><div class="q">¿Cuándo regresan?</div><div class="a">Solo visitamos tu ciudad <strong>una vez cada par de años</strong> — ¡no te pierdas esta!</div></div></div><div class="fcard"><div class="qb">?</div><div><div class="q">¿Hay costo de entrada?</div><div class="a">No — la entrada y el estacionamiento son totalmente <strong>GRATIS</strong>.</div></div></div><div class="fcard"><div class="qb">?</div><div><div class="q">¿Cómo recibo mi Sombra GRATIS?</div><div class="a">Regístrate por teléfono con el formulario de esta página y muestra tu mensaje de confirmación en la puerta.</div></div></div><div class="fcard"><div class="qb">?</div><div><div class="q">¿Cómo desbloqueo el delineador glitter de regalo?</div><div class="a">Comparte el reel del evento en tus redes y muéstralo en caja — ¡el delineador glitter es tuyo!</div></div></div><div class="fcard"><div class="qb">?</div><div><div class="q">¿Puedo traer a mis hijos?</div><div class="a">¡Sí! Todas las edades son bienvenidas, y animales de servicio también.</div></div></div></section><footer><div class="ft-h">THE MAKEUP BLOWOUT SALE · 10 AÑOS</div>Nos vemos en <span class="hl-y">Topeka, KS</span> · June 26th – 28th, 2026<br>&copy; 2026 The Makeup Blowout Sale Group. Todos los derechos reservados.</footer><script>document.addEventListener('DOMContentLoaded',function(){var cur=(window.__CUR_CITY||"").trim().toLowerCase();var rows=document.querySelectorAll('.trow');var hit=null;rows.forEach(function(r){var c=(r.getAttribute('data-city')||"").trim().toLowerCase();if(c&&c===cur){r.classList.add('here');hit=r;var ci=r.querySelector('.ci');if(ci&&!ci.querySelector('.badge')){var b=document.createElement('span');b.className='badge';b.textContent="AQUÍ";ci.appendChild(b);}}});var sc=document.querySelector('.tourscroll');if(hit&&sc){sc.scrollTop=Math.max(0,hit.offsetTop-sc.offsetTop-140);}});</script></body></html>
