@@ -1,20 +1,20 @@
 {
   "events": {
-    "wichita-ks-2026": {
+    "omaha-ne-2026": {
       "eventbrite": {
-        "registrations": 31,
+        "registrations": 113,
         "capacity": 250,
         "today_delta": 0,
         "weekly_delta": 0
       },
       "sms": {
-        "list_id": "68b747dc507c11791233ef77",
-        "list_name": "Wichita, KS 2026",
-        "total": 295,
-        "active": 273,
-        "daily_delta": 295
+        "list_id": "691676e2073eba7f4ef99e1d",
+        "list_name": "Omaha, NE 2026",
+        "total": 1079,
+        "active": 1015,
+        "daily_delta": 1079
       },
-      "updated_at": "2026-05-31T09:24:01+00:00"
+      "updated_at": "2026-05-31T14:11:26+00:00"
     },
     "cleveland-oh-2026": {
       "eventbrite": {
@@ -26,75 +26,11 @@
       "sms": {
         "list_id": "68b7464a52ea05484b1afc44",
         "list_name": "Cleveland, OH 2026",
-        "total": 1996,
-        "active": 1781,
-        "daily_delta": 1613
+        "total": 2004,
+        "active": 1789,
+        "daily_delta": 1621
       },
-      "updated_at": "2026-05-31T09:24:01+00:00"
-    },
-    "omaha-ne-2026": {
-      "eventbrite": {
-        "registrations": 113,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "691676e2073eba7f4ef99e1d",
-        "list_name": "Omaha, NE 2026",
-        "total": 1061,
-        "active": 997,
-        "daily_delta": 1061
-      },
-      "updated_at": "2026-05-31T09:24:01+00:00"
-    },
-    "topeka-ks-2026": {
-      "eventbrite": {
-        "registrations": 28,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "68e83643fe1243162f69fa1c",
-        "list_name": "Topeka, KS 2026",
-        "total": 98,
-        "active": 94,
-        "daily_delta": 98
-      },
-      "updated_at": "2026-05-31T09:24:01+00:00"
-    },
-    "roseville-mn-2026": {
-      "eventbrite": {
-        "registrations": 365,
-        "capacity": 500,
-        "today_delta": 0,
-        "weekly_delta": 2
-      },
-      "sms": {
-        "list_id": "6916769a073eba7f4ef9831a",
-        "list_name": "Roseville, MN 2026",
-        "total": 2550,
-        "active": 2234,
-        "daily_delta": 1458
-      },
-      "updated_at": "2026-05-31T09:24:01+00:00"
-    },
-    "overland-park-ks-2026": {
-      "eventbrite": {
-        "registrations": 78,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "6916850663f88543ee7e9fb6",
-        "list_name": "Overland Park, KS 2026",
-        "total": 783,
-        "active": 713,
-        "daily_delta": 783
-      },
-      "updated_at": "2026-05-31T09:24:01+00:00"
+      "updated_at": "2026-05-31T14:11:26+00:00"
     },
     "columbia-mo-2026": {
       "eventbrite": {
@@ -110,7 +46,39 @@
         "active": 769,
         "daily_delta": 60
       },
-      "updated_at": "2026-05-31T09:24:01+00:00"
+      "updated_at": "2026-05-31T14:11:26+00:00"
+    },
+    "topeka-ks-2026": {
+      "eventbrite": {
+        "registrations": 28,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "68e83643fe1243162f69fa1c",
+        "list_name": "Topeka, KS 2026",
+        "total": 112,
+        "active": 104,
+        "daily_delta": 112
+      },
+      "updated_at": "2026-05-31T14:11:26+00:00"
+    },
+    "overland-park-ks-2026": {
+      "eventbrite": {
+        "registrations": 78,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "6916850663f88543ee7e9fb6",
+        "list_name": "Overland Park, KS 2026",
+        "total": 793,
+        "active": 723,
+        "daily_delta": 793
+      },
+      "updated_at": "2026-05-31T14:11:26+00:00"
     },
     "milwaukee-wi-2026": {
       "eventbrite": {
@@ -126,8 +94,40 @@
         "active": 2031,
         "daily_delta": 827
       },
-      "updated_at": "2026-05-31T09:24:01+00:00"
+      "updated_at": "2026-05-31T14:11:26+00:00"
+    },
+    "roseville-mn-2026": {
+      "eventbrite": {
+        "registrations": 365,
+        "capacity": 500,
+        "today_delta": 0,
+        "weekly_delta": 2
+      },
+      "sms": {
+        "list_id": "6916769a073eba7f4ef9831a",
+        "list_name": "Roseville, MN 2026",
+        "total": 2550,
+        "active": 2234,
+        "daily_delta": 1458
+      },
+      "updated_at": "2026-05-31T14:11:26+00:00"
+    },
+    "wichita-ks-2026": {
+      "eventbrite": {
+        "registrations": 31,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "68b747dc507c11791233ef77",
+        "list_name": "Wichita, KS 2026",
+        "total": 298,
+        "active": 276,
+        "daily_delta": 298
+      },
+      "updated_at": "2026-05-31T14:11:26+00:00"
     }
   },
-  "_updated_at": "2026-05-31T09:24:27Z"
+  "_updated_at": "2026-05-31T14:12:00Z"
 }
