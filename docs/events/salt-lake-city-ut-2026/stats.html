@@ -654,7 +654,18 @@
       const lpv   = data.landing_page_views || 0;
       const ctr   = data.ctr || (imp ? (clk / imp * 100) : 0);
       const cpc   = data.cpc || (clk ? (spend / clk) : 0);
+      const convs = data.conversions || 0;
       const cpl   = data.cost_per_lpv || (lpv ? (spend / lpv) : 0);
+      // 2026-06-05 — objective-aware KPI. Lead-optimized campaigns (e.g. TikTok "City Leads")
+      // drive form submits, not LP Views, so they legitimately report lpv=0 with real
+      // conversions. Detect that and show Form Submits + Cost/Form instead of a misleading
+      // "0 LPV / $thousands CPL" (the Cleveland cost_per_lpv=$2356 divide-by-1 artifact).
+      const isLeadObj = convs > 0 && lpv <= convs * 0.05;
+      const primLabel = isLeadObj ? "Form Submits" : "LP Views";
+      const primVal   = isLeadObj ? convs : lpv;
+      const primSub   = isLeadObj
+        ? ("Cost/Form $" + (convs ? (spend / convs) : 0).toFixed(2))
+        : ("CPL $" + (Number(cpl) || 0).toFixed(2));
       const topAds = data.top_ads || [];
 
       // Status pill: live (spend > 0), idle (no spend, no token), pending (TikTok API not approved)
@@ -671,7 +682,7 @@
         <div class="platform-metrics">
           <div class="platform-metric"><div class="pm-label">Impressions</div><div class="pm-val">${fmtNum(imp)}</div></div>
           <div class="platform-metric"><div class="pm-label">Clicks</div><div class="pm-val">${fmtNum(clk)}</div><div class="pm-sub">CTR ${fmtPct(ctr)}</div></div>
-          <div class="platform-metric"><div class="pm-label">LP Views</div><div class="pm-val">${fmtNum(lpv)}</div><div class="pm-sub">CPL ${fmtCurrencyF(cpl)}</div></div>
+          <div class="platform-metric"><div class="pm-label">${primLabel}</div><div class="pm-val">${fmtNum(primVal)}</div><div class="pm-sub">${primSub}</div></div>
           <div class="platform-metric"><div class="pm-label">CPC</div><div class="pm-val">${fmtCurrencyF(cpc)}</div></div>
         </div>`;
 
@@ -680,16 +691,36 @@
         // 2026-05-13 PM — Lauren wants ads ranked by best converter (lowest CPL first).
         // The aggregator already sorts top_ads by CPL asc. Show #1 as 🏆 winner;
         // others numbered #2..#5. Each row shows ad + campaign + spend + LPV + CPL.
-        topAdsHtml = '<div class="platform-topads"><div class="ta-title">דירוג מודעות — מהמצליחה ביותר לפחות (CPL)</div>' +
-          topAds.slice(0, 5).map((a, i) => {
+        // 2026-06-05 — if NO ad has LPV, this is a Lead-objective platform: the aggregator's
+        // CPL-asc sort is meaningless (all CPL=0), so re-rank by CPC asc and show clicks.
+        const adsHaveLpv = topAds.some(a => (a.lpv || a.landing_page_views || 0) > 0);
+        let ranked = topAds.slice(0, 5);
+        if (!adsHaveLpv) {
+          ranked = topAds.filter(a => (a.spend || 0) > 0).slice().sort((x, y) => {
+            const cx = (x.clicks || 0) ? x.spend / x.clicks : Infinity;
+            const cy = (y.clicks || 0) ? y.spend / y.clicks : Infinity;
+            return cx - cy;
+          }).slice(0, 5);
+        }
+        const taTitle = adsHaveLpv
+          ? 'דירוג מודעות — מהמצליחה ביותר לפחות (CPL)'
+          : 'דירוג מודעות — לפי עלות לקליק (קמפיין Leads — אין LPV)';
+        topAdsHtml = '<div class="platform-topads"><div class="ta-title">' + taTitle + '</div>' +
+          ranked.map((a, i) => {
             const adName = (a.ad_name || "ad #" + (a.ad_id || (i+1))).slice(0, 32);
             const camp = (a.campaign_name || "").slice(0, 36);
-            const lpv = a.lpv || a.landing_page_views || 0;
-            const adCpl = lpv ? (a.spend / lpv) : 0;
+            const adLpv = a.lpv || a.landing_page_views || 0;
+            const adClk = a.clicks || 0;
+            const adCpl = adLpv ? (a.spend / adLpv) : 0;
+            const adCpc = adClk ? (a.spend / adClk) : 0;
             const rank = i === 0
               ? '<span class="ta-rank winner">🏆 #1</span>'
               : `<span class="ta-rank">#${i+1}</span>`;
             const campLine = camp ? `<div class="ta-camp">${camp}</div>` : '';
+            const numMain = adsHaveLpv ? (fmtCurrencyF(adCpl) + ' CPL') : (fmtCurrencyF(adCpc) + ' CPC');
+            const numSub  = adsHaveLpv
+              ? (fmtNum(adLpv) + ' LPV · ' + fmtCurrency(a.spend || 0))
+              : (fmtNum(adClk) + ' clicks · ' + fmtCurrency(a.spend || 0));
             return `<div class="ta-row">
               ${rank}
               <div class="ta-body">
@@ -697,8 +728,8 @@
                 ${campLine}
               </div>
               <div class="ta-nums">
-                <div class="ta-num">${fmtCurrencyF(adCpl)} CPL</div>
-                <div class="ta-num-sub">${fmtNum(lpv)} LPV · ${fmtCurrency(a.spend || 0)}</div>
+                <div class="ta-num">${numMain}</div>
+                <div class="ta-num-sub">${numSub}</div>
               </div>
             </div>`;
           }).join("") +
