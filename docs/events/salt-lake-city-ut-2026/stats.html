@@ -294,6 +294,26 @@
       .funnel-num{font-size:18px}
       #reg-chart{height:220px!important}
     }
+
+  /* 2026-06-05 — Budget → Success + optimization + insights */
+  .budget-wrap{background:#161a22;border:1px solid #262c38;border-radius:14px;padding:16px;margin:14px 0}
+  .budget-title{font-size:17px;font-weight:800;margin-bottom:2px}
+  .budget-sub{color:#9aa6b8;font-size:12.5px;margin-bottom:12px}
+  .budget-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+  .bcard{background:#0f131b;border:1px solid #262c38;border-radius:12px;padding:12px}
+  .bcard-t{font-weight:700;font-size:14px;margin-bottom:8px}
+  .bcard-rows{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+  .bcard-row{display:flex;justify-content:space-between;font-size:13px;color:#cdd6e4}
+  .bcard-row b{color:#fff}
+  .bcard-sub{color:#8a94a6;font-size:11.5px;line-height:1.4}
+  .budget-opt,.budget-ins{margin-top:14px;background:#12161e;border:1px solid #262c38;border-radius:12px;padding:12px}
+  .opt-head{font-weight:700;font-size:14px;margin-bottom:8px}
+  .opt-row{font-size:13px;padding:7px 9px;border-radius:9px;background:#0f131b;margin-bottom:6px;border-right:3px solid #444}
+  .opt-row.pause{border-right-color:#ff5d6c}
+  .opt-row.scale{border-right-color:#22d39a}
+  .opt-why{color:#9aa6b8;font-size:11.5px;margin-top:3px}
+  .opt-cta{display:inline-block;margin-top:6px;color:#a98bff;font-size:13px;text-decoration:none}
+  .ins-row{font-size:13px;color:#cdd6e4;padding:4px 0;line-height:1.5}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -386,6 +406,15 @@
       <div id="shares-insight" class="insight" style="display:none"></div>
     </div>
 
+    <!-- 2026-06-05 — Budget -> Success (realized ROAS + registrations + shares) + per-event optimization + insights -->
+    <div id="budget-section" class="budget-wrap" style="display:none;">
+      <div class="budget-title">💸 תקציב → הצלחה</div>
+      <div class="budget-sub">איך תקציב הפרסום מתורגם להצלחת האירוע — מכירות, הרשמות ושיתופים, כל אחד בנפרד</div>
+      <div class="budget-grid" id="budget-grid"></div>
+      <div id="budget-opt" class="budget-opt" style="display:none"></div>
+      <div id="budget-insights" class="budget-ins" style="display:none"></div>
+    </div>
+
     <div id="paid-section" class="paid-wrap" style="display:none;">
       <div class="paid-title">
         <span>🎯 Paid Acquisition</span>
@@ -467,10 +496,11 @@
     } catch(e) { return null; }
   }
 
-  const [analytics, regStats, timeseries] = await Promise.all([
+  const [analytics, regStats, timeseries, optimizer] = await Promise.all([
     fetchJson("/state/event_analytics.json"),
     fetchJson("/state/registration_stats.json"),
     fetchJson("/state/event_timeseries.json"),
+    fetchJson("/state/ads_optimizer.json"),
   ]);
 
   const evPixel = analytics && analytics.events && analytics.events[slug];
@@ -564,6 +594,99 @@
       document.getElementById("reg-chart-empty").style.display = "block";
     }
   }
+
+  // ============================================================
+  // 1.5) BUDGET -> SUCCESS + OPTIMIZATION + INSIGHTS (2026-06-05)
+  //   Three success lenses, each separate: realized sales/ROAS, registrations,
+  //   reel shares — all tied to ad spend. Plus this event's @ads-optimizer recs
+  //   and computed budget-improvement insights.
+  // ============================================================
+  (function renderBudget(){
+    if(!evPixel) return;
+    var meta = evPixel.meta||{}, tt = evPixel.tiktok||{};
+    var spend = (meta.spend||0)+(tt.spend||0);
+    if(spend<=0) return;
+    var sec=document.getElementById("budget-section"); if(!sec) return;
+    var $=function(id){return document.getElementById(id)};
+    var f$=function(n){return "$"+Math.round(n||0).toLocaleString()};
+    var f2=function(n){return "$"+(Number(n)||0).toFixed(2)};
+    var esc=function(x){return (x||"").replace(/[&<>]/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[m]})};
+    function card3(title,rows,sub){
+      return '<div class="bcard"><div class="bcard-t">'+title+'</div><div class="bcard-rows">'+
+        rows.map(function(r){return '<div class="bcard-row"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>'}).join("")+
+        '</div><div class="bcard-sub">'+sub+'</div></div>';
+    }
+    function noteCard(title,txt){return '<div class="bcard"><div class="bcard-t">'+title+'</div><div class="bcard-sub">'+txt+'</div></div>'}
+    sec.style.display="block";
+
+    // Ladder A — realized sales / true ROAS
+    var rz=evPixel.realized||null, aHtml;
+    if(rz && rz.revenue>0){
+      var roas=(rz.roas!=null)?rz.roas:(spend>0?rz.revenue/spend:null);
+      aHtml=card3("💰 מכירות בפועל (ROAS אמיתי)",
+        [["הכנסת אירוע",f$(rz.revenue)],["הוצאת פרסום",f$(spend)],["ROAS",(roas!=null?roas.toFixed(1)+"x":"—")]],
+        "כל $1 פרסום ⇒ "+(roas!=null?"$"+roas.toFixed(1)+" מכירות":"—")+" · "+(rz.status==="live"?"חי — מצטבר":"סופי"));
+    } else {
+      aHtml=noteCard("💰 מכירות בפועל (ROAS)","האירוע עדיין לא התקיים — ROAS אמיתי יחושב אוטומטית אחרי האירוע ממכירות הקופה (OCTOPOS).");
+    }
+    // Ladder B — registration efficiency
+    var sms=evPixel.sms_registered||0, eb=evPixel.eventbrite_registered||0, regs=sms+eb;
+    var cpr=regs>0?spend/regs:null;
+    var bHtml=card3("📋 הרשמות (עלות להרשמה)",
+      [["הרשמות (SMS+EB)",regs.toLocaleString()],["עלות להרשמה",cpr!=null?f2(cpr):"—"],["SMS / EB",sms.toLocaleString()+" / "+eb.toLocaleString()]],
+      "כמה עולה להביא נרשם/ת אחד/ת לאירוע");
+    // Ladder C — share efficiency (#1 metric)
+    var rs=evPixel.reel_shares||{}, shares=rs.total_shares||rs.total||0;
+    var spd=(shares>0&&spend>0)?(shares/spend):null;
+    var cHtml=card3("📸 שיתופי Reel (הגברה אורגנית)",
+      [["שיתופים",shares.toLocaleString()],["שיתופים לכל $100",spd!=null?(spd*100).toFixed(1):"—"],["paid engagement",(rs.paid_engagement||0).toLocaleString()]],
+      "המנוף שהופך פרסום בתשלום להגעה אורגנית חינמית");
+    $("budget-grid").innerHTML=aHtml+bHtml+cHtml;
+
+    // Per-event optimizer recommendations (read-only; approve in the dashboard)
+    var recs=((optimizer&&optimizer.recommendations)||[]).filter(function(r){return r.event_slug===slug});
+    if(recs.length){
+      var pause=recs.filter(function(r){return r.action==="pause"}), scale=recs.filter(function(r){return r.action==="scale"});
+      var rows=recs.map(function(r){
+        var icon=r.action==="pause"?"🔻":"🔺";
+        var st=(r.status&&r.status!=="open")?(' · <b>'+(r.status==="approved"?"מאושר":r.status==="executed"?"בוצע":"נדחה")+'</b>'):'';
+        return '<div class="opt-row '+r.action+'">'+icon+' <b>'+esc(r.ad_name)+'</b> ('+(r.channel==="meta"?"Meta":"TikTok")+') — '+esc(r.suggested_change)+st+
+               '<div class="opt-why">'+esc(r.reason)+'</div></div>';
+      }).join("");
+      $("budget-opt").innerHTML='<div class="opt-head">⚙️ אופטימיזציה לאירוע — '+scale.length+' להגדלה, '+pause.length+' לכיבוי</div>'+rows+
+        '<a class="opt-cta" href="https://dashboard.themakeupblowout.com/ads-optimizer/" target="_blank">פתחי ב-@ads-optimizer כדי לאשר בקליק →</a>';
+      $("budget-opt").style.display="block";
+    }
+
+    // Budget insights (computed)
+    var ins=[];
+    if(rz && rz.roas!=null){
+      if(rz.roas>=3) ins.push("ROAS "+rz.roas.toFixed(1)+"x — מצוין. כל דולר פרסום מחזיר $"+rz.roas.toFixed(1)+" מכירות.");
+      else if(rz.roas>0 && rz.roas<1.5) ins.push("ROAS "+rz.roas.toFixed(1)+"x נמוך — הפרסום בקושי מחזיר את עצמו; שווה לבחון קריאייטיב/קהל.");
+    }
+    var mcpl=evAverages.mean_cpl, mycpl=meta.cost_per_lpv||(meta.landing_page_views?meta.spend/meta.landing_page_views:0);
+    if(mcpl && mycpl){
+      var d=Math.round((mycpl-mcpl)/mcpl*100);
+      if(d<=-15) ins.push("CPL "+f2(mycpl)+" — "+Math.abs(d)+"% מתחת לממוצע שלך ("+f2(mcpl)+"). אירוע יעיל — שווה להזרים אליו עוד תקציב.");
+      else if(d>=15) ins.push("CPL "+f2(mycpl)+" — "+d+"% מעל הממוצע ("+f2(mcpl)+"). יקר — בדקי כיבוי מודעות חלשות (ראי אופטימיזציה למעלה).");
+    }
+    if(meta.spend>0 && tt.spend>0){
+      var mc=meta.cost_per_lpv||0, tc=tt.cost_per_lpv||0;
+      if(mc>0&&tc>0){
+        if(tc<mc*0.7) ins.push("TikTok זול מ-Meta ל-LPV ("+f2(tc)+" מול "+f2(mc)+") — שקלי להעביר תקציב ל-TikTok.");
+        else if(mc<tc*0.7) ins.push("Meta זול מ-TikTok ל-LPV ("+f2(mc)+" מול "+f2(tc)+") — שקלי להעביר תקציב ל-Meta.");
+      }
+    }
+    if(spd!=null && spd*100<1) ins.push("שיתופים נמוכים יחסית להוצאה — תזכורת לצוות לבקש מהמשתתפים לשתף את ה-Reel תמורת מתנה.");
+    var bl=meta.by_lang||{}, en=bl.english||{}, es=bl.spanish||{};
+    if(en.cpl&&es.cpl&&en.lpv>=100&&es.lpv>=100){
+      if(en.cpl<es.cpl*0.7) ins.push("English זול ב-"+Math.round((es.cpl-en.cpl)/es.cpl*100)+"% מ-Spanish — הטיית תקציב ל-English תוזיל הרשמות.");
+      else if(es.cpl<en.cpl*0.7) ins.push("Spanish זול ב-"+Math.round((en.cpl-es.cpl)/en.cpl*100)+"% מ-English — הטיית תקציב ל-Spanish תוזיל הרשמות.");
+    }
+    if(!ins.length) ins.push("התקציב מתפקד באיזון — אין דגל אדום בולט כרגע. המשיכי לעקוב אחרי ה-CPL וה-ROAS.");
+    $("budget-insights").innerHTML='<div class="opt-head">💡 תובנות תקציב — '+slug+'</div>'+ins.map(function(t){return '<div class="ins-row">• '+esc(t)+'</div>'}).join("");
+    $("budget-insights").style.display="block";
+  })();
 
   // ============================================================
   // 2) PIXEL SECTION (only when data has actually flowed)
