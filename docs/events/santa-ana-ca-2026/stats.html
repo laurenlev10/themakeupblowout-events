@@ -1142,13 +1142,18 @@
       const other = lang.other || {};
       const totalSpend = (en.spend||0) + (es.spend||0) + (other.spend||0);
       if (!totalSpend) return;
-      // Determine the winner — lowest CPL (cost-per-LPV) of languages with spend>0
+      // Determine the winner. Lead-optimized Meta campaigns report leads (Form Subs) but
+      // no per-language LP Views, so rank by Cost/Lead when LPV is unavailable. 2026-06-12.
+      const anyLpv = ((en.lpv||0) + (es.lpv||0) + (other.lpv||0)) > 50;
+      const cpfOf = (v) => (v.cost_per_lead!=null ? v.cost_per_lead : ((v.leads||0) ? (v.spend||0)/v.leads : Infinity));
       const candidates = [
         ['english', en], ['spanish', es], ['other', other]
-      ].filter(([k,v]) => (v.spend||0) > 20 && (v.lpv||0) > 50);
+      ].filter(([k,v]) => (v.spend||0) > 20 && (anyLpv ? (v.lpv||0) > 50 : (v.leads||0) >= 10));
       let winnerKey = null;
       if (candidates.length >= 2) {
-        candidates.sort((a,b) => (a[1].cpl||999) - (b[1].cpl||999));
+        candidates.sort((a,b) => anyLpv
+          ? ((a[1].cpl||999) - (b[1].cpl||999))
+          : (cpfOf(a[1]) - cpfOf(b[1])));
         winnerKey = candidates[0][0];
       }
       const fmt$ = (n) => "$" + (Number(n)||0).toLocaleString(undefined, {maximumFractionDigits:0});
@@ -1166,6 +1171,7 @@
             <div class="lang-spend">${fmt$(data.spend)}</div>
             <div class="lang-spend-sub">${pct}% of Meta spend · ${data.ad_count||0} ads</div>
             <div class="lang-metrics">
+              ${anyLpv ? `
               <div class="lang-metric">
                 <div class="lang-metric-label">LP Views</div>
                 <div class="lang-metric-val">${fmtNum(data.lpv)}</div>
@@ -1173,14 +1179,22 @@
               <div class="lang-metric">
                 <div class="lang-metric-label">Cost/LPV</div>
                 <div class="lang-metric-val">${fmt$$(data.cpl)}</div>
+              </div>` : `
+              <div class="lang-metric">
+                <div class="lang-metric-label">Form Subs</div>
+                <div class="lang-metric-val">${fmtNum(data.leads)}</div>
               </div>
+              <div class="lang-metric">
+                <div class="lang-metric-label">Cost/Form</div>
+                <div class="lang-metric-val">${fmt$$(cpfOf(data)===Infinity?0:cpfOf(data))}</div>
+              </div>`}
               <div class="lang-metric">
                 <div class="lang-metric-label">CTR</div>
                 <div class="lang-metric-val">${(data.ctr||0).toFixed(2)}%</div>
               </div>
               <div class="lang-metric">
-                <div class="lang-metric-label">Form Subs</div>
-                <div class="lang-metric-val">${fmtNum(data.leads)}</div>
+                <div class="lang-metric-label">CPC</div>
+                <div class="lang-metric-val">${fmt$$(data.cpc||0)}</div>
               </div>
             </div>
           </div>`;
@@ -1190,9 +1204,10 @@
         card('spanish', es, '🇲🇽', 'Spanish') +
         card('other',   other, '🎬', 'Reel / Other');
       document.getElementById("lang-section").style.display = "block";
+      const winLabel = (k) => k === 'english' ? 'English' : k === 'spanish' ? 'Spanish' : 'Reel/Other';
       const winnerText = winnerKey
-        ? ('הזוכה: ' + (winnerKey === 'english' ? 'English' : winnerKey === 'spanish' ? 'Spanish' : 'Reel/Other') + ' עם CPL הזול ביותר')
-        : 'אין מספיק נתונים להכרזת מנצח (LPV<50 / spend<$20)';
+        ? ('הזוכה: ' + winLabel(winnerKey) + (anyLpv ? ' עם CPL הזול ביותר' : ' עם העלות הנמוכה ביותר לליד'))
+        : 'אין מספיק נתונים להכרזת מנצח';
       document.getElementById("lang-sub").textContent = winnerText;
     }
 
