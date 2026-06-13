@@ -683,6 +683,31 @@
       if(en.cpl<es.cpl*0.7) ins.push("English זול ב-"+Math.round((es.cpl-en.cpl)/es.cpl*100)+"% מ-Spanish — הטיית תקציב ל-English תוזיל הרשמות.");
       else if(es.cpl<en.cpl*0.7) ins.push("Spanish זול ב-"+Math.round((en.cpl-es.cpl)/en.cpl*100)+"% מ-English — הטיית תקציב ל-Spanish תוזיל הרשמות.");
     }
+    // T-Nd time-aligned benchmark (2026-06-13) — compare this event to where past
+    // events stood at the SAME days-before-event, not their full-run totals.
+    var ta = evAverages.time_aligned, tn = meta.tnd_now;
+    if (ta && ta.by_milestone && tn && (tn.days_to_event != null) && tn.days_to_event >= 0) {
+      var stage = (tn.data_through_dte != null) ? tn.data_through_dte : tn.days_to_event;
+      var best = null, bestD = 1e9;
+      (ta.milestones || []).forEach(function(n){
+        if (ta.by_milestone[String(n)]) { var dd = Math.abs(n - stage); if (dd < bestD) { bestD = dd; best = n; } }
+      });
+      if (best != null && bestD <= 3) {
+        var co = ta.by_milestone[String(best)];
+        if ((tn.cum_leads||0) >= 5 && (co.cum_cost_per_lead||0) > 0) {
+          var myL = tn.cum_cost_per_lead, avL = co.cum_cost_per_lead, dL = Math.round((myL-avL)/avL*100);
+          var baseL = "T-"+best+" (יום "+stage+" לפני האירוע): עלות לליד מצטברת "+f2(myL)+" מול "+f2(avL)+" — איפה ש-"+co.n_events+" אירועים קודמים עמדו באותו שלב";
+          if (dL <= -12) ins.push(baseL+". מקדימה — "+Math.abs(dL)+"% זול יותר; שווה להזרים תקציב.");
+          else if (dL >= 12) ins.push(baseL+". מאחור — "+dL+"% יקר יותר; בדקי קריאייטיב/קהל מול האירועים המוצלחים.");
+          else ins.push(baseL+" — בקצב הרגיל (±"+Math.abs(dL)+"%).");
+        } else if ((tn.cum_lpv||0) >= 50 && (co.cum_cpl||0) > 0) {
+          var myV = tn.cum_cpl, avV = co.cum_cpl, dV = Math.round((myV-avV)/avV*100);
+          var baseV = "T-"+best+": CPL מצטבר "+f2(myV)+" מול "+f2(avV)+" (ממוצע "+co.n_events+" אירועים באותו שלב)";
+          if (dV <= -12) ins.push(baseV+" — מקדימה ב-"+Math.abs(dV)+"%.");
+          else if (dV >= 12) ins.push(baseV+" — מאחור ב-"+dV+"%.");
+        }
+      }
+    }
     if(!ins.length) ins.push("התקציב מתפקד באיזון — אין דגל אדום בולט כרגע. המשיכי לעקוב אחרי ה-CPL וה-ROAS.");
     $("budget-insights").innerHTML='<div class="opt-head">💡 תובנות תקציב — '+slug+'</div>'+ins.map(function(t){return '<div class="ins-row">• '+esc(t)+'</div>'}).join("");
     $("budget-insights").style.display="block";
