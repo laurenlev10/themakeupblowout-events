@@ -1,21 +1,5 @@
 {
   "events": {
-    "anaheim-ca-2026": {
-      "eventbrite": {
-        "registrations": 8,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "6a1326ad94c90ad5aa5e4f40",
-        "list_name": "Anaheim, CA 2026",
-        "total": 0,
-        "active": 0,
-        "daily_delta": 0
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
     "roseville-mn-2026": {
       "eventbrite": {
         "registrations": 365,
@@ -30,263 +14,7 @@
         "active": 2225,
         "daily_delta": 1457
       },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "portland-or-2026": {
-      "eventbrite": {
-        "registrations": 11,
-        "capacity": 250,
-        "today_delta": 2,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "69167a6163f88543ee7c25a1",
-        "list_name": "Portland, OR 2026",
-        "total": 2,
-        "active": 2,
-        "daily_delta": 2
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "santa-ana-ca-2026": {
-      "eventbrite": {
-        "registrations": 16,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "6a1326a494c90ad5aa5e4cac",
-        "list_name": "Santa Ana, CA 2026",
-        "total": 0,
-        "active": 0,
-        "daily_delta": 0
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "milwaukee-wi-2026": {
-      "eventbrite": {
-        "registrations": 182,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "69167653073eba7f4ef96a75",
-        "list_name": "Milwaukee, WI 2026",
-        "total": 2671,
-        "active": 2358,
-        "daily_delta": 1194
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "boise-id-2026": {
-      "eventbrite": {
-        "registrations": 20,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "69167aabe5fbf8385d59474e",
-        "list_name": "Boise, ID 2026",
-        "total": 1,
-        "active": 1,
-        "daily_delta": 1
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "overland-park-ks-2026": {
-      "eventbrite": {
-        "registrations": 170,
-        "capacity": 250,
-        "today_delta": 3,
-        "weekly_delta": 4
-      },
-      "sms": {
-        "list_id": "6916850663f88543ee7e9fb6",
-        "list_name": "Overland Park, KS 2026",
-        "total": 1453,
-        "active": 1274,
-        "daily_delta": 1453
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "richmond-ca-2026": {
-      "eventbrite": {
-        "registrations": 39,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "69167762073eba7f4ef9c164",
-        "list_name": "Richmond, CA 2026",
-        "total": 7,
-        "active": 7,
-        "daily_delta": 7
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "modesto-ca-2026": {
-      "eventbrite": {
-        "registrations": 24,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "6a132400225ea2dd3add5cb6",
-        "list_name": "Modesto, CA 2026",
-        "total": 0,
-        "active": 0,
-        "daily_delta": 0
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "wichita-ks-2026": {
-      "eventbrite": {
-        "registrations": 67,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "68b747dc507c11791233ef77",
-        "list_name": "Wichita, KS 2026",
-        "total": 981,
-        "active": 916,
-        "daily_delta": 981
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "visalia-ca-2026": {
-      "eventbrite": {
-        "registrations": 26,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "691679aa63f88543ee7bf5a8",
-        "list_name": "Visalia, CA 2026",
-        "total": 0,
-        "active": 0,
-        "daily_delta": 0
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "salt-lake-city-ut-2026": {
-      "eventbrite": {
-        "registrations": 1,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "6a13265f94c90ad5aa5e3d09",
-        "list_name": "Salt Lake City, UT 2026",
-        "total": 0,
-        "active": 0,
-        "daily_delta": 0
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "san-jose-ca-2026": {
-      "eventbrite": {
-        "registrations": 89,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "69167a0b63f88543ee7c10eb",
-        "list_name": "San Jose, CA 2026",
-        "total": 4,
-        "active": 4,
-        "daily_delta": 4
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "albuquerque-nm-2026": {
-      "eventbrite": {
-        "registrations": 4,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "6940934d7e67765257b8458d",
-        "list_name": "Albuquerque, NM 2026",
-        "total": 3,
-        "active": 3,
-        "daily_delta": 3
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "riverside-ca-2026": {
-      "eventbrite": {
-        "registrations": 225,
-        "capacity": 500,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "6930cfb42cfb0f607ba2cc27",
-        "list_name": "Riverside, CA 2026",
-        "total": 0,
-        "active": 0,
-        "daily_delta": 0
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "tucson-az-2026": {
-      "eventbrite": {
-        "registrations": 4,
-        "capacity": 250,
-        "today_delta": 2,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "694093787e67765257b86038",
-        "list_name": "Tucson, AZ 2026",
-        "total": 2,
-        "active": 2,
-        "daily_delta": 2
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "omaha-ne-2026": {
-      "eventbrite": {
-        "registrations": 141,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 5
-      },
-      "sms": {
-        "list_id": "691676e2073eba7f4ef99e1d",
-        "list_name": "Omaha, NE 2026",
-        "total": 1970,
-        "active": 1731,
-        "daily_delta": 1970
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "topeka-ks-2026": {
-      "eventbrite": {
-        "registrations": 31,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "68e83643fe1243162f69fa1c",
-        "list_name": "Topeka, KS 2026",
-        "total": 462,
-        "active": 417,
-        "daily_delta": 462
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
+      "updated_at": "2026-06-14T09:56:19+00:00"
     },
     "victorville-ca-2026": {
       "eventbrite": {
@@ -302,119 +30,71 @@
         "active": 1,
         "daily_delta": 1
       },
-      "updated_at": "2026-06-14T05:07:51+00:00"
+      "updated_at": "2026-06-14T09:56:19+00:00"
     },
-    "columbia-mo-2026": {
+    "omaha-ne-2026": {
       "eventbrite": {
-        "registrations": 48,
+        "registrations": 141,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 5
+      },
+      "sms": {
+        "list_id": "691676e2073eba7f4ef99e1d",
+        "list_name": "Omaha, NE 2026",
+        "total": 1970,
+        "active": 1731,
+        "daily_delta": 1970
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "boise-id-2026": {
+      "eventbrite": {
+        "registrations": 20,
         "capacity": 250,
         "today_delta": 0,
         "weekly_delta": 0
       },
       "sms": {
-        "list_id": "691675e163f88543ee7b07c8",
-        "list_name": "Columbia, MO 2026",
-        "total": 919,
-        "active": 765,
-        "daily_delta": 59
+        "list_id": "69167aabe5fbf8385d59474e",
+        "list_name": "Boise, ID 2026",
+        "total": 1,
+        "active": 1,
+        "daily_delta": 1
       },
-      "updated_at": "2026-06-14T05:07:51+00:00"
+      "updated_at": "2026-06-14T09:56:19+00:00"
     },
-    "cleveland-oh-2026": {
+    "tucson-az-2026": {
       "eventbrite": {
-        "registrations": 307,
-        "capacity": 500,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "68b7464a52ea05484b1afc44",
-        "list_name": "Cleveland, OH 2026",
-        "total": 2089,
-        "active": 1813,
-        "daily_delta": 1706
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "fort-collins-co-2026": {
-      "eventbrite": {
-        "registrations": 11,
+        "registrations": 4,
         "capacity": 250,
         "today_delta": 0,
         "weekly_delta": 0
       },
       "sms": {
-        "list_id": "68e8397b372caf03d49edefe",
-        "list_name": "Fort Collins, CO 2026",
-        "total": 244,
-        "active": 222,
-        "daily_delta": 244
+        "list_id": "694093787e67765257b86038",
+        "list_name": "Tucson, AZ 2026",
+        "total": 2,
+        "active": 2,
+        "daily_delta": 2
       },
-      "updated_at": "2026-06-14T05:07:51+00:00"
+      "updated_at": "2026-06-14T09:56:19+00:00"
     },
-    "santa-maria-ca-2026": {
+    "visalia-ca-2026": {
       "eventbrite": {
-        "registrations": 15,
+        "registrations": 26,
         "capacity": 250,
         "today_delta": 0,
         "weekly_delta": 0
       },
       "sms": {
-        "list_id": "69f109c7706d4315e0b3b702",
-        "list_name": "Santa Maria, CA 2026",
+        "list_id": "691679aa63f88543ee7bf5a8",
+        "list_name": "Visalia, CA 2026",
         "total": 0,
         "active": 0,
         "daily_delta": 0
       },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "santa-fe-nm-2026": {
-      "eventbrite": {
-        "registrations": 1,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "6940932b9d097c01a11cba6e",
-        "list_name": "Santa Fe, NM 2026",
-        "total": 0,
-        "active": 0,
-        "daily_delta": 0
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "reno-nv-2026": {
-      "eventbrite": {
-        "registrations": 17,
-        "capacity": 250,
-        "today_delta": 0,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "694093007e67765257b824a8",
-        "list_name": "Reno, NV 2026",
-        "total": 3,
-        "active": 3,
-        "daily_delta": 3
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
-    },
-    "mesa-az-2026": {
-      "eventbrite": {
-        "registrations": 75,
-        "capacity": 250,
-        "today_delta": 3,
-        "weekly_delta": 0
-      },
-      "sms": {
-        "list_id": "68e83663fe1243162f6a08bb",
-        "list_name": "Mesa, AZ 2026",
-        "total": 125,
-        "active": 118,
-        "daily_delta": 125
-      },
-      "updated_at": "2026-06-14T05:07:51+00:00"
+      "updated_at": "2026-06-14T09:56:19+00:00"
     },
     "westminster-co-2026": {
       "eventbrite": {
@@ -430,7 +110,39 @@
         "active": 2,
         "daily_delta": 3
       },
-      "updated_at": "2026-06-14T05:07:51+00:00"
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "modesto-ca-2026": {
+      "eventbrite": {
+        "registrations": 24,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "6a132400225ea2dd3add5cb6",
+        "list_name": "Modesto, CA 2026",
+        "total": 0,
+        "active": 0,
+        "daily_delta": 0
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "santa-ana-ca-2026": {
+      "eventbrite": {
+        "registrations": 16,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "6a1326a494c90ad5aa5e4cac",
+        "list_name": "Santa Ana, CA 2026",
+        "total": 0,
+        "active": 0,
+        "daily_delta": 0
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
     },
     "bakersfield-ca-2026": {
       "eventbrite": {
@@ -446,8 +158,296 @@
         "active": 3,
         "daily_delta": 4
       },
-      "updated_at": "2026-06-14T05:07:51+00:00"
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "overland-park-ks-2026": {
+      "eventbrite": {
+        "registrations": 170,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 4
+      },
+      "sms": {
+        "list_id": "6916850663f88543ee7e9fb6",
+        "list_name": "Overland Park, KS 2026",
+        "total": 1459,
+        "active": 1280,
+        "daily_delta": 1459
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "milwaukee-wi-2026": {
+      "eventbrite": {
+        "registrations": 182,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "69167653073eba7f4ef96a75",
+        "list_name": "Milwaukee, WI 2026",
+        "total": 2671,
+        "active": 2358,
+        "daily_delta": 1194
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "cleveland-oh-2026": {
+      "eventbrite": {
+        "registrations": 307,
+        "capacity": 500,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "68b7464a52ea05484b1afc44",
+        "list_name": "Cleveland, OH 2026",
+        "total": 2089,
+        "active": 1813,
+        "daily_delta": 1706
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "anaheim-ca-2026": {
+      "eventbrite": {
+        "registrations": 8,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "6a1326ad94c90ad5aa5e4f40",
+        "list_name": "Anaheim, CA 2026",
+        "total": 0,
+        "active": 0,
+        "daily_delta": 0
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "santa-fe-nm-2026": {
+      "eventbrite": {
+        "registrations": 1,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "6940932b9d097c01a11cba6e",
+        "list_name": "Santa Fe, NM 2026",
+        "total": 1,
+        "active": 1,
+        "daily_delta": 1
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "topeka-ks-2026": {
+      "eventbrite": {
+        "registrations": 31,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "68e83643fe1243162f69fa1c",
+        "list_name": "Topeka, KS 2026",
+        "total": 463,
+        "active": 418,
+        "daily_delta": 463
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "san-jose-ca-2026": {
+      "eventbrite": {
+        "registrations": 89,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "69167a0b63f88543ee7c10eb",
+        "list_name": "San Jose, CA 2026",
+        "total": 4,
+        "active": 4,
+        "daily_delta": 4
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "richmond-ca-2026": {
+      "eventbrite": {
+        "registrations": 39,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "69167762073eba7f4ef9c164",
+        "list_name": "Richmond, CA 2026",
+        "total": 7,
+        "active": 7,
+        "daily_delta": 7
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "riverside-ca-2026": {
+      "eventbrite": {
+        "registrations": 225,
+        "capacity": 500,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "6930cfb42cfb0f607ba2cc27",
+        "list_name": "Riverside, CA 2026",
+        "total": 0,
+        "active": 0,
+        "daily_delta": 0
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "columbia-mo-2026": {
+      "eventbrite": {
+        "registrations": 48,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "691675e163f88543ee7b07c8",
+        "list_name": "Columbia, MO 2026",
+        "total": 919,
+        "active": 765,
+        "daily_delta": 59
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "portland-or-2026": {
+      "eventbrite": {
+        "registrations": 11,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "69167a6163f88543ee7c25a1",
+        "list_name": "Portland, OR 2026",
+        "total": 2,
+        "active": 2,
+        "daily_delta": 2
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "reno-nv-2026": {
+      "eventbrite": {
+        "registrations": 17,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "694093007e67765257b824a8",
+        "list_name": "Reno, NV 2026",
+        "total": 3,
+        "active": 3,
+        "daily_delta": 3
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "albuquerque-nm-2026": {
+      "eventbrite": {
+        "registrations": 4,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "6940934d7e67765257b8458d",
+        "list_name": "Albuquerque, NM 2026",
+        "total": 3,
+        "active": 3,
+        "daily_delta": 3
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "mesa-az-2026": {
+      "eventbrite": {
+        "registrations": 75,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "68e83663fe1243162f6a08bb",
+        "list_name": "Mesa, AZ 2026",
+        "total": 134,
+        "active": 126,
+        "daily_delta": 134
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "salt-lake-city-ut-2026": {
+      "eventbrite": {
+        "registrations": 1,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "6a13265f94c90ad5aa5e3d09",
+        "list_name": "Salt Lake City, UT 2026",
+        "total": 0,
+        "active": 0,
+        "daily_delta": 0
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "santa-maria-ca-2026": {
+      "eventbrite": {
+        "registrations": 15,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "69f109c7706d4315e0b3b702",
+        "list_name": "Santa Maria, CA 2026",
+        "total": 0,
+        "active": 0,
+        "daily_delta": 0
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "fort-collins-co-2026": {
+      "eventbrite": {
+        "registrations": 11,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "68e8397b372caf03d49edefe",
+        "list_name": "Fort Collins, CO 2026",
+        "total": 247,
+        "active": 225,
+        "daily_delta": 247
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
+    },
+    "wichita-ks-2026": {
+      "eventbrite": {
+        "registrations": 67,
+        "capacity": 250,
+        "today_delta": 0,
+        "weekly_delta": 0
+      },
+      "sms": {
+        "list_id": "68b747dc507c11791233ef77",
+        "list_name": "Wichita, KS 2026",
+        "total": 984,
+        "active": 919,
+        "daily_delta": 984
+      },
+      "updated_at": "2026-06-14T09:56:19+00:00"
     }
   },
-  "_updated_at": "2026-06-14T05:08:23Z"
+  "_updated_at": "2026-06-14T09:56:51Z"
 }
