@@ -17,6 +17,10 @@ on:
   schedule:
     - cron: '0 3 * * *'   # 03:00 UTC — runs BEFORE build-landing-pages.yml's 03:15 cron
   workflow_dispatch: {}
+  # Fired by lauren-agent-hub-data whenever Lauren pastes a reel link (notes.json
+  # changes) — gives near-immediate SHARE-page updates instead of waiting for cron.
+  repository_dispatch:
+    types: [reel-link-updated]
   # Also runs after build-landing-pages so we have a tight loop on form-id arrival
   workflow_run:
     workflows: ["Build landing pages"]
