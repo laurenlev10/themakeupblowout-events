@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-05-29T20:10:17Z",
+  "_updated_at": "2026-06-30T16:39:49Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -41,7 +41,7 @@
       "venue_name": "Holiday Inn Milwaukee Riverfront",
       "venue_address": "4700 N Port Washington Rd, Milwaukee, WI 53212",
       "form_id": "6930ecf65c4c2f0a2f7afe58",
-      "ig_url": "https://www.instagram.com/reel/DXzUUs9xTuz/",
+      "ig_url": "https://www.instagram.com/reel/DXzUUs9xTuz/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/H2q83ao-pe/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7637225913100406046"
     },
@@ -57,7 +57,7 @@
       "venue_name": "DoubleTree by Hilton Roseville Minneapolis",
       "venue_address": "2540 N Cleveland Ave, Roseville, MN 55113",
       "form_id": "6930ed155c4c2f0a2f7b0414",
-      "ig_url": "https://www.instagram.com/reel/DX7z4srxAGk/",
+      "ig_url": "https://www.instagram.com/reel/DX7z4srxAGk/?utm_source=ig_web_copy_link&igsh=NTc4MTIwNjQ2YQ==",
       "fb_url": "https://fb.watch/H2lW3P7zL9/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7637226321277504798"
     },
@@ -72,7 +72,7 @@
       "venue_name": "Courtyard Marriott",
       "venue_address": "3730 Raynor Parkway, Bellevue, NE 68123",
       "form_id": "6930edb84da0131a2656212f",
-      "ig_url": "https://www.instagram.com/reel/DX7zIyoxv83/",
+      "ig_url": "https://www.instagram.com/reel/DX7zIyoxv83/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/G-sa0IxOUh/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638025213283749150"
     },
@@ -87,8 +87,8 @@
       "venue_name": "Holiday Inn & Suites Overland Park",
       "venue_address": "8787 Reeder St, Overland Park, KS 66214",
       "form_id": "6930edcf4da0131a26562362",
-      "ig_url": "https://www.instagram.com/reel/DY70OPIxS1K/",
-      "fb_url": "https://www.facebook.com/reel/1507413744242965/",
+      "ig_url": "https://www.instagram.com/reel/DY70OPIxS1K/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/H1CNptjKot/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638634023014698271"
     },
     {
@@ -103,7 +103,7 @@
       "venue_name": "Holiday Inn Conference Center",
       "venue_address": "6001 Rockside Rd, Independence, OH 44131",
       "form_id": "69406c057e67765257a13998",
-      "ig_url": "https://www.instagram.com/reel/DYM18AwRYV7/",
+      "ig_url": "https://www.instagram.com/reel/DYM18AwRYV7/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://www.facebook.com/reel/2245982816143690/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638839259515981087"
     },
@@ -118,7 +118,7 @@
       "venue_name": "DoubleTree by Hilton Hotel Wichita Airport",
       "venue_address": "2098 Airport Road, Wichita, Kansas, 67209",
       "form_id": "68b74828fad38345cf4bbab3",
-      "ig_url": "https://www.instagram.com/reel/DYqKFx8R1gN/",
+      "ig_url": "https://www.instagram.com/reel/DZWRvxGRjfe/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/HhJSEdQEvn/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7643168815244725534"
     },
@@ -133,8 +133,8 @@
       "venue_name": "Hotel Topeka at City Center",
       "venue_address": "1717 SW Topeka Blvd, Topeka, KS 66612",
       "form_id": "6930ede94da0131a265625a3",
-      "ig_url": "https://www.instagram.com/reel/DYqLN-4x1AD/",
-      "fb_url": "https://fb.watch/HpGDP2ByrY/",
+      "ig_url": "https://www.instagram.com/reel/DZddrWcRXRv/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/HGW3lOHTsg/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7645407811446246686"
     },
     {
@@ -146,8 +146,8 @@
       "venue_name": "The Drake Centre",
       "venue_address": "802 W Drake Rd, Fort Collins, CO 80526",
       "form_id": "6930ee145c4c2f0a2f7b36db",
-      "ig_url": "https://www.instagram.com/reel/DY70B4hRMy5/",
-      "fb_url": "https://fb.watch/HqI0MR-sIk/",
+      "ig_url": "https://www.instagram.com/reel/DZxaqtnxk3k/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://www.facebook.com/reel/992629633259890",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7645694764909694238",
       "subscribe_url": "/events/fort-collins-co-2026/"
     },
@@ -160,7 +160,10 @@
       "venue_name": "Courtyard by Marriott Mesa at Wrigleyville West",
       "venue_address": "2224 W Rio Salado Pkwy, Mesa, AZ 85201",
       "form_id": "6930ee482cfb0f607babad19",
-      "subscribe_url": "/events/mesa-az-2026/"
+      "subscribe_url": "/events/mesa-az-2026/",
+      "ig_url": "https://www.instagram.com/reel/DaA3lARRg8i/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/HD-Pxbvwoa/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7649440155845020958"
     },
     {
       "city": "Santa Maria",
@@ -171,7 +174,10 @@
       "venue_name": "Radisson Hotel Santa Maria",
       "venue_address": "3455 Skyway Dr, Santa Maria, CA 93455",
       "form_id": "6a1c5d6794c6509a1aec8da9",
-      "subscribe_url": "/events/santa-maria-ca-2026/"
+      "subscribe_url": "/events/santa-maria-ca-2026/",
+      "ig_url": "https://www.instagram.com/reel/DaIt5z0RH-I/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/HR7tJ7eZd2/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7653133635981266206"
     },
     {
       "city": "Modesto",
@@ -182,7 +188,10 @@
       "venue_name": "Modesto Center Plaza",
       "venue_address": "1001 K Street, Modesto, CA 95354",
       "form_id": "6a1c5d8ec93ce37da207803d",
-      "subscribe_url": "/events/modesto-ca-2026/"
+      "subscribe_url": "/events/modesto-ca-2026/",
+      "ig_url": "https://www.instagram.com/reel/DZxZYLlRm2k/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/HR7BN1563q/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7653134337986071838"
     },
     {
       "city": "Victorville",
@@ -193,7 +202,10 @@
       "venue_name": "Hilton Garden Inn & Victorville Conference Center",
       "venue_address": "12603 Mariposa Rd, Victorville, CA 92395",
       "form_id": "6930ee6a5c4c2f0a2f7b4a01",
-      "subscribe_url": "/events/victorville-ca-2026/"
+      "subscribe_url": "/events/victorville-ca-2026/",
+      "ig_url": "https://www.instagram.com/reel/DaA3DOCxwpU/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/I2ijzBcdz3/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7656839772647836959"
     },
     {
       "city": "Richmond",
@@ -204,7 +216,10 @@
       "venue_name": "Sure Stay Plus Hotel",
       "venue_address": "915 W Cutting Blvd, Richmond, CA 94804",
       "form_id": "6930ee8f2cfb0f607babb982",
-      "subscribe_url": "/events/richmond-ca-2026/"
+      "subscribe_url": "/events/richmond-ca-2026/",
+      "ig_url": "https://www.instagram.com/reel/DaIuQWExUoA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/I2iEV8826W/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7656840843956931871"
     },
     {
       "city": "Visalia",
