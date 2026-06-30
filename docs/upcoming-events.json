@@ -62,6 +62,22 @@
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7637226321277504798"
     },
     {
+      "city": "Cleveland",
+      "state": "OH",
+      "start_date": "2026-05-29",
+      "end_date": "2026-05-31",
+      "image_url": "/_assets/events/cleveland-oh-2026/hero.png",
+      "subscribe_url": "/events/cleveland-oh-2026/",
+      "cta_label": "Subscribe",
+      "slug": "cleveland-oh-2026",
+      "venue_name": "Holiday Inn Conference Center",
+      "venue_address": "6001 Rockside Rd, Independence, OH 44131",
+      "form_id": "69406c057e67765257a13998",
+      "ig_url": "https://www.instagram.com/reel/DYM18AwRYV7/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://www.facebook.com/reel/2245982816143690/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638839259515981087"
+    },
+    {
       "city": "Omaha",
       "state": "NE",
       "start_date": "2026-06-05",
@@ -90,22 +106,6 @@
       "ig_url": "https://www.instagram.com/reel/DY70OPIxS1K/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/H1CNptjKot/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638634023014698271"
-    },
-    {
-      "city": "Cleveland",
-      "state": "OH",
-      "start_date": "2026-05-29",
-      "end_date": "2026-05-31",
-      "image_url": "/_assets/events/cleveland-oh-2026/hero.png",
-      "subscribe_url": "/events/cleveland-oh-2026/",
-      "cta_label": "Subscribe",
-      "slug": "cleveland-oh-2026",
-      "venue_name": "Holiday Inn Conference Center",
-      "venue_address": "6001 Rockside Rd, Independence, OH 44131",
-      "form_id": "69406c057e67765257a13998",
-      "ig_url": "https://www.instagram.com/reel/DYM18AwRYV7/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-      "fb_url": "https://www.facebook.com/reel/2245982816143690/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638839259515981087"
     },
     {
       "city": "Wichita",
@@ -330,6 +330,17 @@
       "venue_address": "1901 University Boulevard NE, Albuquerque, NM 87102",
       "form_id": "694094d39d097c01a11dccd0",
       "subscribe_url": "/events/albuquerque-nm-2026/"
+    },
+    {
+      "city": "Pueblo",
+      "state": "CO",
+      "start_date": "2026-10-30",
+      "end_date": "2026-11-01",
+      "slug": "pueblo-co-2026",
+      "venue_name": "Pueblo Convention Center - Hall A West",
+      "venue_address": "320 Central Main St, Pueblo, CO 81003",
+      "form_id": "6a44396d253e4ab3b19eb3c3",
+      "subscribe_url": "/events/pueblo-co-2026/"
     },
     {
       "city": "Westminster",
