@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Influencer Collab Brief — The Makeup Blowout Sale</title>
+<style>
+  :root { --pink:#EC4899; --gold:#FFD700; --ink:#111; --muted:#6b7280; --bg:#FFF0F7; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif; color:var(--ink); }
+  .wrap { max-width:520px; margin:0 auto; padding:12px; }
+  .hero { background:linear-gradient(135deg,#EC4899 0%,#FFD700 100%); border-radius:14px; padding:20px 14px; text-align:center; color:#fff; }
+  .hero h1 { margin:0; font-size:22px; letter-spacing:.5px; }
+  .hero .sub { font-size:14px; font-weight:600; margin-top:6px; }
+  .card { background:#fff; border-radius:12px; padding:16px 14px; margin-top:12px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+  .card h2 { margin:0 0 10px; font-size:15px; color:var(--pink); letter-spacing:1px; text-transform:uppercase; }
+  label { display:block; font-size:13px; font-weight:700; margin:10px 0 4px; }
+  input[type=text], input[type=email], input[type=tel], select { width:100%; padding:11px 10px; border:1.5px solid #e5e7eb; border-radius:8px; font-size:15px; }
+  .deal { background:var(--bg); border-left:4px solid var(--pink); border-radius:8px; padding:12px; font-size:14px; line-height:1.55; }
+  .chk { display:flex; gap:10px; align-items:flex-start; margin:10px 0; font-size:13.5px; line-height:1.45; }
+  .chk input { width:22px; height:22px; flex:0 0 22px; margin-top:1px; accent-color:var(--pink); }
+  #sig-canvas { width:100%; height:160px; border:2px dashed #d1d5db; border-radius:10px; background:#fff; touch-action:none; }
+  .sig-row { display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
+  .btn { display:block; width:100%; background:#000; color:var(--gold); border:none; border-radius:26px; padding:15px; font-size:16px; font-weight:800; cursor:pointer; margin-top:14px; }
+  .btn[disabled] { opacity:.5; }
+  .small { font-size:12px; color:var(--muted); }
+  .clear-btn { background:none; border:1px solid #d1d5db; border-radius:14px; padding:5px 12px; font-size:12px; cursor:pointer; }
+  #done { display:none; text-align:center; padding:40px 16px; }
+  #done .big { font-size:52px; }
+  .err { color:#dc2626; font-size:13px; font-weight:700; display:none; margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="form-wrap">
+  <div class="hero">
+    <h1>THE MAKEUP BLOWOUT SALE</h1>
+    <div class="sub">INFLUENCER COLLAB BRIEF</div>
+    <div class="sub" id="ev-line" style="font-weight:400;font-size:13px;">Sign before claiming your $100 product basket ✨</div>
+  </div>
+
+  <div class="card" id="ev-card">
+    <h2>Event</h2>
+    <select id="ev-select"></select>
+    <div class="small" id="ev-details" style="margin-top:6px;"></div>
+  </div>
+
+  <div class="card">
+    <h2>Your details</h2>
+    <label>Full name *</label><input type="text" id="f-name" autocomplete="name">
+    <label>@handle *</label><input type="text" id="f-handle" placeholder="@yourhandle" autocomplete="off">
+    <label>Platform *</label>
+    <select id="f-platform"><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>Other</option></select>
+    <label>Email *</label><input type="email" id="f-email" autocomplete="email">
+    <label>Phone</label><input type="tel" id="f-phone" autocomplete="tel">
+  </div>
+
+  <div class="card">
+    <h2>The deal</h2>
+    <div class="deal">
+      <b>I receive:</b> a $100 product basket — I pick up to $100 worth of products at this event today, no return required.<br><br>
+      <b>In exchange, I agree to ALL of the following:</b>
+    </div>
+    <div class="chk"><input type="checkbox" class="req"><span>Post <b>ONE filmed + edited video</b> (reel / TikTok / short — my choice of platform) featuring this event <b>within 14 days from today</b>.</span></div>
+    <div class="chk"><input type="checkbox" class="req"><span>Tag <b>@themakeupblowoutsale</b> in the caption AND in the on-screen tag.</span></div>
+    <div class="chk"><input type="checkbox" class="req"><span>Use the hashtag <b>#MakeupBlowoutSale</b>.</span></div>
+    <div class="chk"><input type="checkbox" class="req"><span>Include this spoken line in the video: <b>"I'm at The Makeup Blowout Sale!"</b></span></div>
+    <div class="chk"><input type="checkbox" class="req"><span>Send the link to <b>pr@makeupblowoutsalegroup.com</b> within 24 hours of posting.</span></div>
+    <div class="chk"><input type="checkbox" class="req"><span><b>If I don't deliver within 14 days:</b> I'll either (a) return unopened products, or (b) pay the $100 retail value via Venmo or Zelle. I understand non-delivery without settlement may exclude me from future MBS collabs.</span></div>
+    <div class="chk"><input type="checkbox" class="req"><span>I allow The Makeup Blowout Sale Group to <b>re-share and use my video</b> (including in ads).</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Signature</h2>
+    <div class="small">Sign with your finger below:</div>
+    <canvas id="sig-canvas"></canvas>
+    <div class="sig-row">
+      <button type="button" class="clear-btn" id="sig-clear">✕ Clear</button>
+      <span class="small" id="today"></span>
+    </div>
+    <label>MBS rep (optional)</label><input type="text" id="f-rep" placeholder="Staff member name">
+    <div class="err" id="err"></div>
+    <button class="btn" id="submit-btn">✍️ Sign &amp; Claim My Basket</button>
+    <div class="small" style="text-align:center;margin-top:8px;">The Makeup Blowout Sale Group · pr@makeupblowoutsalegroup.com · (323) 384-2662</div>
+  </div>
+</div>
+
+<div id="done" class="wrap">
+  <div class="big">🎉</div>
+  <h2>You're all set!</h2>
+  <p style="font-size:15px;">Go pick your <b>$100 product basket</b> — and don't forget:<br><b>tag @themakeupblowoutsale · #MakeupBlowoutSale</b><br>video due in 14 days 💕</p>
+</div>
+
+<script>
+(function(){
+  var ENDPOINT = "https://danielle.laurenlev10.workers.dev/";
+  var EVENTS = [];
+  var sel = document.getElementById("ev-select");
+
+  function slugCity(c){ return String(c||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+  function evkey(e){ return slugCity(e.city) + "-" + e.start_date; }
+
+  fetch("../upcoming-events.json", { cache: "no-store" })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var list = Array.isArray(d) ? d : (d.events || []);
+      var today = new Date(); today.setHours(0,0,0,0);
+      EVENTS = list.filter(function(e){ return e.city && e.start_date; });
+      EVENTS.forEach(function(e, i){
+        var o = document.createElement("option");
+        o.value = i;
+        o.textContent = e.city + ", " + (e.state || "") + " · " + e.start_date;
+        sel.appendChild(o);
+      });
+      // auto-select the event happening now (setup Thu .. Sunday)
+      var liveIdx = -1;
+      EVENTS.forEach(function(e, i){
+        var s = new Date(e.start_date + "T00:00:00"); s.setDate(s.getDate() - 1);
+        var en = new Date((e.end_date || e.start_date) + "T23:59:59");
+        if (today >= s && today <= en) liveIdx = i;
+      });
+      if (liveIdx === -1) {
+        // else nearest upcoming
+        for (var i = 0; i < EVENTS.length; i++) {
+          if (new Date(EVENTS[i].start_date + "T23:59:59") >= today) { liveIdx = i; break; }
+        }
+      }
+      if (liveIdx === -1) liveIdx = 0;
+      sel.value = liveIdx;
+      renderEv();
+    })
+    .catch(function(){ document.getElementById("ev-details").textContent = "Could not load events — pick manually or reload."; });
+
+  function renderEv(){
+    var e = EVENTS[+sel.value]; if (!e) return;
+    document.getElementById("ev-details").innerHTML =
+      "📅 " + e.start_date + " → " + (e.end_date || "") +
+      (e.venue_name ? "<br>📍 " + e.venue_name + (e.venue_address ? ", " + e.venue_address : "") : "");
+    document.getElementById("ev-line").textContent = e.city + ", " + (e.state || "") + " — sign before claiming your $100 basket ✨";
+  }
+  sel.addEventListener("change", renderEv);
+  document.getElementById("today").textContent = "Date: " + new Date().toLocaleDateString("en-US");
+
+  /* signature pad */
+  var cv = document.getElementById("sig-canvas"), ctx = cv.getContext("2d"), drawing = false, drew = false, last = null;
+  function fit(){
+    var r = cv.getBoundingClientRect();
+    var img = drew ? ctx.getImageData(0,0,cv.width,cv.height) : null;
+    cv.width = r.width * 2; cv.height = r.height * 2;
+    ctx.scale(2,2); ctx.lineWidth = 2.2; ctx.lineCap = "round"; ctx.strokeStyle = "#111";
+    if (img) ctx.putImageData(img,0,0);
+  }
+  setTimeout(fit, 50); window.addEventListener("resize", fit);
+  function pos(ev){
+    var r = cv.getBoundingClientRect();
+    var t = ev.touches ? ev.touches[0] : ev;
+    return { x: t.clientX - r.left, y: t.clientY - r.top };
+  }
+  function start(ev){ drawing = true; last = pos(ev); ev.preventDefault(); }
+  function move(ev){
+    if (!drawing) return;
+    var p = pos(ev);
+    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    last = p; drew = true; ev.preventDefault();
+  }
+  function end(){ drawing = false; }
+  cv.addEventListener("mousedown", start); cv.addEventListener("mousemove", move); window.addEventListener("mouseup", end);
+  cv.addEventListener("touchstart", start, {passive:false}); cv.addEventListener("touchmove", move, {passive:false}); cv.addEventListener("touchend", end);
+  document.getElementById("sig-clear").addEventListener("click", function(){
+    ctx.clearRect(0,0,cv.width,cv.height); drew = false;
+  });
+
+  /* submit */
+  var btn = document.getElementById("submit-btn"), errEl = document.getElementById("err");
+  function fail(msg){ errEl.textContent = msg; errEl.style.display = "block"; }
+  btn.addEventListener("click", function(){
+    errEl.style.display = "none";
+    var e = EVENTS[+sel.value];
+    var name = document.getElementById("f-name").value.trim();
+    var handle = document.getElementById("f-handle").value.trim();
+    var email = document.getElementById("f-email").value.trim();
+    if (!e) return fail("Pick the event.");
+    if (!name || !handle || !email) return fail("Name, @handle and email are required.");
+    var boxes = document.querySelectorAll(".req");
+    for (var i = 0; i < boxes.length; i++) if (!boxes[i].checked) return fail("Please check ALL the boxes — every one is part of the deal.");
+    if (!drew) return fail("Please sign in the box.");
+    btn.disabled = true; btn.textContent = "Saving…";
+    var small = document.createElement("canvas");
+    small.width = 600; small.height = 200;
+    small.getContext("2d").drawImage(cv, 0, 0, 600, 200);
+    var payload = {
+      kind: "influencer_brief",
+      evkey: evkey(e),
+      event_city: e.city + ", " + (e.state || ""),
+      event_dates: e.start_date + " → " + (e.end_date || ""),
+      venue: (e.venue_name || "") + (e.venue_address ? ", " + e.venue_address : ""),
+      full_name: name, handle: handle,
+      platform: document.getElementById("f-platform").value,
+      email: email, phone: document.getElementById("f-phone").value.trim(),
+      mbs_rep: document.getElementById("f-rep").value.trim(),
+      terms_version: "2026-07-01 (spoken line without city)",
+      signed_at_local: new Date().toString(),
+      signature: small.toDataURL("image/png")
+    };
+    fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (j && j.ok) {
+          document.getElementById("form-wrap").style.display = "none";
+          document.getElementById("done").style.display = "block";
+          window.scrollTo(0,0);
+        } else { throw new Error((j && j.error) || "save failed"); }
+      })
+      .catch(function(er){
+        btn.disabled = false; btn.textContent = "✍️ Sign & Claim My Basket";
+        fail("Could not save (" + er.message + "). Check internet and try again, or call a staff member.");
+      });
+  });
+})();
+</script>
+</body>
+</html>
