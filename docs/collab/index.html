@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Collab With Us — The Makeup Blowout Sale</title>
+<meta name="description" content="Local creator? Get a $100 product basket for one video at The Makeup Blowout Sale near you.">
+<style>
+  :root { --pink:#EC4899; --gold:#FFD700; --ink:#111; --muted:#6b7280; --bg:#FFF0F7; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif; color:var(--ink); }
+  .wrap { max-width:520px; margin:0 auto; padding:12px; }
+  .hero { background:linear-gradient(135deg,#EC4899 0%,#FFD700 100%); border-radius:14px; padding:24px 14px; text-align:center; color:#fff; }
+  .hero h1 { margin:0; font-size:24px; }
+  .hero .sub { font-size:15px; font-weight:600; margin-top:8px; line-height:1.5; }
+  .card { background:#fff; border-radius:12px; padding:16px 14px; margin-top:12px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+  .card h2 { margin:0 0 10px; font-size:15px; color:var(--pink); letter-spacing:1px; text-transform:uppercase; }
+  .how { font-size:14px; line-height:1.65; }
+  .how b { color:var(--pink); }
+  label { display:block; font-size:13px; font-weight:700; margin:10px 0 4px; }
+  input, select, textarea { width:100%; padding:11px 10px; border:1.5px solid #e5e7eb; border-radius:8px; font-size:15px; font-family:inherit; }
+  textarea { min-height:70px; resize:vertical; }
+  .btn { display:block; width:100%; background:#000; color:var(--gold); border:none; border-radius:26px; padding:15px; font-size:16px; font-weight:800; cursor:pointer; margin-top:14px; }
+  .btn[disabled] { opacity:.5; }
+  .small { font-size:12px; color:var(--muted); }
+  .err { color:#dc2626; font-size:13px; font-weight:700; display:none; margin-top:8px; }
+  .hp { position:absolute; left:-9999px; opacity:0; height:0; overflow:hidden; }
+  #done { display:none; text-align:center; padding:40px 16px; }
+  #done .big { font-size:52px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="form-wrap">
+  <div class="hero">
+    <h1>COLLAB WITH US 💄</h1>
+    <div class="sub">Local creator? Get a <b>$100 product basket</b> — you pick the products at our event — in exchange for <b>ONE video</b> of you there.</div>
+  </div>
+
+  <div class="card">
+    <h2>How it works</h2>
+    <div class="how">
+      1. Apply below (takes 1 minute).<br>
+      2. If it's a fit, our PR team reaches out. 💌<br>
+      3. At the event you pick <b>$100 worth of products</b> — free.<br>
+      4. Within 14 days you post <b>one filmed + edited video</b> from the event (reel / TikTok / short — your choice), tagging <b>@themakeupblowoutsale</b> + <b>#MakeupBlowoutSale</b>.<br><br>
+      <span class="small">We mostly partner with local creators (1k–50k followers) in beauty, fashion, mom-life, wellness &amp; lifestyle.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Apply</h2>
+    <label>Full name *</label><input type="text" id="f-name" autocomplete="name">
+    <label>@handle *</label><input type="text" id="f-handle" placeholder="@yourhandle">
+    <label>Main platform *</label>
+    <select id="f-platform"><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>Other</option></select>
+    <label>Follower count *</label><input type="text" id="f-followers" placeholder="e.g. 8,500" inputmode="numeric">
+    <label>Your city / area *</label><input type="text" id="f-city" placeholder="e.g. Modesto, CA">
+    <label>Which event? *</label><select id="f-event"></select>
+    <label>Email *</label><input type="email" id="f-email" autocomplete="email">
+    <label>Phone</label><input type="tel" id="f-phone" autocomplete="tel">
+    <label>Anything we should know? (optional)</label><textarea id="f-about" placeholder="Your niche, past collabs, ideas…"></textarea>
+    <div class="hp"><label>Website</label><input type="text" id="f-website" tabindex="-1" autocomplete="off"></div>
+    <div class="err" id="err"></div>
+    <button class="btn" id="submit-btn">💌 Apply for a Collab</button>
+    <div class="small" style="text-align:center;margin-top:8px;">The Makeup Blowout Sale Group · pr@makeupblowoutsalegroup.com</div>
+  </div>
+</div>
+
+<div id="done" class="wrap">
+  <div class="big">💌</div>
+  <h2>Application received!</h2>
+  <p style="font-size:15px;">If it's a fit, our PR team will reach out by email or DM.<br>Follow <b>@themakeupblowoutsale</b> so you don't miss us 💕</p>
+</div>
+
+<script>
+(function(){
+  var ENDPOINT = "https://danielle.laurenlev10.workers.dev/";
+  var sel = document.getElementById("f-event");
+  fetch("../upcoming-events.json", { cache: "no-store" })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var list = (Array.isArray(d) ? d : (d.events || [])).filter(function(e){ return e.city && e.start_date; });
+      var today = new Date(); today.setHours(0,0,0,0);
+      list.forEach(function(e){
+        if (new Date((e.end_date || e.start_date) + "T23:59:59") < today) return;
+        var o = document.createElement("option");
+        o.value = e.city + ", " + (e.state || "") + " · " + e.start_date;
+        o.textContent = o.value;
+        sel.appendChild(o);
+      });
+      var other = document.createElement("option");
+      other.value = "My city isn't listed yet";
+      other.textContent = "My city isn't listed yet";
+      sel.appendChild(other);
+    })
+    .catch(function(){
+      var o = document.createElement("option");
+      o.value = "unknown"; o.textContent = "Couldn't load events — we'll match you";
+      sel.appendChild(o);
+    });
+
+  var btn = document.getElementById("submit-btn"), errEl = document.getElementById("err");
+  function fail(m){ errEl.textContent = m; errEl.style.display = "block"; }
+  btn.addEventListener("click", function(){
+    errEl.style.display = "none";
+    var name = document.getElementById("f-name").value.trim();
+    var handle = document.getElementById("f-handle").value.trim();
+    var followers = document.getElementById("f-followers").value.trim();
+    var city = document.getElementById("f-city").value.trim();
+    var email = document.getElementById("f-email").value.trim();
+    if (!name || !handle || !followers || !city || !email) return fail("Please fill all the required fields (*)");
+    if (!/@?.+/.test(handle)) return fail("Please enter your @handle.");
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return fail("Please enter a valid email.");
+    btn.disabled = true; btn.textContent = "Sending…";
+    var payload = {
+      kind: "influencer_application",
+      full_name: name, handle: handle,
+      platform: document.getElementById("f-platform").value,
+      followers: followers, city: city, email: email,
+      phone: document.getElementById("f-phone").value.trim(),
+      event: sel.value,
+      about: document.getElementById("f-about").value.trim(),
+      website: document.getElementById("f-website").value.trim()
+    };
+    fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (j && j.ok) {
+          document.getElementById("form-wrap").style.display = "none";
+          document.getElementById("done").style.display = "block";
+          window.scrollTo(0,0);
+        } else { throw new Error((j && j.error) || "save failed"); }
+      })
+      .catch(function(er){
+        btn.disabled = false; btn.textContent = "💌 Apply for a Collab";
+        fail("Could not send (" + er.message + "). Please try again.");
+      });
+  });
+})();
+</script>
+</body>
+</html>
