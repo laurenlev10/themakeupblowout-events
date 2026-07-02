@@ -42,6 +42,7 @@
     <h2>Event</h2>
     <select id="ev-select"></select>
     <div class="small" id="ev-details" style="margin-top:6px;"></div>
+    <div id="ev-confirm" style="margin-top:8px;background:#fef3c7;border:1.5px solid #f59e0b;border-radius:8px;padding:8px 10px;font-size:13.5px;font-weight:700;"></div>
   </div>
 
   <div class="card">
@@ -67,6 +68,7 @@
     <div class="chk"><input type="checkbox" class="req"><span>Send the link to <b>pr@makeupblowoutsalegroup.com</b> within 24 hours of posting.</span></div>
     <div class="chk"><input type="checkbox" class="req"><span><b>If I don't deliver within 14 days:</b> I'll either (a) return unopened products, or (b) pay the $100 retail value via Venmo or Zelle. I understand non-delivery without settlement may exclude me from future MBS collabs.</span></div>
     <div class="chk"><input type="checkbox" class="req"><span>I allow The Makeup Blowout Sale Group to <b>re-share and use my video</b> (including in ads).</span></div>
+    <div class="chk"><input type="checkbox" id="ev-ok"><span><b>I picked the correct event</b> (city + dates shown above).</span></div>
   </div>
 
   <div class="card">
@@ -141,6 +143,7 @@
       "📅 " + e.start_date + " → " + (e.end_date || "") +
       (e.venue_name ? "<br>📍 " + e.venue_name + (e.venue_address ? ", " + e.venue_address : "") : "");
     document.getElementById("ev-line").textContent = e.city + ", " + (e.state || "") + " — sign before claiming your $100 basket ✨";
+    document.getElementById("ev-confirm").innerHTML = "✔ You are signing for: <u>" + e.city + ", " + (e.state || "") + " · " + e.start_date + "</u><br><span style='font-weight:400;font-size:12px'>Not your event? Pick the right one from the list above.</span>";
   }
   sel.addEventListener("change", renderEv);
   document.getElementById("today").textContent = "Date: " + new Date().toLocaleDateString("en-US");
@@ -187,6 +190,7 @@
     if (!name || !handle || !email) return fail("Name, @handle and email are required.");
     var boxes = document.querySelectorAll(".req");
     for (var i = 0; i < boxes.length; i++) if (!boxes[i].checked) return fail("Please check ALL the boxes — every one is part of the deal.");
+    if (!document.getElementById("ev-ok").checked) return fail("Please confirm you picked the correct event (the yellow box).");
     if (!drew) return fail("Please sign in the box.");
     btn.disabled = true; btn.textContent = "Saving…";
     var small = document.createElement("canvas");
