@@ -60,7 +60,7 @@
       <b>I receive:</b> a $100 product basket — I pick up to $100 worth of products at this event today, no return required.<br><br>
       <b>In exchange, I agree to ALL of the following:</b>
     </div>
-    <div class="chk"><input type="checkbox" class="req"><span>Post <b>ONE filmed + edited video</b> (reel / TikTok / short — my choice of platform) featuring this event <b>within 14 days from today</b>.</span></div>
+    <div class="chk"><input type="checkbox" class="req"><span>Post <b>ONE filmed + edited video</b> (reel / TikTok / short — my choice of platform) featuring this event <b>within 14 days of attending the event</b>.</span></div>
     <div class="chk"><input type="checkbox" class="req"><span>Tag <b>@themakeupblowoutsale</b> in the caption AND in the on-screen tag.</span></div>
     <div class="chk"><input type="checkbox" class="req"><span>Use the hashtag <b>#MakeupBlowoutSale</b>.</span></div>
     <div class="chk"><input type="checkbox" class="req"><span>Include this spoken line in the video: <b>"I'm at The Makeup Blowout Sale!"</b></span></div>
@@ -125,6 +125,11 @@
         }
       }
       if (liveIdx === -1) liveIdx = 0;
+      // ?ev=<evkey> deep-link (e.g. ?ev=modesto-2026-07-24) overrides auto-detect
+      var evParam = new URLSearchParams(window.location.search).get("ev");
+      if (evParam) {
+        EVENTS.forEach(function(e, i){ if (evkey(e) === evParam) liveIdx = i; });
+      }
       sel.value = liveIdx;
       renderEv();
     })
