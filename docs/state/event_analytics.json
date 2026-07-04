@@ -592,13 +592,18 @@
         }
       ],
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 55734,
+        "page_views": 355,
+        "form_submits": 19,
         "sms_registered": 2432,
         "eventbrite_registered": 182
       },
-      "rates": {},
+      "rates": {
+        "ctr": 0.64,
+        "overall": 4.364,
+        "form_conversion": 5.35,
+        "sms_capture": 12800.0
+      },
       "anomalies": []
     },
     "roseville-mn-2026": {
@@ -828,13 +833,18 @@
         "cost_per_dollar_sales": 0.0056
       },
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 72037,
+        "page_views": 595,
+        "form_submits": 97,
         "sms_registered": 2212,
         "eventbrite_registered": 365
       },
-      "rates": {},
+      "rates": {
+        "ctr": 0.83,
+        "overall": 3.071,
+        "form_conversion": 16.3,
+        "sms_capture": 2280.41
+      },
       "anomalies": []
     },
     "cleveland-oh-2026": {
@@ -1402,13 +1412,18 @@
         "cost_per_dollar_sales": 0.0297
       },
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 197775,
+        "page_views": 1788,
+        "form_submits": 309,
         "sms_registered": 1709,
         "eventbrite_registered": 141
       },
-      "rates": {},
+      "rates": {
+        "ctr": 0.9,
+        "overall": 0.864,
+        "form_conversion": 17.28,
+        "sms_capture": 553.07
+      },
       "anomalies": [
         {
           "event": "omaha-ne-2026",
@@ -1831,13 +1846,18 @@
         "cost_per_dollar_sales": 0.0823
       },
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 482127,
+        "page_views": 4915,
+        "form_submits": 686,
         "sms_registered": 1262,
         "eventbrite_registered": 181
       },
-      "rates": {},
+      "rates": {
+        "ctr": 1.02,
+        "overall": 0.262,
+        "form_conversion": 13.96,
+        "sms_capture": 183.97
+      },
       "anomalies": [
         {
           "event": "overland-park-ks-2026",
@@ -2297,13 +2317,18 @@
         "cost_per_dollar_sales": 0.125
       },
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 798857,
+        "page_views": 6172,
+        "form_submits": 1212,
         "sms_registered": 1473,
         "eventbrite_registered": 98
       },
-      "rates": {},
+      "rates": {
+        "ctr": 0.77,
+        "overall": 0.184,
+        "form_conversion": 19.64,
+        "sms_capture": 121.53
+      },
       "anomalies": [
         {
           "event": "wichita-ks-2026",
@@ -2807,13 +2832,18 @@
         "cost_per_dollar_sales": 0.2022
       },
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 637332,
+        "page_views": 5661,
+        "form_submits": 953,
         "sms_registered": 1013,
         "eventbrite_registered": 59
       },
-      "rates": {},
+      "rates": {
+        "ctr": 0.89,
+        "overall": 0.159,
+        "form_conversion": 16.83,
+        "sms_capture": 106.3
+      },
       "anomalies": [
         {
           "event": "topeka-ks-2026",
@@ -3334,13 +3364,18 @@
         "cost_per_dollar_sales": 0.25
       },
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 613048,
+        "page_views": 7538,
+        "form_submits": 1531,
         "sms_registered": 939,
         "eventbrite_registered": 47
       },
-      "rates": {},
+      "rates": {
+        "ctr": 1.23,
+        "overall": 0.153,
+        "form_conversion": 20.31,
+        "sms_capture": 61.33
+      },
       "anomalies": [
         {
           "event": "fort-collins-co-2026",
@@ -3807,13 +3842,18 @@
         }
       ],
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 571337,
+        "page_views": 9732,
+        "form_submits": 1840,
         "sms_registered": 1055,
         "eventbrite_registered": 113
       },
-      "rates": {},
+      "rates": {
+        "ctr": 1.7,
+        "overall": 0.185,
+        "form_conversion": 18.91,
+        "sms_capture": 57.34
+      },
       "forecast": {
         "metric": "eventbrite_registered",
         "current": 113,
@@ -4227,13 +4267,18 @@
         }
       ],
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 260380,
+        "page_views": 5147,
+        "form_submits": 948,
         "sms_registered": 458,
         "eventbrite_registered": 20
       },
-      "rates": {},
+      "rates": {
+        "ctr": 1.98,
+        "overall": 0.176,
+        "form_conversion": 18.42,
+        "sms_capture": 48.31
+      },
       "forecast": {
         "metric": "eventbrite_registered",
         "current": 20,
@@ -4577,13 +4622,18 @@
         }
       ],
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 152258,
+        "page_views": 3347,
+        "form_submits": 559,
         "sms_registered": 294,
         "eventbrite_registered": 25
       },
-      "rates": {},
+      "rates": {
+        "ctr": 2.2,
+        "overall": 0.193,
+        "form_conversion": 16.7,
+        "sms_capture": 52.59
+      },
       "forecast": {
         "metric": "eventbrite_registered",
         "current": 25,
@@ -4907,13 +4957,18 @@
         }
       ],
       "funnel": {
-        "impressions": 0,
-        "page_views": 0,
-        "form_submits": 0,
+        "impressions": 24038,
+        "page_views": 732,
+        "form_submits": 210,
         "sms_registered": 108,
         "eventbrite_registered": 167
       },
-      "rates": {},
+      "rates": {
+        "ctr": 3.05,
+        "overall": 0.449,
+        "form_conversion": 28.69,
+        "sms_capture": 51.43
+      },
       "forecast": {
         "metric": "eventbrite_registered",
         "current": 167,

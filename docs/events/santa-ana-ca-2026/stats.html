@@ -1322,8 +1322,8 @@
     const v = evPixel.views || {};
     const c = evPixel.conversions || {};
     const sms = evPixel.sms_registered || (f.sms_registered) || 0;
-    document.getElementById("m-views").textContent  = (v.total||0).toLocaleString();
-    document.getElementById("m-conv").textContent   = (c.total||0).toLocaleString();
+    document.getElementById("m-views").textContent  = (v.total || (evPixel.funnel&&evPixel.funnel.page_views) || 0).toLocaleString();
+    document.getElementById("m-conv").textContent   = (c.total || (evPixel.funnel&&evPixel.funnel.form_submits) || 0).toLocaleString();
     document.getElementById("m-sms").textContent    = sms.toLocaleString();
     const listName = evPixel.sms_list_name || "";
     document.getElementById("x-sms").textContent = listName ? ('on "' + listName + '" list') : "year-specific list";
