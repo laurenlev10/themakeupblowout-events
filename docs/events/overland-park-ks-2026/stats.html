@@ -475,10 +475,10 @@
     <h2>By language</h2>
     <div class="breakdown" id="by-lang"></div>
 
-    <h2>By campaign (UTM)</h2>
+    <h2>By campaign</h2>
     <div class="breakdown" id="by-campaign"></div>
 
-    <h2>ROAS by platform</h2>
+    <h2>Cost per lead by platform</h2>
     <div class="breakdown" id="by-roas"></div>
 
     <div id="anomaly-wrap"></div>
@@ -1349,10 +1349,30 @@
         el.appendChild(row);
       });
     }
-    renderRows("by-lang",     v.by_lang);
-    renderRows("by-source",   v.by_source);
-    renderRows("by-campaign", v.by_campaign);
-    renderRows("by-roas",     evPixel.roas_by_source, x => x.toFixed(1) + "x");
+    // GA4 (v.by_*) is empty on every event (service-account gap) — fall back to
+    // Meta/TikTok pixel data so these panels aren't blank. (2026-07-04)
+    function _nz(o){ return o && Object.keys(o).length; }
+    var _bl = meta.by_lang || {};
+    var langFb = {};
+    ["english","spanish","other"].forEach(function(k){
+      var o = _bl[k] || {}, val = o.lpv || o.leads || o.impressions || 0;
+      if (val) langFb[k.charAt(0).toUpperCase()+k.slice(1)] = val;
+    });
+    var srcFb = {};
+    if (meta.landing_page_views) srcFb["Meta (paid)"] = meta.landing_page_views;
+    if (tt.landing_page_views)   srcFb["TikTok (paid)"] = tt.landing_page_views;
+    var campFb = {};
+    (meta.top_ads || []).concat(tt.top_ads || []).forEach(function(a){
+      var name = a.campaign_name || a.ad_name, val = a.lpv || 0;
+      if (name && val) campFb[name] = (campFb[name] || 0) + val;
+    });
+    var cplFb = {};
+    if (meta.spend > 0 && (meta.leads || 0) > 0)       cplFb["Meta"]   = meta.spend / meta.leads;
+    if (tt.spend > 0 && (tt.conversions || 0) > 0)     cplFb["TikTok"] = tt.spend / tt.conversions;
+    renderRows("by-lang",     _nz(v.by_lang)     ? v.by_lang     : langFb);
+    renderRows("by-source",   _nz(v.by_source)   ? v.by_source   : srcFb);
+    renderRows("by-campaign", _nz(v.by_campaign) ? v.by_campaign : campFb);
+    renderRows("by-roas",     cplFb, function(x){ return "$" + x.toFixed(2); });
 
     const aw = document.getElementById("anomaly-wrap");
     aw.innerHTML = "";

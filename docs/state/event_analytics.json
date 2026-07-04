@@ -1424,16 +1424,7 @@
         "form_conversion": 17.28,
         "sms_capture": 553.07
       },
-      "anomalies": [
-        {
-          "event": "omaha-ne-2026",
-          "severity": "warning",
-          "metric": "roas_meta",
-          "observed": 0.0,
-          "expected": 3.0,
-          "hypothesis": "cut spend on meta creative"
-        }
-      ]
+      "anomalies": []
     },
     "overland-park-ks-2026": {
       "views": {
@@ -1858,16 +1849,7 @@
         "form_conversion": 13.96,
         "sms_capture": 183.97
       },
-      "anomalies": [
-        {
-          "event": "overland-park-ks-2026",
-          "severity": "warning",
-          "metric": "roas_meta",
-          "observed": 0.0,
-          "expected": 3.0,
-          "hypothesis": "cut spend on meta creative"
-        }
-      ]
+      "anomalies": []
     },
     "wichita-ks-2026": {
       "views": {
@@ -2329,16 +2311,7 @@
         "form_conversion": 19.64,
         "sms_capture": 121.53
       },
-      "anomalies": [
-        {
-          "event": "wichita-ks-2026",
-          "severity": "warning",
-          "metric": "roas_meta",
-          "observed": 0.0,
-          "expected": 3.0,
-          "hypothesis": "cut spend on meta creative"
-        }
-      ]
+      "anomalies": []
     },
     "topeka-ks-2026": {
       "views": {
@@ -2844,16 +2817,7 @@
         "form_conversion": 16.83,
         "sms_capture": 106.3
       },
-      "anomalies": [
-        {
-          "event": "topeka-ks-2026",
-          "severity": "warning",
-          "metric": "roas_meta",
-          "observed": 0.0,
-          "expected": 3.0,
-          "hypothesis": "cut spend on meta creative"
-        }
-      ]
+      "anomalies": []
     },
     "fort-collins-co-2026": {
       "views": {
@@ -3376,16 +3340,7 @@
         "form_conversion": 20.31,
         "sms_capture": 61.33
       },
-      "anomalies": [
-        {
-          "event": "fort-collins-co-2026",
-          "severity": "warning",
-          "metric": "roas_meta",
-          "observed": 0.0,
-          "expected": 3.0,
-          "hypothesis": "cut spend on meta creative"
-        }
-      ]
+      "anomalies": []
     },
     "mesa-az-2026": {
       "views": {
@@ -3864,16 +3819,7 @@
         "status": "behind",
         "gap": 126
       },
-      "anomalies": [
-        {
-          "event": "mesa-az-2026",
-          "severity": "warning",
-          "metric": "roas_meta",
-          "observed": 0.0,
-          "expected": 3.0,
-          "hypothesis": "cut spend on meta creative"
-        }
-      ]
+      "anomalies": []
     },
     "santa-maria-ca-2026": {
       "views": {
@@ -4289,16 +4235,7 @@
         "status": "behind",
         "gap": 227
       },
-      "anomalies": [
-        {
-          "event": "santa-maria-ca-2026",
-          "severity": "warning",
-          "metric": "roas_meta",
-          "observed": 0.0,
-          "expected": 3.0,
-          "hypothesis": "cut spend on meta creative"
-        }
-      ]
+      "anomalies": []
     },
     "modesto-ca-2026": {
       "views": {
@@ -4644,16 +4581,7 @@
         "status": "behind",
         "gap": 224
       },
-      "anomalies": [
-        {
-          "event": "modesto-ca-2026",
-          "severity": "warning",
-          "metric": "roas_meta",
-          "observed": 0.0,
-          "expected": 3.0,
-          "hypothesis": "cut spend on meta creative"
-        }
-      ]
+      "anomalies": []
     },
     "victorville-ca-2026": {
       "views": {
@@ -4979,16 +4907,7 @@
         "status": "behind",
         "gap": 2
       },
-      "anomalies": [
-        {
-          "event": "victorville-ca-2026",
-          "severity": "warning",
-          "metric": "roas_meta",
-          "observed": 0.0,
-          "expected": 3.0,
-          "hypothesis": "cut spend on meta creative"
-        }
-      ]
+      "anomalies": []
     },
     "richmond-ca-2026": {
       "views": {
