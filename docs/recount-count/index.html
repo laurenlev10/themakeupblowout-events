@@ -76,6 +76,7 @@ var LABEL=(params.get("label")||"").trim();
 var WORKLIST=[], STATE={};   // pid -> "yes"|"no"
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 async function init(){
+  if(!LABEL && EVKEY){ LABEL = EVKEY.replace(/-\d{4}-\d{2}-\d{2}$/,"").split("-").map(function(w){ return w ? w.charAt(0).toUpperCase()+w.slice(1) : w; }).join(" "); }
   if(LABEL) document.getElementById("ev-label").textContent="Recount — "+LABEL;
   try{ var rc=await fetch(RAW+"docs/manager-report/config.json?_="+Date.now(),{cache:"no-store"}); if(rc.ok){ var ep=((await rc.json()).save_endpoint||"").trim(); if(ep) ENDPOINT=ep; } }catch(e){}
   if(!EVKEY){ document.getElementById("prod-list").textContent="⚠️ Missing event key in the link. Ask Lauren to resend the link."; return; }
