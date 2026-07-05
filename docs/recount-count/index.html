@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makeup Blowout — Count Checklist</title>
+<style>
+  :root{ --pink:#ec4899; --purple:#7c3aed; --ink:#1f2937; --muted:#6b7280; --bg:#f6f7fb; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,sans-serif}
+  .hdr{background:linear-gradient(135deg,#ec4899 0%,#7c3aed 100%);color:#fff;padding:20px 18px;text-align:center}
+  .hdr h1{margin:0;font-size:21px;font-weight:900}
+  .hdr p{margin:6px 0 0;font-size:13.5px;opacity:.95}
+  .wrap{max-width:600px;margin:0 auto;padding:16px}
+  .card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:14px}
+  label{display:block;font-size:13px;font-weight:800;color:#6b7280;margin:0 0 5px}
+  input,textarea{width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:10px;font-size:15px;font-family:inherit;background:#fafafa}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 12px}
+  .tbtn{border:1.5px solid #e5e7eb;background:#fafafa;border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:800;cursor:pointer}
+  .prod{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f3f4f6;flex-wrap:wrap}
+  .prod:last-child{border-bottom:0}
+  .prod .info{flex:1;min-width:150px}
+  .prod .nm{font-weight:800;font-size:14.5px;line-height:1.25}
+  .prod .sku{font-size:11.5px;color:#9ca3af;margin-top:1px}
+  .toggle{display:flex;gap:6px}
+  .opt{border:1.5px solid #e5e7eb;background:#fafafa;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:800;cursor:pointer;user-select:none;white-space:nowrap}
+  .opt.yes.on{background:#dcfce7;border-color:#16a34a;color:#166534}
+  .opt.no.on{background:#fee2e2;border-color:#dc2626;color:#991b1b}
+  .summary{font-size:13px;font-weight:800;color:#374151;margin:0 0 10px}
+  .summary b.g{color:#166534}
+  .summary b.r{color:#991b1b}
+  .btn{width:100%;border:0;border-radius:13px;padding:14px;font-size:17px;font-weight:900;cursor:pointer;background:var(--purple);color:#fff;margin-top:6px}
+  .btn:disabled{opacity:.6}
+  .note{font-size:12px;color:#9ca3af;margin-top:8px;text-align:center}
+  .okbox{display:none;background:#dcfce7;border:1.5px solid #16a34a;color:#166534;border-radius:14px;padding:16px;text-align:center;font-weight:800;margin-bottom:14px}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>💄 The Makeup Blowout — Count Checklist</h1>
+  <p id="ev-label">Recount for the event</p>
+</div>
+<div class="wrap">
+  <div class="okbox" id="okbox">✅ Thank you! Your count was sent to Lauren.</div>
+  <div class="card">
+    <label>Your name *</label>
+    <input id="f-who" type="text" placeholder="e.g. Brit">
+  </div>
+  <div class="card">
+    <label style="font-size:14.5px;color:#1f2937">🔢 Items to count</label>
+    <p style="font-size:12.5px;color:#6b7280;margin:0 0 10px">All items start as ✅ <b>Counted</b>. Tap any item you did <b>NOT</b> finish to mark it ❌ Not counted.</p>
+    <div class="tools">
+      <span class="tbtn" onclick="setAll('yes')">✅ Mark all counted</span>
+      <span class="tbtn" onclick="setAll('no')">❌ Mark all not counted</span>
+    </div>
+    <div class="summary" id="summary"></div>
+    <div id="prod-list">Loading items…</div>
+  </div>
+  <div class="card">
+    <label>Notes for Lauren (optional)</label>
+    <textarea id="f-notes" rows="3" placeholder="e.g. couldn't find the 3 Banana boxes / ran out of time on the concealers..."></textarea>
+  </div>
+  <button class="btn" id="btn-send" onclick="submitForm()">📨 Send count to Lauren</button>
+  <div class="note">Goes straight to Lauren's dashboard.<br>
+  Trouble sending? <a href="#" onclick="copyText();return false;">Copy as text</a> and send it to Lauren on WhatsApp.</div>
+</div>
+
+<script>
+"use strict";
+var ENDPOINT="https://danielle.laurenlev10.workers.dev/";
+var RAW="https://raw.githubusercontent.com/laurenlev10/lauren-agent-hub-data/main/";
+var LAUREN_WA="14243547625";
+var params=new URLSearchParams(location.search);
+var EVKEY=(params.get("evkey")||"").trim();
+var LABEL=(params.get("label")||"").trim();
+var WORKLIST=[], STATE={};   // pid -> "yes"|"no"
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+async function init(){
+  if(LABEL) document.getElementById("ev-label").textContent="Recount — "+LABEL;
+  try{ var rc=await fetch(RAW+"docs/manager-report/config.json?_="+Date.now(),{cache:"no-store"}); if(rc.ok){ var ep=((await rc.json()).save_endpoint||"").trim(); if(ep) ENDPOINT=ep; } }catch(e){}
+  if(!EVKEY){ document.getElementById("prod-list").textContent="⚠️ Missing event key in the link. Ask Lauren to resend the link."; return; }
+  try{
+    var r=await fetch(RAW+"docs/state/octopos_recount.json?_="+Date.now(),{cache:"no-store"});
+    var data=await r.json();
+    var ev=(data.events||{})[EVKEY]||{};
+    WORKLIST=(ev.worklist||[]).map(function(w){ return {pid:Number(w.id), name:w.name||("#"+w.id), sku:w.sku||""}; });
+    if(!LABEL && ev.window){ /* no city in json; keep evkey label */ }
+  }catch(e){ document.getElementById("prod-list").textContent="⚠️ Could not load the item list — please try again later."; return; }
+  if(!WORKLIST.length){ document.getElementById("prod-list").textContent="No items to count for this event."; document.getElementById("summary").textContent=""; return; }
+  WORKLIST.forEach(function(p){ STATE[p.pid]="yes"; });   // default: counted
+  renderList();
+}
+function renderList(){
+  document.getElementById("prod-list").innerHTML = WORKLIST.map(function(p){
+    return '<div class="prod"><div class="info"><div class="nm">'+esc(p.name)+'</div>'+
+      (p.sku?'<div class="sku">'+esc(p.sku)+'</div>':'')+'</div>'+
+      '<div class="toggle">'+
+      '<span class="opt yes" id="y-'+p.pid+'" onclick="pick('+p.pid+',\'yes\')">✅ Counted</span>'+
+      '<span class="opt no" id="n-'+p.pid+'" onclick="pick('+p.pid+',\'no\')">❌ Not yet</span>'+
+      '</div></div>';
+  }).join("");
+  WORKLIST.forEach(function(p){ paint(p.pid); });
+  updateSummary();
+}
+function paint(pid){
+  var y=document.getElementById("y-"+pid), n=document.getElementById("n-"+pid);
+  if(y) y.classList.toggle("on", STATE[pid]==="yes");
+  if(n) n.classList.toggle("on", STATE[pid]==="no");
+}
+function pick(pid, ans){ STATE[pid]=ans; paint(pid); updateSummary(); }
+function setAll(ans){ WORKLIST.forEach(function(p){ STATE[p.pid]=ans; paint(p.pid); }); updateSummary(); }
+function updateSummary(){
+  var c=0,nc=0; WORKLIST.forEach(function(p){ if(STATE[p.pid]==="no") nc++; else c++; });
+  document.getElementById("summary").innerHTML="Counted: <b class='g'>"+c+"</b> &nbsp;·&nbsp; Not yet: <b class='r'>"+nc+"</b> &nbsp;·&nbsp; of "+WORKLIST.length;
+}
+function collectP(){
+  var who=document.getElementById("f-who").value.trim();
+  if(!who){ alert("Please type your name 🙂"); return null; }
+  var counted=[], notc=[];
+  WORKLIST.forEach(function(p){ if(STATE[p.pid]==="no") notc.push(p.pid); else counted.push(p.pid); });
+  return {
+    kind:"recount_count", evkey:EVKEY,
+    manager_name:who,
+    counted_pids:counted, not_counted_pids:notc,
+    notes:document.getElementById("f-notes").value.trim(),
+    submitted_at:new Date().toISOString(),
+    source:"recount-count-form-public"
+  };
+}
+function buildText(p){
+  var byId={}; WORKLIST.forEach(function(w){ byId[w.pid]=w; });
+  var lines=["Count checklist — "+(LABEL||EVKEY), "By: "+p.manager_name, ""];
+  if(p.not_counted_pids.length){
+    lines.push("❌ NOT counted yet ("+p.not_counted_pids.length+"):");
+    p.not_counted_pids.forEach(function(pid){ var w=byId[pid]||{}; lines.push("  • "+(w.name||("#"+pid))+(w.sku?" ("+w.sku+")":"")); });
+  } else {
+    lines.push("✅ Everything counted!");
+  }
+  lines.push("", "✅ Counted: "+p.counted_pids.length+" of "+WORKLIST.length);
+  if(p.notes) lines.push("", "Notes: "+p.notes);
+  return lines.join("\n");
+}
+function copyText(){
+  var p=collectP(); if(!p) return;
+  var t=buildText(p);
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){ alert("Copied! Send it to Lauren on WhatsApp 🙂"); }); }
+  else prompt("Copy this text:", t);
+}
+async function submitForm(){
+  var p=collectP(); if(!p) return;
+  var btn=document.getElementById("btn-send");
+  btn.disabled=true; btn.textContent="⏳ Sending...";
+  if(ENDPOINT){
+    try{
+      var r=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)});
+      if(r.ok){ document.getElementById("okbox").style.display="block"; btn.textContent="✓ Sent!"; window.scrollTo(0,0); return; }
+      throw new Error("HTTP "+r.status);
+    }catch(e){ console.warn("endpoint failed:", e); }
+  }
+  window.open("https://wa.me/"+LAUREN_WA+"?text="+encodeURIComponent(buildText(p)),"_blank");
+  btn.disabled=false; btn.textContent="📨 Send count to Lauren";
+}
+init();
+</script>
+</body>
+</html>
