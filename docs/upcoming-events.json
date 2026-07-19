@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-06-30T16:39:49Z",
+  "_updated_at": "2026-07-19T17:46:01Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -230,7 +230,8 @@
       "venue_name": "Visalia Convention Center",
       "venue_address": "303 E Acequia Ave, Visalia, CA 93291",
       "form_id": "6930eeb54da0131a26564ef5",
-      "subscribe_url": "/events/visalia-ca-2026/"
+      "subscribe_url": "/events/visalia-ca-2026/",
+      "ig_url": "https://www.instagram.com/reel/DabAtjZxoBU/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
     },
     {
       "city": "Riverside",
