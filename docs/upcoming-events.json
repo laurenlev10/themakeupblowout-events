@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-07-19T17:51:21Z",
+  "_updated_at": "2026-07-19T17:53:12Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -189,7 +189,7 @@
       "venue_address": "1001 K Street, Modesto, CA 95354",
       "form_id": "6a1c5d8ec93ce37da207803d",
       "subscribe_url": "/events/modesto-ca-2026/",
-      "ig_url": "https://www.instagram.com/reel/DZxZYLlRm2k/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "ig_url": "https://www.instagram.com/reel/DabDYPjRwUB/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/HR7BN1563q/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7653134337986071838"
     },
@@ -203,7 +203,7 @@
       "venue_address": "12603 Mariposa Rd, Victorville, CA 92395",
       "form_id": "6930ee6a5c4c2f0a2f7b4a01",
       "subscribe_url": "/events/victorville-ca-2026/",
-      "ig_url": "https://www.instagram.com/reel/DaA3DOCxwpU/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "ig_url": "https://www.instagram.com/reel/Dax2--XRqi5/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/I2ijzBcdz3/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7656839772647836959"
     },
@@ -246,7 +246,8 @@
       "form_id": "6930d17f4da0131a264e28d8",
       "subscribe_url": "/events/riverside-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/Dax2w9_xBxw/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7664297668683779358"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7664297668683779358",
+      "fb_url": "https://fb.watch/IsO8l8ULPe/"
     },
     {
       "city": "San Jose",
