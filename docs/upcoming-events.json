@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-07-19T17:53:12Z",
+  "_updated_at": "2026-07-22T15:53:30Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -258,7 +258,8 @@
       "venue_name": "Holiday Inn San Jose",
       "venue_address": "1350 North 1st St, San Jose, CA 95112",
       "form_id": "6930eed72cfb0f607babc9ab",
-      "subscribe_url": "/events/san-jose-ca-2026/"
+      "subscribe_url": "/events/san-jose-ca-2026/",
+      "ig_url": "https://www.instagram.com/reel/DbGbLWsx4Qr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
     },
     {
       "city": "Portland",
