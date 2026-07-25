@@ -1,5 +1,5 @@
 {
-  "_updated_at": "2026-07-24T23:09:05.284998+00:00",
+  "_updated_at": "2026-07-25T15:11:02.258980+00:00",
   "_about": "@ads-optimizer recommendations. Engine is read-only; execution happens only after Lauren approves each rec in /ads-optimizer/. Decisions are merge-preserved across runs (IRON RULE #7).",
   "thresholds": {
     "MIN_SPEND": 50.0,
@@ -11,25 +11,44 @@
   "benchmarks": {
     "modesto-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.1698,
+      "value": 0.1718,
       "n_ads": 3
     },
     "victorville-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.3367,
+      "value": 0.3381,
       "n_ads": 4
     },
     "visalia-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.2723,
-      "n_ads": 4
+      "value": 0.2925,
+      "n_ads": 5
     }
   },
   "summary": {
     "pause_count": 0,
-    "scale_count": 0,
-    "events_covered": 0,
-    "open_count": 0
+    "scale_count": 1,
+    "events_covered": 1,
+    "open_count": 1
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "event_slug": "visalia-ca-2026",
+      "channel": "meta",
+      "ad_id": "120248733310870182",
+      "ad_name": "Test - Ads 9",
+      "campaign_name": "Traffic English 2026 Visalia, CA",
+      "spend": 311.44,
+      "metric_name": "CPL",
+      "metric_value": 0.25,
+      "benchmark": 0.29,
+      "ratio": 0.85,
+      "roas": null,
+      "action": "scale",
+      "suggested_change": "+20% תקציב יומי",
+      "reason": "CPL $0.25 — 15% טוב מהממוצע בערוץ ($0.29). מנצח — שווה יותר תקציב.",
+      "id": "visalia-ca-2026|meta|120248733310870182|scale",
+      "status": "open"
+    }
+  ]
 }
