@@ -1,5 +1,5 @@
 {
-  "_updated_at": "2026-07-26T15:11:27.093163+00:00",
+  "_updated_at": "2026-07-26T23:04:05.987406+00:00",
   "_about": "@ads-optimizer recommendations. Engine is read-only; execution happens only after Lauren approves each rec in /ads-optimizer/. Decisions are merge-preserved across runs (IRON RULE #7).",
   "thresholds": {
     "MIN_SPEND": 50.0,
@@ -11,22 +11,22 @@
   "benchmarks": {
     "modesto-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.1727,
+      "value": 0.173,
       "n_ads": 3
     },
     "victorville-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.3397,
+      "value": 0.3403,
       "n_ads": 4
     },
     "visalia-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.2971,
+      "value": 0.2978,
       "n_ads": 5
     },
     "riverside-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.1289,
+      "value": 0.1306,
       "n_ads": 2
     }
   },
