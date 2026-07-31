@@ -125,7 +125,7 @@
         "rate_per_hour": 0.0,
         "scan_count": 1
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 0,
       "sms_total_count": 0,
       "sms_list_id": null,
@@ -276,7 +276,7 @@
         "rate_per_hour": 0.0,
         "scan_count": 1
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 745,
       "sms_total_count": 919,
       "sms_list_id": "691675e163f88543ee7b07c8",
@@ -284,10 +284,6 @@
       "eventbrite_registered": 48,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 48
-        },
         {
           "date": "2026-07-14",
           "registrations": 48
@@ -362,6 +358,10 @@
         },
         {
           "date": "2026-07-30",
+          "registrations": 48
+        },
+        {
+          "date": "2026-07-31",
           "registrations": 48
         }
       ],
@@ -502,7 +502,7 @@
         "rate_per_hour": 1.08,
         "scan_count": 13
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 2401,
       "sms_total_count": 2802,
       "sms_list_id": "69167653073eba7f4ef96a75",
@@ -510,10 +510,6 @@
       "eventbrite_registered": 182,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 182
-        },
         {
           "date": "2026-07-14",
           "registrations": 182
@@ -588,6 +584,10 @@
         },
         {
           "date": "2026-07-30",
+          "registrations": 182
+        },
+        {
+          "date": "2026-07-31",
           "registrations": 182
         }
       ],
@@ -733,7 +733,7 @@
         "rate_per_hour": 1.26,
         "scan_count": 17
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 2185,
       "sms_total_count": 2549,
       "sms_list_id": "6916769a073eba7f4ef9831a",
@@ -741,10 +741,6 @@
       "eventbrite_registered": 365,
       "eventbrite_capacity": 500,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 365
-        },
         {
           "date": "2026-07-14",
           "registrations": 365
@@ -819,6 +815,10 @@
         },
         {
           "date": "2026-07-30",
+          "registrations": 365
+        },
+        {
+          "date": "2026-07-31",
           "registrations": 365
         }
       ],
@@ -972,7 +972,7 @@
         "rate_per_hour": 1.09,
         "scan_count": 20
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 1778,
       "sms_total_count": 2089,
       "sms_list_id": "68b7464a52ea05484b1afc44",
@@ -980,10 +980,6 @@
       "eventbrite_registered": 307,
       "eventbrite_capacity": 500,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 307
-        },
         {
           "date": "2026-07-14",
           "registrations": 307
@@ -1058,6 +1054,10 @@
         },
         {
           "date": "2026-07-30",
+          "registrations": 307
+        },
+        {
+          "date": "2026-07-31",
           "registrations": 307
         }
       ],
@@ -1206,7 +1206,7 @@
         "rate_per_hour": 0.63,
         "scan_count": 26
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 1683,
       "sms_total_count": 1971,
       "sms_list_id": "691676e2073eba7f4ef99e1d",
@@ -1214,10 +1214,6 @@
       "eventbrite_registered": 141,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 141
-        },
         {
           "date": "2026-07-14",
           "registrations": 141
@@ -1292,6 +1288,10 @@
         },
         {
           "date": "2026-07-30",
+          "registrations": 141
+        },
+        {
+          "date": "2026-07-31",
           "registrations": 141
         }
       ],
@@ -1448,7 +1448,7 @@
         "rate_per_hour": 0.84,
         "scan_count": 16
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 1240,
       "sms_total_count": 1486,
       "sms_list_id": "6916850663f88543ee7e9fb6",
@@ -1456,10 +1456,6 @@
       "eventbrite_registered": 181,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 181
-        },
         {
           "date": "2026-07-14",
           "registrations": 181
@@ -1534,6 +1530,10 @@
         },
         {
           "date": "2026-07-30",
+          "registrations": 181
+        },
+        {
+          "date": "2026-07-31",
           "registrations": 181
         }
       ],
@@ -1682,7 +1682,7 @@
         "rate_per_hour": 0.1,
         "scan_count": 18
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 1464,
       "sms_total_count": 1682,
       "sms_list_id": "68b747dc507c11791233ef77",
@@ -1690,10 +1690,6 @@
       "eventbrite_registered": 98,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 98
-        },
         {
           "date": "2026-07-14",
           "registrations": 98
@@ -1768,6 +1764,10 @@
         },
         {
           "date": "2026-07-30",
+          "registrations": 98
+        },
+        {
+          "date": "2026-07-31",
           "registrations": 98
         }
       ],
@@ -1924,7 +1924,7 @@
         "rate_per_hour": 0.04,
         "scan_count": 25
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 1010,
       "sms_total_count": 1137,
       "sms_list_id": "68e83643fe1243162f69fa1c",
@@ -1932,10 +1932,6 @@
       "eventbrite_registered": 59,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 59
-        },
         {
           "date": "2026-07-14",
           "registrations": 59
@@ -2010,6 +2006,10 @@
         },
         {
           "date": "2026-07-30",
+          "registrations": 59
+        },
+        {
+          "date": "2026-07-31",
           "registrations": 59
         }
       ],
@@ -2046,8 +2046,8 @@
       },
       "share_clicks": {},
       "ad_spend": {
-        "meta": 1077.07,
-        "tiktok": 1076.3700000000001
+        "meta": 869.5699999999999,
+        "tiktok": 902.1
       },
       "ad_revenue_attributed": {
         "meta": 0.0
@@ -2056,14 +2056,14 @@
         "meta": 0.0
       },
       "tiktok": {
-        "spend": 1076.3700000000001,
-        "impressions": 137239,
-        "clicks": 758,
+        "spend": 902.1,
+        "impressions": 123891,
+        "clicks": 691,
         "landing_page_views": 0,
-        "conversions": 108,
-        "ctr": 0.55,
-        "cpc": 1.42,
-        "cpm": 7.84,
+        "conversions": 96,
+        "ctr": 0.56,
+        "cpc": 1.31,
+        "cpm": 7.28,
         "cost_per_lpv": 0,
         "top_ads": [
           {
@@ -2085,9 +2085,9 @@
           {
             "ad_id": "1852253717827602",
             "ad_name": "Fort Collins, CO 2026 Leads",
-            "spend": 257.41,
-            "impressions": 20982,
-            "clicks": 101,
+            "spend": 83.14,
+            "impressions": 7634,
+            "clicks": 34,
             "lpv": 0
           },
           {
@@ -2109,119 +2109,186 @@
         ]
       },
       "meta": {
-        "spend": 1077.07,
+        "spend": 869.5699999999999,
         "revenue": 0.0,
-        "impressions": 143415,
-        "clicks": 6351,
-        "link_clicks": 3726,
-        "engage_through": 2625,
-        "link_ctr": 2.6,
-        "cost_per_link_click": 0.289,
-        "landing_page_views": 2975,
-        "ctr": 4.43,
-        "cpc": 0.17,
-        "cpm": 7.51,
-        "cost_per_lpv": 0.362,
+        "impressions": 118344,
+        "clicks": 5180,
+        "link_clicks": 3037,
+        "engage_through": 2143,
+        "link_ctr": 2.57,
+        "cost_per_link_click": 0.286,
+        "landing_page_views": 2429,
+        "ctr": 4.38,
+        "cpc": 0.168,
+        "cpm": 7.35,
+        "cost_per_lpv": 0.358,
         "top_ads": [
           {
             "ad_id": "120248161173170182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic English 2026 Fort Collins",
-            "spend": 265.9,
-            "impressions": 38619,
-            "clicks": 1752,
-            "lpv": 803
+            "spend": 218.2,
+            "impressions": 32677,
+            "clicks": 1439,
+            "lpv": 656
           },
           {
             "ad_id": "120248161189050182",
             "ad_name": "Test - ADS 12",
             "campaign_name": "Traffic English 2026 Fort Collins",
-            "spend": 232.23,
-            "impressions": 23258,
-            "clicks": 1193,
-            "lpv": 668
+            "spend": 180.66,
+            "impressions": 17961,
+            "clicks": 923,
+            "lpv": 519
           },
           {
             "ad_id": "120248161248500182",
             "ad_name": "Test - ADS 10",
             "campaign_name": "Traffic Spanish 2026 Fort Collins",
-            "spend": 53.82,
-            "impressions": 6199,
-            "clicks": 322,
-            "lpv": 145
-          },
-          {
-            "ad_id": "120248140437240182",
-            "ad_name": "NEW Reel 2026 Fort Collins, CO",
-            "campaign_name": "NEW Reel 2026 Fort Collins, CO - Copy",
-            "spend": 253.15,
-            "impressions": 33598,
-            "clicks": 1372,
-            "lpv": 657
+            "spend": 42.4,
+            "impressions": 5266,
+            "clicks": 264,
+            "lpv": 121
           },
           {
             "ad_id": "120248161259950182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic Spanish 2026 Fort Collins",
-            "spend": 192.83,
-            "impressions": 32351,
-            "clicks": 1289,
-            "lpv": 491
+            "spend": 162.74,
+            "impressions": 28024,
+            "clicks": 1121,
+            "lpv": 432
+          },
+          {
+            "ad_id": "120248140437240182",
+            "ad_name": "NEW Reel 2026 Fort Collins, CO",
+            "campaign_name": "NEW Reel 2026 Fort Collins, CO - Copy",
+            "spend": 206.57,
+            "impressions": 27151,
+            "clicks": 1117,
+            "lpv": 543
           }
         ],
-        "leads": 484,
-        "cost_per_lead": 2.225,
+        "leads": 402,
+        "cost_per_lead": 2.163,
         "by_lang": {
           "english": {
-            "spend": 524.8,
-            "impressions": 64842,
-            "clicks": 3094,
-            "lpv": 1549,
-            "leads": 262,
-            "ad_count": 5,
-            "ctr": 4.77,
+            "spend": 422.40999999999997,
+            "impressions": 53285,
+            "clicks": 2489,
+            "lpv": 1242,
+            "leads": 210,
+            "ad_count": 4,
+            "ctr": 4.67,
             "cpc": 0.17,
-            "cpm": 8.09,
-            "cpl": 0.339,
-            "cost_per_lead": 2.003
+            "cpm": 7.93,
+            "cpl": 0.34,
+            "cost_per_lead": 2.011
           },
           "spanish": {
-            "spend": 287.74,
-            "impressions": 43463,
-            "clicks": 1825,
-            "lpv": 738,
-            "leads": 94,
+            "spend": 234.32,
+            "impressions": 36988,
+            "clicks": 1542,
+            "lpv": 625,
+            "leads": 84,
             "ad_count": 5,
-            "ctr": 4.2,
-            "cpc": 0.158,
-            "cpm": 6.62,
-            "cpl": 0.39,
-            "cost_per_lead": 3.061
+            "ctr": 4.17,
+            "cpc": 0.152,
+            "cpm": 6.34,
+            "cpl": 0.375,
+            "cost_per_lead": 2.79
           },
           "other": {
-            "spend": 264.53000000000003,
-            "impressions": 35110,
-            "clicks": 1432,
-            "lpv": 688,
-            "leads": 128,
+            "spend": 212.84,
+            "impressions": 28071,
+            "clicks": 1149,
+            "lpv": 562,
+            "leads": 108,
             "ad_count": 2,
-            "ctr": 4.08,
+            "ctr": 4.09,
             "cpc": 0.185,
-            "cpm": 7.53,
-            "cpl": 0.384,
-            "cost_per_lead": 2.067
+            "cpm": 7.58,
+            "cpl": 0.379,
+            "cost_per_lead": 1.971
           }
         },
-        "paid_shares": 160,
-        "paid_saves": 55,
-        "paid_reactions": 275,
-        "daily_timeseries": []
+        "paid_shares": 123,
+        "paid_saves": 42,
+        "paid_reactions": 221,
+        "daily_timeseries": [
+          {
+            "date": "2026-07-01",
+            "spend": 202.94,
+            "impressions": 25834,
+            "clicks": 1112,
+            "link_clicks": 646,
+            "lpv": 507,
+            "leads": 72
+          },
+          {
+            "date": "2026-07-02",
+            "spend": 187.09,
+            "impressions": 25359,
+            "clicks": 1278,
+            "link_clicks": 743,
+            "lpv": 570,
+            "leads": 108
+          },
+          {
+            "date": "2026-07-03",
+            "spend": 186.6,
+            "impressions": 25527,
+            "clicks": 1172,
+            "link_clicks": 656,
+            "lpv": 534,
+            "leads": 116
+          },
+          {
+            "date": "2026-07-04",
+            "spend": 199.02,
+            "impressions": 28408,
+            "clicks": 1074,
+            "link_clicks": 671,
+            "lpv": 548,
+            "leads": 68
+          },
+          {
+            "date": "2026-07-05",
+            "spend": 93.92,
+            "impressions": 13216,
+            "clicks": 544,
+            "link_clicks": 321,
+            "lpv": 270,
+            "leads": 38
+          },
+          {
+            "date": "2026-07-06",
+            "spend": 0.0,
+            "impressions": 0,
+            "clicks": 0,
+            "link_clicks": 0,
+            "lpv": 0,
+            "leads": 0
+          }
+        ],
+        "tnd_now": {
+          "days_to_event": -28,
+          "data_through_dte": 0,
+          "cum_spend": 576.63,
+          "cum_leads": 296.0,
+          "cum_lpv": 1611.0,
+          "cum_clicks": 3562.0,
+          "cum_impressions": 76720.0,
+          "cum_cpl": 0.358,
+          "cum_cost_per_lead": 1.948,
+          "cum_ctr": 4.64
+        }
       },
       "reel_shares": {
         "total_shares": 87,
-        "paid_engagement": 160,
+        "paid_engagement": 123,
         "total": 87,
-        "paid": 160,
+        "paid": 123,
         "organic": null,
         "last_scan_at": "2026-07-05T22:31:47+00:00",
         "url": "https://www.instagram.com/reel/DZxaqtnxk3k/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
@@ -2230,7 +2297,7 @@
         "rate_per_hour": 0.26,
         "scan_count": 25
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 1019,
       "sms_total_count": 1169,
       "sms_list_id": "68e8397b372caf03d49edefe",
@@ -2238,10 +2305,6 @@
       "eventbrite_registered": 49,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 49
-        },
         {
           "date": "2026-07-14",
           "registrations": 49
@@ -2317,6 +2380,10 @@
         {
           "date": "2026-07-30",
           "registrations": 49
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 49
         }
       ],
       "realized": {
@@ -2325,22 +2392,22 @@
         "source": "event_summary",
         "as_of": "2026-07-06T06:52:09Z",
         "status": "final",
-        "ad_spend": 2153.44,
-        "roas": 15.56,
-        "cost_per_dollar_sales": 0.0643
+        "ad_spend": 1771.67,
+        "roas": 18.91,
+        "cost_per_dollar_sales": 0.0529
       },
       "funnel": {
-        "impressions": 280654,
-        "page_views": 2975,
-        "form_submits": 592,
+        "impressions": 242235,
+        "page_views": 2429,
+        "form_submits": 498,
         "sms_registered": 1019,
         "eventbrite_registered": 49
       },
       "rates": {
-        "ctr": 1.06,
-        "overall": 0.363,
-        "form_conversion": 19.9,
-        "sms_capture": 172.13
+        "ctr": 1.0,
+        "overall": 0.421,
+        "form_conversion": 20.5,
+        "sms_capture": 204.62
       },
       "anomalies": []
     },
@@ -2357,8 +2424,8 @@
       },
       "share_clicks": {},
       "ad_spend": {
-        "meta": 2130.82,
-        "tiktok": 2301.21
+        "meta": 1945.4700000000003,
+        "tiktok": 2099.3399999999997
       },
       "ad_revenue_attributed": {
         "meta": 0.0
@@ -2367,14 +2434,14 @@
         "meta": 0.0
       },
       "tiktok": {
-        "spend": 2301.21,
-        "impressions": 404505,
-        "clicks": 2492,
+        "spend": 2099.3399999999997,
+        "impressions": 374347,
+        "clicks": 2289,
         "landing_page_views": 0,
-        "conversions": 462,
-        "ctr": 0.62,
+        "conversions": 416,
+        "ctr": 0.61,
         "cpc": 0.92,
-        "cpm": 5.69,
+        "cpm": 5.61,
         "cost_per_lpv": 0,
         "top_ads": [
           {
@@ -2396,127 +2463,248 @@
           {
             "ad_id": "1852341622187089",
             "ad_name": "Mesa, AZ 2026 Leads",
-            "spend": 299.35,
-            "impressions": 44657,
-            "clicks": 304,
+            "spend": 97.48,
+            "impressions": 14499,
+            "clicks": 101,
             "lpv": 0
           }
         ]
       },
       "meta": {
-        "spend": 2130.82,
+        "spend": 1945.4700000000003,
         "revenue": 0.0,
-        "impressions": 334523,
-        "clicks": 16748,
-        "link_clicks": 10127,
-        "engage_through": 6621,
-        "link_ctr": 3.03,
-        "cost_per_link_click": 0.21,
-        "landing_page_views": 8182,
-        "ctr": 5.01,
+        "impressions": 308942,
+        "clicks": 15293,
+        "link_clicks": 9205,
+        "engage_through": 6088,
+        "link_ctr": 2.98,
+        "cost_per_link_click": 0.211,
+        "landing_page_views": 7441,
+        "ctr": 4.95,
         "cpc": 0.127,
-        "cpm": 6.37,
-        "cost_per_lpv": 0.26,
+        "cpm": 6.3,
+        "cost_per_lpv": 0.261,
         "top_ads": [
           {
             "ad_id": "120248162037390182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic English 2026 Mesa",
-            "spend": 643.76,
-            "impressions": 97138,
-            "clicks": 5969,
-            "lpv": 3390
+            "spend": 596.61,
+            "impressions": 90917,
+            "clicks": 5491,
+            "lpv": 3100
           },
           {
             "ad_id": "120248162042180182",
             "ad_name": "Test - ADS 12",
             "campaign_name": "Traffic English 2026 Mesa",
-            "spend": 145.28,
-            "impressions": 18767,
-            "clicks": 1254,
-            "lpv": 724
+            "spend": 129.28,
+            "impressions": 16795,
+            "clicks": 1114,
+            "lpv": 646
           },
           {
             "ad_id": "120248162048540182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic Spanish 2026 Mesa",
-            "spend": 341.79,
-            "impressions": 66807,
-            "clicks": 2929,
-            "lpv": 1238
+            "spend": 314.37,
+            "impressions": 62449,
+            "clicks": 2717,
+            "lpv": 1133
           },
           {
             "ad_id": "120248162046520182",
             "ad_name": "Test - ADS 12",
             "campaign_name": "Traffic Spanish 2026 Mesa",
-            "spend": 93.25,
-            "impressions": 12455,
-            "clicks": 660,
-            "lpv": 323
+            "spend": 82.69,
+            "impressions": 11318,
+            "clicks": 588,
+            "lpv": 280
           },
           {
             "ad_id": "120248162047360182",
             "ad_name": "Test - ADS 10",
             "campaign_name": "Traffic Spanish 2026 Mesa",
-            "spend": 191.34,
-            "impressions": 22370,
-            "clicks": 1464,
-            "lpv": 616
+            "spend": 177.31,
+            "impressions": 21247,
+            "clicks": 1356,
+            "lpv": 571
           }
         ],
-        "leads": 1286,
-        "cost_per_lead": 1.657,
+        "leads": 1190,
+        "cost_per_lead": 1.635,
         "by_lang": {
           "english": {
-            "spend": 804.38,
-            "impressions": 118002,
-            "clicks": 7378,
-            "lpv": 4219,
-            "leads": 726,
+            "spend": 740.1700000000001,
+            "impressions": 109662,
+            "clicks": 6746,
+            "lpv": 3847,
+            "leads": 684,
             "ad_count": 5,
-            "ctr": 6.25,
-            "cpc": 0.109,
-            "cpm": 6.82,
-            "cpl": 0.191,
-            "cost_per_lead": 1.108
+            "ctr": 6.15,
+            "cpc": 0.11,
+            "cpm": 6.75,
+            "cpl": 0.192,
+            "cost_per_lead": 1.082
           },
           "spanish": {
-            "spend": 628.74,
-            "impressions": 101968,
-            "clicks": 5064,
-            "lpv": 2182,
-            "leads": 210,
-            "ad_count": 6,
-            "ctr": 4.97,
-            "cpc": 0.124,
-            "cpm": 6.17,
-            "cpl": 0.288,
-            "cost_per_lead": 2.994
+            "spend": 576.5699999999999,
+            "impressions": 95320,
+            "clicks": 4670,
+            "lpv": 1987,
+            "leads": 184,
+            "ad_count": 5,
+            "ctr": 4.9,
+            "cpc": 0.123,
+            "cpm": 6.05,
+            "cpl": 0.29,
+            "cost_per_lead": 3.134
           },
           "other": {
-            "spend": 697.7,
-            "impressions": 114553,
-            "clicks": 4306,
-            "lpv": 1781,
-            "leads": 350,
+            "spend": 628.73,
+            "impressions": 103960,
+            "clicks": 3877,
+            "lpv": 1607,
+            "leads": 322,
             "ad_count": 1,
-            "ctr": 3.76,
+            "ctr": 3.73,
             "cpc": 0.162,
-            "cpm": 6.09,
-            "cpl": 0.392,
-            "cost_per_lead": 1.993
+            "cpm": 6.05,
+            "cpl": 0.391,
+            "cost_per_lead": 1.953
           }
         },
-        "paid_shares": 621,
-        "paid_saves": 201,
-        "paid_reactions": 1002,
-        "daily_timeseries": []
+        "paid_shares": 550,
+        "paid_saves": 177,
+        "paid_reactions": 918,
+        "daily_timeseries": [
+          {
+            "date": "2026-07-01",
+            "spend": 191.55,
+            "impressions": 29740,
+            "clicks": 1536,
+            "link_clicks": 976,
+            "lpv": 814,
+            "leads": 108
+          },
+          {
+            "date": "2026-07-02",
+            "spend": 169.08,
+            "impressions": 26835,
+            "clicks": 1382,
+            "link_clicks": 810,
+            "lpv": 647,
+            "leads": 76
+          },
+          {
+            "date": "2026-07-03",
+            "spend": 185.58,
+            "impressions": 28718,
+            "clicks": 1402,
+            "link_clicks": 882,
+            "lpv": 739,
+            "leads": 124
+          },
+          {
+            "date": "2026-07-04",
+            "spend": 193.89,
+            "impressions": 31632,
+            "clicks": 1446,
+            "link_clicks": 879,
+            "lpv": 688,
+            "leads": 84
+          },
+          {
+            "date": "2026-07-05",
+            "spend": 194.36,
+            "impressions": 33086,
+            "clicks": 1490,
+            "link_clicks": 910,
+            "lpv": 746,
+            "leads": 84
+          },
+          {
+            "date": "2026-07-06",
+            "spend": 179.68,
+            "impressions": 30775,
+            "clicks": 1410,
+            "link_clicks": 875,
+            "lpv": 714,
+            "leads": 122
+          },
+          {
+            "date": "2026-07-07",
+            "spend": 164.57,
+            "impressions": 26951,
+            "clicks": 1302,
+            "link_clicks": 785,
+            "lpv": 600,
+            "leads": 94
+          },
+          {
+            "date": "2026-07-08",
+            "spend": 176.75,
+            "impressions": 28050,
+            "clicks": 1339,
+            "link_clicks": 800,
+            "lpv": 628,
+            "leads": 90
+          },
+          {
+            "date": "2026-07-09",
+            "spend": 172.13,
+            "impressions": 26503,
+            "clicks": 1345,
+            "link_clicks": 793,
+            "lpv": 635,
+            "leads": 122
+          },
+          {
+            "date": "2026-07-10",
+            "spend": 180.27,
+            "impressions": 26335,
+            "clicks": 1516,
+            "link_clicks": 884,
+            "lpv": 703,
+            "leads": 180
+          },
+          {
+            "date": "2026-07-11",
+            "spend": 137.61,
+            "impressions": 20317,
+            "clicks": 1125,
+            "link_clicks": 611,
+            "lpv": 527,
+            "leads": 96
+          },
+          {
+            "date": "2026-07-12",
+            "spend": 0.0,
+            "impressions": 0,
+            "clicks": 0,
+            "link_clicks": 0,
+            "lpv": 0,
+            "leads": 10
+          }
+        ],
+        "tnd_now": {
+          "days_to_event": -21,
+          "data_through_dte": 0,
+          "cum_spend": 1807.86,
+          "cum_leads": 1084.0,
+          "cum_lpv": 6914.0,
+          "cum_clicks": 14168.0,
+          "cum_impressions": 288625.0,
+          "cum_cpl": 0.261,
+          "cum_cost_per_lead": 1.668,
+          "cum_ctr": 4.91
+        }
       },
       "reel_shares": {
         "total_shares": 158,
-        "paid_engagement": 621,
+        "paid_engagement": 550,
         "total": 158,
-        "paid": 621,
+        "paid": 550,
         "organic": null,
         "last_scan_at": "2026-07-09T17:58:11+00:00",
         "url": "https://www.instagram.com/reel/DaA3lARRg8i/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
@@ -2525,7 +2713,7 @@
         "rate_per_hour": 0.61,
         "scan_count": 9
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 2028,
       "sms_total_count": 2276,
       "sms_list_id": "68e83663fe1243162f6a08bb",
@@ -2533,10 +2721,6 @@
       "eventbrite_registered": 171,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 171
-        },
         {
           "date": "2026-07-14",
           "registrations": 171
@@ -2612,6 +2796,10 @@
         {
           "date": "2026-07-30",
           "registrations": 171
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 171
         }
       ],
       "realized": {
@@ -2620,22 +2808,22 @@
         "source": "event_summary",
         "as_of": "2026-07-13T05:53:05Z",
         "status": "final",
-        "ad_spend": 4432.03,
-        "roas": 12.81,
-        "cost_per_dollar_sales": 0.078
+        "ad_spend": 4044.81,
+        "roas": 14.04,
+        "cost_per_dollar_sales": 0.0712
       },
       "funnel": {
-        "impressions": 739028,
-        "page_views": 8182,
-        "form_submits": 1748,
+        "impressions": 683289,
+        "page_views": 7441,
+        "form_submits": 1606,
         "sms_registered": 2028,
         "eventbrite_registered": 171
       },
       "rates": {
-        "ctr": 1.11,
-        "overall": 0.274,
-        "form_conversion": 21.36,
-        "sms_capture": 116.02
+        "ctr": 1.09,
+        "overall": 0.297,
+        "form_conversion": 21.58,
+        "sms_capture": 126.28
       },
       "anomalies": []
     },
@@ -2652,7 +2840,7 @@
       },
       "share_clicks": {},
       "ad_spend": {
-        "meta": 3220.5299999999997,
+        "meta": 3040.22,
         "tiktok": 2837.55
       },
       "ad_revenue_attributed": {
@@ -2707,119 +2895,303 @@
         ]
       },
       "meta": {
-        "spend": 3220.5299999999997,
+        "spend": 3040.22,
         "revenue": 0.0,
-        "impressions": 581180,
-        "clicks": 24579,
-        "link_clicks": 12545,
-        "engage_through": 12034,
-        "link_ctr": 2.16,
-        "cost_per_link_click": 0.257,
-        "landing_page_views": 9969,
-        "ctr": 4.23,
-        "cpc": 0.131,
-        "cpm": 5.54,
-        "cost_per_lpv": 0.323,
+        "impressions": 551640,
+        "clicks": 22790,
+        "link_clicks": 11703,
+        "engage_through": 11087,
+        "link_ctr": 2.12,
+        "cost_per_link_click": 0.26,
+        "landing_page_views": 9270,
+        "ctr": 4.13,
+        "cpc": 0.133,
+        "cpm": 5.51,
+        "cost_per_lpv": 0.328,
         "top_ads": [
           {
             "ad_id": "120248161786080182",
             "ad_name": "Test - ADS 12",
             "campaign_name": "Traffic English 2026 Santa Maria",
-            "spend": 250.82,
-            "impressions": 32006,
-            "clicks": 1681,
-            "lpv": 872
+            "spend": 230.04,
+            "impressions": 29559,
+            "clicks": 1534,
+            "lpv": 795
           },
           {
             "ad_id": "120248161784770182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic English 2026 Santa Maria",
-            "spend": 708.6,
-            "impressions": 116568,
-            "clicks": 5360,
-            "lpv": 2424
+            "spend": 668.2,
+            "impressions": 110907,
+            "clicks": 4994,
+            "lpv": 2247
           },
           {
             "ad_id": "120248161784570182",
             "ad_name": "EVA",
             "campaign_name": "Traffic English 2026 Santa Maria",
-            "spend": 50.14,
-            "impressions": 7577,
-            "clicks": 355,
-            "lpv": 168
+            "spend": 49.82,
+            "impressions": 7517,
+            "clicks": 354,
+            "lpv": 167
           },
           {
             "ad_id": "120248161785150182",
             "ad_name": "Test - ADS 11",
             "campaign_name": "Traffic English 2026 Santa Maria",
-            "spend": 194.56,
-            "impressions": 29991,
-            "clicks": 1535,
-            "lpv": 650
+            "spend": 192.46,
+            "impressions": 29771,
+            "clicks": 1517,
+            "lpv": 637
           },
           {
             "ad_id": "120248161789650182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic Spanish 2026 Santa Maria",
-            "spend": 793.93,
-            "impressions": 180041,
-            "clicks": 7825,
-            "lpv": 2382
+            "spend": 746.93,
+            "impressions": 171214,
+            "clicks": 7208,
+            "lpv": 2203
           }
         ],
-        "leads": 1476,
-        "cost_per_lead": 2.182,
+        "leads": 1340,
+        "cost_per_lead": 2.269,
         "by_lang": {
           "english": {
-            "spend": 1228.9299999999998,
-            "impressions": 189378,
-            "clicks": 9067,
-            "lpv": 4198,
-            "leads": 702,
+            "spend": 1165.0300000000002,
+            "impressions": 180947,
+            "clicks": 8534,
+            "lpv": 3930,
+            "leads": 646,
             "ad_count": 5,
-            "ctr": 4.79,
-            "cpc": 0.136,
-            "cpm": 6.49,
-            "cpl": 0.293,
-            "cost_per_lead": 1.751
+            "ctr": 4.72,
+            "cpc": 0.137,
+            "cpm": 6.44,
+            "cpl": 0.296,
+            "cost_per_lead": 1.803
           },
           "spanish": {
-            "spend": 1041.98,
-            "impressions": 220128,
-            "clicks": 9580,
-            "lpv": 3076,
-            "leads": 402,
+            "spend": 988.01,
+            "impressions": 210534,
+            "clicks": 8918,
+            "lpv": 2873,
+            "leads": 366,
             "ad_count": 5,
-            "ctr": 4.35,
-            "cpc": 0.109,
-            "cpm": 4.73,
-            "cpl": 0.339,
-            "cost_per_lead": 2.592
+            "ctr": 4.24,
+            "cpc": 0.111,
+            "cpm": 4.69,
+            "cpl": 0.344,
+            "cost_per_lead": 2.699
           },
           "other": {
-            "spend": 949.62,
-            "impressions": 171674,
-            "clicks": 5932,
-            "lpv": 2695,
-            "leads": 372,
+            "spend": 887.18,
+            "impressions": 160159,
+            "clicks": 5338,
+            "lpv": 2467,
+            "leads": 328,
             "ad_count": 2,
-            "ctr": 3.46,
-            "cpc": 0.16,
-            "cpm": 5.53,
-            "cpl": 0.352,
-            "cost_per_lead": 2.553
+            "ctr": 3.33,
+            "cpc": 0.166,
+            "cpm": 5.54,
+            "cpl": 0.36,
+            "cost_per_lead": 2.705
           }
         },
-        "paid_shares": 865,
-        "paid_saves": 236,
-        "paid_reactions": 1158,
-        "daily_timeseries": []
+        "paid_shares": 778,
+        "paid_saves": 211,
+        "paid_reactions": 1050,
+        "daily_timeseries": [
+          {
+            "date": "2026-07-01",
+            "spend": 166.02,
+            "impressions": 30565,
+            "clicks": 1514,
+            "link_clicks": 757,
+            "lpv": 615,
+            "leads": 110
+          },
+          {
+            "date": "2026-07-02",
+            "spend": 163.06,
+            "impressions": 30395,
+            "clicks": 1513,
+            "link_clicks": 749,
+            "lpv": 603,
+            "leads": 94
+          },
+          {
+            "date": "2026-07-03",
+            "spend": 168.25,
+            "impressions": 30578,
+            "clicks": 1258,
+            "link_clicks": 665,
+            "lpv": 543,
+            "leads": 82
+          },
+          {
+            "date": "2026-07-04",
+            "spend": 191.14,
+            "impressions": 35804,
+            "clicks": 1365,
+            "link_clicks": 705,
+            "lpv": 557,
+            "leads": 64
+          },
+          {
+            "date": "2026-07-05",
+            "spend": 181.29,
+            "impressions": 35577,
+            "clicks": 1481,
+            "link_clicks": 776,
+            "lpv": 620,
+            "leads": 80
+          },
+          {
+            "date": "2026-07-06",
+            "spend": 172.63,
+            "impressions": 34645,
+            "clicks": 1381,
+            "link_clicks": 749,
+            "lpv": 578,
+            "leads": 80
+          },
+          {
+            "date": "2026-07-07",
+            "spend": 158.68,
+            "impressions": 31195,
+            "clicks": 1222,
+            "link_clicks": 620,
+            "lpv": 490,
+            "leads": 54
+          },
+          {
+            "date": "2026-07-08",
+            "spend": 160.42,
+            "impressions": 30038,
+            "clicks": 1134,
+            "link_clicks": 572,
+            "lpv": 460,
+            "leads": 54
+          },
+          {
+            "date": "2026-07-09",
+            "spend": 160.16,
+            "impressions": 27894,
+            "clicks": 1085,
+            "link_clicks": 588,
+            "lpv": 473,
+            "leads": 58
+          },
+          {
+            "date": "2026-07-10",
+            "spend": 165.29,
+            "impressions": 28180,
+            "clicks": 1031,
+            "link_clicks": 539,
+            "lpv": 436,
+            "leads": 42
+          },
+          {
+            "date": "2026-07-11",
+            "spend": 135.27,
+            "impressions": 22297,
+            "clicks": 864,
+            "link_clicks": 444,
+            "lpv": 359,
+            "leads": 38
+          },
+          {
+            "date": "2026-07-12",
+            "spend": 0.0,
+            "impressions": 0,
+            "clicks": 0,
+            "link_clicks": 0,
+            "lpv": 0,
+            "leads": 2
+          },
+          {
+            "date": "2026-07-13",
+            "spend": 170.88,
+            "impressions": 30541,
+            "clicks": 1125,
+            "link_clicks": 589,
+            "lpv": 446,
+            "leads": 62
+          },
+          {
+            "date": "2026-07-14",
+            "spend": 186.64,
+            "impressions": 34407,
+            "clicks": 1363,
+            "link_clicks": 704,
+            "lpv": 561,
+            "leads": 90
+          },
+          {
+            "date": "2026-07-15",
+            "spend": 176.29,
+            "impressions": 32005,
+            "clicks": 1259,
+            "link_clicks": 652,
+            "lpv": 502,
+            "leads": 80
+          },
+          {
+            "date": "2026-07-16",
+            "spend": 182.03,
+            "impressions": 31318,
+            "clicks": 1347,
+            "link_clicks": 665,
+            "lpv": 515,
+            "leads": 106
+          },
+          {
+            "date": "2026-07-17",
+            "spend": 195.75,
+            "impressions": 32236,
+            "clicks": 1573,
+            "link_clicks": 767,
+            "lpv": 601,
+            "leads": 138
+          },
+          {
+            "date": "2026-07-18",
+            "spend": 226.7,
+            "impressions": 39526,
+            "clicks": 1710,
+            "link_clicks": 876,
+            "lpv": 673,
+            "leads": 86
+          },
+          {
+            "date": "2026-07-19",
+            "spend": 79.72,
+            "impressions": 14439,
+            "clicks": 565,
+            "link_clicks": 286,
+            "lpv": 238,
+            "leads": 20
+          }
+        ],
+        "tnd_now": {
+          "days_to_event": -14,
+          "data_through_dte": 0,
+          "cum_spend": 2733.8,
+          "cum_leads": 1234.0,
+          "cum_lpv": 8359.0,
+          "cum_clicks": 20515.0,
+          "cum_impressions": 497675.0,
+          "cum_cpl": 0.327,
+          "cum_cost_per_lead": 2.215,
+          "cum_ctr": 4.12
+        }
       },
       "reel_shares": {
         "total_shares": 363,
-        "paid_engagement": 865,
+        "paid_engagement": 778,
         "total": 363,
-        "paid": 865,
+        "paid": 778,
         "organic": null,
         "last_scan_at": "2026-07-19T23:04:07+00:00",
         "url": "https://www.instagram.com/reel/DaIt5z0RH-I/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
@@ -2828,7 +3200,7 @@
         "rate_per_hour": 0.75,
         "scan_count": 31
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 1286,
       "sms_total_count": 1519,
       "sms_list_id": "6a1c5d4bc93ce37da207759f",
@@ -2836,10 +3208,6 @@
       "eventbrite_registered": 54,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 34
-        },
         {
           "date": "2026-07-14",
           "registrations": 38
@@ -2915,6 +3283,10 @@
         {
           "date": "2026-07-30",
           "registrations": 54
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 54
         }
       ],
       "realized": {
@@ -2923,22 +3295,22 @@
         "source": "event_summary",
         "as_of": "2026-07-20T05:53:56Z",
         "status": "final",
-        "ad_spend": 6058.08,
-        "roas": 7.69,
-        "cost_per_dollar_sales": 0.1301
+        "ad_spend": 5877.77,
+        "roas": 7.92,
+        "cost_per_dollar_sales": 0.1262
       },
       "funnel": {
-        "impressions": 994272,
-        "page_views": 9969,
-        "form_submits": 1646,
+        "impressions": 964732,
+        "page_views": 9270,
+        "form_submits": 1510,
         "sms_registered": 1286,
         "eventbrite_registered": 54
       },
       "rates": {
-        "ctr": 1.0,
-        "overall": 0.129,
-        "form_conversion": 16.51,
-        "sms_capture": 78.13
+        "ctr": 0.96,
+        "overall": 0.133,
+        "form_conversion": 16.29,
+        "sms_capture": 85.17
       },
       "anomalies": []
     },
@@ -2955,7 +3327,7 @@
       },
       "share_clicks": {},
       "ad_spend": {
-        "meta": 5751.589999999999,
+        "meta": 5622.92,
         "tiktok": 3006.62
       },
       "ad_revenue_attributed": {
@@ -2986,119 +3358,366 @@
         ]
       },
       "meta": {
-        "spend": 5751.589999999999,
+        "spend": 5622.92,
         "revenue": 0.0,
-        "impressions": 882648,
-        "clicks": 47797,
-        "link_clicks": 28897,
-        "engage_through": 18900,
+        "impressions": 866148,
+        "clicks": 46547,
+        "link_clicks": 28295,
+        "engage_through": 18252,
         "link_ctr": 3.27,
         "cost_per_link_click": 0.199,
-        "landing_page_views": 23420,
-        "ctr": 5.42,
-        "cpc": 0.12,
-        "cpm": 6.52,
-        "cost_per_lpv": 0.246,
+        "landing_page_views": 22921,
+        "ctr": 5.37,
+        "cpc": 0.121,
+        "cpm": 6.49,
+        "cost_per_lpv": 0.245,
         "top_ads": [
           {
             "ad_id": "120248277693510182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic English 2026 Richmond, CA",
-            "spend": 834.8,
-            "impressions": 108935,
-            "clicks": 7701,
-            "lpv": 4924
+            "spend": 848.87,
+            "impressions": 110858,
+            "clicks": 7862,
+            "lpv": 5036
           },
           {
             "ad_id": "120248277694740182",
             "ad_name": "Test - ADS 12",
             "campaign_name": "Traffic English 2026 Richmond, CA",
-            "spend": 130.77,
-            "impressions": 16040,
-            "clicks": 1163,
-            "lpv": 721
+            "spend": 133.75,
+            "impressions": 16441,
+            "clicks": 1193,
+            "lpv": 738
           },
           {
             "ad_id": "120248215375770182",
             "ad_name": "Test - ADS 11",
             "campaign_name": "Traffic English 2026 Modesto - Copy",
-            "spend": 94.53,
-            "impressions": 13349,
-            "clicks": 921,
-            "lpv": 476
+            "spend": 93.83,
+            "impressions": 13251,
+            "clicks": 915,
+            "lpv": 471
           },
           {
             "ad_id": "120248215375780182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic English 2026 Modesto - Copy",
-            "spend": 1006.29,
-            "impressions": 184963,
-            "clicks": 11055,
-            "lpv": 4869
+            "spend": 983.14,
+            "impressions": 181629,
+            "clicks": 10740,
+            "lpv": 4722
           },
           {
             "ad_id": "120248215375760182",
             "ad_name": "Test - ADS 12",
             "campaign_name": "Traffic English 2026 Modesto - Copy",
-            "spend": 311.75,
-            "impressions": 46200,
-            "clicks": 2884,
-            "lpv": 1444
+            "spend": 294.96,
+            "impressions": 44100,
+            "clicks": 2723,
+            "lpv": 1355
           }
         ],
-        "leads": 2774,
-        "cost_per_lead": 2.073,
+        "leads": 2680,
+        "cost_per_lead": 2.098,
         "by_lang": {
           "english": {
-            "spend": 2423.63,
-            "impressions": 376018,
-            "clicks": 24223,
-            "lpv": 12736,
-            "leads": 1910,
-            "ad_count": 14,
-            "ctr": 6.44,
-            "cpc": 0.1,
-            "cpm": 6.45,
-            "cpl": 0.19,
-            "cost_per_lead": 1.269
+            "spend": 2386.41,
+            "impressions": 370773,
+            "clicks": 23696,
+            "lpv": 12507,
+            "leads": 1844,
+            "ad_count": 10,
+            "ctr": 6.39,
+            "cpc": 0.101,
+            "cpm": 6.44,
+            "cpl": 0.191,
+            "cost_per_lead": 1.294
           },
           "spanish": {
-            "spend": 2011.4099999999999,
-            "impressions": 358447,
-            "clicks": 18958,
-            "lpv": 8056,
-            "leads": 864,
-            "ad_count": 18,
-            "ctr": 5.29,
-            "cpc": 0.106,
-            "cpm": 5.61,
+            "spend": 1974.35,
+            "impressions": 353261,
+            "clicks": 18415,
+            "lpv": 7887,
+            "leads": 836,
+            "ad_count": 13,
+            "ctr": 5.21,
+            "cpc": 0.107,
+            "cpm": 5.59,
             "cpl": 0.25,
-            "cost_per_lead": 2.328
+            "cost_per_lead": 2.362
           },
           "other": {
-            "spend": 1316.55,
-            "impressions": 148183,
-            "clicks": 4616,
-            "lpv": 2628,
+            "spend": 1262.16,
+            "impressions": 142114,
+            "clicks": 4436,
+            "lpv": 2527,
             "leads": 0,
             "ad_count": 2,
             "ctr": 3.12,
             "cpc": 0.285,
             "cpm": 8.88,
-            "cpl": 0.501,
+            "cpl": 0.499,
             "cost_per_lead": 0
           }
         },
-        "paid_shares": 1562,
-        "paid_saves": 470,
-        "paid_reactions": 2832,
-        "daily_timeseries": []
+        "paid_shares": 1498,
+        "paid_saves": 450,
+        "paid_reactions": 2739,
+        "daily_timeseries": [
+          {
+            "date": "2026-07-01",
+            "spend": 155.42,
+            "impressions": 24173,
+            "clicks": 1579,
+            "link_clicks": 917,
+            "lpv": 770,
+            "leads": 126
+          },
+          {
+            "date": "2026-07-02",
+            "spend": 145.46,
+            "impressions": 23729,
+            "clicks": 1400,
+            "link_clicks": 733,
+            "lpv": 592,
+            "leads": 78
+          },
+          {
+            "date": "2026-07-03",
+            "spend": 151.71,
+            "impressions": 24175,
+            "clicks": 1237,
+            "link_clicks": 694,
+            "lpv": 565,
+            "leads": 86
+          },
+          {
+            "date": "2026-07-04",
+            "spend": 161.04,
+            "impressions": 26326,
+            "clicks": 1239,
+            "link_clicks": 738,
+            "lpv": 582,
+            "leads": 44
+          },
+          {
+            "date": "2026-07-05",
+            "spend": 139.71,
+            "impressions": 23086,
+            "clicks": 1206,
+            "link_clicks": 698,
+            "lpv": 566,
+            "leads": 84
+          },
+          {
+            "date": "2026-07-06",
+            "spend": 107.29,
+            "impressions": 17555,
+            "clicks": 902,
+            "link_clicks": 533,
+            "lpv": 421,
+            "leads": 70
+          },
+          {
+            "date": "2026-07-07",
+            "spend": 98.66,
+            "impressions": 15585,
+            "clicks": 738,
+            "link_clicks": 436,
+            "lpv": 341,
+            "leads": 44
+          },
+          {
+            "date": "2026-07-08",
+            "spend": 101.25,
+            "impressions": 14355,
+            "clicks": 757,
+            "link_clicks": 451,
+            "lpv": 349,
+            "leads": 58
+          },
+          {
+            "date": "2026-07-09",
+            "spend": 99.81,
+            "impressions": 13472,
+            "clicks": 729,
+            "link_clicks": 443,
+            "lpv": 351,
+            "leads": 66
+          },
+          {
+            "date": "2026-07-10",
+            "spend": 102.0,
+            "impressions": 13224,
+            "clicks": 718,
+            "link_clicks": 448,
+            "lpv": 357,
+            "leads": 50
+          },
+          {
+            "date": "2026-07-11",
+            "spend": 76.48,
+            "impressions": 10104,
+            "clicks": 528,
+            "link_clicks": 319,
+            "lpv": 267,
+            "leads": 26
+          },
+          {
+            "date": "2026-07-13",
+            "spend": 104.04,
+            "impressions": 14953,
+            "clicks": 717,
+            "link_clicks": 392,
+            "lpv": 308,
+            "leads": 40
+          },
+          {
+            "date": "2026-07-14",
+            "spend": 127.81,
+            "impressions": 18227,
+            "clicks": 977,
+            "link_clicks": 573,
+            "lpv": 456,
+            "leads": 48
+          },
+          {
+            "date": "2026-07-15",
+            "spend": 119.2,
+            "impressions": 16932,
+            "clicks": 783,
+            "link_clicks": 455,
+            "lpv": 349,
+            "leads": 50
+          },
+          {
+            "date": "2026-07-16",
+            "spend": 123.67,
+            "impressions": 16008,
+            "clicks": 875,
+            "link_clicks": 536,
+            "lpv": 436,
+            "leads": 64
+          },
+          {
+            "date": "2026-07-17",
+            "spend": 127.82,
+            "impressions": 16821,
+            "clicks": 909,
+            "link_clicks": 523,
+            "lpv": 427,
+            "leads": 54
+          },
+          {
+            "date": "2026-07-18",
+            "spend": 114.53,
+            "impressions": 17170,
+            "clicks": 802,
+            "link_clicks": 469,
+            "lpv": 382,
+            "leads": 44
+          },
+          {
+            "date": "2026-07-19",
+            "spend": 199.98,
+            "impressions": 32917,
+            "clicks": 1447,
+            "link_clicks": 848,
+            "lpv": 627,
+            "leads": 64
+          },
+          {
+            "date": "2026-07-20",
+            "spend": 217.1,
+            "impressions": 36653,
+            "clicks": 1662,
+            "link_clicks": 1006,
+            "lpv": 776,
+            "leads": 90
+          },
+          {
+            "date": "2026-07-21",
+            "spend": 210.72,
+            "impressions": 34919,
+            "clicks": 1533,
+            "link_clicks": 931,
+            "lpv": 730,
+            "leads": 78
+          },
+          {
+            "date": "2026-07-22",
+            "spend": 202.07,
+            "impressions": 34843,
+            "clicks": 1423,
+            "link_clicks": 807,
+            "lpv": 653,
+            "leads": 58
+          },
+          {
+            "date": "2026-07-23",
+            "spend": 203.21,
+            "impressions": 32987,
+            "clicks": 1526,
+            "link_clicks": 872,
+            "lpv": 668,
+            "leads": 60
+          },
+          {
+            "date": "2026-07-24",
+            "spend": 214.22,
+            "impressions": 32372,
+            "clicks": 1532,
+            "link_clicks": 881,
+            "lpv": 690,
+            "leads": 108
+          },
+          {
+            "date": "2026-07-25",
+            "spend": 211.14,
+            "impressions": 31420,
+            "clicks": 1424,
+            "link_clicks": 865,
+            "lpv": 717,
+            "leads": 82
+          },
+          {
+            "date": "2026-07-26",
+            "spend": 75.71,
+            "impressions": 10780,
+            "clicks": 477,
+            "link_clicks": 287,
+            "lpv": 230,
+            "leads": 24
+          },
+          {
+            "date": "2026-07-27",
+            "spend": 12.19,
+            "impressions": 1630,
+            "clicks": 35,
+            "link_clicks": 29,
+            "lpv": 20,
+            "leads": 0
+          }
+        ],
+        "tnd_now": {
+          "days_to_event": -7,
+          "data_through_dte": 0,
+          "cum_spend": 3303.2,
+          "cum_leads": 1490.0,
+          "cum_lpv": 11663.0,
+          "cum_clicks": 25219.0,
+          "cum_impressions": 510586.0,
+          "cum_cpl": 0.283,
+          "cum_cost_per_lead": 2.217,
+          "cum_ctr": 4.94
+        }
       },
       "reel_shares": {
         "total_shares": 296,
-        "paid_engagement": 1562,
+        "paid_engagement": 1498,
         "total": 296,
-        "paid": 1562,
+        "paid": 1498,
         "organic": null,
         "last_scan_at": "2026-07-26T22:33:34+00:00",
         "url": "https://www.instagram.com/reel/DabDYPjRwUB/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
@@ -3107,7 +3726,7 @@
         "rate_per_hour": 1.7,
         "scan_count": 20
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 1619,
       "sms_total_count": 1851,
       "sms_list_id": "6a1c5d7bc93ce37da2077c69",
@@ -3115,10 +3734,6 @@
       "eventbrite_registered": 85,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 54
-        },
         {
           "date": "2026-07-14",
           "registrations": 58
@@ -3194,6 +3809,10 @@
         {
           "date": "2026-07-30",
           "registrations": 85
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 85
         }
       ],
       "realized": {
@@ -3202,22 +3821,22 @@
         "source": "event_summary",
         "as_of": "2026-07-27T06:04:41Z",
         "status": "final",
-        "ad_spend": 8758.21,
-        "roas": 5.42,
-        "cost_per_dollar_sales": 0.1846
+        "ad_spend": 8629.54,
+        "roas": 5.5,
+        "cost_per_dollar_sales": 0.1819
       },
       "funnel": {
-        "impressions": 1353159,
-        "page_views": 23420,
-        "form_submits": 3233,
+        "impressions": 1336659,
+        "page_views": 22921,
+        "form_submits": 3139,
         "sms_registered": 1619,
         "eventbrite_registered": 85
       },
       "rates": {
-        "ctr": 1.73,
-        "overall": 0.12,
-        "form_conversion": 13.8,
-        "sms_capture": 50.08
+        "ctr": 1.71,
+        "overall": 0.121,
+        "form_conversion": 13.69,
+        "sms_capture": 51.58
       },
       "anomalies": []
     },
@@ -3234,8 +3853,8 @@
       },
       "share_clicks": {},
       "ad_spend": {
-        "meta": 4546.42,
-        "tiktok": 2129.81
+        "meta": 4621.360000000001,
+        "tiktok": 2129.87
       },
       "ad_revenue_attributed": {
         "meta": 0.0
@@ -3244,11 +3863,11 @@
         "meta": 0.0
       },
       "tiktok": {
-        "spend": 2129.81,
-        "impressions": 328468,
+        "spend": 2129.87,
+        "impressions": 328470,
         "clicks": 1522,
         "landing_page_views": 0,
-        "conversions": 235,
+        "conversions": 237,
         "ctr": 0.46,
         "cpc": 1.4,
         "cpm": 6.48,
@@ -3257,8 +3876,8 @@
           {
             "ad_id": "1869548024434865",
             "ad_name": "2026",
-            "spend": 2129.81,
-            "impressions": 328468,
+            "spend": 2129.87,
+            "impressions": 328470,
             "clicks": 1522,
             "lpv": 0
           },
@@ -3281,16 +3900,16 @@
         ]
       },
       "meta": {
-        "spend": 4546.42,
+        "spend": 4621.360000000001,
         "revenue": 0.0,
-        "impressions": 763247,
-        "clicks": 32484,
-        "link_clicks": 17958,
-        "engage_through": 14526,
-        "link_ctr": 2.35,
+        "impressions": 775428,
+        "clicks": 32965,
+        "link_clicks": 18262,
+        "engage_through": 14703,
+        "link_ctr": 2.36,
         "cost_per_link_click": 0.253,
-        "landing_page_views": 12953,
-        "ctr": 4.26,
+        "landing_page_views": 13165,
+        "ctr": 4.25,
         "cpc": 0.14,
         "cpm": 5.96,
         "cost_per_lpv": 0.351,
@@ -3299,37 +3918,37 @@
             "ad_id": "120248275383200182",
             "ad_name": "EVA",
             "campaign_name": "Traffic English 2026 Victorville, CA",
-            "spend": 42.24,
-            "impressions": 6347,
-            "clicks": 284,
-            "lpv": 140
+            "spend": 45.76,
+            "impressions": 6907,
+            "clicks": 316,
+            "lpv": 157
           },
           {
             "ad_id": "120248275387960182",
             "ad_name": "LAUREN",
             "campaign_name": "Traffic English 2026 Victorville, CA",
-            "spend": 52.97,
-            "impressions": 6270,
-            "clicks": 327,
-            "lpv": 173
-          },
-          {
-            "ad_id": "120248275390040182",
-            "ad_name": "Test - ADS 12",
-            "campaign_name": "Traffic English 2026 Victorville, CA",
-            "spend": 402.44,
-            "impressions": 52860,
-            "clicks": 2711,
-            "lpv": 1234
+            "spend": 53.92,
+            "impressions": 6419,
+            "clicks": 336,
+            "lpv": 177
           },
           {
             "ad_id": "120248275385150182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic English 2026 Victorville, CA",
-            "spend": 962.9,
-            "impressions": 164881,
-            "clicks": 7427,
-            "lpv": 2946
+            "spend": 974.68,
+            "impressions": 167030,
+            "clicks": 7516,
+            "lpv": 2987
+          },
+          {
+            "ad_id": "120248275390040182",
+            "ad_name": "Test - ADS 12",
+            "campaign_name": "Traffic English 2026 Victorville, CA",
+            "spend": 410.23,
+            "impressions": 53915,
+            "clicks": 2752,
+            "lpv": 1253
           },
           {
             "ad_id": "120248277463900182",
@@ -3341,79 +3960,340 @@
             "lpv": 2848
           }
         ],
-        "leads": 2528,
-        "cost_per_lead": 1.798,
+        "leads": 2588,
+        "cost_per_lead": 1.786,
         "by_lang": {
           "english": {
-            "spend": 1607.0800000000002,
-            "impressions": 249797,
-            "clicks": 11599,
-            "lpv": 4863,
-            "leads": 1198,
+            "spend": 1634.53,
+            "impressions": 254314,
+            "clicks": 11790,
+            "lpv": 4954,
+            "leads": 1226,
             "ad_count": 5,
             "ctr": 4.64,
             "cpc": 0.139,
             "cpm": 6.43,
             "cpl": 0.33,
-            "cost_per_lead": 1.341
+            "cost_per_lead": 1.333
           },
           "spanish": {
-            "spend": 1606.3999999999999,
-            "impressions": 277601,
-            "clicks": 12266,
-            "lpv": 4217,
-            "leads": 586,
+            "spend": 1634.1100000000001,
+            "impressions": 282249,
+            "clicks": 12453,
+            "lpv": 4282,
+            "leads": 610,
             "ad_count": 5,
-            "ctr": 4.42,
+            "ctr": 4.41,
             "cpc": 0.131,
             "cpm": 5.79,
-            "cpl": 0.381,
-            "cost_per_lead": 2.741
+            "cpl": 0.382,
+            "cost_per_lead": 2.679
           },
           "other": {
-            "spend": 1332.94,
-            "impressions": 235849,
-            "clicks": 8619,
-            "lpv": 3873,
-            "leads": 744,
+            "spend": 1352.72,
+            "impressions": 238865,
+            "clicks": 8722,
+            "lpv": 3929,
+            "leads": 752,
             "ad_count": 2,
             "ctr": 3.65,
             "cpc": 0.155,
-            "cpm": 5.65,
+            "cpm": 5.66,
             "cpl": 0.344,
-            "cost_per_lead": 1.792
+            "cost_per_lead": 1.799
           }
         },
-        "paid_shares": 1389,
-        "paid_saves": 432,
-        "paid_reactions": 2625,
-        "daily_timeseries": []
+        "paid_shares": 1407,
+        "paid_saves": 436,
+        "paid_reactions": 2667,
+        "daily_timeseries": [
+          {
+            "date": "2026-07-03",
+            "spend": 125.49,
+            "impressions": 21620,
+            "clicks": 1823,
+            "link_clicks": 926,
+            "lpv": 660,
+            "leads": 196
+          },
+          {
+            "date": "2026-07-04",
+            "spend": 170.62,
+            "impressions": 30307,
+            "clicks": 1698,
+            "link_clicks": 931,
+            "lpv": 683,
+            "leads": 142
+          },
+          {
+            "date": "2026-07-05",
+            "spend": 175.86,
+            "impressions": 33224,
+            "clicks": 1662,
+            "link_clicks": 883,
+            "lpv": 666,
+            "leads": 166
+          },
+          {
+            "date": "2026-07-06",
+            "spend": 168.32,
+            "impressions": 33122,
+            "clicks": 1532,
+            "link_clicks": 812,
+            "lpv": 585,
+            "leads": 158
+          },
+          {
+            "date": "2026-07-07",
+            "spend": 159.59,
+            "impressions": 30354,
+            "clicks": 1387,
+            "link_clicks": 719,
+            "lpv": 523,
+            "leads": 126
+          },
+          {
+            "date": "2026-07-08",
+            "spend": 159.62,
+            "impressions": 28902,
+            "clicks": 1274,
+            "link_clicks": 670,
+            "lpv": 457,
+            "leads": 104
+          },
+          {
+            "date": "2026-07-09",
+            "spend": 163.74,
+            "impressions": 28425,
+            "clicks": 1258,
+            "link_clicks": 674,
+            "lpv": 498,
+            "leads": 106
+          },
+          {
+            "date": "2026-07-10",
+            "spend": 169.12,
+            "impressions": 28478,
+            "clicks": 1094,
+            "link_clicks": 610,
+            "lpv": 439,
+            "leads": 96
+          },
+          {
+            "date": "2026-07-11",
+            "spend": 134.42,
+            "impressions": 21944,
+            "clicks": 877,
+            "link_clicks": 477,
+            "lpv": 345,
+            "leads": 78
+          },
+          {
+            "date": "2026-07-12",
+            "spend": 0.0,
+            "impressions": 0,
+            "clicks": 0,
+            "link_clicks": 0,
+            "lpv": 5,
+            "leads": 0
+          },
+          {
+            "date": "2026-07-13",
+            "spend": 171.32,
+            "impressions": 30780,
+            "clicks": 1186,
+            "link_clicks": 606,
+            "lpv": 438,
+            "leads": 82
+          },
+          {
+            "date": "2026-07-14",
+            "spend": 204.77,
+            "impressions": 38076,
+            "clicks": 1494,
+            "link_clicks": 789,
+            "lpv": 569,
+            "leads": 88
+          },
+          {
+            "date": "2026-07-15",
+            "spend": 192.34,
+            "impressions": 33431,
+            "clicks": 1232,
+            "link_clicks": 694,
+            "lpv": 514,
+            "leads": 108
+          },
+          {
+            "date": "2026-07-16",
+            "spend": 196.07,
+            "impressions": 31374,
+            "clicks": 1233,
+            "link_clicks": 663,
+            "lpv": 467,
+            "leads": 74
+          },
+          {
+            "date": "2026-07-17",
+            "spend": 208.46,
+            "impressions": 33341,
+            "clicks": 1339,
+            "link_clicks": 711,
+            "lpv": 525,
+            "leads": 76
+          },
+          {
+            "date": "2026-07-18",
+            "spend": 217.04,
+            "impressions": 33909,
+            "clicks": 1292,
+            "link_clicks": 746,
+            "lpv": 557,
+            "leads": 100
+          },
+          {
+            "date": "2026-07-19",
+            "spend": 173.38,
+            "impressions": 28075,
+            "clicks": 1035,
+            "link_clicks": 609,
+            "lpv": 425,
+            "leads": 74
+          },
+          {
+            "date": "2026-07-20",
+            "spend": 174.82,
+            "impressions": 28544,
+            "clicks": 1031,
+            "link_clicks": 622,
+            "lpv": 480,
+            "leads": 56
+          },
+          {
+            "date": "2026-07-21",
+            "spend": 169.3,
+            "impressions": 29032,
+            "clicks": 1047,
+            "link_clicks": 606,
+            "lpv": 441,
+            "leads": 60
+          },
+          {
+            "date": "2026-07-22",
+            "spend": 162.65,
+            "impressions": 27550,
+            "clicks": 995,
+            "link_clicks": 529,
+            "lpv": 378,
+            "leads": 70
+          },
+          {
+            "date": "2026-07-23",
+            "spend": 161.02,
+            "impressions": 25748,
+            "clicks": 1055,
+            "link_clicks": 589,
+            "lpv": 380,
+            "leads": 68
+          },
+          {
+            "date": "2026-07-24",
+            "spend": 172.03,
+            "impressions": 25948,
+            "clicks": 1076,
+            "link_clicks": 595,
+            "lpv": 429,
+            "leads": 68
+          },
+          {
+            "date": "2026-07-25",
+            "spend": 171.72,
+            "impressions": 24209,
+            "clicks": 973,
+            "link_clicks": 601,
+            "lpv": 424,
+            "leads": 68
+          },
+          {
+            "date": "2026-07-26",
+            "spend": 160.75,
+            "impressions": 24179,
+            "clicks": 1043,
+            "link_clicks": 626,
+            "lpv": 451,
+            "leads": 64
+          },
+          {
+            "date": "2026-07-27",
+            "spend": 172.67,
+            "impressions": 27210,
+            "clicks": 1123,
+            "link_clicks": 653,
+            "lpv": 452,
+            "leads": 80
+          },
+          {
+            "date": "2026-07-28",
+            "spend": 178.69,
+            "impressions": 28129,
+            "clicks": 1161,
+            "link_clicks": 680,
+            "lpv": 502,
+            "leads": 78
+          },
+          {
+            "date": "2026-07-29",
+            "spend": 170.93,
+            "impressions": 27597,
+            "clicks": 1110,
+            "link_clicks": 680,
+            "lpv": 484,
+            "leads": 112
+          },
+          {
+            "date": "2026-07-30",
+            "spend": 136.62,
+            "impressions": 21920,
+            "clicks": 935,
+            "link_clicks": 561,
+            "lpv": 388,
+            "leads": 90
+          }
+        ],
+        "tnd_now": {
+          "days_to_event": 0,
+          "data_through_dte": 1,
+          "cum_spend": 4621.36,
+          "cum_leads": 2588.0,
+          "cum_lpv": 13165.0,
+          "cum_clicks": 32965.0,
+          "cum_impressions": 775428.0,
+          "cum_cpl": 0.351,
+          "cum_cost_per_lead": 1.786,
+          "cum_ctr": 4.25
+        }
       },
       "reel_shares": {
-        "total_shares": 155,
-        "paid_engagement": 1389,
-        "total": 155,
-        "paid": 1389,
+        "total_shares": 158,
+        "paid_engagement": 1407,
+        "total": 158,
+        "paid": 1407,
         "organic": null,
-        "last_scan_at": "2026-07-30T17:36:35+00:00",
+        "last_scan_at": "2026-07-31T00:06:36+00:00",
         "url": "https://www.instagram.com/reel/Dax2--XRqi5/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-        "delta_6h": 19,
-        "delta_24h": 32,
+        "delta_6h": 3,
+        "delta_24h": 35,
         "rate_per_hour": 0.52,
-        "scan_count": 11
+        "scan_count": 12
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
-      "sms_registered": 1330,
-      "sms_total_count": 1485,
+      "last_pulled": "2026-07-31T03:59:48Z",
+      "sms_registered": 1364,
+      "sms_total_count": 1526,
       "sms_list_id": "68e83675372caf03d49da4a7",
       "sms_list_name": "Victorville, CA 2026",
-      "eventbrite_registered": 290,
+      "eventbrite_registered": 298,
       "eventbrite_capacity": 500,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 195
-        },
         {
           "date": "2026-07-14",
           "registrations": 195
@@ -3489,30 +4369,24 @@
         {
           "date": "2026-07-30",
           "registrations": 290
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 298
         }
       ],
       "funnel": {
-        "impressions": 1091715,
-        "page_views": 12953,
-        "form_submits": 2763,
-        "sms_registered": 1330,
-        "eventbrite_registered": 290
+        "impressions": 1103898,
+        "page_views": 13165,
+        "form_submits": 2825,
+        "sms_registered": 1364,
+        "eventbrite_registered": 298
       },
       "rates": {
         "ctr": 1.19,
-        "overall": 0.122,
-        "form_conversion": 21.33,
-        "sms_capture": 48.14
-      },
-      "forecast": {
-        "metric": "eventbrite_registered",
-        "current": 290,
-        "daily_rate": 5.59,
-        "projected_total": 295,
-        "target": 500,
-        "days_remaining": 1,
-        "status": "behind",
-        "gap": 205
+        "overall": 0.124,
+        "form_conversion": 21.46,
+        "sms_capture": 48.28
       },
       "anomalies": []
     },
@@ -3529,8 +4403,8 @@
       },
       "share_clicks": {},
       "ad_spend": {
-        "meta": 985.0,
-        "tiktok": 933.3
+        "meta": 1001.14,
+        "tiktok": 933.32
       },
       "ad_revenue_attributed": {
         "meta": 0.0
@@ -3539,7 +4413,7 @@
         "meta": 0.0
       },
       "tiktok": {
-        "spend": 933.3,
+        "spend": 933.32,
         "impressions": 139169,
         "clicks": 614,
         "landing_page_views": 0,
@@ -3552,7 +4426,7 @@
           {
             "ad_id": "1871436483323042",
             "ad_name": "2026",
-            "spend": 933.3,
+            "spend": 933.32,
             "impressions": 139169,
             "clicks": 614,
             "lpv": 0
@@ -3576,32 +4450,32 @@
         ]
       },
       "meta": {
-        "spend": 985.0,
+        "spend": 1001.14,
         "revenue": 0.0,
-        "impressions": 162232,
-        "clicks": 7059,
-        "link_clicks": 3964,
-        "engage_through": 3095,
+        "impressions": 164759,
+        "clicks": 7143,
+        "link_clicks": 4016,
+        "engage_through": 3127,
         "link_ctr": 2.44,
-        "cost_per_link_click": 0.248,
-        "landing_page_views": 3089,
-        "ctr": 4.35,
+        "cost_per_link_click": 0.249,
+        "landing_page_views": 3123,
+        "ctr": 4.34,
         "cpc": 0.14,
-        "cpm": 6.07,
-        "cost_per_lpv": 0.319,
+        "cpm": 6.08,
+        "cost_per_lpv": 0.321,
         "top_ads": [
           {
             "ad_id": "120248277572610182",
             "ad_name": "NEW Reel 2026 Richmond, CA",
             "campaign_name": "NEW Reel 2026 Richmond, CA",
-            "spend": 985.0,
-            "impressions": 162232,
-            "clicks": 7059,
-            "lpv": 3089
+            "spend": 1001.14,
+            "impressions": 164759,
+            "clicks": 7143,
+            "lpv": 3123
           }
         ],
         "leads": 448,
-        "cost_per_lead": 2.199,
+        "cost_per_lead": 2.235,
         "by_lang": {
           "english": {
             "spend": 0.0,
@@ -3630,29 +4504,231 @@
             "cost_per_lead": 0
           },
           "other": {
-            "spend": 985.0,
-            "impressions": 162232,
-            "clicks": 7059,
-            "lpv": 3089,
+            "spend": 1001.14,
+            "impressions": 164759,
+            "clicks": 7143,
+            "lpv": 3123,
             "leads": 448,
             "ad_count": 1,
-            "ctr": 4.35,
+            "ctr": 4.34,
             "cpc": 0.14,
-            "cpm": 6.07,
-            "cpl": 0.319,
-            "cost_per_lead": 2.199
+            "cpm": 6.08,
+            "cpl": 0.321,
+            "cost_per_lead": 2.235
           }
         },
-        "paid_shares": 273,
-        "paid_saves": 108,
-        "paid_reactions": 372,
-        "daily_timeseries": []
+        "paid_shares": 277,
+        "paid_saves": 109,
+        "paid_reactions": 377,
+        "daily_timeseries": [
+          {
+            "date": "2026-07-10",
+            "spend": 115.75,
+            "impressions": 17200,
+            "clicks": 1592,
+            "link_clicks": 988,
+            "lpv": 860,
+            "leads": 90
+          },
+          {
+            "date": "2026-07-11",
+            "spend": 93.65,
+            "impressions": 14283,
+            "clicks": 1058,
+            "link_clicks": 647,
+            "lpv": 555,
+            "leads": 94
+          },
+          {
+            "date": "2026-07-12",
+            "spend": 0.0,
+            "impressions": 0,
+            "clicks": 0,
+            "link_clicks": 0,
+            "lpv": 1,
+            "leads": 0
+          },
+          {
+            "date": "2026-07-13",
+            "spend": 155.87,
+            "impressions": 25521,
+            "clicks": 1562,
+            "link_clicks": 857,
+            "lpv": 700,
+            "leads": 130
+          },
+          {
+            "date": "2026-07-14",
+            "spend": 176.45,
+            "impressions": 30953,
+            "clicks": 1919,
+            "link_clicks": 1154,
+            "lpv": 947,
+            "leads": 114
+          },
+          {
+            "date": "2026-07-15",
+            "spend": 166.71,
+            "impressions": 27570,
+            "clicks": 1551,
+            "link_clicks": 949,
+            "lpv": 768,
+            "leads": 86
+          },
+          {
+            "date": "2026-07-16",
+            "spend": 173.91,
+            "impressions": 27198,
+            "clicks": 1516,
+            "link_clicks": 918,
+            "lpv": 759,
+            "leads": 102
+          },
+          {
+            "date": "2026-07-17",
+            "spend": 182.31,
+            "impressions": 27607,
+            "clicks": 1548,
+            "link_clicks": 942,
+            "lpv": 779,
+            "leads": 98
+          },
+          {
+            "date": "2026-07-18",
+            "spend": 194.75,
+            "impressions": 29930,
+            "clicks": 1574,
+            "link_clicks": 976,
+            "lpv": 806,
+            "leads": 70
+          },
+          {
+            "date": "2026-07-19",
+            "spend": 155.04,
+            "impressions": 24104,
+            "clicks": 1264,
+            "link_clicks": 770,
+            "lpv": 634,
+            "leads": 78
+          },
+          {
+            "date": "2026-07-20",
+            "spend": 154.18,
+            "impressions": 24958,
+            "clicks": 1260,
+            "link_clicks": 791,
+            "lpv": 621,
+            "leads": 64
+          },
+          {
+            "date": "2026-07-21",
+            "spend": 149.19,
+            "impressions": 24401,
+            "clicks": 1261,
+            "link_clicks": 783,
+            "lpv": 641,
+            "leads": 60
+          },
+          {
+            "date": "2026-07-22",
+            "spend": 144.79,
+            "impressions": 24992,
+            "clicks": 1207,
+            "link_clicks": 680,
+            "lpv": 533,
+            "leads": 76
+          },
+          {
+            "date": "2026-07-23",
+            "spend": 137.57,
+            "impressions": 21629,
+            "clicks": 1113,
+            "link_clicks": 698,
+            "lpv": 551,
+            "leads": 70
+          },
+          {
+            "date": "2026-07-24",
+            "spend": 149.64,
+            "impressions": 22193,
+            "clicks": 1124,
+            "link_clicks": 710,
+            "lpv": 598,
+            "leads": 56
+          },
+          {
+            "date": "2026-07-25",
+            "spend": 155.97,
+            "impressions": 22064,
+            "clicks": 1175,
+            "link_clicks": 775,
+            "lpv": 660,
+            "leads": 64
+          },
+          {
+            "date": "2026-07-26",
+            "spend": 141.99,
+            "impressions": 21539,
+            "clicks": 1144,
+            "link_clicks": 723,
+            "lpv": 554,
+            "leads": 70
+          },
+          {
+            "date": "2026-07-27",
+            "spend": 151.1,
+            "impressions": 24825,
+            "clicks": 1190,
+            "link_clicks": 770,
+            "lpv": 620,
+            "leads": 48
+          },
+          {
+            "date": "2026-07-28",
+            "spend": 162.62,
+            "impressions": 25159,
+            "clicks": 1328,
+            "link_clicks": 849,
+            "lpv": 665,
+            "leads": 78
+          },
+          {
+            "date": "2026-07-29",
+            "spend": 149.73,
+            "impressions": 23053,
+            "clicks": 1235,
+            "link_clicks": 824,
+            "lpv": 662,
+            "leads": 46
+          },
+          {
+            "date": "2026-07-30",
+            "spend": 110.6,
+            "impressions": 17312,
+            "clicks": 914,
+            "link_clicks": 623,
+            "lpv": 500,
+            "leads": 38
+          }
+        ],
+        "tnd_now": {
+          "days_to_event": 7,
+          "data_through_dte": 8,
+          "cum_spend": 3021.82,
+          "cum_leads": 1532.0,
+          "cum_lpv": 13414.0,
+          "cum_clicks": 26535.0,
+          "cum_impressions": 476491.0,
+          "cum_cpl": 0.225,
+          "cum_cost_per_lead": 1.972,
+          "cum_ctr": 5.57
+        }
       },
       "reel_shares": {
         "total_shares": 68,
-        "paid_engagement": 273,
+        "paid_engagement": 277,
         "total": 68,
-        "paid": 273,
+        "paid": 277,
         "organic": null,
         "last_scan_at": "2026-07-30T17:36:35+00:00",
         "url": "https://www.instagram.com/reel/DbGdIQ2x0An/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
@@ -3661,18 +4737,14 @@
         "rate_per_hour": 0.35,
         "scan_count": 6
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
-      "sms_registered": 748,
-      "sms_total_count": 850,
+      "last_pulled": "2026-07-31T03:59:48Z",
+      "sms_registered": 754,
+      "sms_total_count": 856,
       "sms_list_id": "69167762073eba7f4ef9c164",
       "sms_list_name": "Richmond, CA 2026",
       "eventbrite_registered": 56,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 49
-        },
         {
           "date": "2026-07-14",
           "registrations": 49
@@ -3748,30 +4820,34 @@
         {
           "date": "2026-07-30",
           "registrations": 56
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 56
         }
       ],
       "funnel": {
-        "impressions": 301401,
-        "page_views": 3089,
+        "impressions": 303928,
+        "page_views": 3123,
         "form_submits": 538,
-        "sms_registered": 748,
+        "sms_registered": 754,
         "eventbrite_registered": 56
       },
       "rates": {
-        "ctr": 1.02,
+        "ctr": 1.03,
         "overall": 0.248,
-        "form_conversion": 17.42,
-        "sms_capture": 139.03
+        "form_conversion": 17.23,
+        "sms_capture": 140.15
       },
       "forecast": {
         "metric": "eventbrite_registered",
         "current": 56,
         "daily_rate": 0.41,
-        "projected_total": 59,
+        "projected_total": 58,
         "target": 250,
-        "days_remaining": 8,
+        "days_remaining": 7,
         "status": "behind",
-        "gap": 191
+        "gap": 192
       },
       "anomalies": []
     },
@@ -3788,7 +4864,7 @@
       },
       "share_clicks": {},
       "ad_spend": {
-        "meta": 2091.5499999999997,
+        "meta": 2156.1099999999997,
         "tiktok": 0.0
       },
       "ad_revenue_attributed": {
@@ -3827,119 +4903,258 @@
         ]
       },
       "meta": {
-        "spend": 2091.5499999999997,
+        "spend": 2156.1099999999997,
         "revenue": 0.0,
-        "impressions": 374330,
-        "clicks": 17615,
-        "link_clicks": 9110,
-        "engage_through": 8505,
+        "impressions": 386287,
+        "clicks": 18096,
+        "link_clicks": 9375,
+        "engage_through": 8721,
         "link_ctr": 2.43,
         "cost_per_link_click": 0.23,
-        "landing_page_views": 6635,
-        "ctr": 4.71,
+        "landing_page_views": 6812,
+        "ctr": 4.68,
         "cpc": 0.119,
-        "cpm": 5.59,
-        "cost_per_lpv": 0.315,
+        "cpm": 5.58,
+        "cost_per_lpv": 0.317,
         "top_ads": [
           {
             "ad_id": "120248733310870182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic English 2026 Visalia, CA",
-            "spend": 514.31,
-            "impressions": 90620,
-            "clicks": 4624,
-            "lpv": 1956
+            "spend": 527.19,
+            "impressions": 92988,
+            "clicks": 4734,
+            "lpv": 1993
           },
           {
             "ad_id": "120248733314140182",
             "ad_name": "Test - ADS 12",
             "campaign_name": "Traffic English 2026 Visalia, CA",
-            "spend": 148.05,
-            "impressions": 21476,
-            "clicks": 1087,
-            "lpv": 506
+            "spend": 153.28,
+            "impressions": 22303,
+            "clicks": 1117,
+            "lpv": 515
           },
           {
             "ad_id": "120248733343110182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic Spanish 2026 Visalia, CA",
-            "spend": 506.81,
-            "impressions": 111138,
-            "clicks": 5507,
-            "lpv": 1582
+            "spend": 520.97,
+            "impressions": 114461,
+            "clicks": 5653,
+            "lpv": 1623
           },
           {
             "ad_id": "120248733320400182",
             "ad_name": "Test - ADS 12",
             "campaign_name": "Traffic Spanish 2026 Visalia, CA",
-            "spend": 94.82,
-            "impressions": 15858,
-            "clicks": 736,
-            "lpv": 284
+            "spend": 98.63,
+            "impressions": 16494,
+            "clicks": 760,
+            "lpv": 296
           },
           {
             "ad_id": "120248733341900182",
             "ad_name": "Test - ADS 10",
             "campaign_name": "Traffic Spanish 2026 Visalia, CA",
-            "spend": 111.86,
-            "impressions": 13758,
-            "clicks": 822,
-            "lpv": 319
+            "spend": 117.62,
+            "impressions": 14732,
+            "clicks": 867,
+            "lpv": 338
           }
         ],
-        "leads": 1304,
-        "cost_per_lead": 1.604,
+        "leads": 1314,
+        "cost_per_lead": 1.641,
         "by_lang": {
           "english": {
-            "spend": 720.72,
-            "impressions": 120699,
-            "clicks": 6117,
-            "lpv": 2640,
-            "leads": 588,
+            "spend": 742.0800000000002,
+            "impressions": 124483,
+            "clicks": 6276,
+            "lpv": 2692,
+            "leads": 594,
             "ad_count": 5,
-            "ctr": 5.07,
+            "ctr": 5.04,
             "cpc": 0.118,
-            "cpm": 5.97,
-            "cpl": 0.273,
-            "cost_per_lead": 1.226
+            "cpm": 5.96,
+            "cpl": 0.276,
+            "cost_per_lead": 1.249
           },
           "spanish": {
-            "spend": 720.2,
-            "impressions": 142194,
-            "clicks": 7106,
-            "lpv": 2201,
-            "leads": 344,
+            "spend": 744.33,
+            "impressions": 147202,
+            "clicks": 7325,
+            "lpv": 2276,
+            "leads": 346,
             "ad_count": 5,
-            "ctr": 5.0,
-            "cpc": 0.101,
+            "ctr": 4.98,
+            "cpc": 0.102,
             "cpm": 5.06,
             "cpl": 0.327,
-            "cost_per_lead": 2.094
+            "cost_per_lead": 2.151
           },
           "other": {
-            "spend": 650.63,
-            "impressions": 111437,
-            "clicks": 4392,
-            "lpv": 1794,
-            "leads": 372,
+            "spend": 669.7,
+            "impressions": 114602,
+            "clicks": 4495,
+            "lpv": 1844,
+            "leads": 374,
             "ad_count": 1,
-            "ctr": 3.94,
-            "cpc": 0.148,
+            "ctr": 3.92,
+            "cpc": 0.149,
             "cpm": 5.84,
             "cpl": 0.363,
-            "cost_per_lead": 1.749
+            "cost_per_lead": 1.791
           }
         },
-        "paid_shares": 904,
-        "paid_saves": 238,
-        "paid_reactions": 1364,
-        "daily_timeseries": []
+        "paid_shares": 930,
+        "paid_saves": 245,
+        "paid_reactions": 1397,
+        "daily_timeseries": [
+          {
+            "date": "2026-07-17",
+            "spend": 36.79,
+            "impressions": 6441,
+            "clicks": 506,
+            "link_clicks": 235,
+            "lpv": 183,
+            "leads": 88
+          },
+          {
+            "date": "2026-07-18",
+            "spend": 240.22,
+            "impressions": 41672,
+            "clicks": 2566,
+            "link_clicks": 1273,
+            "lpv": 968,
+            "leads": 224
+          },
+          {
+            "date": "2026-07-19",
+            "spend": 157.02,
+            "impressions": 28755,
+            "clicks": 1580,
+            "link_clicks": 804,
+            "lpv": 593,
+            "leads": 148
+          },
+          {
+            "date": "2026-07-20",
+            "spend": 158.41,
+            "impressions": 29631,
+            "clicks": 1372,
+            "link_clicks": 664,
+            "lpv": 510,
+            "leads": 98
+          },
+          {
+            "date": "2026-07-21",
+            "spend": 156.43,
+            "impressions": 29152,
+            "clicks": 1410,
+            "link_clicks": 721,
+            "lpv": 531,
+            "leads": 104
+          },
+          {
+            "date": "2026-07-22",
+            "spend": 152.7,
+            "impressions": 30266,
+            "clicks": 1353,
+            "link_clicks": 644,
+            "lpv": 447,
+            "leads": 92
+          },
+          {
+            "date": "2026-07-23",
+            "spend": 147.94,
+            "impressions": 27086,
+            "clicks": 1210,
+            "link_clicks": 607,
+            "lpv": 411,
+            "leads": 68
+          },
+          {
+            "date": "2026-07-24",
+            "spend": 168.37,
+            "impressions": 27530,
+            "clicks": 1255,
+            "link_clicks": 667,
+            "lpv": 503,
+            "leads": 92
+          },
+          {
+            "date": "2026-07-25",
+            "spend": 174.94,
+            "impressions": 27607,
+            "clicks": 1221,
+            "link_clicks": 673,
+            "lpv": 493,
+            "leads": 68
+          },
+          {
+            "date": "2026-07-26",
+            "spend": 151.76,
+            "impressions": 26646,
+            "clicks": 1089,
+            "link_clicks": 621,
+            "lpv": 449,
+            "leads": 64
+          },
+          {
+            "date": "2026-07-27",
+            "spend": 160.73,
+            "impressions": 29194,
+            "clicks": 1147,
+            "link_clicks": 614,
+            "lpv": 432,
+            "leads": 68
+          },
+          {
+            "date": "2026-07-28",
+            "spend": 170.35,
+            "impressions": 31099,
+            "clicks": 1319,
+            "link_clicks": 719,
+            "lpv": 486,
+            "leads": 72
+          },
+          {
+            "date": "2026-07-29",
+            "spend": 161.05,
+            "impressions": 29694,
+            "clicks": 1161,
+            "link_clicks": 635,
+            "lpv": 449,
+            "leads": 88
+          },
+          {
+            "date": "2026-07-30",
+            "spend": 119.4,
+            "impressions": 21514,
+            "clicks": 907,
+            "link_clicks": 498,
+            "lpv": 357,
+            "leads": 40
+          }
+        ],
+        "tnd_now": {
+          "days_to_event": 14,
+          "data_through_dte": 15,
+          "cum_spend": 2156.11,
+          "cum_leads": 1314.0,
+          "cum_lpv": 6812.0,
+          "cum_clicks": 18096.0,
+          "cum_impressions": 386287.0,
+          "cum_cpl": 0.317,
+          "cum_cost_per_lead": 1.641,
+          "cum_ctr": 4.68
+        }
       },
       "reel_shares": {
         "total_shares": 85,
-        "paid_engagement": 904,
+        "paid_engagement": 930,
         "total": 85,
-        "paid": 904,
+        "paid": 930,
         "organic": null,
         "last_scan_at": "2026-07-30T17:36:35+00:00",
         "url": "https://www.instagram.com/reel/DabAtjZxoBU/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
@@ -3948,18 +5163,14 @@
         "rate_per_hour": 0.26,
         "scan_count": 8
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
-      "sms_registered": 603,
-      "sms_total_count": 674,
+      "last_pulled": "2026-07-31T03:59:48Z",
+      "sms_registered": 609,
+      "sms_total_count": 680,
       "sms_list_id": "691679aa63f88543ee7bf5a8",
       "sms_list_name": "Visalia, CA 2026",
       "eventbrite_registered": 84,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 46
-        },
         {
           "date": "2026-07-14",
           "registrations": 47
@@ -4035,30 +5246,34 @@
         {
           "date": "2026-07-30",
           "registrations": 84
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 84
         }
       ],
       "funnel": {
-        "impressions": 374330,
-        "page_views": 6635,
-        "form_submits": 1304,
-        "sms_registered": 603,
+        "impressions": 386287,
+        "page_views": 6812,
+        "form_submits": 1314,
+        "sms_registered": 609,
         "eventbrite_registered": 84
       },
       "rates": {
-        "ctr": 1.77,
-        "overall": 0.161,
-        "form_conversion": 19.65,
-        "sms_capture": 46.24
+        "ctr": 1.76,
+        "overall": 0.158,
+        "form_conversion": 19.29,
+        "sms_capture": 46.35
       },
       "forecast": {
         "metric": "eventbrite_registered",
         "current": 84,
-        "daily_rate": 2.24,
-        "projected_total": 117,
+        "daily_rate": 2.18,
+        "projected_total": 114,
         "target": 250,
-        "days_remaining": 15,
+        "days_remaining": 14,
         "status": "behind",
-        "gap": 133
+        "gap": 136
       },
       "anomalies": []
     },
@@ -4075,7 +5290,7 @@
       },
       "share_clicks": {},
       "ad_spend": {
-        "meta": 846.9399999999999,
+        "meta": 897.99,
         "tiktok": 0.0
       },
       "ad_revenue_attributed": {
@@ -4114,119 +5329,195 @@
         ]
       },
       "meta": {
-        "spend": 846.9399999999999,
+        "spend": 897.99,
         "revenue": 0.0,
-        "impressions": 139016,
-        "clicks": 11242,
-        "link_clicks": 6583,
-        "engage_through": 4659,
-        "link_ctr": 4.74,
+        "impressions": 147713,
+        "clicks": 11858,
+        "link_clicks": 6949,
+        "engage_through": 4909,
+        "link_ctr": 4.7,
         "cost_per_link_click": 0.129,
-        "landing_page_views": 5078,
-        "ctr": 8.09,
-        "cpc": 0.075,
-        "cpm": 6.09,
-        "cost_per_lpv": 0.167,
+        "landing_page_views": 5354,
+        "ctr": 8.03,
+        "cpc": 0.076,
+        "cpm": 6.08,
+        "cost_per_lpv": 0.168,
         "top_ads": [
           {
             "ad_id": "120248932859870182",
             "ad_name": "Test - ADS 12",
             "campaign_name": "Traffic English 2026 Riverside, CA",
-            "spend": 55.58,
-            "impressions": 7869,
-            "clicks": 735,
-            "lpv": 389
+            "spend": 58.4,
+            "impressions": 8280,
+            "clicks": 782,
+            "lpv": 407
           },
           {
             "ad_id": "120248932852280182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic English 2026 Riverside, CA",
-            "spend": 231.66,
-            "impressions": 35341,
-            "clicks": 2952,
-            "lpv": 1606
+            "spend": 245.56,
+            "impressions": 37454,
+            "clicks": 3123,
+            "lpv": 1688
           },
           {
             "ad_id": "120248932890740182",
             "ad_name": "Test - Ads 9",
             "campaign_name": "Traffic Spanish 2026 Riverside, CA",
-            "spend": 246.78,
-            "impressions": 44608,
-            "clicks": 3857,
-            "lpv": 1505
+            "spend": 259.9,
+            "impressions": 47142,
+            "clicks": 4044,
+            "lpv": 1573
           },
           {
             "ad_id": "120248932879720182",
             "ad_name": "Test - ADS 12",
             "campaign_name": "Traffic Spanish 2026 Riverside, CA",
-            "spend": 34.89,
-            "impressions": 5025,
-            "clicks": 466,
-            "lpv": 206
+            "spend": 37.33,
+            "impressions": 5391,
+            "clicks": 485,
+            "lpv": 217
           },
           {
             "ad_id": "120249014411620182",
             "ad_name": "NEW Reel 2026 Riverside",
             "campaign_name": "NEW Reel 2026 Riverside",
-            "spend": 246.52,
-            "impressions": 42168,
-            "clicks": 2824,
-            "lpv": 1171
+            "spend": 262.85,
+            "impressions": 45118,
+            "clicks": 2978,
+            "lpv": 1251
           }
         ],
-        "leads": 974,
-        "cost_per_lead": 0.87,
+        "leads": 1036,
+        "cost_per_lead": 0.867,
         "by_lang": {
           "english": {
-            "spend": 299.38,
-            "impressions": 44873,
-            "clicks": 3880,
-            "lpv": 2102,
-            "leads": 384,
+            "spend": 317.23,
+            "impressions": 47534,
+            "clicks": 4114,
+            "lpv": 2211,
+            "leads": 410,
             "ad_count": 5,
             "ctr": 8.65,
             "cpc": 0.077,
             "cpm": 6.67,
-            "cpl": 0.142,
-            "cost_per_lead": 0.78
+            "cpl": 0.143,
+            "cost_per_lead": 0.774
           },
           "spanish": {
-            "spend": 301.04,
-            "impressions": 51975,
-            "clicks": 4538,
-            "lpv": 1805,
-            "leads": 288,
+            "spend": 317.90999999999997,
+            "impressions": 55061,
+            "clicks": 4766,
+            "lpv": 1892,
+            "leads": 300,
             "ad_count": 5,
-            "ctr": 8.73,
-            "cpc": 0.066,
-            "cpm": 5.79,
-            "cpl": 0.167,
-            "cost_per_lead": 1.045
+            "ctr": 8.66,
+            "cpc": 0.067,
+            "cpm": 5.77,
+            "cpl": 0.168,
+            "cost_per_lead": 1.06
           },
           "other": {
-            "spend": 246.52,
-            "impressions": 42168,
-            "clicks": 2824,
-            "lpv": 1171,
-            "leads": 302,
+            "spend": 262.85,
+            "impressions": 45118,
+            "clicks": 2978,
+            "lpv": 1251,
+            "leads": 326,
             "ad_count": 1,
-            "ctr": 6.7,
-            "cpc": 0.087,
-            "cpm": 5.85,
-            "cpl": 0.211,
-            "cost_per_lead": 0.816
+            "ctr": 6.6,
+            "cpc": 0.088,
+            "cpm": 5.83,
+            "cpl": 0.21,
+            "cost_per_lead": 0.806
           }
         },
-        "paid_shares": 523,
-        "paid_saves": 251,
-        "paid_reactions": 943,
-        "daily_timeseries": []
+        "paid_shares": 553,
+        "paid_saves": 261,
+        "paid_reactions": 990,
+        "daily_timeseries": [
+          {
+            "date": "2026-07-24",
+            "spend": 82.97,
+            "impressions": 12316,
+            "clicks": 1474,
+            "link_clicks": 942,
+            "lpv": 717,
+            "leads": 136
+          },
+          {
+            "date": "2026-07-25",
+            "spend": 119.14,
+            "impressions": 18409,
+            "clicks": 1674,
+            "link_clicks": 983,
+            "lpv": 779,
+            "leads": 142
+          },
+          {
+            "date": "2026-07-26",
+            "spend": 131.05,
+            "impressions": 21480,
+            "clicks": 1637,
+            "link_clicks": 960,
+            "lpv": 728,
+            "leads": 158
+          },
+          {
+            "date": "2026-07-27",
+            "spend": 151.74,
+            "impressions": 25793,
+            "clicks": 2029,
+            "link_clicks": 1110,
+            "lpv": 838,
+            "leads": 176
+          },
+          {
+            "date": "2026-07-28",
+            "spend": 154.69,
+            "impressions": 25952,
+            "clicks": 1972,
+            "link_clicks": 1130,
+            "lpv": 865,
+            "leads": 130
+          },
+          {
+            "date": "2026-07-29",
+            "spend": 150.86,
+            "impressions": 25724,
+            "clicks": 1797,
+            "link_clicks": 1048,
+            "lpv": 810,
+            "leads": 180
+          },
+          {
+            "date": "2026-07-30",
+            "spend": 107.54,
+            "impressions": 18039,
+            "clicks": 1275,
+            "link_clicks": 776,
+            "lpv": 615,
+            "leads": 112
+          }
+        ],
+        "tnd_now": {
+          "days_to_event": 21,
+          "data_through_dte": 22,
+          "cum_spend": 897.99,
+          "cum_leads": 1034.0,
+          "cum_lpv": 5352.0,
+          "cum_clicks": 11858.0,
+          "cum_impressions": 147713.0,
+          "cum_cpl": 0.168,
+          "cum_cost_per_lead": 0.868,
+          "cum_ctr": 8.03
+        }
       },
       "reel_shares": {
         "total_shares": 102,
-        "paid_engagement": 523,
+        "paid_engagement": 553,
         "total": 102,
-        "paid": 523,
+        "paid": 553,
         "organic": null,
         "last_scan_at": "2026-07-30T17:36:35+00:00",
         "url": "https://www.instagram.com/reel/Dax2w9_xBxw/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
@@ -4235,18 +5526,14 @@
         "rate_per_hour": 0.22,
         "scan_count": 6
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
-      "sms_registered": 497,
-      "sms_total_count": 548,
+      "last_pulled": "2026-07-31T03:59:48Z",
+      "sms_registered": 529,
+      "sms_total_count": 582,
       "sms_list_id": "6930cfb42cfb0f607ba2cc27",
       "sms_list_name": "Riverside, CA 2026",
-      "eventbrite_registered": 479,
+      "eventbrite_registered": 484,
       "eventbrite_capacity": 1000,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 293
-        },
         {
           "date": "2026-07-14",
           "registrations": 310
@@ -4322,30 +5609,34 @@
         {
           "date": "2026-07-30",
           "registrations": 479
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 484
         }
       ],
       "funnel": {
-        "impressions": 139016,
-        "page_views": 5078,
-        "form_submits": 974,
-        "sms_registered": 497,
-        "eventbrite_registered": 479
+        "impressions": 147713,
+        "page_views": 5354,
+        "form_submits": 1036,
+        "sms_registered": 529,
+        "eventbrite_registered": 484
       },
       "rates": {
-        "ctr": 3.65,
+        "ctr": 3.62,
         "overall": 0.358,
-        "form_conversion": 19.18,
-        "sms_capture": 51.03
+        "form_conversion": 19.35,
+        "sms_capture": 51.06
       },
       "forecast": {
         "metric": "eventbrite_registered",
-        "current": 479,
-        "daily_rate": 10.94,
-        "projected_total": 719,
+        "current": 484,
+        "daily_rate": 10.24,
+        "projected_total": 698,
         "target": 1000,
-        "days_remaining": 22,
+        "days_remaining": 21,
         "status": "behind",
-        "gap": 281
+        "gap": 302
       },
       "anomalies": []
     },
@@ -4474,18 +5765,14 @@
         "rate_per_hour": 0.04,
         "scan_count": 2
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
-      "sms_registered": 37,
-      "sms_total_count": 40,
+      "last_pulled": "2026-07-31T03:59:48Z",
+      "sms_registered": 39,
+      "sms_total_count": 42,
       "sms_list_id": "69167a0b63f88543ee7c10eb",
       "sms_list_name": "San Jose, CA 2026",
       "eventbrite_registered": 168,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 118
-        },
         {
           "date": "2026-07-14",
           "registrations": 118
@@ -4561,13 +5848,17 @@
         {
           "date": "2026-07-30",
           "registrations": 168
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 168
         }
       ],
       "funnel": {
         "impressions": 0,
         "page_views": 0,
         "form_submits": 0,
-        "sms_registered": 37,
+        "sms_registered": 39,
         "eventbrite_registered": 168
       },
       "rates": {},
@@ -4575,9 +5866,9 @@
         "metric": "eventbrite_registered",
         "current": 168,
         "daily_rate": 2.94,
-        "projected_total": 253,
+        "projected_total": 250,
         "target": 250,
-        "days_remaining": 29,
+        "days_remaining": 28,
         "status": "on_track",
         "gap": 0
       },
@@ -4708,18 +5999,14 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 7,
       "sms_total_count": 8,
       "sms_list_id": "69167a6163f88543ee7c25a1",
       "sms_list_name": "Portland, OR 2026",
-      "eventbrite_registered": 11,
+      "eventbrite_registered": 12,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 11
-        },
         {
           "date": "2026-07-14",
           "registrations": 11
@@ -4795,6 +6082,10 @@
         {
           "date": "2026-07-30",
           "registrations": 11
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 12
         }
       ],
       "funnel": {
@@ -4802,18 +6093,18 @@
         "page_views": 0,
         "form_submits": 0,
         "sms_registered": 7,
-        "eventbrite_registered": 11
+        "eventbrite_registered": 12
       },
       "rates": {},
       "forecast": {
         "metric": "eventbrite_registered",
-        "current": 11,
-        "daily_rate": 0.79,
-        "projected_total": 39,
+        "current": 12,
+        "daily_rate": 0.06,
+        "projected_total": 14,
         "target": 250,
-        "days_remaining": 36,
+        "days_remaining": 35,
         "status": "behind",
-        "gap": 211
+        "gap": 236
       },
       "anomalies": []
     },
@@ -4942,7 +6233,7 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 5,
       "sms_total_count": 5,
       "sms_list_id": "69167aabe5fbf8385d59474e",
@@ -4950,10 +6241,6 @@
       "eventbrite_registered": 23,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 22
-        },
         {
           "date": "2026-07-14",
           "registrations": 22
@@ -5029,6 +6316,10 @@
         {
           "date": "2026-07-30",
           "registrations": 23
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 23
         }
       ],
       "funnel": {
@@ -5045,7 +6336,7 @@
         "daily_rate": 0.06,
         "projected_total": 25,
         "target": 250,
-        "days_remaining": 43,
+        "days_remaining": 42,
         "status": "behind",
         "gap": 225
       },
@@ -5159,7 +6450,7 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 3,
       "sms_total_count": 3,
       "sms_list_id": "6a1c5d9cc2ab1b2d917467b8",
@@ -5167,10 +6458,6 @@
       "eventbrite_registered": 19,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 3
-        },
         {
           "date": "2026-07-14",
           "registrations": 3
@@ -5246,6 +6533,10 @@
         {
           "date": "2026-07-30",
           "registrations": 19
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 19
         }
       ],
       "funnel": {
@@ -5260,11 +6551,11 @@
         "metric": "eventbrite_registered",
         "current": 19,
         "daily_rate": 0.94,
-        "projected_total": 72,
+        "projected_total": 71,
         "target": 250,
-        "days_remaining": 57,
+        "days_remaining": 56,
         "status": "behind",
-        "gap": 178
+        "gap": 179
       },
       "anomalies": []
     },
@@ -5393,7 +6684,7 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 13,
       "sms_total_count": 14,
       "sms_list_id": "6940931f767a56645e8766bf",
@@ -5401,10 +6692,6 @@
       "eventbrite_registered": 39,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 33
-        },
         {
           "date": "2026-07-14",
           "registrations": 33
@@ -5480,6 +6767,10 @@
         {
           "date": "2026-07-30",
           "registrations": 39
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 39
         }
       ],
       "funnel": {
@@ -5496,7 +6787,7 @@
         "daily_rate": 0.35,
         "projected_total": 61,
         "target": 250,
-        "days_remaining": 64,
+        "days_remaining": 63,
         "status": "behind",
         "gap": 189
       },
@@ -5627,7 +6918,7 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 11,
       "sms_total_count": 11,
       "sms_list_id": "694093007e67765257b824a8",
@@ -5635,10 +6926,6 @@
       "eventbrite_registered": 24,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 19
-        },
         {
           "date": "2026-07-14",
           "registrations": 19
@@ -5714,6 +7001,10 @@
         {
           "date": "2026-07-30",
           "registrations": 24
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 24
         }
       ],
       "funnel": {
@@ -5730,7 +7021,7 @@
         "daily_rate": 0.29,
         "projected_total": 44,
         "target": 250,
-        "days_remaining": 71,
+        "days_remaining": 70,
         "status": "behind",
         "gap": 206
       },
@@ -5844,7 +7135,7 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 4,
       "sms_total_count": 4,
       "sms_list_id": "6940932b9d097c01a11cba6e",
@@ -5852,10 +7143,6 @@
       "eventbrite_registered": 1,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 1
-        },
         {
           "date": "2026-07-14",
           "registrations": 1
@@ -5931,6 +7218,10 @@
         {
           "date": "2026-07-30",
           "registrations": 1
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 1
         }
       ],
       "funnel": {
@@ -5947,7 +7238,7 @@
         "daily_rate": 0.07,
         "projected_total": 6,
         "target": 250,
-        "days_remaining": 78,
+        "days_remaining": 77,
         "status": "behind",
         "gap": 244
       },
@@ -6078,7 +7369,7 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 7,
       "sms_total_count": 7,
       "sms_list_id": "6940934d7e67765257b8458d",
@@ -6086,10 +7377,6 @@
       "eventbrite_registered": 13,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 9
-        },
         {
           "date": "2026-07-14",
           "registrations": 13
@@ -6165,6 +7452,10 @@
         {
           "date": "2026-07-30",
           "registrations": 13
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 13
         }
       ],
       "funnel": {
@@ -6178,12 +7469,12 @@
       "forecast": {
         "metric": "eventbrite_registered",
         "current": 13,
-        "daily_rate": 0.24,
-        "projected_total": 33,
+        "daily_rate": 0.93,
+        "projected_total": 91,
         "target": 250,
-        "days_remaining": 85,
+        "days_remaining": 84,
         "status": "behind",
-        "gap": 217
+        "gap": 159
       },
       "anomalies": []
     },
@@ -6295,7 +7586,7 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 2,
       "sms_total_count": 2,
       "sms_list_id": "6a44394a253e4ab3b19e9f2e",
@@ -6303,10 +7594,6 @@
       "eventbrite_registered": 8,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 5
-        },
         {
           "date": "2026-07-14",
           "registrations": 5
@@ -6382,6 +7669,10 @@
         {
           "date": "2026-07-30",
           "registrations": 8
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 8
         }
       ],
       "funnel": {
@@ -6398,7 +7689,7 @@
         "daily_rate": 0.18,
         "projected_total": 24,
         "target": 250,
-        "days_remaining": 92,
+        "days_remaining": 91,
         "status": "behind",
         "gap": 226
       },
@@ -6529,7 +7820,7 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 5,
       "sms_total_count": 7,
       "sms_list_id": "69167cd4073eba7f4efb30b1",
@@ -6537,10 +7828,6 @@
       "eventbrite_registered": 5,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 5
-        },
         {
           "date": "2026-07-14",
           "registrations": 5
@@ -6616,6 +7903,10 @@
         {
           "date": "2026-07-30",
           "registrations": 5
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 5
         }
       ],
       "funnel": {
@@ -6632,7 +7923,7 @@
         "daily_rate": 0.36,
         "projected_total": 42,
         "target": 250,
-        "days_remaining": 106,
+        "days_remaining": 105,
         "status": "behind",
         "gap": 208
       },
@@ -6763,7 +8054,7 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 12,
       "sms_total_count": 12,
       "sms_list_id": "694093787e67765257b86038",
@@ -6771,10 +8062,6 @@
       "eventbrite_registered": 19,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 11
-        },
         {
           "date": "2026-07-14",
           "registrations": 11
@@ -6850,6 +8137,10 @@
         {
           "date": "2026-07-30",
           "registrations": 19
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 19
         }
       ],
       "funnel": {
@@ -6864,11 +8155,11 @@
         "metric": "eventbrite_registered",
         "current": 19,
         "daily_rate": 0.47,
-        "projected_total": 72,
+        "projected_total": 71,
         "target": 250,
-        "days_remaining": 113,
+        "days_remaining": 112,
         "status": "behind",
-        "gap": 178
+        "gap": 179
       },
       "anomalies": []
     },
@@ -6980,18 +8271,14 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 3,
       "sms_total_count": 3,
       "sms_list_id": "6a1c5dbcc2ab1b2d91746cd9",
       "sms_list_name": "Santa Ana 2026",
-      "eventbrite_registered": 42,
+      "eventbrite_registered": 45,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 31
-        },
         {
           "date": "2026-07-14",
           "registrations": 31
@@ -7067,6 +8354,10 @@
         {
           "date": "2026-07-30",
           "registrations": 42
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 45
         }
       ],
       "funnel": {
@@ -7074,18 +8365,18 @@
         "page_views": 0,
         "form_submits": 0,
         "sms_registered": 3,
-        "eventbrite_registered": 42
+        "eventbrite_registered": 45
       },
       "rates": {},
       "forecast": {
         "metric": "eventbrite_registered",
-        "current": 42,
-        "daily_rate": 0.65,
-        "projected_total": 124,
+        "current": 45,
+        "daily_rate": 0.82,
+        "projected_total": 148,
         "target": 250,
-        "days_remaining": 127,
+        "days_remaining": 126,
         "status": "behind",
-        "gap": 126
+        "gap": 102
       },
       "anomalies": []
     },
@@ -7197,7 +8488,7 @@
         "rate_per_hour": 0,
         "scan_count": 0
       },
-      "last_pulled": "2026-07-30T20:01:30Z",
+      "last_pulled": "2026-07-31T03:59:48Z",
       "sms_registered": 8,
       "sms_total_count": 8,
       "sms_list_id": "6a1326ad94c90ad5aa5e4f40",
@@ -7205,10 +8496,6 @@
       "eventbrite_registered": 17,
       "eventbrite_capacity": 250,
       "eventbrite_history": [
-        {
-          "date": "2026-07-13",
-          "registrations": 12
-        },
         {
           "date": "2026-07-14",
           "registrations": 12
@@ -7284,6 +8571,10 @@
         {
           "date": "2026-07-30",
           "registrations": 17
+        },
+        {
+          "date": "2026-07-31",
+          "registrations": 17
         }
       ],
       "funnel": {
@@ -7300,7 +8591,7 @@
         "daily_rate": 0.29,
         "projected_total": 58,
         "target": 250,
-        "days_remaining": 141,
+        "days_remaining": 140,
         "status": "behind",
         "gap": 192
       },
@@ -7308,16 +8599,135 @@
     }
   },
   "_averages": {
-    "mean_cpl": 0.293,
-    "mean_ctr": 5.06,
-    "mean_spend": 2581.24,
-    "mean_cpl_english": 0.251,
-    "mean_cpl_spanish": 0.306,
+    "mean_cpl": 0.294,
+    "mean_ctr": 5.02,
+    "mean_spend": 2519.35,
+    "mean_cpl_english": 0.253,
+    "mean_cpl_spanish": 0.305,
     "best_event": "riverside-ca-2026",
-    "best_cpl": 0.167,
+    "best_cpl": 0.168,
     "worst_event": "fort-collins-co-2026",
-    "worst_cpl": 0.362,
-    "event_count": 8
+    "worst_cpl": 0.358,
+    "event_count": 8,
+    "time_aligned": {
+      "milestones": [
+        28,
+        21,
+        14,
+        10,
+        7,
+        5,
+        4,
+        3,
+        2,
+        1,
+        0
+      ],
+      "by_milestone": {
+        "28": {
+          "n_events": 4,
+          "cum_cpl": 0.16,
+          "cum_cost_per_lead": 0.739,
+          "cum_spend": 90.25,
+          "cum_leads": 127.5,
+          "cum_lpv": 605.0,
+          "ctr": 9.378
+        },
+        "21": {
+          "n_events": 4,
+          "cum_cpl": 0.253,
+          "cum_cost_per_lead": 1.391,
+          "cum_spend": 1006.87,
+          "cum_leads": 753.0,
+          "cum_lpv": 3988.2,
+          "ctr": 5.566
+        },
+        "14": {
+          "n_events": 4,
+          "cum_cpl": 0.272,
+          "cum_cost_per_lead": 1.709,
+          "cum_spend": 1577.31,
+          "cum_leads": 945.0,
+          "cum_lpv": 5945.5,
+          "ctr": 5.066
+        },
+        "10": {
+          "n_events": 4,
+          "cum_cpl": 0.282,
+          "cum_cost_per_lead": 1.903,
+          "cum_spend": 2166.88,
+          "cum_leads": 1180.5,
+          "cum_lpv": 7865.0,
+          "ctr": 4.875
+        },
+        "7": {
+          "n_events": 4,
+          "cum_cpl": 0.295,
+          "cum_cost_per_lead": 1.955,
+          "cum_spend": 1951.12,
+          "cum_leads": 1027.5,
+          "cum_lpv": 6294.0,
+          "ctr": 4.691
+        },
+        "5": {
+          "n_events": 4,
+          "cum_cpl": 0.3,
+          "cum_cost_per_lead": 2.051,
+          "cum_spend": 2243.75,
+          "cum_leads": 1139.5,
+          "cum_lpv": 7213.2,
+          "ctr": 4.598
+        },
+        "4": {
+          "n_events": 4,
+          "cum_cpl": 0.302,
+          "cum_cost_per_lead": 2.043,
+          "cum_spend": 2428.83,
+          "cum_leads": 1228.0,
+          "cum_lpv": 7810.2,
+          "ctr": 4.561
+        },
+        "3": {
+          "n_events": 4,
+          "cum_cpl": 0.303,
+          "cum_cost_per_lead": 2.044,
+          "cum_spend": 2613.99,
+          "cum_leads": 1313.0,
+          "cum_lpv": 8408.5,
+          "ctr": 4.543
+        },
+        "2": {
+          "n_events": 5,
+          "cum_cpl": 0.324,
+          "cum_cost_per_lead": 2.208,
+          "cum_spend": 2276.99,
+          "cum_leads": 1132.8,
+          "cum_lpv": 7281.6,
+          "ctr": 4.476
+        },
+        "1": {
+          "n_events": 5,
+          "cum_cpl": 0.317,
+          "cum_cost_per_lead": 2.061,
+          "cum_spend": 2453.2,
+          "cum_leads": 1230.0,
+          "cum_lpv": 7836.8,
+          "ctr": 4.553
+        },
+        "0": {
+          "n_events": 4,
+          "cum_cpl": 0.307,
+          "cum_cost_per_lead": 2.012,
+          "cum_spend": 2105.37,
+          "cum_leads": 1026.0,
+          "cum_lpv": 7136.8,
+          "ctr": 4.653
+        }
+      },
+      "method": "cumulative Meta spend/lpv/leads/clicks from campaign start up to T-N days before event_date, averaged across events with >= $100 spend that reached T-N",
+      "event_count": 8,
+      "generated_at": "2026-07-31T03:59:59Z"
+    }
   },
-  "_updated_at": "2026-07-30T20:01:30Z"
+  "_updated_at": "2026-07-31T03:59:48Z"
 }
