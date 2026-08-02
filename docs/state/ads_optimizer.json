@@ -1,5 +1,5 @@
 {
-  "_updated_at": "2026-08-02T15:08:11.948972+00:00",
+  "_updated_at": "2026-08-02T23:00:52.459615+00:00",
   "_about": "@ads-optimizer recommendations. Engine is read-only; execution happens only after Lauren approves each rec in /ads-optimizer/. Decisions are merge-preserved across runs (IRON RULE #7).",
   "thresholds": {
     "MIN_SPEND": 50.0,
@@ -11,35 +11,35 @@
   "benchmarks": {
     "victorville-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.3241,
+      "value": 0.3239,
       "n_ads": 5
     },
     "victorville-ca-2026/tiktok": {
       "metric": "CPC",
-      "value": 1.3781,
+      "value": 1.363,
       "n_ads": 2
     },
     "richmond-ca-2026/tiktok": {
       "metric": "CPC",
-      "value": 1.5186,
+      "value": 1.508,
       "n_ads": 2
     },
     "visalia-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.2994,
+      "value": 0.2998,
       "n_ads": 4
     },
     "riverside-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.163,
+      "value": 0.1639,
       "n_ads": 4
     }
   },
   "summary": {
     "pause_count": 0,
-    "scale_count": 1,
-    "events_covered": 1,
-    "open_count": 1
+    "scale_count": 2,
+    "events_covered": 2,
+    "open_count": 2
   },
   "recommendations": [
     {
@@ -48,16 +48,34 @@
       "ad_id": "1872334768669745",
       "ad_name": "2026",
       "campaign_name": "",
-      "spend": 252.35,
+      "spend": 338.91,
       "metric_name": "CPC",
-      "metric_value": 1.09,
-      "benchmark": 1.38,
+      "metric_value": 1.08,
+      "benchmark": 1.36,
       "ratio": 0.79,
-      "roas": 6.79,
+      "roas": 6.68,
       "action": "scale",
       "suggested_change": "+20% תקציב יומי",
-      "reason": "CPC $1.09 — 21% טוב מהממוצע בערוץ ($1.38). מנצח — שווה יותר תקציב.",
+      "reason": "CPC $1.08 — 21% טוב מהממוצע בערוץ ($1.36). מנצח — שווה יותר תקציב.",
       "id": "victorville-ca-2026|tiktok|1872334768669745|scale",
+      "status": "open"
+    },
+    {
+      "event_slug": "richmond-ca-2026",
+      "channel": "tiktok",
+      "ad_id": "1872335041040497",
+      "ad_name": "2026",
+      "campaign_name": "",
+      "spend": 251.61,
+      "metric_name": "CPC",
+      "metric_value": 1.28,
+      "benchmark": 1.51,
+      "ratio": 0.85,
+      "roas": null,
+      "action": "scale",
+      "suggested_change": "+20% תקציב יומי",
+      "reason": "CPC $1.28 — 15% טוב מהממוצע בערוץ ($1.51). מנצח — שווה יותר תקציב.",
+      "id": "richmond-ca-2026|tiktok|1872335041040497|scale",
       "status": "open"
     }
   ]
