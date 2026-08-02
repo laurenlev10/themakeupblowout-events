@@ -1,5 +1,5 @@
 {
-  "_updated_at": "2026-08-01T22:59:59.481450+00:00",
+  "_updated_at": "2026-08-02T15:08:11.948972+00:00",
   "_about": "@ads-optimizer recommendations. Engine is read-only; execution happens only after Lauren approves each rec in /ads-optimizer/. Decisions are merge-preserved across runs (IRON RULE #7).",
   "thresholds": {
     "MIN_SPEND": 50.0,
@@ -11,25 +11,54 @@
   "benchmarks": {
     "victorville-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.3236,
+      "value": 0.3241,
       "n_ads": 5
+    },
+    "victorville-ca-2026/tiktok": {
+      "metric": "CPC",
+      "value": 1.3781,
+      "n_ads": 2
+    },
+    "richmond-ca-2026/tiktok": {
+      "metric": "CPC",
+      "value": 1.5186,
+      "n_ads": 2
     },
     "visalia-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.3028,
-      "n_ads": 5
+      "value": 0.2994,
+      "n_ads": 4
     },
     "riverside-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.1737,
+      "value": 0.163,
       "n_ads": 4
     }
   },
   "summary": {
     "pause_count": 0,
-    "scale_count": 0,
-    "events_covered": 0,
-    "open_count": 0
+    "scale_count": 1,
+    "events_covered": 1,
+    "open_count": 1
   },
-  "recommendations": []
+  "recommendations": [
+    {
+      "event_slug": "victorville-ca-2026",
+      "channel": "tiktok",
+      "ad_id": "1872334768669745",
+      "ad_name": "2026",
+      "campaign_name": "",
+      "spend": 252.35,
+      "metric_name": "CPC",
+      "metric_value": 1.09,
+      "benchmark": 1.38,
+      "ratio": 0.79,
+      "roas": 6.79,
+      "action": "scale",
+      "suggested_change": "+20% תקציב יומי",
+      "reason": "CPC $1.09 — 21% טוב מהממוצע בערוץ ($1.38). מנצח — שווה יותר תקציב.",
+      "id": "victorville-ca-2026|tiktok|1872334768669745|scale",
+      "status": "open"
+    }
+  ]
 }
