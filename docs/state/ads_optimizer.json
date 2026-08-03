@@ -1,5 +1,5 @@
 {
-  "_updated_at": "2026-08-02T23:00:52.459615+00:00",
+  "_updated_at": "2026-08-03T16:31:22.572974+00:00",
   "_about": "@ads-optimizer recommendations. Engine is read-only; execution happens only after Lauren approves each rec in /ads-optimizer/. Decisions are merge-preserved across runs (IRON RULE #7).",
   "thresholds": {
     "MIN_SPEND": 50.0,
@@ -11,7 +11,7 @@
   "benchmarks": {
     "victorville-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.3239,
+      "value": 0.331,
       "n_ads": 5
     },
     "victorville-ca-2026/tiktok": {
@@ -21,17 +21,17 @@
     },
     "richmond-ca-2026/tiktok": {
       "metric": "CPC",
-      "value": 1.508,
+      "value": 1.4467,
       "n_ads": 2
     },
     "visalia-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.2998,
+      "value": 0.3013,
       "n_ads": 4
     },
     "riverside-ca-2026/meta": {
       "metric": "CPL",
-      "value": 0.1639,
+      "value": 0.166,
       "n_ads": 4
     }
   },
@@ -43,6 +43,24 @@
   },
   "recommendations": [
     {
+      "event_slug": "richmond-ca-2026",
+      "channel": "tiktok",
+      "ad_id": "1872335041040497",
+      "ad_name": "2026",
+      "campaign_name": "",
+      "spend": 399.33,
+      "metric_name": "CPC",
+      "metric_value": 1.18,
+      "benchmark": 1.45,
+      "ratio": 0.82,
+      "roas": null,
+      "action": "scale",
+      "suggested_change": "+20% תקציב יומי",
+      "reason": "CPC $1.18 — 18% טוב מהממוצע בערוץ ($1.45). מנצח — שווה יותר תקציב.",
+      "id": "richmond-ca-2026|tiktok|1872335041040497|scale",
+      "status": "open"
+    },
+    {
       "event_slug": "victorville-ca-2026",
       "channel": "tiktok",
       "ad_id": "1872334768669745",
@@ -53,29 +71,11 @@
       "metric_value": 1.08,
       "benchmark": 1.36,
       "ratio": 0.79,
-      "roas": 6.68,
+      "roas": 7.56,
       "action": "scale",
       "suggested_change": "+20% תקציב יומי",
       "reason": "CPC $1.08 — 21% טוב מהממוצע בערוץ ($1.36). מנצח — שווה יותר תקציב.",
       "id": "victorville-ca-2026|tiktok|1872334768669745|scale",
-      "status": "open"
-    },
-    {
-      "event_slug": "richmond-ca-2026",
-      "channel": "tiktok",
-      "ad_id": "1872335041040497",
-      "ad_name": "2026",
-      "campaign_name": "",
-      "spend": 251.61,
-      "metric_name": "CPC",
-      "metric_value": 1.28,
-      "benchmark": 1.51,
-      "ratio": 0.85,
-      "roas": null,
-      "action": "scale",
-      "suggested_change": "+20% תקציב יומי",
-      "reason": "CPC $1.28 — 15% טוב מהממוצע בערוץ ($1.51). מנצח — שווה יותר תקציב.",
-      "id": "richmond-ca-2026|tiktok|1872335041040497|scale",
       "status": "open"
     }
   ]
