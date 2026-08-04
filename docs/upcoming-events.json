@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-08-04T13:52:06Z",
+  "_updated_at": "2026-08-04T13:58:33Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -231,7 +231,7 @@
       "venue_address": "303 E Acequia Ave, Visalia, CA 93291",
       "form_id": "6930eeb54da0131a26564ef5",
       "subscribe_url": "/events/visalia-ca-2026/",
-      "ig_url": "https://www.instagram.com/reel/DabAtjZxoBU/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "ig_url": "https://www.instagram.com/reel/DbnuEZBxAEl/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7664296987734396190",
       "fb_url": "https://fb.watch/IsNRUwnvQx/"
     },
