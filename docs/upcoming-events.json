@@ -355,6 +355,18 @@
       "subscribe_url": "/events/pueblo-co-2026/"
     },
     {
+      "city": "South Denver",
+      "state": "CO",
+      "start_date": "2026-11-06",
+      "end_date": "2026-11-08",
+      "subscribe_url": "/events/south-denver-co-2026/",
+      "cta_label": "Subscribe",
+      "slug": "south-denver-co-2026",
+      "venue_name": "Embassy Suites by Hilton Denver Tech Center",
+      "venue_address": "10250 E Costilla Ave, Centennial, CO 80112",
+      "form_id": "6930efcc5c4c2f0a2f7b9eee"
+    },
+    {
       "city": "Westminster",
       "state": "CO",
       "start_date": "2026-11-13",
