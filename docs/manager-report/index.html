@@ -572,7 +572,7 @@ async function onSaveDraft(){
 }
 async function fetchServerDraft(){
   try{
-    var url = "https://raw.githubusercontent.com/laurenlev10/lauren-agent-hub-data/main/docs/state/manager_reports.json?_="+Date.now();
+    var url = "https://dashboard.themakeupblowout.com/state/manager_reports.json?_="+Date.now();
     var r = await fetch(url, { cache:"no-store" });
     if(!r.ok) return null;
     var d = await r.json();
