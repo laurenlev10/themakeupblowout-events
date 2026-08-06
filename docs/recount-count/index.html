@@ -68,7 +68,7 @@
 <script>
 "use strict";
 var ENDPOINT="https://danielle.laurenlev10.workers.dev/";
-var RAW="https://raw.githubusercontent.com/laurenlev10/lauren-agent-hub-data/main/";
+var RAW="https://dashboard.themakeupblowout.com/";  // was raw.githubusercontent/lauren-agent-hub-data; dashboard serves docs/ at root, is public for these files, and survives the repo going private
 var LAUREN_WA="14243547625";
 var params=new URLSearchParams(location.search);
 var EVKEY=(params.get("evkey")||"").trim();
@@ -78,10 +78,10 @@ function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,
 async function init(){
   if(!LABEL && EVKEY){ LABEL = EVKEY.replace(/-\d{4}-\d{2}-\d{2}$/,"").split("-").map(function(w){ return w ? w.charAt(0).toUpperCase()+w.slice(1) : w; }).join(" "); }
   if(LABEL) document.getElementById("ev-label").textContent="Recount — "+LABEL;
-  try{ var rc=await fetch(RAW+"docs/manager-report/config.json?_="+Date.now(),{cache:"no-store"}); if(rc.ok){ var ep=((await rc.json()).save_endpoint||"").trim(); if(ep) ENDPOINT=ep; } }catch(e){}
+  try{ var rc=await fetch(RAW+"manager-report/config.json?_="+Date.now(),{cache:"no-store"}); if(rc.ok){ var ep=((await rc.json()).save_endpoint||"").trim(); if(ep) ENDPOINT=ep; } }catch(e){}
   if(!EVKEY){ document.getElementById("prod-list").textContent="⚠️ Missing event key in the link. Ask Lauren to resend the link."; return; }
   try{
-    var r=await fetch(RAW+"docs/state/octopos_recount.json?_="+Date.now(),{cache:"no-store"});
+    var r=await fetch(RAW+"state/octopos_recount.json?_="+Date.now(),{cache:"no-store"});
     var data=await r.json();
     var ev=(data.events||{})[EVKEY]||{};
     WORKLIST=(ev.worklist||[]).map(function(w){ return {pid:Number(w.id), name:w.name||("#"+w.id), sku:w.sku||""}; });

@@ -571,14 +571,12 @@ async function onSaveDraft(){
   flash(btn,"\u2713 Saved on device");
 }
 async function fetchServerDraft(){
-  try{
-    var url = "https://raw.githubusercontent.com/laurenlev10/lauren-agent-hub-data/main/docs/state/manager_reports.json?_="+Date.now();
-    var r = await fetch(url, { cache:"no-store" });
-    if(!r.ok) return null;
-    var d = await r.json();
-    var k = getEvent().evkey;
-    return (d && d.drafts && d.drafts[k]) ? d.drafts[k] : null;
-  }catch(e){ return null; }
+  // PRIVACY (2026-08-06): manager_reports.json holds team PII (names, phones,
+  // addresses, payouts) and is being made private. This public, unauthenticated
+  // events page must NOT read it. Server-side draft resume is therefore disabled
+  // here; drafts still persist on this device (localStorage). The full report
+  // inbox lives only on dashboard.themakeupblowout.com (behind Cloudflare Access).
+  return null;
 }
 function _setVal(id,v){ var el=document.getElementById(id); if(el && v!==undefined && v!==null && v!=="") el.value=v; }
 function applyDraft(p){

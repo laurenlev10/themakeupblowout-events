@@ -21,8 +21,17 @@ import json, re, urllib.request, urllib.error, datetime, sys
 from pathlib import Path
 
 
+# Public state files: served by GitHub Pages at the dashboard custom domain
+# (docs/ = site root). Public + CORS-enabled, and STAYS public after
+# lauren-agent-hub-data goes private (GitHub Pro keeps Pages serving).
+HUB_PAGES = "https://dashboard.themakeupblowout.com"
+# raw.githubusercontent is still used ONLY for scripts/data/venue_details.md — it
+# lives OUTSIDE docs/, so Pages doesn't serve it and there is no public URL for it.
+# This 404s once the repo is private; venue auto-fill then degrades gracefully
+# (venues keep their "— please update" placeholder). TODO (private-safe follow-up):
+# move venue_details.md under docs/ + add to the CF Access public allowlist, OR
+# give this Action a read-only hub token.
 HUB_RAW = "https://raw.githubusercontent.com/laurenlev10/lauren-agent-hub-data/main"
-HUB_PAGES = "https://laurenlev10.github.io/lauren-agent-hub-data"
 
 REPO = Path(__file__).resolve().parent.parent
 EVENTS_JSON = REPO / "docs/upcoming-events.json"
@@ -175,7 +184,7 @@ def main():
     print("Fetching upstream data sources...")
     form_ids = fetch_json(f"{HUB_PAGES}/state/event_form_ids.json") or {"events":{}}
     posts = fetch_json(f"{HUB_PAGES}/state/recent_meta_posts.json") or {}
-    notes = fetch_json(NOTES_URL) or fetch_json(f"{HUB_RAW}/docs/launch/notes.json") or {}
+    notes = fetch_json(NOTES_URL) or {}  # NOTES_URL is the public dashboard path (private-safe)
     notes_mt = notes.get("MANUAL_TASKS", notes) if isinstance(notes, dict) else {}
     venue_md = fetch_text(f"{HUB_RAW}/scripts/data/venue_details.md")
     venues = parse_venue_details(venue_md)

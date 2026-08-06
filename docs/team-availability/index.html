@@ -59,7 +59,7 @@
 <script>
 "use strict";
 var ROSTER=null, ANSWERS={}, ENDPOINT="https://danielle.laurenlev10.workers.dev/";
-var RAW="https://raw.githubusercontent.com/laurenlev10/lauren-agent-hub-data/main/";
+var RAW="https://dashboard.themakeupblowout.com/";  // legacy base, repointed off raw.githubusercontent (private-safe); live fetches below already use the dashboard domain
 var LAUREN_WA="14243547625";
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function fmtDate(iso){ if(!iso) return ""; var p=iso.split("-"); return p[1]+"/"+p[2]; }
