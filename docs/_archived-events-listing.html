@@ -579,9 +579,10 @@
 
   <script>
   (function(){
-    // Primary source: my new auto-refreshed file in lauren-agent-hub-data (14 events,
-    // updated daily by .github/workflows/update-subscribe-target.yml).
-    var PRIMARY_URL = 'https://raw.githubusercontent.com/laurenlev10/lauren-agent-hub-data/main/docs/state/upcoming_events.json';
+    // Primary source: the PUBLIC events feed (same file as LOCAL_URL below, absolute).
+    // Was raw.githubusercontent/lauren-agent-hub-data (private → 404 after the 2026-08 privacy
+    // migration). This feed is public + CORS:* + auto-updated, so it can't 404 the same way.
+    var PRIMARY_URL = 'https://events.themakeupblowout.com/upcoming-events.json';
     // Enrichment source: the legacy local file in this repo (has per-event image_url,
     // subscribe_url, ig_url for events with their own landing page). Used only to
     // override the default subscribe URL when a per-event landing page exists.
