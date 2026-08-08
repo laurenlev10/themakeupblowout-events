@@ -354,7 +354,8 @@
       SOFLAG[String(p.id)] = true;
       var row = btn.closest(".sorow"); if(row) row.classList.add("flagged");
       btn.disabled = false; btn.textContent = "✓ FLAGGED";
-      toast("🚨 "+p.name+" marked SOLD OUT");
+      if(j.zeroed){ toast("🚨 "+p.name+" — SOLD OUT, stock set to 0"); }
+      else { toast("🚨 "+p.name+" flagged SOLD OUT (stock NOT zeroed — tell Lauren)", true); }
     }catch(e){
       btn.disabled = false; btn.textContent = "SOLD OUT";
       toast("Failed: "+(e.message||e), true);
