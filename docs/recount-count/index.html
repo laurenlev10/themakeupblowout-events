@@ -89,6 +89,22 @@
   .sorow button:disabled{ opacity:.5; }
   .sorow.flagged button{ background:var(--green); }
   .sohint{ text-align:center; color:var(--muted); padding:34px 20px; font-size:14px; }
+  /* a row already flagged SOLD OUT */
+  .row.soldout{ background:#fdf2f8; border-color:#fbcfe8; }
+  .sopill{ font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; background:#ec4899; color:#fff; white-space:nowrap; }
+  .soby{ font-size:11px; color:#be185d; margin-top:4px; font-weight:700; }
+  /* crew SOLD OUT log button + list */
+  header .soldout-log{ margin-top:8px; width:100%; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.4); color:#fff; font-weight:700; font-size:13px; padding:9px; border-radius:12px; cursor:pointer; }
+  .solog{ position:fixed; inset:0; background:var(--bg); z-index:60; display:none; flex-direction:column; }
+  .solog.open{ display:flex; }
+  .solog .top{ background:#be185d; color:#fff; padding:14px 16px; display:flex; align-items:center; gap:12px; }
+  .solog .top button.x{ background:none; border:0; color:#fff; font-size:26px; line-height:1; cursor:pointer; padding:0 4px; }
+  .solog .top .ttl{ font-weight:800; font-size:17px; }
+  .solog .lglist{ flex:1; overflow-y:auto; padding:12px; max-width:640px; width:100%; margin:0 auto; }
+  .lgrow{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:9px; }
+  .lgrow .name{ font-weight:700; font-size:14px; }
+  .lgrow .meta{ font-size:12px; color:#be185d; margin-top:3px; font-weight:600; }
+  .lgrow .sub{ font-size:11px; color:var(--muted); margin-top:2px; }
 </style>
 </head>
 <body>
@@ -98,6 +114,7 @@
   <div class="who">Counting as: <b id="whoName">—</b> <button id="changeName" type="button">change</button></div>
   <div class="progress"><span id="progTxt">—</span><div class="bar"><span id="progBar"></span></div></div>
   <button id="soldOutAdd" class="soldout-add" type="button">🚨 SOLD OUT +</button>
+  <button id="soldOutLog" class="soldout-log" type="button">📋 View SOLD OUT list</button>
 </header>
 
 <div class="wrap">
@@ -130,6 +147,12 @@
   <div class="top"><button class="x" id="soBack" type="button">←</button><div class="ttl">🚨 Mark a product SOLD OUT</div></div>
   <div class="searchbar"><input id="soSearch" type="text" inputmode="search" placeholder="Search product name or SKU…"></div>
   <div class="solist" id="soList"><div class="sohint">Loading products…</div></div>
+</div>
+
+<!-- SOLD OUT log: everything flagged sold-out this event + who + when -->
+<div class="solog" id="soLog">
+  <div class="top"><button class="x" id="soLogBack" type="button">←</button><div class="ttl">📋 SOLD OUT this event</div></div>
+  <div class="lglist" id="soLogList"><div class="sohint">Loading…</div></div>
 </div>
 
 <!-- name modal -->
@@ -183,7 +206,8 @@
     var ev = (d.events||{})[EVKEY] || {};
     WORKLIST = (ev.worklist||[]).map(function(w){
       return { pid:Number(w.id), name:w.name||("#"+w.id), sku:w.sku||"", supplier:w.supplier||"",
-               stock:(w.qty==null?null:Number(w.qty)), barcode:w.barcode||"", slow:!!w.slow };
+               stock:(w.qty==null?null:Number(w.qty)), barcode:w.barcode||"", slow:!!w.slow,
+               sold_out:!!w.sold_out, sold_out_by:w.sold_out_by||"", sold_out_at:w.sold_out_at||"" };
     });
     byId = {}; WORKLIST.forEach(function(w){ byId[w.pid]=w; });
   }
@@ -202,25 +226,33 @@
     var list = $("list"); list.innerHTML = "";
     if(!WORKLIST.length){ $("empty").style.display="block"; }
     else { $("empty").style.display="none"; }
-    var done = 0;
+    var done = 0, soldOutN = 0;
     WORKLIST.forEach(function(w){
       var c = COUNTS[String(w.pid)];
-      if(c) done++;
+      var so = !!w.sold_out;
+      if(so) soldOutN++;
+      else if(c) done++;
       var row = document.createElement("div");
-      row.className = "row" + (c?" done":"");
+      row.className = "row" + (so?" soldout":(c?" done":""));
+      var right = so ? '<span class="sopill">SOLD OUT</span>'
+                     : (c ? '<span class="donepill">DONE</span>'
+                          : '<span class="stockpill">'+(w.stock==null?"?":w.stock)+' in sys</span>');
       row.innerHTML =
         '<div class="info">' +
           '<div class="name">'+esc(w.name)+ (w.slow?' <span class="slowpill">🐌 SLOW</span>':'') +'</div>' +
           '<div class="meta"><span class="sku">'+esc(w.sku||"—")+'</span>'+(w.supplier?' · '+esc(w.supplier):'')+'</div>' +
-          (c ? '<div class="doneby">✅ '+esc(c.out_of_stock?"OUT OF STOCK":("Counted: "+c.qty))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div>' : '') +
+          (so ? '<div class="soby">🚨 SOLD OUT — by '+esc(w.sold_out_by||"?")+(w.sold_out_at?' · '+esc(fmtWhen(w.sold_out_at)):'')+'</div>'
+              : (c ? '<div class="doneby">✅ '+esc(c.out_of_stock?"OUT OF STOCK":("Counted: "+c.qty))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div>' : '')) +
         '</div>' +
-        '<div class="rt">' + (c ? '<span class="donepill">DONE</span>' : '<span class="stockpill">'+(w.stock==null?"?":w.stock)+' in sys</span>') + '</div>';
-      row.onclick = function(){ openScreen(w); };
+        '<div class="rt">' + right + '</div>';
+      if(!so) row.onclick = function(){ openScreen(w); };
+      else row.onclick = function(){ toast("🚨 Already marked SOLD OUT by "+(w.sold_out_by||"a teammate")); };
       list.appendChild(row);
     });
     var tot = WORKLIST.length;
-    $("progTxt").textContent = done + " of " + tot + " counted";
-    $("progBar").style.width = tot ? Math.round(done/tot*100)+"%" : "0%";
+    var countable = tot - soldOutN;
+    $("progTxt").textContent = done + " of " + countable + " counted" + (soldOutN ? "  ·  🚨 " + soldOutN + " sold out" : "");
+    $("progBar").style.width = countable ? Math.round(done/countable*100)+"%" : "0%";
     renderTally();
   }
 
@@ -298,6 +330,26 @@
   $("soBack").onclick = function(){ $("soModal").classList.remove("open"); };
   $("soSearch").addEventListener("input", function(){ renderSoList(this.value); });
 
+  // Crew SOLD OUT log — everything flagged this event + who + when.
+  $("soldOutLog").onclick = function(){ $("soLog").classList.add("open"); loadLog(); };
+  $("soLogBack").onclick = function(){ $("soLog").classList.remove("open"); };
+  async function loadLog(){
+    $("soLogList").innerHTML = '<div class="sohint">Loading…</div>';
+    try{
+      var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({kind:"get_soldout", evkey:EVKEY}) });
+      var j = await r.json().catch(function(){ return {}; });
+      if(!r.ok || !j.ok || !Array.isArray(j.items)) throw new Error(j.error || ("HTTP "+r.status));
+      if(!j.items.length){ $("soLogList").innerHTML = '<div class="sohint">✅ Nothing marked SOLD OUT yet.</div>'; return; }
+      $("soLogList").innerHTML = j.items.map(function(it){
+        return '<div class="lgrow"><div class="name">'+esc(it.name||("#"+it.pid))+'</div>' +
+          '<div class="meta">🚨 by '+esc(it.employee||"?")+' · '+esc(fmtWhen(it.at))+'</div>' +
+          '<div class="sub">'+esc(it.sku||"")+(it.count>1?' · flagged '+it.count+'×':'')+(it.zeroed?' · stock set to 0 ✓':'')+'</div></div>';
+      }).join('');
+    }catch(e){
+      $("soLogList").innerHTML = '<div class="sohint">⚠️ Could not load.<br>'+esc(e.message||e)+'</div>';
+    }
+  }
+
   async function loadCatalog(){
     if(CAT_LOADING) return;
     CAT_LOADING = true;
@@ -354,6 +406,8 @@
       SOFLAG[String(p.id)] = true;
       var row = btn.closest(".sorow"); if(row) row.classList.add("flagged");
       btn.disabled = false; btn.textContent = "✓ FLAGGED";
+      // optimistic: reflect it on the main count list right away (if it's on the list)
+      if(byId[p.id]){ byId[p.id].sold_out = true; byId[p.id].sold_out_by = EMPLOYEE; byId[p.id].sold_out_at = new Date().toISOString(); render(); }
       if(j.zeroed){ toast("🚨 "+p.name+" — SOLD OUT, stock set to 0"); }
       else { toast("🚨 "+p.name+" flagged SOLD OUT (stock NOT zeroed — tell Lauren)", true); }
     }catch(e){
