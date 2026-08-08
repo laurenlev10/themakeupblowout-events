@@ -35,6 +35,11 @@
   .slowpill{ font-size:10px; font-weight:800; padding:1px 7px; border-radius:6px; background:var(--amber); color:#fff; }
   .empty{ text-align:center; color:var(--muted); padding:50px 20px; }
   .empty .big{ font-size:44px; }
+  .tally{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 15px; margin-bottom:14px; }
+  .tally .th{ font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:9px; }
+  .tally .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tchip{ display:inline-flex; align-items:center; gap:7px; background:#f5f3ff; border:1px solid #ddd6fe; border-radius:999px; padding:5px 6px 5px 12px; font-size:13px; font-weight:600; }
+  .tchip .n{ background:var(--accent); color:#fff; border-radius:999px; min-width:22px; height:22px; padding:0 6px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; }
   /* count screen */
   .screen{ position:fixed; inset:0; background:var(--bg); z-index:50; display:none; flex-direction:column; }
   .screen.open{ display:flex; }
@@ -76,6 +81,7 @@
 </header>
 
 <div class="wrap">
+  <div id="tally" class="tally" style="display:none;"></div>
   <div id="list"></div>
   <div id="empty" class="empty" style="display:none;"><div class="big">✅</div><p>Nothing to count right now.</p></div>
 </div>
@@ -187,6 +193,25 @@
     var tot = WORKLIST.length;
     $("progTxt").textContent = done + " of " + tot + " counted";
     $("progBar").style.width = tot ? Math.round(done/tot*100)+"%" : "0%";
+    renderTally();
+  }
+
+  // Who has counted so far + how many each — refreshes on every load / poll.
+  function renderTally(){
+    var by = {};
+    Object.keys(COUNTS).forEach(function(pid){
+      var e = (COUNTS[pid] && COUNTS[pid].employee || "").trim() || "—";
+      by[e] = (by[e]||0) + 1;
+    });
+    var names = Object.keys(by).sort(function(a,b){ return by[b]-by[a]; });
+    var el = $("tally");
+    if(!names.length){ el.style.display="none"; return; }
+    el.style.display="block";
+    var total = names.reduce(function(s,n){ return s+by[n]; },0);
+    el.innerHTML = '<div class="th">👥 Counted so far · ' + total + ' items by ' + names.length + (names.length===1?' person':' people') + '</div>' +
+      '<div class="chips">' + names.map(function(n){
+        return '<span class="tchip">'+esc(n)+' <span class="n">'+by[n]+'</span></span>';
+      }).join('') + '</div>';
   }
 
   // ---- count screen ----
