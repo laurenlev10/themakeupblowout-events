@@ -1,167 +1,258 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Makeup Blowout — Count Checklist</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>RECOUNT — Count Sheet</title>
 <style>
-  :root{ --pink:#ec4899; --purple:#7c3aed; --ink:#1f2937; --muted:#6b7280; --bg:#f6f7fb; }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,sans-serif}
-  .hdr{background:linear-gradient(135deg,#ec4899 0%,#7c3aed 100%);color:#fff;padding:20px 18px;text-align:center}
-  .hdr h1{margin:0;font-size:21px;font-weight:900}
-  .hdr p{margin:6px 0 0;font-size:13.5px;opacity:.95}
-  .wrap{max-width:600px;margin:0 auto;padding:16px}
-  .card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:14px}
-  label{display:block;font-size:13px;font-weight:800;color:#6b7280;margin:0 0 5px}
-  input,textarea{width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:10px;font-size:15px;font-family:inherit;background:#fafafa}
-  .tools{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 12px}
-  .tbtn{border:1.5px solid #e5e7eb;background:#fafafa;border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:800;cursor:pointer}
-  .prod{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f3f4f6;flex-wrap:wrap}
-  .prod:last-child{border-bottom:0}
-  .prod .info{flex:1;min-width:150px}
-  .prod .nm{font-weight:800;font-size:14.5px;line-height:1.25}
-  .prod .sku{font-size:11.5px;color:#9ca3af;margin-top:1px}
-  .toggle{display:flex;gap:6px}
-  .opt{border:1.5px solid #e5e7eb;background:#fafafa;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:800;cursor:pointer;user-select:none;white-space:nowrap}
-  .opt.yes.on{background:#dcfce7;border-color:#16a34a;color:#166534}
-  .opt.no.on{background:#fee2e2;border-color:#dc2626;color:#991b1b}
-  .summary{font-size:13px;font-weight:800;color:#374151;margin:0 0 10px}
-  .summary b.g{color:#166534}
-  .summary b.r{color:#991b1b}
-  .btn{width:100%;border:0;border-radius:13px;padding:14px;font-size:17px;font-weight:900;cursor:pointer;background:var(--purple);color:#fff;margin-top:6px}
-  .btn:disabled{opacity:.6}
-  .note{font-size:12px;color:#9ca3af;margin-top:8px;text-align:center}
-  .okbox{display:none;background:#dcfce7;border:1.5px solid #16a34a;color:#166534;border-radius:14px;padding:16px;text-align:center;font-weight:800;margin-bottom:14px}
+  :root{ --bg:#f4f5fb; --card:#fff; --text:#111827; --muted:#6b7280; --line:#e5e7eb;
+         --accent:#7c3aed; --green:#16a34a; --red:#dc2626; --amber:#f59e0b; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+        background:var(--bg); color:var(--text); padding:0 0 40px; }
+  header{ background:linear-gradient(135deg,#7c3aed,#5b21b6); color:#fff; padding:18px 16px 20px; position:sticky; top:0; z-index:20; box-shadow:0 2px 10px rgba(0,0,0,.15); }
+  header .kicker{ font-size:12px; letter-spacing:2px; opacity:.85; font-weight:700; }
+  header h1{ margin:2px 0 0; font-size:22px; line-height:1.15; }
+  header .who{ margin-top:10px; font-size:13px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  header .who b{ background:rgba(255,255,255,.2); padding:3px 10px; border-radius:999px; }
+  header .who button{ background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.4); border-radius:999px; padding:3px 10px; font-size:12px; cursor:pointer; }
+  .progress{ margin-top:10px; font-size:13px; font-weight:700; }
+  .bar{ height:8px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; margin-top:6px; }
+  .bar>span{ display:block; height:100%; background:#4ade80; width:0; transition:width .3s; }
+  .wrap{ max-width:640px; margin:0 auto; padding:14px 12px; }
+  .row{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:10px;
+        display:flex; align-items:center; gap:12px; cursor:pointer; transition:transform .06s; }
+  .row:active{ transform:scale(.99); }
+  .row.done{ background:#f0fdf4; border-color:#bbf7d0; }
+  .row .info{ flex:1; min-width:0; }
+  .row .name{ font-weight:700; font-size:15px; line-height:1.25; }
+  .row .meta{ font-size:12px; color:var(--muted); margin-top:3px; }
+  .row .sku{ font-variant-numeric:tabular-nums; }
+  .row .rt{ text-align:right; flex-shrink:0; }
+  .stockpill{ font-size:12px; font-weight:700; padding:3px 9px; border-radius:999px; background:#ede9fe; color:#5b21b6; white-space:nowrap; }
+  .donepill{ font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; background:#16a34a; color:#fff; white-space:nowrap; }
+  .doneby{ font-size:11px; color:var(--green); margin-top:4px; font-weight:600; }
+  .slowpill{ font-size:10px; font-weight:800; padding:1px 7px; border-radius:6px; background:var(--amber); color:#fff; }
+  .empty{ text-align:center; color:var(--muted); padding:50px 20px; }
+  .empty .big{ font-size:44px; }
+  /* count screen */
+  .screen{ position:fixed; inset:0; background:var(--bg); z-index:50; display:none; flex-direction:column; }
+  .screen.open{ display:flex; }
+  .screen .top{ background:#111827; color:#fff; padding:14px 16px; display:flex; align-items:center; gap:12px; }
+  .screen .top button{ background:none; border:0; color:#fff; font-size:26px; line-height:1; cursor:pointer; padding:0 4px; }
+  .screen .body{ flex:1; overflow-y:auto; padding:22px 18px; max-width:640px; width:100%; margin:0 auto; }
+  .screen .pname{ font-size:26px; font-weight:800; line-height:1.15; }
+  .screen .psku{ font-size:15px; color:var(--muted); margin-top:6px; font-variant-numeric:tabular-nums; }
+  .screen .facts{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:20px 0; }
+  .fact{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+  .fact .l{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+  .fact .v{ font-size:20px; font-weight:800; margin-top:2px; }
+  .screen h3{ font-size:14px; color:var(--muted); margin:24px 0 10px; text-transform:uppercase; letter-spacing:1px; }
+  .bigbtn{ display:block; width:100%; border:0; border-radius:16px; padding:20px; font-size:20px; font-weight:800; cursor:pointer; margin-bottom:14px; color:#fff; }
+  .bigbtn.oos{ background:var(--red); }
+  .bigbtn.save{ background:var(--green); }
+  .bigbtn:disabled{ opacity:.5; }
+  .countin{ width:100%; font-size:40px; font-weight:800; text-align:center; padding:16px; border:2px solid var(--line); border-radius:16px; margin-bottom:14px; }
+  .prev{ background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; border-radius:12px; padding:11px 14px; font-size:13px; margin-bottom:16px; }
+  .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px); background:#111827; color:#fff; padding:12px 22px; border-radius:10px; font-size:14px; opacity:0; transition:all .3s; z-index:100; pointer-events:none; max-width:90%; text-align:center; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.err{ background:var(--red); }
+  /* name modal */
+  .namebg{ position:fixed; inset:0; background:rgba(17,24,39,.7); z-index:80; display:none; align-items:center; justify-content:center; padding:20px; }
+  .namebg.open{ display:flex; }
+  .namecard{ background:#fff; border-radius:18px; padding:24px; max-width:380px; width:100%; text-align:center; }
+  .namecard h2{ margin:0 0 6px; font-size:20px; }
+  .namecard p{ color:var(--muted); font-size:13px; margin:0 0 16px; }
+  .namecard input{ width:100%; font-size:18px; padding:14px; border:2px solid var(--line); border-radius:12px; text-align:center; margin-bottom:14px; }
+  .namecard button{ width:100%; background:var(--accent); color:#fff; border:0; border-radius:12px; padding:15px; font-size:17px; font-weight:800; cursor:pointer; }
 </style>
 </head>
 <body>
-<div class="hdr">
-  <h1>💄 The Makeup Blowout — Count Checklist</h1>
-  <p id="ev-label">Recount for the event</p>
-</div>
+<header>
+  <div class="kicker">🔢 RECOUNT COUNT SHEET</div>
+  <h1 id="loc">Loading…</h1>
+  <div class="who">Counting as: <b id="whoName">—</b> <button id="changeName" type="button">change</button></div>
+  <div class="progress"><span id="progTxt">—</span><div class="bar"><span id="progBar"></span></div></div>
+</header>
+
 <div class="wrap">
-  <div class="okbox" id="okbox">✅ Thank you! Your count was sent to Lauren.</div>
-  <div class="card">
-    <label>Your name *</label>
-    <input id="f-who" type="text" placeholder="e.g. Brit">
-  </div>
-  <div class="card">
-    <label style="font-size:14.5px;color:#1f2937">🔢 Items to count</label>
-    <p style="font-size:12.5px;color:#6b7280;margin:0 0 10px">All items start as ✅ <b>Counted</b>. Tap any item you did <b>NOT</b> finish to mark it ❌ Not counted.</p>
-    <div class="tools">
-      <span class="tbtn" onclick="setAll('yes')">✅ Mark all counted</span>
-      <span class="tbtn" onclick="setAll('no')">❌ Mark all not counted</span>
-    </div>
-    <div class="summary" id="summary"></div>
-    <div id="prod-list">Loading items…</div>
-  </div>
-  <div class="card">
-    <label>Notes for Lauren (optional)</label>
-    <textarea id="f-notes" rows="3" placeholder="e.g. couldn't find the 3 Banana boxes / ran out of time on the concealers..."></textarea>
-  </div>
-  <button class="btn" id="btn-send" onclick="submitForm()">📨 Send count to Lauren</button>
-  <div class="note">Goes straight to Lauren's dashboard.<br>
-  Trouble sending? <a href="#" onclick="copyText();return false;">Copy as text</a> and send it to Lauren on WhatsApp.</div>
+  <div id="list"></div>
+  <div id="empty" class="empty" style="display:none;"><div class="big">✅</div><p>Nothing to count right now.</p></div>
 </div>
 
+<!-- per-product count screen -->
+<div class="screen" id="screen">
+  <div class="top"><button id="scBack" type="button">←</button><div style="font-weight:700;">Count product</div></div>
+  <div class="body">
+    <div class="pname" id="scName">—</div>
+    <div class="psku" id="scSku">—</div>
+    <div class="facts">
+      <div class="fact"><div class="l">Supplier</div><div class="v" id="scSup">—</div></div>
+      <div class="fact"><div class="l">System stock</div><div class="v" id="scStock">—</div></div>
+    </div>
+    <div class="prev" id="scPrev" style="display:none;"></div>
+    <h3>Out of stock?</h3>
+    <button class="bigbtn oos" id="btnOos" type="button">🚫 OUT OF STOCK — set to 0</button>
+    <h3>Or enter the counted quantity</h3>
+    <input class="countin" id="scInput" type="number" inputmode="numeric" min="0" step="1" placeholder="0">
+    <button class="bigbtn save" id="btnSave" type="button">✅ Save count</button>
+  </div>
+</div>
+
+<!-- name modal -->
+<div class="namebg" id="nameModal">
+  <div class="namecard">
+    <h2>What's your name?</h2>
+    <p>So the team knows who counted each item. Saved on this phone.</p>
+    <input id="nameInput" type="text" autocomplete="name" placeholder="Your name">
+    <button id="nameSave" type="button">Start counting</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-"use strict";
-var ENDPOINT="https://danielle.laurenlev10.workers.dev/";
-var RAW="https://dashboard.themakeupblowout.com/";  // was raw.githubusercontent/lauren-agent-hub-data; dashboard serves docs/ at root, is public for these files, and survives the repo going private
-var LAUREN_WA="14243547625";
-var params=new URLSearchParams(location.search);
-var EVKEY=(params.get("evkey")||"").trim();
-var LABEL=(params.get("label")||"").trim();
-var WORKLIST=[], STATE={};   // pid -> "yes"|"no"
-function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-async function init(){
-  if(!LABEL && EVKEY){ LABEL = EVKEY.replace(/-\d{4}-\d{2}-\d{2}$/,"").split("-").map(function(w){ return w ? w.charAt(0).toUpperCase()+w.slice(1) : w; }).join(" "); }
-  if(LABEL) document.getElementById("ev-label").textContent="Recount — "+LABEL;
-  try{ var rc=await fetch(RAW+"manager-report/config.json?_="+Date.now(),{cache:"no-store"}); if(rc.ok){ var ep=((await rc.json()).save_endpoint||"").trim(); if(ep) ENDPOINT=ep; } }catch(e){}
-  if(!EVKEY){ document.getElementById("prod-list").textContent="⚠️ Missing event key in the link. Ask Lauren to resend the link."; return; }
-  try{
-    var r=await fetch(RAW+"state/octopos_recount.json?_="+Date.now(),{cache:"no-store"});
-    var data=await r.json();
-    var ev=(data.events||{})[EVKEY]||{};
-    WORKLIST=(ev.worklist||[]).map(function(w){ return {pid:Number(w.id), name:w.name||("#"+w.id), sku:w.sku||""}; });
-    if(!LABEL && ev.window){ /* no city in json; keep evkey label */ }
-  }catch(e){ document.getElementById("prod-list").textContent="⚠️ Could not load the item list — please try again later."; return; }
-  if(!WORKLIST.length){ document.getElementById("prod-list").textContent="No items to count for this event."; document.getElementById("summary").textContent=""; return; }
-  WORKLIST.forEach(function(p){ STATE[p.pid]="yes"; });   // default: counted
-  renderList();
-}
-function renderList(){
-  document.getElementById("prod-list").innerHTML = WORKLIST.map(function(p){
-    return '<div class="prod"><div class="info"><div class="nm">'+esc(p.name)+'</div>'+
-      (p.sku?'<div class="sku">'+esc(p.sku)+'</div>':'')+'</div>'+
-      '<div class="toggle">'+
-      '<span class="opt yes" id="y-'+p.pid+'" onclick="pick('+p.pid+',\'yes\')">✅ Counted</span>'+
-      '<span class="opt no" id="n-'+p.pid+'" onclick="pick('+p.pid+',\'no\')">❌ Not yet</span>'+
-      '</div></div>';
-  }).join("");
-  WORKLIST.forEach(function(p){ paint(p.pid); });
-  updateSummary();
-}
-function paint(pid){
-  var y=document.getElementById("y-"+pid), n=document.getElementById("n-"+pid);
-  if(y) y.classList.toggle("on", STATE[pid]==="yes");
-  if(n) n.classList.toggle("on", STATE[pid]==="no");
-}
-function pick(pid, ans){ STATE[pid]=ans; paint(pid); updateSummary(); }
-function setAll(ans){ WORKLIST.forEach(function(p){ STATE[p.pid]=ans; paint(p.pid); }); updateSummary(); }
-function updateSummary(){
-  var c=0,nc=0; WORKLIST.forEach(function(p){ if(STATE[p.pid]==="no") nc++; else c++; });
-  document.getElementById("summary").innerHTML="Counted: <b class='g'>"+c+"</b> &nbsp;·&nbsp; Not yet: <b class='r'>"+nc+"</b> &nbsp;·&nbsp; of "+WORKLIST.length;
-}
-function collectP(){
-  var who=document.getElementById("f-who").value.trim();
-  if(!who){ alert("Please type your name 🙂"); return null; }
-  var counted=[], notc=[];
-  WORKLIST.forEach(function(p){ if(STATE[p.pid]==="no") notc.push(p.pid); else counted.push(p.pid); });
-  return {
-    kind:"recount_count", evkey:EVKEY,
-    manager_name:who,
-    counted_pids:counted, not_counted_pids:notc,
-    notes:document.getElementById("f-notes").value.trim(),
-    submitted_at:new Date().toISOString(),
-    source:"recount-count-form-public"
+(function(){
+  var params = new URLSearchParams(location.search);
+  var EVKEY = (params.get("evkey")||"").trim();
+  var LABEL = (params.get("label")||"").trim();
+  var RAW = "https://dashboard.themakeupblowout.com/";
+  var ENDPOINT = "https://danielle.laurenlev10.workers.dev/";
+  var NAME_KEY = "recount_employee_name";
+  var WORKLIST = [], COUNTS = {}, byId = {}, CUR = null, EMPLOYEE = "";
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ var d=document.createElement("div"); d.textContent=(s==null?"":String(s)); return d.innerHTML; }
+  var toastT;
+  function toast(msg, err){ var t=$("toast"); t.textContent=msg; t.className="toast show"+(err?" err":""); clearTimeout(toastT); toastT=setTimeout(function(){ t.className="toast"+(err?" err":""); }, 2600); }
+
+  // ---- employee name ----
+  function ensureName(){
+    EMPLOYEE = (localStorage.getItem(NAME_KEY)||"").trim();
+    if (EMPLOYEE){ $("whoName").textContent = EMPLOYEE; }
+    else { $("nameModal").classList.add("open"); setTimeout(function(){ $("nameInput").focus(); }, 100); }
+  }
+  $("nameSave").onclick = function(){
+    var v = ($("nameInput").value||"").trim();
+    if (v.length < 2){ $("nameInput").focus(); return; }
+    EMPLOYEE = v; localStorage.setItem(NAME_KEY, v);
+    $("whoName").textContent = v; $("nameModal").classList.remove("open");
   };
-}
-function buildText(p){
-  var byId={}; WORKLIST.forEach(function(w){ byId[w.pid]=w; });
-  var lines=["Count checklist — "+(LABEL||EVKEY), "By: "+p.manager_name, ""];
-  if(p.not_counted_pids.length){
-    lines.push("❌ NOT counted yet ("+p.not_counted_pids.length+"):");
-    p.not_counted_pids.forEach(function(pid){ var w=byId[pid]||{}; lines.push("  • "+(w.name||("#"+pid))+(w.sku?" ("+w.sku+")":"")); });
-  } else {
-    lines.push("✅ Everything counted!");
+  $("nameInput").addEventListener("keydown", function(e){ if(e.key==="Enter") $("nameSave").click(); });
+  $("changeName").onclick = function(){ $("nameInput").value = EMPLOYEE; $("nameModal").classList.add("open"); setTimeout(function(){ $("nameInput").focus(); }, 100); };
+
+  // ---- data ----
+  async function loadWorklist(){
+    var r = await fetch(RAW+"state/octopos_recount.json?_="+Date.now(), {cache:"no-store"});
+    if(!r.ok) throw new Error("worklist "+r.status);
+    var d = await r.json();
+    var ev = (d.events||{})[EVKEY] || {};
+    WORKLIST = (ev.worklist||[]).map(function(w){
+      return { pid:Number(w.id), name:w.name||("#"+w.id), sku:w.sku||"", supplier:w.supplier||"",
+               stock:(w.qty==null?null:Number(w.qty)), barcode:w.barcode||"", slow:!!w.slow };
+    });
+    byId = {}; WORKLIST.forEach(function(w){ byId[w.pid]=w; });
   }
-  lines.push("", "✅ Counted: "+p.counted_pids.length+" of "+WORKLIST.length);
-  if(p.notes) lines.push("", "Notes: "+p.notes);
-  return lines.join("\n");
-}
-function copyText(){
-  var p=collectP(); if(!p) return;
-  var t=buildText(p);
-  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){ alert("Copied! Send it to Lauren on WhatsApp 🙂"); }); }
-  else prompt("Copy this text:", t);
-}
-async function submitForm(){
-  var p=collectP(); if(!p) return;
-  var btn=document.getElementById("btn-send");
-  btn.disabled=true; btn.textContent="⏳ Sending...";
-  if(ENDPOINT){
+  async function loadCounts(){
     try{
-      var r=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)});
-      if(r.ok){ document.getElementById("okbox").style.display="block"; btn.textContent="✓ Sent!"; window.scrollTo(0,0); return; }
-      throw new Error("HTTP "+r.status);
-    }catch(e){ console.warn("endpoint failed:", e); }
+      var r = await fetch(RAW+"state/recount_field_counts.json?_="+Date.now(), {cache:"no-store"});
+      if(r.ok){ var d = await r.json(); COUNTS = (((d.events||{})[EVKEY])||{}).counts || {}; }
+    }catch(e){ COUNTS = COUNTS || {}; }
   }
-  window.open("https://wa.me/"+LAUREN_WA+"?text="+encodeURIComponent(buildText(p)),"_blank");
-  btn.disabled=false; btn.textContent="📨 Send count to Lauren";
-}
-init();
+
+  function fmtWhen(iso){ try{ var d=new Date(iso); return d.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }catch(e){ return ""; } }
+
+  function render(){
+    $("loc").textContent = LABEL || EVKEY || "Event";
+    document.title = "RECOUNT — " + (LABEL || EVKEY || "");
+    var list = $("list"); list.innerHTML = "";
+    if(!WORKLIST.length){ $("empty").style.display="block"; }
+    else { $("empty").style.display="none"; }
+    var done = 0;
+    WORKLIST.forEach(function(w){
+      var c = COUNTS[String(w.pid)];
+      if(c) done++;
+      var row = document.createElement("div");
+      row.className = "row" + (c?" done":"");
+      row.innerHTML =
+        '<div class="info">' +
+          '<div class="name">'+esc(w.name)+ (w.slow?' <span class="slowpill">🐌 SLOW</span>':'') +'</div>' +
+          '<div class="meta"><span class="sku">'+esc(w.sku||"—")+'</span>'+(w.supplier?' · '+esc(w.supplier):'')+'</div>' +
+          (c ? '<div class="doneby">✅ '+esc(c.out_of_stock?"OUT OF STOCK":("Counted: "+c.qty))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div>' : '') +
+        '</div>' +
+        '<div class="rt">' + (c ? '<span class="donepill">DONE</span>' : '<span class="stockpill">'+(w.stock==null?"?":w.stock)+' in sys</span>') + '</div>';
+      row.onclick = function(){ openScreen(w); };
+      list.appendChild(row);
+    });
+    var tot = WORKLIST.length;
+    $("progTxt").textContent = done + " of " + tot + " counted";
+    $("progBar").style.width = tot ? Math.round(done/tot*100)+"%" : "0%";
+  }
+
+  // ---- count screen ----
+  function openScreen(w){
+    if(!EMPLOYEE){ ensureName(); return; }
+    CUR = w;
+    $("scName").textContent = w.name;
+    $("scSku").textContent = (w.sku||"—") + (w.barcode? "  ·  "+w.barcode : "");
+    $("scSup").textContent = w.supplier || "—";
+    $("scStock").textContent = (w.stock==null?"?":w.stock);
+    var c = COUNTS[String(w.pid)];
+    if(c){ $("scPrev").style.display="block"; $("scPrev").innerHTML = "Already counted: <b>"+esc(c.out_of_stock?"OUT OF STOCK":c.qty)+"</b> by "+esc(c.employee)+" ("+esc(fmtWhen(c.at))+"). Re-counting will overwrite it."; }
+    else { $("scPrev").style.display="none"; }
+    $("scInput").value = "";
+    $("btnOos").disabled = false; $("btnSave").disabled = false;
+    $("screen").classList.add("open");
+    window.scrollTo(0,0);
+  }
+  $("scBack").onclick = function(){ $("screen").classList.remove("open"); CUR=null; };
+  $("btnOos").onclick = function(){ if(CUR) submit(CUR, 0, true); };
+  $("btnSave").onclick = function(){
+    if(!CUR) return;
+    var v = $("scInput").value;
+    if(v==="" || isNaN(Number(v)) || Number(v)<0){ toast("Enter a number first", true); $("scInput").focus(); return; }
+    submit(CUR, Math.round(Number(v)), false);
+  };
+
+  async function submit(w, qty, oos){
+    $("btnOos").disabled = true; $("btnSave").disabled = true;
+    toast("Saving…");
+    var body = { kind:"recount_set_qty", evkey:EVKEY, pid:w.pid, qty:qty, out_of_stock:oos,
+                 employee:EMPLOYEE, sku:w.sku, name:w.name };
+    try{
+      var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
+      var j = await r.json().catch(function(){ return {}; });
+      if(!r.ok || !j.ok){ throw new Error(j.error || ("HTTP "+r.status)); }
+      // optimistic local update
+      COUNTS[String(w.pid)] = { pid:w.pid, qty:qty, out_of_stock:oos, employee:EMPLOYEE, at:new Date().toISOString() };
+      render();
+      $("screen").classList.remove("open"); CUR=null;
+      toast(oos ? "✅ Set OUT OF STOCK" : ("✅ Counted "+qty));
+    }catch(e){
+      toast("Failed: "+(e.message||e), true);
+      $("btnOos").disabled = false; $("btnSave").disabled = false;
+    }
+  }
+
+  // ---- init ----
+  async function init(){
+    ensureName();
+    try{
+      // optional: pull the live save endpoint from config
+      try{ var rc=await fetch(RAW+"manager-report/config.json?_="+Date.now(),{cache:"no-store"}); if(rc.ok){ var ep=((await rc.json()).save_endpoint||"").trim(); if(ep) ENDPOINT=ep; } }catch(e){}
+      await loadWorklist();
+      await loadCounts();
+      render();
+    }catch(e){
+      $("loc").textContent = "Couldn't load";
+      $("empty").style.display="block";
+      $("empty").innerHTML = '<div class="big">⚠️</div><p>Could not load the count sheet.<br>'+esc(e.message||e)+'</p>';
+    }
+    // poll for other people's counts
+    setInterval(async function(){ if($("screen").classList.contains("open")) return; await loadCounts(); render(); }, 20000);
+  }
+  init();
+})();
 </script>
 </body>
 </html>
