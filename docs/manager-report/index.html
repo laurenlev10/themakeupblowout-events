@@ -348,6 +348,11 @@ function renderForm(){
           '<button type="button" class="add-row" id="add-photo-btn">📷 Add photos (camera or gallery)</button>' +
           '<div class="photo-grid" id="photo-grid"></div></div>';
 
+  // 📦 Mystery Box — collect leftover stock, zero it, ship to warehouse
+  html += '<div class="card"><div class="sec-title">📦 Mystery Box — collect &amp; send to warehouse</div>' +
+          '<div style="font-size:12px;color:var(--muted);margin:-2px 0 8px;">Pull every unit of these off the floor and pack them for the warehouse. Tap <b>MARK AS ZERO</b> once packed — it zeros the product in OCTOPOS and removes it from the list. Lauren sees what\'s done.</div>' +
+          '<div id="mb-list">Loading…</div></div>';
+
   // notes
   html += '<div class="card"><div class="sec-title">🗒️ Notes</div>' +
           '<div class="field"><textarea id="f-notes" placeholder="Anything else Lauren should know..."></textarea></div></div>';
@@ -379,6 +384,8 @@ function renderForm(){
     if(e.target.id==="add-exp"){ EXPENSES.push({desc:"",amount:""}); renderExpensesGrid(); recalcTotals(); return; }
     if(e.target.id==="add-photo-btn"){ document.getElementById("photo-input").click(); return; }
     var phx=e.target.closest(".ph-x"); if(phx){ PHOTOS.splice(+phx.getAttribute("data-i"),1); renderPhotoGrid(); return; }
+    var mz=e.target.closest(".mb-zero"); if(mz){ mbMarkZero(mz); return; }
+    if(e.target.id==="mb-retry"){ loadMysteryBox(); return; }
   });
   document.getElementById("photo-input").addEventListener("change", function(e){ addPhotos(e.target.files); e.target.value=""; });
 
@@ -409,6 +416,69 @@ function renderForm(){
   document.getElementById("btn-textcopy").addEventListener("click", async function(){ var p=collect(); if(!p) return; var ok=await copyText(reportText(p)); flash(this, ok?"✓ Copied":"Copy failed"); });
   document.getElementById("btn-draft").addEventListener("click", onSaveDraft);
   loadDraftIntoForm();
+  loadMysteryBox();
+}
+
+// ── 📦 Mystery Box — collect leftover stock → MARK AS ZERO (zeros OCTOPOS + drops the tag) ──
+var MB_PENDING = [], MB_PACKED = [];
+async function loadMysteryBox(){
+  var box = document.getElementById("mb-list"); if(!box) return;
+  try{
+    var r = await fetch(saveEndpoint(), { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_mysterybox_list" }) });
+    var j = await r.json();
+    if(!j || !j.ok) throw new Error((j && j.error) || "load failed");
+    MB_PENDING = j.pending || []; MB_PACKED = j.packed || [];
+    renderMysteryBox();
+  }catch(e){
+    box.innerHTML = '<div style="color:#b91c1c;font-size:13px;">Couldn\'t load the Mystery Box list. <button type="button" id="mb-retry" class="add-row" style="display:inline-block;width:auto;">Retry</button></div>';
+  }
+}
+function renderMysteryBox(){
+  var box = document.getElementById("mb-list"); if(!box) return;
+  var h = "";
+  if(!MB_PENDING.length){ h += '<div style="font-size:13px;color:var(--muted);padding:6px 0;">✅ Nothing to collect right now.</div>'; }
+  MB_PENDING.forEach(function(p){
+    var meta = esc(p.supplier||"") + (p.sku?(" · "+esc(p.sku)):"") + (p.stock!=null?(" · stock "+p.stock):"");
+    h += '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eee;">'+
+           '<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">'+esc(p.name||("#"+p.pid))+'</div>'+
+           '<div style="font-size:12px;color:var(--muted);">'+meta+'</div></div>'+
+           '<button type="button" class="mb-zero" data-pid="'+p.pid+'" data-name="'+esc(p.name||"")+'" data-sku="'+esc(p.sku||"")+'" style="background:#dc2626;color:#fff;border:0;border-radius:8px;padding:9px 12px;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;">MARK AS ZERO</button>'+
+         '</div>';
+  });
+  if(MB_PACKED.length){
+    h += '<div style="font-size:12px;font-weight:700;color:var(--muted);margin-top:12px;">✅ Packed ('+MB_PACKED.length+')</div>';
+    MB_PACKED.forEach(function(p){
+      h += '<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;font-size:12px;color:var(--muted);border-bottom:1px solid #f3f4f6;">'+
+             '<span>✅ '+esc(p.name||("#"+p.pid))+(p.qty_collected!=null?(" — "+p.qty_collected+" units"):"")+'</span>'+
+             '<span style="white-space:nowrap;">'+esc(p.manager||"")+'</span></div>';
+    });
+  }
+  box.innerHTML = h;
+}
+async function mbMarkZero(btn){
+  var pid = btn.getAttribute("data-pid");
+  var name = btn.getAttribute("data-name")||"";
+  if(btn.getAttribute("data-armed")!=="1"){   // two-tap confirm — zeroing stock is not reversible in one click
+    btn.setAttribute("data-armed","1"); btn.dataset.old = btn.textContent; btn.textContent = "Tap again to confirm";
+    setTimeout(function(){ try{ btn.setAttribute("data-armed","0"); btn.textContent = btn.dataset.old || "MARK AS ZERO"; }catch(_){} }, 3000);
+    return;
+  }
+  btn.disabled = true; btn.textContent = "…";
+  var mgrEl = document.getElementById("f-manager_name");
+  var manager = (mgrEl && mgrEl.value || "").trim();
+  try{
+    var r = await fetch(saveEndpoint(), { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ kind:"mysterybox_mark_zero", pid:Number(pid), name:name, sku:btn.getAttribute("data-sku")||"", manager:manager, evkey:qp("evkey") }) });
+    var j = await r.json();
+    if(!r.ok || !j.ok) throw new Error((j && j.error) || ("HTTP "+r.status));
+    toast("✅ Zeroed" + (j.qty_collected!=null?(" ("+j.qty_collected+" units)"):""));
+    MB_PENDING = MB_PENDING.filter(function(p){ return String(p.pid)!==String(pid); });
+    MB_PACKED.unshift({ pid:Number(pid), name:name, qty_collected:j.qty_collected, manager:manager, at:new Date().toISOString() });
+    renderMysteryBox();
+  }catch(e){
+    toast("Failed: " + (e.message||e));
+    btn.disabled = false; btn.textContent = "MARK AS ZERO"; btn.setAttribute("data-armed","0");
+  }
 }
 
 function flash(btn, msg){
