@@ -212,9 +212,14 @@
     byId = {}; WORKLIST.forEach(function(w){ byId[w.pid]=w; });
   }
   async function loadCounts(){
+    // recount_field_counts.json is behind Cloudflare Access (302) for this public page,
+    // so we read WHO-counted-WHAT through the worker (it holds the token). This is what
+    // makes every teammate + the manager see "counted by <name> · <time>" after reopen.
     try{
-      var r = await fetch(RAW+"state/recount_field_counts.json?_="+Date.now(), {cache:"no-store"});
-      if(r.ok){ var d = await r.json(); COUNTS = (((d.events||{})[EVKEY])||{}).counts || {}; }
+      var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
+                                      body:JSON.stringify({kind:"get_field_counts", evkey:EVKEY}) });
+      var j = await r.json().catch(function(){ return {}; });
+      if(r.ok && j.ok && j.counts){ COUNTS = j.counts; }
     }catch(e){ COUNTS = COUNTS || {}; }
   }
 
