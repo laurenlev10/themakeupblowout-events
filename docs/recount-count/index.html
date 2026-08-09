@@ -32,6 +32,7 @@
   .stockpill{ font-size:12px; font-weight:700; padding:3px 9px; border-radius:999px; background:#ede9fe; color:#5b21b6; white-space:nowrap; }
   .donepill{ font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; background:#16a34a; color:#fff; white-space:nowrap; }
   .doneby{ font-size:11px; color:var(--green); margin-top:4px; font-weight:600; }
+  .edithint{ font-size:11px; color:var(--accent); margin-top:3px; font-weight:700; }
   .slowpill{ font-size:10px; font-weight:800; padding:1px 7px; border-radius:6px; background:var(--amber); color:#fff; }
   .empty{ text-align:center; color:var(--muted); padding:50px 20px; }
   .empty .big{ font-size:44px; }
@@ -247,7 +248,7 @@
           '<div class="name">'+esc(w.name)+ (w.slow?' <span class="slowpill">🐌 SLOW</span>':'') +'</div>' +
           '<div class="meta"><span class="sku">'+esc(w.sku||"—")+'</span>'+(w.supplier?' · '+esc(w.supplier):'')+'</div>' +
           (so ? '<div class="soby">🚨 SOLD OUT — by '+esc(w.sold_out_by||"?")+(w.sold_out_at?' · '+esc(fmtWhen(w.sold_out_at)):'')+'</div>'
-              : (c ? '<div class="doneby">✅ '+esc(c.out_of_stock?"OUT OF STOCK":("Counted: "+c.qty))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div>' : '')) +
+              : (c ? '<div class="doneby">✅ '+esc(c.out_of_stock?"OUT OF STOCK":("Counted: "+c.qty))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div><div class="edithint">✏️ Tap to re-count / fix</div>' : '')) +
         '</div>' +
         '<div class="rt">' + right + '</div>';
       if(!so) row.onclick = function(){ openScreen(w); };
