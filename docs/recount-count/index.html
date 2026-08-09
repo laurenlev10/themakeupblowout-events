@@ -60,6 +60,10 @@
   .bigbtn.save{ background:var(--green); }
   .bigbtn:disabled{ opacity:.5; }
   .countin{ width:100%; font-size:40px; font-weight:800; text-align:center; padding:16px; border:2px solid var(--line); border-radius:16px; margin-bottom:14px; }
+  .bcedit{ display:flex; gap:8px; margin-bottom:14px; }
+  .bcedit .bcinput{ flex:1; font-size:18px; padding:13px 14px; border:2px solid var(--line); border-radius:12px; font-variant-numeric:tabular-nums; }
+  .bcedit .bcsave{ flex-shrink:0; background:var(--accent); color:#fff; border:0; border-radius:12px; padding:0 16px; font-size:14px; font-weight:800; cursor:pointer; }
+  .bcedit .bcsave:disabled{ opacity:.5; }
   .prev{ background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; border-radius:12px; padding:11px 14px; font-size:13px; margin-bottom:16px; }
   .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px); background:#111827; color:#fff; padding:12px 22px; border-radius:10px; font-size:14px; opacity:0; transition:all .3s; z-index:100; pointer-events:none; max-width:90%; text-align:center; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
@@ -138,6 +142,11 @@
       <div class="fact"><div class="l">System stock</div><div class="v" id="scStock">—</div></div>
     </div>
     <div class="prev" id="scPrev" style="display:none;"></div>
+    <h3>Barcode</h3>
+    <div class="bcedit">
+      <input class="bcinput" id="scBarcode" type="text" inputmode="numeric" placeholder="Scan or type the barcode">
+      <button class="bcsave" id="btnBarcode" type="button">💾 Save barcode</button>
+    </div>
     <h3>Out of stock?</h3>
     <button class="bigbtn oos" id="btnOos" type="button">🚫 OUT OF STOCK — set to 0</button>
     <h3>Or enter the counted quantity</h3>
@@ -317,10 +326,32 @@
     if(c){ $("scPrev").style.display="block"; $("scPrev").innerHTML = "Already counted: <b>"+esc(c.out_of_stock?"OUT OF STOCK":c.qty)+"</b> by "+esc(c.employee)+" ("+esc(fmtWhen(c.at))+"). Re-counting will overwrite it."; }
     else { $("scPrev").style.display="none"; }
     $("scInput").value = "";
+    $("scBarcode").value = w.barcode || "";
+    $("btnBarcode").disabled = false; $("btnBarcode").textContent = "💾 Save barcode";
     $("btnOos").disabled = false; $("btnSave").disabled = false;
     $("screen").classList.add("open");
     window.scrollTo(0,0);
   }
+  // Save an edited barcode straight to OCTOPOS (via the worker).
+  $("btnBarcode").onclick = async function(){
+    if(!CUR) return;
+    var bc = ($("scBarcode").value||"").trim();
+    var btn = $("btnBarcode"); btn.disabled = true; btn.textContent = "…";
+    try{
+      var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ kind:"set_barcode", evkey:EVKEY, pid:CUR.pid, barcode:bc }) });
+      var j = await r.json().catch(function(){ return {}; });
+      if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP "+r.status));
+      CUR.barcode = bc;
+      if(byId[CUR.pid]) byId[CUR.pid].barcode = bc;
+      $("scSku").textContent = (CUR.sku||"—") + (bc? "  ·  "+bc : "");
+      btn.textContent = "✓ Saved"; setTimeout(function(){ btn.disabled=false; btn.textContent="💾 Save barcode"; }, 1500);
+      toast("✅ Barcode saved");
+    }catch(e){
+      btn.disabled=false; btn.textContent="💾 Save barcode";
+      toast("Failed: "+(e.message||e), true);
+    }
+  };
   $("scBack").onclick = function(){ $("screen").classList.remove("open"); CUR=null; };
   $("btnOos").onclick = function(){ if(CUR) submit(CUR, 0, true); };
   $("btnSave").onclick = function(){
@@ -444,7 +475,7 @@
         if(isCount){
           // open the normal count screen for an off-list product, then it saves like any count
           $("soModal").classList.remove("open");
-          openScreen({ pid:p.id, name:p.name, sku:p.sku||"", supplier:p.supplier||"", stock:null, barcode:"", extra:true });
+          openScreen({ pid:p.id, name:p.name, sku:p.sku||"", supplier:p.supplier||"", stock:null, barcode:p.barcode||"", extra:true });
         } else {
           flagSoldOut(p, b);
         }
