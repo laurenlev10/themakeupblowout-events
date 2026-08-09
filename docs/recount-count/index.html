@@ -122,6 +122,7 @@
   <div class="progress"><span id="progTxt">—</span><div class="bar"><span id="progBar"></span></div></div>
   <button id="soldOutAdd" class="soldout-add" type="button">🚨 SOLD OUT +</button>
   <button id="countAny" class="count-any" type="button">🔎 Count another product</button>
+  <button id="bcList" class="count-any" type="button">🏷️ Add barcodes</button>
   <button id="soldOutLog" class="soldout-log" type="button">📋 View SOLD OUT list</button>
 </header>
 
@@ -160,6 +161,12 @@
   <div class="top"><button class="x" id="soBack" type="button">←</button><div class="ttl" id="soTitle">🚨 Mark a product SOLD OUT</div></div>
   <div class="searchbar"><input id="soSearch" type="text" inputmode="search" placeholder="Search product name or SKU…"></div>
   <div class="solist" id="soList"><div class="sohint">Loading products…</div></div>
+</div>
+
+<!-- Barcode list: products Lauren flagged as needing a barcode -->
+<div class="solog" id="bcLog">
+  <div class="top"><button class="x" id="bcLogBack" type="button">←</button><div class="ttl">🏷️ Products needing a barcode</div></div>
+  <div class="lglist" id="bcLogList"><div class="sohint">Loading…</div></div>
 </div>
 
 <!-- SOLD OUT log: everything flagged sold-out this event + who + when -->
@@ -399,6 +406,31 @@
   $("countAny").onclick = function(){ openCatalogModal("count"); };
   $("soBack").onclick = function(){ $("soModal").classList.remove("open"); };
   $("soSearch").addEventListener("input", function(){ renderSoList(this.value); });
+
+  // Barcode list — products Lauren flagged as needing a barcode. Tap one → count
+  // screen opens (with the Barcode field) so the crew can scan/type + save it.
+  $("bcList").onclick = function(){ if(!EMPLOYEE){ ensureName(); return; } $("bcLog").classList.add("open"); loadBcList(); };
+  $("bcLogBack").onclick = function(){ $("bcLog").classList.remove("open"); };
+  async function loadBcList(){
+    $("bcLogList").innerHTML = '<div class="sohint">Loading…</div>';
+    try{
+      var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({kind:"get_barcode_list", evkey:EVKEY}) });
+      var j = await r.json().catch(function(){ return {}; });
+      if(!r.ok || !j.ok || !Array.isArray(j.items)) throw new Error(j.error || ("HTTP "+r.status));
+      if(!j.items.length){ $("bcLogList").innerHTML = '<div class="sohint">✅ Nothing here right now.</div>'; return; }
+      var box = $("bcLogList"); box.innerHTML = "";
+      j.items.forEach(function(it){
+        var row = document.createElement("div"); row.className = "lgrow"; row.style.cursor = "pointer";
+        row.innerHTML = '<div class="name">'+esc(it.name||("#"+it.pid))+'</div>' +
+          '<div class="sub">'+esc(it.sku||"")+(it.supplier?' · '+esc(it.supplier):'')+'</div>' +
+          '<div class="meta">🏷️ Tap to add a barcode</div>';
+        row.onclick = function(){ $("bcLog").classList.remove("open"); openScreen({ pid:it.pid, name:it.name, sku:it.sku||"", supplier:it.supplier||"", stock:null, barcode:"", extra:true }); };
+        box.appendChild(row);
+      });
+    }catch(e){
+      $("bcLogList").innerHTML = '<div class="sohint">⚠️ Could not load.<br>'+esc(e.message||e)+'</div>';
+    }
+  }
 
   // Crew SOLD OUT log — everything flagged this event + who + when.
   $("soldOutLog").onclick = function(){ $("soLog").classList.add("open"); loadLog(); };
