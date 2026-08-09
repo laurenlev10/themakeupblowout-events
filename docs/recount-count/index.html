@@ -33,6 +33,7 @@
   .donepill{ font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; background:#16a34a; color:#fff; white-space:nowrap; }
   .doneby{ font-size:11px; color:var(--green); margin-top:4px; font-weight:600; }
   .edithint{ font-size:11px; color:var(--accent); margin-top:3px; font-weight:700; }
+  .extrahdr{ font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:16px 2px 8px; }
   .slowpill{ font-size:10px; font-weight:800; padding:1px 7px; border-radius:6px; background:var(--amber); color:#fff; }
   .empty{ text-align:center; color:var(--muted); padding:50px 20px; }
   .empty .big{ font-size:44px; }
@@ -96,6 +97,7 @@
   .soby{ font-size:11px; color:#be185d; margin-top:4px; font-weight:700; }
   /* crew SOLD OUT log button + list */
   header .soldout-log{ margin-top:8px; width:100%; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.4); color:#fff; font-weight:700; font-size:13px; padding:9px; border-radius:12px; cursor:pointer; }
+  header .count-any{ margin-top:8px; width:100%; background:rgba(255,255,255,.22); border:1px solid rgba(255,255,255,.55); color:#fff; font-weight:800; font-size:14px; padding:11px; border-radius:12px; cursor:pointer; }
   .solog{ position:fixed; inset:0; background:var(--bg); z-index:60; display:none; flex-direction:column; }
   .solog.open{ display:flex; }
   .solog .top{ background:#be185d; color:#fff; padding:14px 16px; display:flex; align-items:center; gap:12px; }
@@ -115,6 +117,7 @@
   <div class="who">Counting as: <b id="whoName">—</b> <button id="changeName" type="button">change</button></div>
   <div class="progress"><span id="progTxt">—</span><div class="bar"><span id="progBar"></span></div></div>
   <button id="soldOutAdd" class="soldout-add" type="button">🚨 SOLD OUT +</button>
+  <button id="countAny" class="count-any" type="button">🔎 Count another product</button>
   <button id="soldOutLog" class="soldout-log" type="button">📋 View SOLD OUT list</button>
 </header>
 
@@ -145,7 +148,7 @@
 
 <!-- SOLD OUT modal: search any product, flag it as sold out -->
 <div class="somodal" id="soModal">
-  <div class="top"><button class="x" id="soBack" type="button">←</button><div class="ttl">🚨 Mark a product SOLD OUT</div></div>
+  <div class="top"><button class="x" id="soBack" type="button">←</button><div class="ttl" id="soTitle">🚨 Mark a product SOLD OUT</div></div>
   <div class="searchbar"><input id="soSearch" type="text" inputmode="search" placeholder="Search product name or SKU…"></div>
   <div class="solist" id="soList"><div class="sohint">Loading products…</div></div>
 </div>
@@ -178,6 +181,7 @@
   var NAME_KEY = "recount_employee_name";
   var WORKLIST = [], COUNTS = {}, byId = {}, CUR = null, EMPLOYEE = "";
   var CATALOG = null, CAT_LOADING = false, SOFLAG = {};   // SOLD OUT: product catalog + locally-flagged pids
+  var CATALOG_MODE = "soldout";   // "soldout" = flag sold-out · "count" = search a product to COUNT it
 
   function $(id){ return document.getElementById(id); }
   function esc(s){ var d=document.createElement("div"); d.textContent=(s==null?"":String(s)); return d.innerHTML; }
@@ -255,9 +259,30 @@
       else row.onclick = function(){ toast("🚨 Already marked SOLD OUT by "+(w.sold_out_by||"a teammate")); };
       list.appendChild(row);
     });
+    // Extra products counted in the field that were NOT on the requested list (Lauren
+    // 2026-08-08 — "🔎 Count another product"). Show them so the crew sees they're done.
+    var extras = Object.keys(COUNTS).filter(function(pid){ return !byId[Number(pid)]; });
+    if(extras.length){
+      var hdr = document.createElement("div"); hdr.className = "extrahdr";
+      hdr.textContent = "➕ Also counted (not on the list) · " + extras.length;
+      list.appendChild(hdr);
+      extras.forEach(function(pid){
+        var c = COUNTS[pid];
+        var row = document.createElement("div"); row.className = "row done";
+        row.innerHTML =
+          '<div class="info">' +
+            '<div class="name">'+esc(c.name||("#"+pid))+'</div>' +
+            '<div class="meta"><span class="sku">'+esc(c.sku||"—")+'</span>'+(c.supplier?' · '+esc(c.supplier):'')+'</div>' +
+            '<div class="doneby">✅ '+esc(c.out_of_stock?"OUT OF STOCK":("Counted: "+c.qty))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div><div class="edithint">✏️ Tap to re-count / fix</div>' +
+          '</div>' +
+          '<div class="rt"><span class="donepill">DONE</span></div>';
+        row.onclick = function(){ openScreen({ pid:Number(pid), name:c.name, sku:c.sku, supplier:c.supplier||"", stock:null, barcode:"", extra:true }); };
+        list.appendChild(row);
+      });
+    }
     var tot = WORKLIST.length;
     var countable = tot - soldOutN;
-    $("progTxt").textContent = done + " of " + countable + " counted" + (soldOutN ? "  ·  🚨 " + soldOutN + " sold out" : "");
+    $("progTxt").textContent = done + " of " + countable + " counted" + (soldOutN ? "  ·  🚨 " + soldOutN + " sold out" : "") + (extras.length ? "  ·  ➕ " + extras.length + " extra" : "");
     $("progBar").style.width = countable ? Math.round(done/countable*100)+"%" : "0%";
     renderTally();
   }
@@ -314,8 +339,9 @@
       var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
       var j = await r.json().catch(function(){ return {}; });
       if(!r.ok || !j.ok){ throw new Error(j.error || ("HTTP "+r.status)); }
-      // optimistic local update
-      COUNTS[String(w.pid)] = { pid:w.pid, qty:qty, out_of_stock:oos, employee:EMPLOYEE, at:new Date().toISOString() };
+      // optimistic local update (include name/sku so off-list "extra" rows can render)
+      COUNTS[String(w.pid)] = { pid:w.pid, qty:qty, out_of_stock:oos, employee:EMPLOYEE, at:new Date().toISOString(),
+                                name:w.name, sku:w.sku, supplier:w.supplier||"" };
       render();
       $("screen").classList.remove("open"); CUR=null;
       toast(oos ? "✅ Set OUT OF STOCK" : ("✅ Counted "+qty));
@@ -325,14 +351,21 @@
     }
   }
 
-  // ---- SOLD OUT: flag any product as sold out ----
-  $("soldOutAdd").onclick = function(){
+  // ---- Product search modal — shared by SOLD OUT (flag) and COUNT-ANOTHER (count) ----
+  function openCatalogModal(mode){
     if(!EMPLOYEE){ ensureName(); return; }
+    CATALOG_MODE = mode;
+    $("soTitle").textContent = (mode === "count") ? "🔎 Search a product to count" : "🚨 Mark a product SOLD OUT";
+    $("soSearch").placeholder = (mode === "count") ? "Search any product to count…" : "Search product name or SKU…";
     $("soModal").classList.add("open");
     $("soSearch").value = "";
     if(CATALOG){ renderSoList(""); setTimeout(function(){ $("soSearch").focus(); }, 100); }
     else { loadCatalog(); }
-  };
+  }
+  // ---- SOLD OUT: flag any product as sold out ----
+  $("soldOutAdd").onclick = function(){ openCatalogModal("soldout"); };
+  // ---- COUNT ANOTHER: search any product (not on the list) and count it ----
+  $("countAny").onclick = function(){ openCatalogModal("count"); };
   $("soBack").onclick = function(){ $("soModal").classList.remove("open"); };
   $("soSearch").addEventListener("input", function(){ renderSoList(this.value); });
 
@@ -384,7 +417,17 @@
     }
     if(!items.length){ box.innerHTML = '<div class="sohint">No products match “'+esc(q)+'”.</div>'; return; }
     var capped = items.slice(0, 200);
+    var isCount = (CATALOG_MODE === "count");
     box.innerHTML = capped.map(function(p){
+      if(isCount){
+        var counted = !!COUNTS[String(p.id)];
+        var btnTxt = counted ? '✓ COUNTED' : 'COUNT';
+        return '<div class="sorow'+(counted?' flagged':'')+'" data-pid="'+p.id+'">' +
+          '<div class="info"><div class="name">'+esc(p.name)+'</div>' +
+          '<div class="meta">'+esc(p.sku||"—")+(p.supplier?' · '+esc(p.supplier):'')+'</div></div>' +
+          '<button type="button" data-pid="'+p.id+'">'+btnTxt+'</button>' +
+        '</div>';
+      }
       var flagged = !!SOFLAG[String(p.id)];
       return '<div class="sorow'+(flagged?' flagged':'')+'" data-pid="'+p.id+'">' +
         '<div class="info"><div class="name">'+esc(p.name)+'</div>' +
@@ -397,7 +440,14 @@
         var pid = Number(b.getAttribute("data-pid"));
         var p = null;
         for(var i=0;i<CATALOG.length;i++){ if(CATALOG[i].id===pid){ p=CATALOG[i]; break; } }
-        if(p) flagSoldOut(p, b);
+        if(!p) return;
+        if(isCount){
+          // open the normal count screen for an off-list product, then it saves like any count
+          $("soModal").classList.remove("open");
+          openScreen({ pid:p.id, name:p.name, sku:p.sku||"", supplier:p.supplier||"", stock:null, barcode:"", extra:true });
+        } else {
+          flagSoldOut(p, b);
+        }
       };
     });
   }
