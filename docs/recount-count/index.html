@@ -358,17 +358,45 @@
   }
 
   // ---- count screen ----
-  // A stored "barcode" that isn't a plausible GTIN (8/12/13/14 digits) is bad data, not a
-  // barcode — OCTOPOS currently holds product NAMES in that field for some products.
-  // Never prefill it and never print it as if it were real.
-  function looksLikeBarcode(v){
-    v = String(v == null ? "" : v).trim();
-    return /^[0-9]{8}$|^[0-9]{12,14}$/.test(v);
-  }
+  // Lauren 2026-08-14: a product NAME sitting in the barcode field is fine by her — do not
+  // second-guess the stored value, show it and prefill it as-is.
+  // What DOES break: OCTOPOS refuses to store the same value on two products, so saving a
+  // code another product already owns fails. Catch that here, by name, before the save.
   function skuLine(sku, bc){
-    if (looksLikeBarcode(bc)) return (sku || "—") + "  ·  " + bc;
-    if (String(bc || "").trim()) return (sku || "—") + "  ·  ⚠️ needs a real barcode";
-    return sku || "—";
+    bc = String(bc == null ? "" : bc).trim();
+    return bc ? (sku || "—") + "  ·  " + bc : (sku || "—");
+  }
+  // Returns the OTHER product already holding this code, or null. Uses the catalog the
+  // page already loads; if it isn't loaded yet, fetch it once — a wrong "it's free" here
+  // is a failed save in the crew's hands.
+  async function barcodeOwner(code){
+    code = String(code || "").trim().toLowerCase();
+    if (!code) return null;
+    if (!CATALOG){
+      try {
+        var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ kind:"get_catalog" }) });
+        var j = await r.json().catch(function(){ return {}; });
+        if (j && j.ok && Array.isArray(j.products)) CATALOG = j.products;
+      } catch(e){}
+    }
+    if (!CATALOG) return null;   // couldn't check — let OCTOPOS have the final say
+    for (var i = 0; i < CATALOG.length; i++){
+      var p = CATALOG[i];
+      if (Number(p.id != null ? p.id : p.pid) === Number(CUR && CUR.pid)) continue;
+      var codes = [p.barcode].concat(p.barcodes || []);
+      for (var k = 0; k < codes.length; k++){
+        if (String(codes[k] || "").trim().toLowerCase() === code) return p;
+      }
+    }
+    return null;
+  }
+  async function blockedByDuplicate(code){
+    var owner = await barcodeOwner(code);
+    if (!owner) return false;
+    toast("⚠️ " + code + " already belongs to " + (owner.name || ("#" + (owner.id != null ? owner.id : owner.pid))) +
+          " — OCTOPOS won't store the same code twice", true);
+    return true;
   }
   function openScreen(w){
     if(!EMPLOYEE){ ensureName(); return; }
@@ -381,7 +409,7 @@
     if(c){ $("scPrev").style.display="block"; $("scPrev").innerHTML = "Already counted: <b>"+esc(c.out_of_stock?"OUT OF STOCK":c.qty)+"</b> by "+esc(c.employee)+" ("+esc(fmtWhen(c.at))+"). Re-counting will overwrite it."; }
     else { $("scPrev").style.display="none"; }
     $("scInput").value = "";
-    $("scBarcode").value = looksLikeBarcode(w.barcode) ? w.barcode : "";
+    $("scBarcode").value = w.barcode || "";
     $("btnBarcode").disabled = false; $("btnBarcode").textContent = "💾 Save barcode";
     $("btnOos").disabled = false; $("btnSave").disabled = false;
     // Extra barcodes (Lauren 2026-08-14): show what's already on the product, then pull the
@@ -405,7 +433,7 @@
       if(byId[pid]) byId[pid].barcodes = CUR.barcodes;
       if(it.barcode && !CUR.barcode){
         CUR.barcode = it.barcode;
-        if(looksLikeBarcode(it.barcode) && $("scBarcode").value === "") $("scBarcode").value = it.barcode;
+        if($("scBarcode").value === "") $("scBarcode").value = it.barcode;
         $("scSku").textContent = skuLine(CUR.sku, it.barcode);
       }
       if(it.stock != null && CUR.stock == null){ CUR.stock = it.stock; $("scStock").textContent = it.stock; }
@@ -417,6 +445,7 @@
     if(!CUR) return;
     var bc = ($("scBarcode").value||"").trim();
     var btn = $("btnBarcode"); btn.disabled = true; btn.textContent = "…";
+    if (await blockedByDuplicate(bc)){ btn.disabled = false; btn.textContent = "💾 Save barcode"; return; }
     try{
       var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
         body:JSON.stringify({ kind:"set_barcode", evkey:EVKEY, pid:CUR.pid, barcode:bc }) });
@@ -429,7 +458,10 @@
       toast("✅ Barcode saved");
     }catch(e){
       btn.disabled=false; btn.textContent="💾 Save barcode";
-      toast("Failed: "+(e.message||e), true);
+      var m = String(e.message||e);
+      toast(/put 4\d\d|duplicat|exist|taken|unique/i.test(m)
+        ? "⚠️ OCTOPOS refused this barcode — most likely another product already has it"
+        : "Failed: " + m, true);
     }
   };
   // ═══════ Extra barcodes — a product can carry more than one (Lauren 2026-08-14) ═══════
@@ -463,6 +495,7 @@
     var code = (prompt("Extra barcode for " + (CUR.name||"this product") + ":") || "").trim();
     if(!code) return;
     var btn = this; btn.disabled = true;
+    if (await blockedByDuplicate(code)){ btn.disabled = false; return; }
     try { await bananaWrite({ code: code }); toast("✅ Barcode added"); }
     catch(e){ toast("Failed: "+(e.message||e), true); }
     btn.disabled = false;
