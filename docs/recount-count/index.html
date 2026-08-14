@@ -8,8 +8,11 @@
   :root{ --bg:#f4f5fb; --card:#fff; --text:#111827; --muted:#6b7280; --line:#e5e7eb;
          --accent:#7c3aed; --green:#16a34a; --red:#dc2626; --amber:#f59e0b; }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ overflow-x:hidden; }
   body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-        background:var(--bg); color:var(--text); padding:0 0 40px; }
+        background:var(--bg); color:var(--text); padding:0 0 40px;
+        overflow-x:hidden; max-width:100%; overscroll-behavior-x:none; }
+  .screen .body{ overflow-x:hidden; }
   header{ background:linear-gradient(135deg,#7c3aed,#5b21b6); color:#fff; padding:18px 16px 20px; position:sticky; top:0; z-index:20; box-shadow:0 2px 10px rgba(0,0,0,.15); }
   header .kicker{ font-size:12px; letter-spacing:2px; opacity:.85; font-weight:700; }
   header h1{ margin:2px 0 0; font-size:22px; line-height:1.15; }
@@ -60,12 +63,19 @@
   .bigbtn.save{ background:var(--green); }
   .bigbtn:disabled{ opacity:.5; }
   .countin{ width:100%; font-size:40px; font-weight:800; text-align:center; padding:16px; border:2px solid var(--line); border-radius:16px; margin-bottom:14px; }
-  .bcedit{ display:flex; gap:8px; margin-bottom:14px; }
-  .bcedit .bcinput{ flex:1; font-size:18px; padding:13px 14px; border:2px solid var(--line); border-radius:12px; font-variant-numeric:tabular-nums; }
-  .bcedit .bcsave{ flex-shrink:0; background:var(--accent); color:#fff; border:0; border-radius:12px; padding:0 16px; font-size:14px; font-weight:800; cursor:pointer; }
+  /* 🛑 A flex item will NOT shrink below its content width unless min-width:0. Without it
+     the input kept its natural width, pushed 💾 off the screen, and the whole page picked
+     up a horizontal scroll that slid side to side under a finger. Lauren, 2026-08-14. */
+  .bcedit{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .bcedit .bcinput{ flex:1 1 100%; min-width:0; font-size:18px; padding:13px 14px; border:2px solid var(--line); border-radius:12px; font-variant-numeric:tabular-nums; }
+  .bcedit .bcsave{ flex:1 1 0; min-width:0; background:var(--accent); color:#fff; border:0; border-radius:12px; padding:13px 16px; font-size:14px; font-weight:800; cursor:pointer; white-space:nowrap; }
+  @media (min-width:520px){
+    .bcedit .bcinput{ flex:1 1 auto; }
+    .bcedit .bcsave{ flex:0 0 auto; }
+  }
   .bcedit .bcsave:disabled{ opacity:.5; }
   /* 📷 camera scan + extra barcodes (Lauren 2026-08-14) */
-  .bcedit .bcscan{ flex-shrink:0; background:#0f172a; color:#fff; border:0; border-radius:12px; padding:0 15px; font-size:20px; cursor:pointer; }
+  .bcedit .bcscan{ flex:0 0 auto; background:#0f172a; color:#fff; border:0; border-radius:12px; padding:13px 18px; font-size:20px; line-height:1; cursor:pointer; }
   .bcedit .bcscan:disabled{ opacity:.5; }
   .bcextra{ margin:-6px 0 14px; }
   .bcextra-list{ display:flex; flex-wrap:wrap; gap:6px; }
@@ -348,18 +358,30 @@
   }
 
   // ---- count screen ----
+  // A stored "barcode" that isn't a plausible GTIN (8/12/13/14 digits) is bad data, not a
+  // barcode — OCTOPOS currently holds product NAMES in that field for some products.
+  // Never prefill it and never print it as if it were real.
+  function looksLikeBarcode(v){
+    v = String(v == null ? "" : v).trim();
+    return /^[0-9]{8}$|^[0-9]{12,14}$/.test(v);
+  }
+  function skuLine(sku, bc){
+    if (looksLikeBarcode(bc)) return (sku || "—") + "  ·  " + bc;
+    if (String(bc || "").trim()) return (sku || "—") + "  ·  ⚠️ needs a real barcode";
+    return sku || "—";
+  }
   function openScreen(w){
     if(!EMPLOYEE){ ensureName(); return; }
     CUR = w;
     $("scName").textContent = w.name;
-    $("scSku").textContent = (w.sku||"—") + (w.barcode? "  ·  "+w.barcode : "");
+    $("scSku").textContent = skuLine(w.sku, w.barcode);
     $("scSup").textContent = w.supplier || "—";
     $("scStock").textContent = (w.stock==null?"?":w.stock);
     var c = COUNTS[String(w.pid)];
     if(c){ $("scPrev").style.display="block"; $("scPrev").innerHTML = "Already counted: <b>"+esc(c.out_of_stock?"OUT OF STOCK":c.qty)+"</b> by "+esc(c.employee)+" ("+esc(fmtWhen(c.at))+"). Re-counting will overwrite it."; }
     else { $("scPrev").style.display="none"; }
     $("scInput").value = "";
-    $("scBarcode").value = w.barcode || "";
+    $("scBarcode").value = looksLikeBarcode(w.barcode) ? w.barcode : "";
     $("btnBarcode").disabled = false; $("btnBarcode").textContent = "💾 Save barcode";
     $("btnOos").disabled = false; $("btnSave").disabled = false;
     // Extra barcodes (Lauren 2026-08-14): show what's already on the product, then pull the
@@ -383,8 +405,8 @@
       if(byId[pid]) byId[pid].barcodes = CUR.barcodes;
       if(it.barcode && !CUR.barcode){
         CUR.barcode = it.barcode;
-        if($("scBarcode").value === "") $("scBarcode").value = it.barcode;
-        $("scSku").textContent = (CUR.sku||"—") + "  ·  " + it.barcode;
+        if(looksLikeBarcode(it.barcode) && $("scBarcode").value === "") $("scBarcode").value = it.barcode;
+        $("scSku").textContent = skuLine(CUR.sku, it.barcode);
       }
       if(it.stock != null && CUR.stock == null){ CUR.stock = it.stock; $("scStock").textContent = it.stock; }
       renderExtras();
@@ -402,7 +424,7 @@
       if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP "+r.status));
       CUR.barcode = bc;
       if(byId[CUR.pid]) byId[CUR.pid].barcode = bc;
-      $("scSku").textContent = (CUR.sku||"—") + (bc? "  ·  "+bc : "");
+      $("scSku").textContent = skuLine(CUR.sku, bc);
       btn.textContent = "✓ Saved"; setTimeout(function(){ btn.disabled=false; btn.textContent="💾 Save barcode"; }, 1500);
       toast("✅ Barcode saved");
     }catch(e){
