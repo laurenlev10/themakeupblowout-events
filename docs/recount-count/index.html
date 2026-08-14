@@ -64,6 +64,20 @@
   .bcedit .bcinput{ flex:1; font-size:18px; padding:13px 14px; border:2px solid var(--line); border-radius:12px; font-variant-numeric:tabular-nums; }
   .bcedit .bcsave{ flex-shrink:0; background:var(--accent); color:#fff; border:0; border-radius:12px; padding:0 16px; font-size:14px; font-weight:800; cursor:pointer; }
   .bcedit .bcsave:disabled{ opacity:.5; }
+  /* 📷 camera scan + extra barcodes (Lauren 2026-08-14) */
+  .bcedit .bcscan{ flex-shrink:0; background:#0f172a; color:#fff; border:0; border-radius:12px; padding:0 15px; font-size:20px; cursor:pointer; }
+  .bcedit .bcscan:disabled{ opacity:.5; }
+  .bcextra{ margin:-6px 0 14px; }
+  .bcextra-list{ display:flex; flex-wrap:wrap; gap:6px; }
+  .bcextra-chip{ display:inline-flex; align-items:center; gap:7px; background:#f1f5f9; border:1px solid var(--line); border-radius:999px; padding:5px 8px 5px 12px; font-size:13px; font-variant-numeric:tabular-nums; }
+  .bcextra-chip button{ background:#e2e8f0; border:0; border-radius:999px; width:20px; height:20px; line-height:1; font-size:12px; cursor:pointer; color:#334155; }
+  .bcextra-add{ background:#fff; border:2px dashed var(--line); border-radius:12px; padding:9px 13px; font-size:13px; font-weight:700; color:#475569; cursor:pointer; margin-top:8px; }
+  .bcextra-add:disabled{ opacity:.5; }
+  .camwrap{ display:none; margin:0 0 14px; background:#000; border-radius:14px; overflow:hidden; position:relative; }
+  .camwrap.open{ display:block; }
+  .camwrap video{ width:100%; max-height:46vh; display:block; object-fit:cover; }
+  .camhint{ position:absolute; top:10px; left:0; right:0; text-align:center; color:#fff; font-size:13px; font-weight:700; text-shadow:0 1px 3px #000; pointer-events:none; }
+  .camclose{ position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:rgba(15,23,42,.85); color:#fff; border:0; border-radius:999px; padding:9px 18px; font-size:13px; font-weight:800; cursor:pointer; }
   .prev{ background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; border-radius:12px; padding:11px 14px; font-size:13px; margin-bottom:16px; }
   .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px); background:#111827; color:#fff; padding:12px 22px; border-radius:10px; font-size:14px; opacity:0; transition:all .3s; z-index:100; pointer-events:none; max-width:90%; text-align:center; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
@@ -146,7 +160,19 @@
     <h3>Barcode</h3>
     <div class="bcedit">
       <input class="bcinput" id="scBarcode" type="text" inputmode="numeric" placeholder="Scan or type the barcode">
+      <button class="bcscan" id="btnScan" type="button" style="display:none;" title="Scan with the camera">📷</button>
       <button class="bcsave" id="btnBarcode" type="button">💾 Save barcode</button>
+    </div>
+    <!-- A product can carry more than one barcode (OCTOPOS additional_barcodes) — e.g. an
+         old sticker and a new one, or a multipack. Lauren 2026-08-14. -->
+    <div class="bcextra" id="bcExtraWrap">
+      <div class="bcextra-list" id="bcExtraList"></div>
+      <button class="bcextra-add" id="btnBcExtra" type="button">＋ Add another barcode</button>
+    </div>
+    <div class="camwrap" id="camWrap">
+      <video id="camVideo" playsinline muted></video>
+      <div class="camhint" id="camHint">Point the camera at the barcode…</div>
+      <button class="camclose" id="btnCamClose" type="button">✕ Close camera</button>
     </div>
     <h3>Out of stock?</h3>
     <button class="bigbtn oos" id="btnOos" type="button">🚫 OUT OF STOCK — set to 0</button>
@@ -336,8 +362,33 @@
     $("scBarcode").value = w.barcode || "";
     $("btnBarcode").disabled = false; $("btnBarcode").textContent = "💾 Save barcode";
     $("btnOos").disabled = false; $("btnSave").disabled = false;
+    // Extra barcodes (Lauren 2026-08-14): show what's already on the product, then pull the
+    // authoritative list from OCTOPOS. Fail-soft — if the fetch fails the crew still counts.
+    stopCam();
+    CUR.barcodes = Array.isArray(w.barcodes) ? w.barcodes.slice() : [];
+    renderExtras();
+    loadExtras(w.pid);
     $("screen").classList.add("open");
     window.scrollTo(0,0);
+  }
+  // Authoritative additional_barcodes straight from OCTOPOS (read-only path).
+  async function loadExtras(pid){
+    try{
+      var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ kind:"banana_read", pids:[Number(pid)] }) });
+      var j = await r.json().catch(function(){ return {}; });
+      var it = (j && j.ok && (j.items||[])[0]) || null;
+      if(!it || !CUR || Number(CUR.pid) !== Number(pid)) return;
+      CUR.barcodes = it.barcodes || [];
+      if(byId[pid]) byId[pid].barcodes = CUR.barcodes;
+      if(it.barcode && !CUR.barcode){
+        CUR.barcode = it.barcode;
+        if($("scBarcode").value === "") $("scBarcode").value = it.barcode;
+        $("scSku").textContent = (CUR.sku||"—") + "  ·  " + it.barcode;
+      }
+      if(it.stock != null && CUR.stock == null){ CUR.stock = it.stock; $("scStock").textContent = it.stock; }
+      renderExtras();
+    }catch(e){}
   }
   // Save an edited barcode straight to OCTOPOS (via the worker).
   $("btnBarcode").onclick = async function(){
@@ -359,7 +410,106 @@
       toast("Failed: "+(e.message||e), true);
     }
   };
-  $("scBack").onclick = function(){ $("screen").classList.remove("open"); CUR=null; };
+  // ═══════ Extra barcodes — a product can carry more than one (Lauren 2026-08-14) ═══════
+  // "Save barcode" above writes the PRIMARY barcode. OCTOPOS also has additional_barcodes,
+  // which is what an old sticker + a new sticker, or a multipack, needs. The worker's
+  // banana_write already appends to that list server-side (add defaults to 0, so the stock
+  // qty is never touched) — no new worker kind, nothing to deploy.
+  function renderExtras(){
+    var box = $("bcExtraList"); box.innerHTML = "";
+    ((CUR && CUR.barcodes) || []).forEach(function(code){
+      var chip = document.createElement("span"); chip.className = "bcextra-chip";
+      chip.appendChild(document.createTextNode(code));
+      var x = document.createElement("button"); x.type = "button"; x.textContent = "✕";
+      x.title = "Remove this barcode";
+      x.onclick = function(){ removeExtra(code); };
+      chip.appendChild(x); box.appendChild(chip);
+    });
+  }
+  async function bananaWrite(body, failMsg){
+    var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(Object.assign({ kind:"banana_write", pid: CUR.pid }, body)) });
+    var j = await r.json().catch(function(){ return {}; });
+    if(!r.ok || !j.ok) throw new Error(j.error || failMsg || ("HTTP "+r.status));
+    CUR.barcodes = j.barcodes || [];
+    if(byId[CUR.pid]) byId[CUR.pid].barcodes = CUR.barcodes;
+    renderExtras();
+    return j;
+  }
+  $("btnBcExtra").onclick = async function(){
+    if(!CUR) return;
+    var code = (prompt("Extra barcode for " + (CUR.name||"this product") + ":") || "").trim();
+    if(!code) return;
+    var btn = this; btn.disabled = true;
+    try { await bananaWrite({ code: code }); toast("✅ Barcode added"); }
+    catch(e){ toast("Failed: "+(e.message||e), true); }
+    btn.disabled = false;
+  };
+  async function removeExtra(code){
+    if(!CUR || !confirm("Remove barcode " + code + "?")) return;
+    var keep = ((CUR.barcodes)||[]).filter(function(c){ return c !== code; });
+    try { await bananaWrite({ list: keep }); toast("✅ Barcode removed"); }
+    catch(e){ toast("Failed: "+(e.message||e), true); }
+  }
+
+  // ═══════ 📷 Camera scan (Lauren 2026-08-14) ═══════
+  // Uses the browser's built-in BarcodeDetector — no library, no upload, nothing leaves
+  // the phone. The button only appears where the API actually exists (Android Chrome and
+  // recent Samsung Internet today), so a phone without it simply keeps typing/using the
+  // hardware scanner instead of seeing a button that does nothing.
+  var CAM = { stream:null, timer:null, det:null };
+  // navigator.mediaDevices only exists on a SECURE origin — no https, no camera.
+  // Require both, so the button never appears where it could only fail.
+  var CAM_SUPPORTED = (typeof window.BarcodeDetector === "function")
+                   && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  async function startCam(){
+    if(!CUR) return;
+    try{
+      if(!CAM.det){
+        var fmts = ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","itf","codabar"];
+        try{
+          var avail = await window.BarcodeDetector.getSupportedFormats();
+          fmts = fmts.filter(function(f){ return avail.indexOf(f) >= 0; });
+        }catch(e){}
+        CAM.det = new window.BarcodeDetector(fmts.length ? { formats: fmts } : undefined);
+      }
+      CAM.stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" } } });
+      var v = $("camVideo"); v.srcObject = CAM.stream; await v.play();
+      $("camWrap").classList.add("open");
+      $("camHint").textContent = "Point the camera at the barcode…";
+      CAM.timer = setInterval(async function(){
+        try{
+          var hits = await CAM.det.detect($("camVideo"));
+          if(hits && hits.length){
+            var code = String(hits[0].rawValue || "").trim();
+            if(code){
+              $("scBarcode").value = code;
+              $("camHint").textContent = "✓ " + code;
+              if(navigator.vibrate) try{ navigator.vibrate(60); }catch(e){}
+              stopCam();
+              toast("📷 Scanned " + code + " — press 💾 to save");
+            }
+          }
+        }catch(e){}
+      }, 350);
+    }catch(e){
+      stopCam();
+      toast("Camera unavailable: " + (e && e.message ? e.message : e), true);
+    }
+  }
+  function stopCam(){
+    if(CAM.timer){ clearInterval(CAM.timer); CAM.timer = null; }
+    if(CAM.stream){ CAM.stream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); CAM.stream = null; }
+    var v = $("camVideo"); if(v) v.srcObject = null;
+    $("camWrap").classList.remove("open");
+  }
+  if(CAM_SUPPORTED){
+    $("btnScan").style.display = "";
+    $("btnScan").onclick = function(){ $("camWrap").classList.contains("open") ? stopCam() : startCam(); };
+    $("btnCamClose").onclick = stopCam;
+  }
+
+  $("scBack").onclick = function(){ stopCam(); $("screen").classList.remove("open"); CUR=null; };
   $("btnOos").onclick = function(){ if(CUR) submit(CUR, 0, true); };
   $("btnSave").onclick = function(){
     if(!CUR) return;
