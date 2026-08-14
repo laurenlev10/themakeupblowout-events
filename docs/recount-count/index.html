@@ -177,6 +177,14 @@
     <div class="bcextra" id="bcExtraWrap">
       <div class="bcextra-list" id="bcExtraList"></div>
       <button class="bcextra-add" id="btnBcExtra" type="button">＋ Add another barcode</button>
+      <!-- Its own input + 📷, so a second barcode is scanned exactly like the first.
+           It used to be a prompt() — typing only. Lauren 2026-08-14. -->
+      <div class="bcedit" id="bcNewRow" style="display:none; margin-top:10px;">
+        <input class="bcinput" id="scBcNew" type="text" inputmode="numeric" placeholder="Scan or type another barcode">
+        <button class="bcscan" id="btnScanNew" type="button" style="display:none;" title="Scan with the camera">📷</button>
+        <button class="bcsave" id="btnBcNewSave" type="button">✓ Add</button>
+        <button class="bcsave" id="btnBcNewCancel" type="button" style="background:#94a3b8;">✕</button>
+      </div>
     </div>
     <div class="camwrap" id="camWrap">
       <video id="camVideo" playsinline muted></video>
@@ -413,7 +421,7 @@
     $("btnOos").disabled = false; $("btnSave").disabled = false;
     // Extra barcodes (Lauren 2026-08-14): show what's already on the product, then pull the
     // authoritative list from OCTOPOS. Fail-soft — if the fetch fails the crew still counts.
-    stopCam();
+    closeBcNew();
     CUR.barcodes = Array.isArray(w.barcodes) ? w.barcodes.slice() : [];
     renderExtras();
     loadExtras(w.pid);
@@ -489,16 +497,31 @@
     renderExtras();
     return j;
   }
-  $("btnBcExtra").onclick = async function(){
+  function closeBcNew(){
+    stopCam();
+    $("bcNewRow").style.display = "none";
+    $("btnBcExtra").style.display = "";
+    $("scBcNew").value = "";
+    CAM.target = "scBarcode";
+  }
+  $("btnBcExtra").onclick = function(){
     if(!CUR) return;
-    var code = (prompt("Extra barcode for " + (CUR.name||"this product") + ":") || "").trim();
-    if(!code) return;
-    var btn = this; btn.disabled = true;
-    if (await blockedByDuplicate(code)){ btn.disabled = false; return; }
-    try { await bananaWrite({ code: code }); toast("✅ Barcode added"); }
-    catch(e){ toast("Failed: "+(e.message||e), true); }
-    btn.disabled = false;
+    this.style.display = "none";
+    $("bcNewRow").style.display = "flex";
+    $("scBcNew").focus();
   };
+  $("btnBcNewCancel").onclick = closeBcNew;
+  $("btnBcNewSave").onclick = async function(){
+    if(!CUR) return;
+    var code = ($("scBcNew").value||"").trim();
+    if(!code){ toast("Scan or type a barcode first", true); return; }
+    var btn = this; btn.disabled = true; btn.textContent = "…";
+    if (await blockedByDuplicate(code)){ btn.disabled = false; btn.textContent = "✓ Add"; return; }
+    try { await bananaWrite({ code: code }); toast("✅ Barcode added"); closeBcNew(); }
+    catch(e){ toast("Failed: "+(e.message||e), true); }
+    btn.disabled = false; btn.textContent = "✓ Add";
+  };
+  $("scBcNew").addEventListener("keydown", function(e){ if(e.key === "Enter") $("btnBcNewSave").click(); });
   async function removeExtra(code){
     if(!CUR || !confirm("Remove barcode " + code + "?")) return;
     var keep = ((CUR.barcodes)||[]).filter(function(c){ return c !== code; });
@@ -516,7 +539,7 @@
   // version keyed the button off BarcodeDetector alone, so it was correctly hidden — and
   // useless on every iPhone the crew might hold. The button now depends only on there
   // being a camera at all; picking a decoder is the code's problem, not the crew's.
-  var CAM = { stream:null, timer:null, det:null, zx:null, mode:null };
+  var CAM = { stream:null, timer:null, det:null, zx:null, mode:null, target:"scBarcode" };
   var CAM_SUPPORTED = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   var ZXING_URL = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
 
@@ -533,7 +556,7 @@
   function onScanned(code){
     code = String(code || "").trim();
     if (!code) return;
-    $("scBarcode").value = code;
+    $(CAM.target || "scBarcode").value = code;
     $("camHint").textContent = "✓ " + code;
     if (navigator.vibrate) try { navigator.vibrate(60); } catch(e){}
     stopCam();
@@ -545,7 +568,13 @@
     $("camHint").textContent = "Starting the camera…";
     try {
       CAM.stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" } } });
-      var v = $("camVideo"); v.srcObject = CAM.stream; await v.play();
+      // 🛑 Do NOT await play(). Under autoplay policies it can reject, and it can also
+      // simply never settle — and awaiting it there left the camera open, showing
+      // "Starting the camera…", decoding nothing, forever. A silent hang in the crew's
+      // hands is worse than an error. Start playback and move on; the decoder reads
+      // frames as they arrive. Found by the headless test, 2026-08-14.
+      var v = $("camVideo"); v.srcObject = CAM.stream;
+      try { var pl = v.play(); if (pl && pl.catch) pl.catch(function(){}); } catch(e){}
     } catch(e){
       stopCam();
       toast("Camera unavailable: " + (e && e.message ? e.message : e), true);
@@ -612,12 +641,24 @@
     CAM.mode = null;
   }
   if (CAM_SUPPORTED){
-    $("btnScan").style.display = "";
-    $("btnScan").onclick = function(){ $("camWrap").classList.contains("open") ? stopCam() : startCam(); };
+    // One camera, two fields. Tapping either 📷 aims it at that field, so a second
+    // barcode is scanned exactly like the first.
+    function wireScan(btnId, targetId){
+      var btn = $(btnId); if(!btn) return;
+      btn.style.display = "";
+      btn.onclick = function(){
+        if ($("camWrap").classList.contains("open") && CAM.target === targetId){ stopCam(); return; }
+        stopCam();
+        CAM.target = targetId;
+        startCam();
+      };
+    }
+    wireScan("btnScan", "scBarcode");
+    wireScan("btnScanNew", "scBcNew");
     $("btnCamClose").onclick = stopCam;
   }
 
-  $("scBack").onclick = function(){ stopCam(); $("screen").classList.remove("open"); CUR=null; };
+  $("scBack").onclick = function(){ closeBcNew(); $("screen").classList.remove("open"); CUR=null; };
   $("btnOos").onclick = function(){ if(CUR) submit(CUR, 0, true); };
   $("btnSave").onclick = function(){
     if(!CUR) return;
