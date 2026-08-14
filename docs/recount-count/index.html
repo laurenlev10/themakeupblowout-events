@@ -37,7 +37,6 @@
   .doneby{ font-size:11px; color:var(--green); margin-top:4px; font-weight:600; }
   .edithint{ font-size:11px; color:var(--accent); margin-top:3px; font-weight:700; }
   .extrahdr{ font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:16px 2px 8px; }
-  .slowpill{ font-size:10px; font-weight:800; padding:1px 7px; border-radius:6px; background:var(--amber); color:#fff; }
   .empty{ text-align:center; color:var(--muted); padding:50px 20px; }
   .empty .big{ font-size:44px; }
   .tally{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 15px; margin-bottom:14px; }
@@ -301,7 +300,7 @@
                           : '<span class="stockpill">'+(w.stock==null?"?":w.stock)+' in sys</span>');
       row.innerHTML =
         '<div class="info">' +
-          '<div class="name">'+esc(w.name)+ (w.slow?' <span class="slowpill">🐌 SLOW</span>':'') +'</div>' +
+          '<div class="name">'+esc(w.name)+'</div>' +
           '<div class="meta"><span class="sku">'+esc(w.sku||"—")+'</span>'+(w.supplier?' · '+esc(w.supplier):'')+'</div>' +
           (so ? '<div class="soby">🚨 SOLD OUT — by '+esc(w.sold_out_by||"?")+(w.sold_out_at?' · '+esc(fmtWhen(w.sold_out_at)):'')+'</div>'
               : (c ? '<div class="doneby">✅ '+esc(c.out_of_stock?"OUT OF STOCK":("Counted: "+c.qty))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div><div class="edithint">✏️ Tap to re-count / fix</div>' : '')) +
