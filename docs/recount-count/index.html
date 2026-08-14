@@ -453,57 +453,111 @@
   }
 
   // ═══════ 📷 Camera scan (Lauren 2026-08-14) ═══════
-  // Uses the browser's built-in BarcodeDetector — no library, no upload, nothing leaves
-  // the phone. The button only appears where the API actually exists (Android Chrome and
-  // recent Samsung Internet today), so a phone without it simply keeps typing/using the
-  // hardware scanner instead of seeing a button that does nothing.
-  var CAM = { stream:null, timer:null, det:null };
-  // navigator.mediaDevices only exists on a SECURE origin — no https, no camera.
-  // Require both, so the button never appears where it could only fail.
-  var CAM_SUPPORTED = (typeof window.BarcodeDetector === "function")
-                   && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  // Two decoders, one button:
+  //   1. BarcodeDetector — built into the browser, instant, zero download. Android Chrome
+  //      and Samsung Internet have it. Windows desktop Chrome and iOS Safari do NOT.
+  //   2. ZXing — lazily fetched from a CDN the first time it is actually needed, so an
+  //      iPhone (and Lauren's Windows laptop) can scan too.
+  // Lauren reported "I don't see any camera option" from Windows Chrome: the first
+  // version keyed the button off BarcodeDetector alone, so it was correctly hidden — and
+  // useless on every iPhone the crew might hold. The button now depends only on there
+  // being a camera at all; picking a decoder is the code's problem, not the crew's.
+  var CAM = { stream:null, timer:null, det:null, zx:null, mode:null };
+  var CAM_SUPPORTED = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  var ZXING_URL = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+
+  function loadZxing(){
+    if (window.ZXing) return Promise.resolve(window.ZXing);
+    return new Promise(function(res, rej){
+      var sc = document.createElement("script");
+      sc.src = ZXING_URL;
+      sc.onload = function(){ window.ZXing ? res(window.ZXing) : rej(new Error("ZXing did not load")); };
+      sc.onerror = function(){ rej(new Error("could not download the scanner (no internet?)")); };
+      document.head.appendChild(sc);
+    });
+  }
+  function onScanned(code){
+    code = String(code || "").trim();
+    if (!code) return;
+    $("scBarcode").value = code;
+    $("camHint").textContent = "✓ " + code;
+    if (navigator.vibrate) try { navigator.vibrate(60); } catch(e){}
+    stopCam();
+    toast("📷 Scanned " + code + " — press 💾 to save");
+  }
   async function startCam(){
-    if(!CUR) return;
-    try{
-      if(!CAM.det){
-        var fmts = ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","itf","codabar"];
-        try{
-          var avail = await window.BarcodeDetector.getSupportedFormats();
-          fmts = fmts.filter(function(f){ return avail.indexOf(f) >= 0; });
-        }catch(e){}
-        CAM.det = new window.BarcodeDetector(fmts.length ? { formats: fmts } : undefined);
-      }
+    if (!CUR) return;
+    $("camWrap").classList.add("open");
+    $("camHint").textContent = "Starting the camera…";
+    try {
       CAM.stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" } } });
       var v = $("camVideo"); v.srcObject = CAM.stream; await v.play();
-      $("camWrap").classList.add("open");
-      $("camHint").textContent = "Point the camera at the barcode…";
-      CAM.timer = setInterval(async function(){
-        try{
-          var hits = await CAM.det.detect($("camVideo"));
-          if(hits && hits.length){
-            var code = String(hits[0].rawValue || "").trim();
-            if(code){
-              $("scBarcode").value = code;
-              $("camHint").textContent = "✓ " + code;
-              if(navigator.vibrate) try{ navigator.vibrate(60); }catch(e){}
-              stopCam();
-              toast("📷 Scanned " + code + " — press 💾 to save");
-            }
-          }
-        }catch(e){}
-      }, 350);
-    }catch(e){
+    } catch(e){
       stopCam();
       toast("Camera unavailable: " + (e && e.message ? e.message : e), true);
+      return;
+    }
+    // Decoder 1 — native.
+    if (typeof window.BarcodeDetector === "function"){
+      try {
+        if (!CAM.det){
+          var fmts = ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","itf","codabar"];
+          try {
+            var avail = await window.BarcodeDetector.getSupportedFormats();
+            fmts = fmts.filter(function(f){ return avail.indexOf(f) >= 0; });
+          } catch(e){}
+          CAM.det = new window.BarcodeDetector(fmts.length ? { formats: fmts } : undefined);
+        }
+        CAM.mode = "native";
+        $("camHint").textContent = "Point the camera at the barcode…";
+        CAM.timer = setInterval(async function(){
+          try {
+            var hits = await CAM.det.detect($("camVideo"));
+            if (hits && hits.length) onScanned(hits[0].rawValue);
+          } catch(e){}
+        }, 350);
+        return;
+      } catch(e){ /* fall through to ZXing */ }
+    }
+    // Decoder 2 — ZXing, fetched only now.
+    try {
+      $("camHint").textContent = "Loading the scanner…";
+      var Z = await loadZxing();
+      if (!CAM.stream) return;                       // crew closed it while downloading
+      CAM.zx = new Z.BrowserMultiFormatReader();
+      CAM.mode = "zxing";
+      $("camHint").textContent = "Point the camera at the barcode…";
+      var cb = function(result){ if (result) onScanned(result.getText ? result.getText() : result.text); };
+      // API name drifts between ZXing builds — use whichever this one actually ships,
+      // instead of assuming. A wrong guess here just silently never scans.
+      if (typeof CAM.zx.decodeFromStream === "function"){
+        await CAM.zx.decodeFromStream(CAM.stream, $("camVideo"), cb);
+      } else if (typeof CAM.zx.decodeFromConstraints === "function"){
+        // ZXing opens its own stream — hand ours back first so the camera isn't held twice.
+        CAM.stream.getTracks().forEach(function(t){ try { t.stop(); } catch(e){} });
+        CAM.stream = null;
+        await CAM.zx.decodeFromConstraints({ video:{ facingMode:{ ideal:"environment" } } }, $("camVideo"), cb);
+      } else if (typeof CAM.zx.decodeFromVideoDevice === "function"){
+        CAM.stream.getTracks().forEach(function(t){ try { t.stop(); } catch(e){} });
+        CAM.stream = null;
+        await CAM.zx.decodeFromVideoDevice(null, $("camVideo"), cb);
+      } else {
+        throw new Error("this scanner build has no usable camera method");
+      }
+    } catch(e){
+      stopCam();
+      toast("Scanner unavailable: " + (e && e.message ? e.message : e) + " — type the barcode instead", true);
     }
   }
   function stopCam(){
-    if(CAM.timer){ clearInterval(CAM.timer); CAM.timer = null; }
-    if(CAM.stream){ CAM.stream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); CAM.stream = null; }
-    var v = $("camVideo"); if(v) v.srcObject = null;
+    if (CAM.timer){ clearInterval(CAM.timer); CAM.timer = null; }
+    if (CAM.zx){ try { CAM.zx.reset(); } catch(e){} CAM.zx = null; }
+    if (CAM.stream){ CAM.stream.getTracks().forEach(function(t){ try { t.stop(); } catch(e){} }); CAM.stream = null; }
+    var v = $("camVideo"); if (v) v.srcObject = null;
     $("camWrap").classList.remove("open");
+    CAM.mode = null;
   }
-  if(CAM_SUPPORTED){
+  if (CAM_SUPPORTED){
     $("btnScan").style.display = "";
     $("btnScan").onclick = function(){ $("camWrap").classList.contains("open") ? stopCam() : startCam(); };
     $("btnCamClose").onclick = stopCam;
