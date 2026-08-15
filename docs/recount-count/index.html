@@ -74,19 +74,26 @@
   }
   .bcedit .bcsave:disabled{ opacity:.5; }
   /* 📷 camera scan + extra barcodes (Lauren 2026-08-14) */
-  .bcedit .bcscan{ flex:0 0 auto; background:#0f172a; color:#fff; border:0; border-radius:12px; padding:13px 18px; font-size:20px; line-height:1; cursor:pointer; }
-  .bcedit .bcscan:disabled{ opacity:.5; }
+  /* Generic class, not scoped to .bcedit: the SAME button style is used by the
+     product-search bar (Lauren 2026-08-15) — one camera button, three places. */
+  .bcscan{ flex:0 0 auto; background:#0f172a; color:#fff; border:0; border-radius:12px; padding:13px 18px; font-size:20px; line-height:1; cursor:pointer; }
+  .bcscan:disabled{ opacity:.5; }
   .bcextra{ margin:-6px 0 14px; }
   .bcextra-list{ display:flex; flex-wrap:wrap; gap:6px; }
   .bcextra-chip{ display:inline-flex; align-items:center; gap:7px; background:#f1f5f9; border:1px solid var(--line); border-radius:999px; padding:5px 8px 5px 12px; font-size:13px; font-variant-numeric:tabular-nums; }
   .bcextra-chip button{ background:#e2e8f0; border:0; border-radius:999px; width:20px; height:20px; line-height:1; font-size:12px; cursor:pointer; color:#334155; }
   .bcextra-add{ background:#fff; border:2px dashed var(--line); border-radius:12px; padding:9px 13px; font-size:13px; font-weight:700; color:#475569; cursor:pointer; margin-top:8px; }
   .bcextra-add:disabled{ opacity:.5; }
-  .camwrap{ display:none; margin:0 0 14px; background:#000; border-radius:14px; overflow:hidden; position:relative; }
-  .camwrap.open{ display:block; }
-  .camwrap video{ width:100%; max-height:46vh; display:block; object-fit:cover; }
-  .camhint{ position:absolute; top:10px; left:0; right:0; text-align:center; color:#fff; font-size:13px; font-weight:700; text-shadow:0 1px 3px #000; pointer-events:none; }
-  .camclose{ position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:rgba(15,23,42,.85); color:#fff; border:0; border-radius:999px; padding:9px 18px; font-size:13px; font-weight:800; cursor:pointer; }
+  /* 🛑 Lauren 2026-08-15 — ONE camera panel for the whole page, fixed above every
+     overlay (count screen z50, search modal z60), below the toast (z100). It used to
+     sit inline inside the count screen, which meant the search modal could not use it
+     without a second copy of the markup — and a duplicated camera is two cameras that
+     rot apart (IRON RULE #27). */
+  .camwrap{ display:none; position:fixed; inset:0; z-index:90; background:#000; align-items:center; justify-content:center; overflow:hidden; }
+  .camwrap.open{ display:flex; }
+  .camwrap video{ width:100%; max-height:100vh; display:block; object-fit:cover; }
+  .camhint{ position:absolute; top:18px; left:0; right:0; text-align:center; color:#fff; font-size:15px; font-weight:700; text-shadow:0 1px 3px #000; pointer-events:none; }
+  .camclose{ position:absolute; bottom:28px; left:50%; transform:translateX(-50%); background:rgba(15,23,42,.85); color:#fff; border:0; border-radius:999px; padding:9px 18px; font-size:13px; font-weight:800; cursor:pointer; }
   .prev{ background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; border-radius:12px; padding:11px 14px; font-size:13px; margin-bottom:16px; }
   .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px); background:#111827; color:#fff; padding:12px 22px; border-radius:10px; font-size:14px; opacity:0; transition:all .3s; z-index:100; pointer-events:none; max-width:90%; text-align:center; }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
@@ -107,8 +114,10 @@
   .somodal .top{ background:#be185d; color:#fff; padding:14px 16px; display:flex; align-items:center; gap:12px; }
   .somodal .top button.x{ background:none; border:0; color:#fff; font-size:26px; line-height:1; cursor:pointer; padding:0 4px; }
   .somodal .top .ttl{ font-weight:800; font-size:17px; }
-  .somodal .searchbar{ padding:12px 14px; background:#fff; border-bottom:1px solid var(--line); }
-  .somodal .searchbar input{ width:100%; font-size:16px; padding:13px 14px; border:2px solid var(--line); border-radius:12px; }
+  .somodal .searchbar{ padding:12px 14px; background:#fff; border-bottom:1px solid var(--line); display:flex; gap:8px; align-items:center; }
+  .somodal .searchbar input{ flex:1 1 auto; min-width:0; font-size:16px; padding:13px 14px; border:2px solid var(--line); border-radius:12px; }
+  /* the matched barcode, shown on a row only when THAT is what the search hit */
+  .sorow .bcmatch{ font-size:11px; color:#0f172a; font-weight:800; margin-top:3px; font-variant-numeric:tabular-nums; }
   .somodal .solist{ flex:1; overflow-y:auto; padding:10px 12px; max-width:640px; width:100%; margin:0 auto; }
   .sorow{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:9px; display:flex; align-items:center; gap:10px; }
   .sorow .info{ flex:1; min-width:0; }
@@ -186,11 +195,6 @@
         <button class="bcsave" id="btnBcNewCancel" type="button" style="background:#94a3b8;">✕</button>
       </div>
     </div>
-    <div class="camwrap" id="camWrap">
-      <video id="camVideo" playsinline muted></video>
-      <div class="camhint" id="camHint">Point the camera at the barcode…</div>
-      <button class="camclose" id="btnCamClose" type="button">✕ Close camera</button>
-    </div>
     <h3>Out of stock?</h3>
     <button class="bigbtn oos" id="btnOos" type="button">🚫 OUT OF STOCK — set to 0</button>
     <h3>Or enter the counted quantity</h3>
@@ -202,7 +206,12 @@
 <!-- SOLD OUT modal: search any product, flag it as sold out -->
 <div class="somodal" id="soModal">
   <div class="top"><button class="x" id="soBack" type="button">←</button><div class="ttl" id="soTitle">🚨 Mark a product SOLD OUT</div></div>
-  <div class="searchbar"><input id="soSearch" type="text" inputmode="search" placeholder="Search product name or SKU…"></div>
+  <div class="searchbar">
+    <input id="soSearch" type="text" inputmode="search" placeholder="Search name, SKU or barcode…">
+    <!-- Lauren 2026-08-15: scan a product's barcode to FIND it here, instead of typing
+         a name. Same button, same camera as the barcode fields on the count screen. -->
+    <button class="bcscan" id="btnSoScan" type="button" style="display:none;" title="Find a product by scanning its barcode">📷</button>
+  </div>
   <div class="solist" id="soList"><div class="sohint">Loading products…</div></div>
 </div>
 
@@ -226,6 +235,14 @@
     <input id="nameInput" type="text" autocomplete="name" placeholder="Your name">
     <button id="nameSave" type="button">Start counting</button>
   </div>
+</div>
+
+<!-- 📷 The one camera panel — shared by the barcode fields AND by the product
+     search bar. Lives at the page root so it can open above any overlay. -->
+<div class="camwrap" id="camWrap">
+  <video id="camVideo" playsinline muted></video>
+  <div class="camhint" id="camHint">Point the camera at the barcode…</div>
+  <button class="camclose" id="btnCamClose" type="button">✕ Close camera</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -376,6 +393,14 @@
   // Returns the OTHER product already holding this code, or null. Uses the catalog the
   // page already loads; if it isn't loaded yet, fetch it once — a wrong "it's free" here
   // is a failed save in the crew's hands.
+  // Every code a product answers to: its primary barcode plus OCTOPOS
+  // additional_barcodes. Single definition — the duplicate check, the search filter
+  // and the camera lookup all ask this one function (IRON RULE #27).
+  function codesOf(p){
+    return [p.barcode].concat(p.barcodes || [])
+      .map(function(c){ return String(c == null ? "" : c).trim().toLowerCase(); })
+      .filter(Boolean);
+  }
   async function barcodeOwner(code){
     code = String(code || "").trim().toLowerCase();
     if (!code) return null;
@@ -391,10 +416,7 @@
     for (var i = 0; i < CATALOG.length; i++){
       var p = CATALOG[i];
       if (Number(p.id != null ? p.id : p.pid) === Number(CUR && CUR.pid)) continue;
-      var codes = [p.barcode].concat(p.barcodes || []);
-      for (var k = 0; k < codes.length; k++){
-        if (String(codes[k] || "").trim().toLowerCase() === code) return p;
-      }
+      if (codesOf(p).indexOf(code) >= 0) return p;
     }
     return null;
   }
@@ -539,7 +561,10 @@
   // version keyed the button off BarcodeDetector alone, so it was correctly hidden — and
   // useless on every iPhone the crew might hold. The button now depends only on there
   // being a camera at all; picking a decoder is the code's problem, not the crew's.
-  var CAM = { stream:null, timer:null, det:null, zx:null, mode:null, target:"scBarcode" };
+  // `target` names which 📷 is aimed (so tapping the same one again closes it);
+  // `onResult` is what to DO with the code. Lauren 2026-08-15 — the search bar needs a
+  // lookup, not a field fill, so the destination stopped being an input id.
+  var CAM = { stream:null, timer:null, det:null, zx:null, mode:null, target:"scBarcode", onResult:null };
   var CAM_SUPPORTED = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   var ZXING_URL = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
 
@@ -556,14 +581,15 @@
   function onScanned(code){
     code = String(code || "").trim();
     if (!code) return;
-    $(CAM.target || "scBarcode").value = code;
     $("camHint").textContent = "✓ " + code;
     if (navigator.vibrate) try { navigator.vibrate(60); } catch(e){}
-    stopCam();
-    toast("📷 Scanned " + code + " — press 💾 to save");
+    var handler = CAM.onResult;
+    stopCam();                                  // stopCam clears onResult — grab it first
+    if (handler) handler(code);
   }
   async function startCam(){
-    if (!CUR) return;
+    // No `if (!CUR) return;` — the camera is no longer tied to the count screen; the
+    // product-search bar opens it with no product selected at all.
     $("camWrap").classList.add("open");
     $("camHint").textContent = "Starting the camera…";
     try {
@@ -638,23 +664,30 @@
     if (CAM.stream){ CAM.stream.getTracks().forEach(function(t){ try { t.stop(); } catch(e){} }); CAM.stream = null; }
     var v = $("camVideo"); if (v) v.srcObject = null;
     $("camWrap").classList.remove("open");
-    CAM.mode = null;
+    CAM.mode = null; CAM.onResult = null;
   }
   if (CAM_SUPPORTED){
-    // One camera, two fields. Tapping either 📷 aims it at that field, so a second
-    // barcode is scanned exactly like the first.
-    function wireScan(btnId, targetId){
+    // One camera, three buttons. Tapping a 📷 aims it and says what to do with the code;
+    // tapping the SAME one again closes it.
+    function wireScan(btnId, key, handler){
       var btn = $(btnId); if(!btn) return;
       btn.style.display = "";
       btn.onclick = function(){
-        if ($("camWrap").classList.contains("open") && CAM.target === targetId){ stopCam(); return; }
+        if ($("camWrap").classList.contains("open") && CAM.target === key){ stopCam(); return; }
         stopCam();
-        CAM.target = targetId;
+        CAM.target = key;
+        CAM.onResult = handler;
         startCam();
       };
     }
-    wireScan("btnScan", "scBarcode");
-    wireScan("btnScanNew", "scBcNew");
+    // …into a barcode field (save/add the code onto the product)
+    function fillField(id, hint){
+      return function(code){ $(id).value = code; toast("📷 Scanned " + code + " — " + hint); };
+    }
+    wireScan("btnScan",    "scBarcode", fillField("scBarcode", "press 💾 to save"));
+    wireScan("btnScanNew", "scBcNew",   fillField("scBcNew",   "press ✓ to add"));
+    // …or into the product search: find the product this barcode belongs to.
+    wireScan("btnSoScan",  "soSearch",  findByBarcode);
     $("btnCamClose").onclick = stopCam;
   }
 
@@ -693,7 +726,7 @@
     if(!EMPLOYEE){ ensureName(); return; }
     CATALOG_MODE = mode;
     $("soTitle").textContent = (mode === "count") ? "🔎 Search a product to count" : "🚨 Mark a product SOLD OUT";
-    $("soSearch").placeholder = (mode === "count") ? "Search any product to count…" : "Search product name or SKU…";
+    $("soSearch").placeholder = (mode === "count") ? "Search or 📷 scan a product to count…" : "Search or 📷 scan a product…";
     $("soModal").classList.add("open");
     $("soSearch").value = "";
     if(CATALOG){ renderSoList(""); setTimeout(function(){ $("soSearch").focus(); }, 100); }
@@ -703,7 +736,7 @@
   $("soldOutAdd").onclick = function(){ openCatalogModal("soldout"); };
   // ---- COUNT ANOTHER: search any product (not on the list) and count it ----
   $("countAny").onclick = function(){ openCatalogModal("count"); };
-  $("soBack").onclick = function(){ $("soModal").classList.remove("open"); };
+  $("soBack").onclick = function(){ stopCam(); $("soModal").classList.remove("open"); };
   $("soSearch").addEventListener("input", function(){ renderSoList(this.value); });
 
   // Barcode list — products Lauren flagged as needing a barcode. Tap one → count
@@ -767,33 +800,62 @@
     }finally{ CAT_LOADING = false; }
   }
 
+  // Products whose barcode (primary or additional) IS this code, exactly.
+  // Used by the camera; a scan must never "sort of" match.
+  function byBarcode(code){
+    code = String(code||"").trim().toLowerCase();
+    if(!code || !CATALOG) return [];
+    return CATALOG.filter(function(p){ return codesOf(p).indexOf(code) >= 0; });
+  }
+
+  // 📷 → find the product. Lauren 2026-08-15: the crew scans the sticker instead of
+  // typing a name. It only LOCATES — the SOLD OUT / COUNT tap stays deliberate, because
+  // flagging sold-out zeroes the stock in OCTOPOS and a misread must not do that by itself.
+  function findByBarcode(code){
+    $("soSearch").value = code;
+    renderSoList(code);
+    var hits = byBarcode(code);
+    if(hits.length === 1){ toast("📷 " + hits[0].name); }
+    else if(hits.length > 1){ toast("📷 " + hits.length + " products carry " + code); }
+    else { toast("📷 " + code + " — no product has this barcode. Search by name instead.", true); }
+  }
+
   function renderSoList(q){
     if(!CATALOG){ return; }
     q = (q||"").trim().toLowerCase();
     var box = $("soList");
-    var items = CATALOG;
+    // Each entry: the product + the barcode that matched, when the barcode is what hit.
+    // Showing the code back is how the crew confirms the camera read the right sticker.
+    var items = CATALOG.map(function(p){ return { p:p, bc:"" }; });
     if(q){
-      items = CATALOG.filter(function(p){
-        return (p.name||"").toLowerCase().indexOf(q)>=0 || (p.sku||"").toLowerCase().indexOf(q)>=0;
+      items = [];
+      CATALOG.forEach(function(p){
+        if((p.name||"").toLowerCase().indexOf(q)>=0 || (p.sku||"").toLowerCase().indexOf(q)>=0){
+          items.push({ p:p, bc:"" }); return;
+        }
+        var hit = null;
+        codesOf(p).forEach(function(c){ if(!hit && c.indexOf(q)>=0) hit = c; });
+        if(hit) items.push({ p:p, bc:hit });
       });
     }
-    if(!items.length){ box.innerHTML = '<div class="sohint">No products match “'+esc(q)+'”.</div>'; return; }
+    if(!items.length){ box.innerHTML = '<div class="sohint">No products match “'+esc(q)+'”.<br>If you scanned a barcode, this product has no barcode saved yet — find it by name and add one.</div>'; return; }
     var capped = items.slice(0, 200);
     var isCount = (CATALOG_MODE === "count");
-    box.innerHTML = capped.map(function(p){
+    box.innerHTML = capped.map(function(it){
+      var p = it.p;
+      var bcLine = it.bc ? '<div class="bcmatch">🏷️ '+esc(it.bc)+'</div>' : '';
+      var meta = '<div class="meta">'+esc(p.sku||"—")+(p.supplier?' · '+esc(p.supplier):'')+'</div>'+bcLine;
       if(isCount){
         var counted = !!COUNTS[String(p.id)];
         var btnTxt = counted ? '✓ COUNTED' : 'COUNT';
         return '<div class="sorow'+(counted?' flagged':'')+'" data-pid="'+p.id+'">' +
-          '<div class="info"><div class="name">'+esc(p.name)+'</div>' +
-          '<div class="meta">'+esc(p.sku||"—")+(p.supplier?' · '+esc(p.supplier):'')+'</div></div>' +
+          '<div class="info"><div class="name">'+esc(p.name)+'</div>' + meta + '</div>' +
           '<button type="button" data-pid="'+p.id+'">'+btnTxt+'</button>' +
         '</div>';
       }
       var flagged = !!SOFLAG[String(p.id)];
       return '<div class="sorow'+(flagged?' flagged':'')+'" data-pid="'+p.id+'">' +
-        '<div class="info"><div class="name">'+esc(p.name)+'</div>' +
-        '<div class="meta">'+esc(p.sku||"—")+(p.supplier?' · '+esc(p.supplier):'')+'</div></div>' +
+        '<div class="info"><div class="name">'+esc(p.name)+'</div>' + meta + '</div>' +
         '<button type="button" data-pid="'+p.id+'">'+(flagged?'✓ FLAGGED':'SOLD OUT')+'</button>' +
       '</div>';
     }).join('') + (items.length>200 ? '<div class="sohint">Showing first 200 — keep typing to narrow.</div>' : '');
@@ -805,6 +867,7 @@
         if(!p) return;
         if(isCount){
           // open the normal count screen for an off-list product, then it saves like any count
+          stopCam();
           $("soModal").classList.remove("open");
           openScreen({ pid:p.id, name:p.name, sku:p.sku||"", supplier:p.supplier||"", stock:null, barcode:p.barcode||"", extra:true });
         } else {
