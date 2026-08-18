@@ -4,15 +4,19 @@ Cross-repo sync: pull authoritative event data from lauren-agent-hub-data
 into themakeupblowout-events/docs/upcoming-events.json.
 
 Sources (all fetched from public Pages-served URLs — no auth needed):
+  - launch/notes.json     → ig_url / fb_url / tiktok_url  (IRON RULE #5, authoritative)
   - event_form_ids.json   → form_id per event
-  - venue_details.md      → venue_name, venue_address per event
-  - recent_meta_posts.json → ig_url (auto-match by city)
+  - data/venue_details.md → venue_name, venue_address per event
+
+🛑 EVERY fetch here MUST carry a real User-Agent. dashboard.themakeupblowout.com
+sits behind Cloudflare, which 403s the default `Python-urllib/3.x` UA. That is
+exactly how this script spent weeks reporting SUCCESS while syncing nothing —
+see the 2026-08-18 note on fetch_json below.
 
 For each event in upcoming-events.json:
   - If form_id starts with "TODO_" or is missing, fill from event_form_ids.json
   - If venue_name/venue_address contain "(...— please update)", fill from venue_details.md
-  - If ig_url is the default themakeupblowoutsale page, try to find a city-matching reel
-    in recent_meta_posts.json
+  - Mirror the reel links Lauren pasted (notes.json) into ig_url / fb_url / tiktok_url
 
 Writes back upcoming-events.json. The downstream build-landing-pages.yml will then
 auto-rebuild the affected pages.
@@ -25,13 +29,12 @@ from pathlib import Path
 # (docs/ = site root). Public + CORS-enabled, and STAYS public after
 # lauren-agent-hub-data goes private (GitHub Pro keeps Pages serving).
 HUB_PAGES = "https://dashboard.themakeupblowout.com"
-# raw.githubusercontent is still used ONLY for scripts/data/venue_details.md — it
-# lives OUTSIDE docs/, so Pages doesn't serve it and there is no public URL for it.
-# This 404s once the repo is private; venue auto-fill then degrades gracefully
-# (venues keep their "— please update" placeholder). TODO (private-safe follow-up):
-# move venue_details.md under docs/ + add to the CF Access public allowlist, OR
-# give this Action a read-only hub token.
-HUB_RAW = "https://raw.githubusercontent.com/laurenlev10/lauren-agent-hub-data/main"
+# 🛑 2026-08-18 — venue_details.md used to be pulled from raw.githubusercontent
+# (`scripts/data/venue_details.md`), which 404s now that the hub repo is private.
+# The file already exists at docs/data/venue_details.md — byte-identical, and
+# Pages-served. There is no reason for a second transport: everything this
+# script needs is public at HUB_PAGES.
+VENUE_URL = f"{HUB_PAGES}/data/venue_details.md"
 
 REPO = Path(__file__).resolve().parent.parent
 EVENTS_JSON = REPO / "docs/upcoming-events.json"
@@ -76,20 +79,56 @@ def reel_links_from_notes(note):
     return out
 
 
-def fetch_json(url):
+# 🛑 2026-08-18 — the silent-sync bug, and why both of these look like this.
+#
+# Lauren pasted the Salt Lake City and Bakersfield reel links via the launch-
+# dashboard chips. notes.json got them, the hub notify workflow fired, the
+# repository_dispatch arrived, THIS workflow ran and reported ✅ success — and
+# the SHARE pages kept pointing at the generic brand profiles.
+#
+# Cause: every request to dashboard.themakeupblowout.com came back 403. It is
+# behind Cloudflare, which blocks the default `Python-urllib/3.x` User-Agent.
+# Measured that day: no UA → 403, any real UA → 200, on all three dashboard
+# paths (events.themakeupblowout.com is NOT affected — no bot rule there).
+#
+# The 403 was not the dangerous part. `fetch_json(...) or {}` turned a dead
+# source into an EMPTY one, the loop then found nothing to change, and the
+# workflow exited 0. A green check mark on a job that did nothing is worse than
+# a red one: nobody looks. So notes.json and event_form_ids.json are now HARD
+# REQUIRED — if they cannot be read, this script raises and the workflow fails
+# loudly (and texts Lauren). Never re-add an `or {}` fallback to a required
+# source; a reel link that does not reach the buttons must never be silent.
+UA = "Mozilla/5.0 (compatible; makeupblowout-sync/1.0; +https://events.themakeupblowout.com)"
+
+
+def _get(url, timeout=20):
+    """Raw GET with a real User-Agent. Raises on any failure — callers decide."""
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read().decode("utf-8")
+
+
+def fetch_json(url, required=False):
+    """Fetch JSON. required=True → raise instead of degrading to None."""
     try:
-        with urllib.request.urlopen(url, timeout=20) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError) as e:
+        return json.loads(_get(url))
+    except Exception as e:
+        if required:
+            raise RuntimeError(
+                f"REQUIRED source unreadable: {url} → {type(e).__name__}: {e}. "
+                "Refusing to 'succeed' with nothing synced — the SHARE-page reel "
+                "buttons would silently keep the previous (or generic) link."
+            ) from e
         print(f"  ⚠ couldn't fetch {url}: {e}")
         return None
 
 
-def fetch_text(url):
+def fetch_text(url, required=False):
     try:
-        with urllib.request.urlopen(url, timeout=20) as resp:
-            return resp.read().decode("utf-8")
+        return _get(url)
     except Exception as e:
+        if required:
+            raise RuntimeError(f"REQUIRED source unreadable: {url} → {type(e).__name__}: {e}") from e
         print(f"  ⚠ couldn't fetch {url}: {e}")
         return ""
 
@@ -155,47 +194,27 @@ def match_venue(event, venues):
     return None
 
 
-def match_reel_by_city(city, state, posts):
-    """Find a reel in recent_meta_posts.json whose caption matches the city."""
-    if not posts or not city: return None
-    needle = city.lower()
-    state_l = (state or "").lower()
-    items = posts.get("ig_media", [])
-    # Score-based match (port of lauren_meta.match_by_city)
-    best, best_score = None, 0
-    for it in items:
-        text = (it.get("caption") or "").lower()
-        head = text[:80]
-        score = 0
-        if re.search(rf"sale\s+in\s+{re.escape(needle)}\s*,\s*{re.escape(state_l) if state_l else '[a-z]{2}'}", text):
-            score += 10
-        if re.search(rf"\bin\s+{re.escape(needle)}\s*,", head):
-            score += 6
-        if re.search(rf"\bin\s+{re.escape(needle)}\b", text):
-            score += 3
-        if re.search(rf"\b{re.escape(needle)}\b", text):
-            score += 1
-        if score > best_score:
-            best, best_score = it, score
-    return best
-
-
 def main():
     print("Fetching upstream data sources...")
-    form_ids = fetch_json(f"{HUB_PAGES}/state/event_form_ids.json") or {"events":{}}
-    posts = fetch_json(f"{HUB_PAGES}/state/recent_meta_posts.json") or {}
-    notes = fetch_json(NOTES_URL) or {}  # NOTES_URL is the public dashboard path (private-safe)
+    # required=True: an unreadable source fails the run instead of syncing nothing.
+    form_ids = fetch_json(f"{HUB_PAGES}/state/event_form_ids.json", required=True)
+    notes = fetch_json(NOTES_URL, required=True)
     notes_mt = notes.get("MANUAL_TASKS", notes) if isinstance(notes, dict) else {}
-    venue_md = fetch_text(f"{HUB_RAW}/scripts/data/venue_details.md")
+    venue_md = fetch_text(VENUE_URL, required=True)
     venues = parse_venue_details(venue_md)
     print(f"  form_ids: {len(form_ids.get('events',{}))} entries")
-    print(f"  recent_meta_posts.json: {len(posts.get('ig_media',[]))} reels")
     print(f"  venue_details.md: {len(venues)} venues")
     print(f"  notes.json: {len(notes_mt)} event entries")
+    if not notes_mt:
+        raise RuntimeError(
+            "notes.json fetched but contains no event entries — the reel links "
+            "cannot be synced. Failing loudly rather than leaving the SHARE "
+            "buttons on their previous value."
+        )
 
     data = json.loads(EVENTS_JSON.read_text(encoding="utf-8"))
     events = data.get("events", [])
-    n_form = n_venue = n_ig = n_reel = 0
+    n_form = n_venue = n_reel = 0
 
     for ev in events:
         slug = ev.get("slug") or ""
@@ -238,22 +257,16 @@ def main():
                 n_reel += 1
                 print(f"  ✓ {field:9s}: {slug} → {new_val}")
 
-        # Fallback ONLY for IG: if notes has no reel yet, try the city-caption
-        # auto-match from recent_meta_posts.json (legacy behavior, never overrides
-        # a notes-provided link since that already set ev_ig above).
-        ev_ig = ev.get("ig_url", "") or ""
-        is_default_ig = "themakeupblowoutsale/" in ev_ig and "/reel/" not in ev_ig
-        if not links.get("ig_url") and (is_default_ig or not ev_ig) and ev.get("city"):
-            reel = match_reel_by_city(ev["city"], ev.get("state",""), posts)
-            if reel and reel.get("permalink"):
-                ev["ig_url"] = reel["permalink"]
-                n_ig += 1
-                print(f"  ✓ ig_url(cap): {slug} → {reel['permalink']}")
+        # No caption fallback any more. It read docs/state/recent_meta_posts.json,
+        # which the octopos-proxy Worker replaced on 2026-08-16 — the file is gone,
+        # so the "fallback" was a guaranteed 404 pretending to be a safety net.
+        # notes.json is the only source for these buttons (IRON RULE #5); an event
+        # with no reel pasted yet correctly keeps the generic brand link.
 
-    if n_form + n_venue + n_ig + n_reel > 0:
+    if n_form + n_venue + n_reel > 0:
         data["_updated_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         EVENTS_JSON.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-        print(f"\n✓ Updated {n_form} form_ids, {n_venue} venues, {n_reel} reel-links, {n_ig} ig_urls(caption)")
+        print(f"\n✓ Updated {n_form} form_ids, {n_venue} venues, {n_reel} reel-links")
     else:
         print("\n  no changes needed")
 

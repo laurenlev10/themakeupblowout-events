@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-08-04T13:58:33Z",
+  "_updated_at": "2026-08-18T19:59:40Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -245,7 +245,7 @@
       "venue_address": "3637 Fifth Street, Riverside, CA 92501",
       "form_id": "6930d17f4da0131a264e28d8",
       "subscribe_url": "/events/riverside-ca-2026/",
-      "ig_url": "https://www.instagram.com/reel/Dax2w9_xBxw/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "ig_url": "https://www.instagram.com/reel/Db6LxgNR7LJ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7664297668683779358",
       "fb_url": "https://fb.watch/IsO8l8ULPe/"
     },
@@ -259,7 +259,7 @@
       "venue_address": "1350 North 1st St, San Jose, CA 95112",
       "form_id": "6930eed72cfb0f607babc9ab",
       "subscribe_url": "/events/san-jose-ca-2026/",
-      "ig_url": "https://www.instagram.com/reel/DbGbLWsx4Qr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "ig_url": "https://www.instagram.com/reel/DcMDyg8RNhm/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7665381376849480990",
       "fb_url": "https://www.facebook.com/reel/1843327326638636"
     },
@@ -286,7 +286,10 @@
       "venue_name": "Hilton Garden Inn",
       "venue_address": "7699 W Spectrum St, Boise, ID 83709",
       "form_id": "6930ef9e2cfb0f607babe990",
-      "subscribe_url": "/events/boise-id-2026/"
+      "subscribe_url": "/events/boise-id-2026/",
+      "ig_url": "https://www.instagram.com/reel/Db6LdRNRdak/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/IX7EmobTXl/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7672836882576739614"
     },
     {
       "city": "Salt Lake City",
@@ -297,7 +300,10 @@
       "venue_name": "DoubleTree by Hilton",
       "venue_address": "110 West 600 South, Salt Lake City, UT 84101",
       "form_id": "6a1c5db094c6509a1aec974e",
-      "subscribe_url": "/events/salt-lake-city-ut-2026/"
+      "subscribe_url": "/events/salt-lake-city-ut-2026/",
+      "ig_url": "https://www.instagram.com/reel/DcMEC8Pxr51/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/J4riLN0I7w/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7675456247054732575?is_from_webapp=1&sender_device=pc"
     },
     {
       "city": "Bakersfield",
@@ -308,7 +314,10 @@
       "venue_name": "Four Points by Sheraton",
       "venue_address": "5101 California Ave, Bakersfield, CA 93309",
       "form_id": "694094aa767a56645e882207",
-      "subscribe_url": "/events/bakersfield-ca-2026/"
+      "subscribe_url": "/events/bakersfield-ca-2026/",
+      "ig_url": "https://www.instagram.com/reel/DcMYFdsRyYt/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/J4rxg-8Dey/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7675457605661117727?is_from_webapp=1&sender_device=pc"
     },
     {
       "city": "Reno",
