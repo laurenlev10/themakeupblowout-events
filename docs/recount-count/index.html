@@ -957,8 +957,22 @@
       $("empty").style.display="block";
       $("empty").innerHTML = '<div class="big">⚠️</div><p>Could not load the count sheet.<br>'+esc(e.message||e)+'</p>';
     }
-    // poll for other people's counts
-    setInterval(async function(){ if($("screen").classList.contains("open")) return; await loadCounts(); render(); }, 20000);
+    // Poll for other people's counts — and, every third tick, for the LIST itself.
+    // 🛑 2026-08-20 — the list used to load exactly once. When Lauren removed a product on
+    // the board (🗑️ הסר תג, which drops it from the worklist in git), every phone already
+    // open kept showing it until someone thought to reload — and nobody reloads a page
+    // they are working in. The crew would keep counting a product she had taken off.
+    // Same in the other direction: a product she ADDS mid-event never appeared.
+    // The Worker caches the file ~60s, so a 60s refresh costs one read per phone per minute.
+    // Never while a count screen is open: replacing the list under an open screen is how a
+    // count lands on the wrong product.
+    var _tick = 0;
+    setInterval(async function(){
+      if($("screen").classList.contains("open")) return;
+      _tick++;
+      if(_tick % 3 === 0){ try{ await loadWorklist(); }catch(e){} }
+      await loadCounts(); render();
+    }, 20000);
   }
   init();
 })();
