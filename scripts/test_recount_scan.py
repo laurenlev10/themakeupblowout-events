@@ -73,19 +73,37 @@ def main():
         pg.on("console", lambda m: logs.append(m.type + ": " + m.text))
         pg.on("pageerror", lambda e: logs.append("PAGEERROR: " + str(e)))
 
+        worker_worklist_hits = []
+        pages_copy_hits = []
+
         # worker stub
         def worker(route):
             body = json.loads(route.request.post_data or "{}")
             k = body.get("kind")
             if k == "get_catalog":  return route.fulfill(status=200, content_type="application/json", body=json.dumps(CATALOG))
             if k == "get_field_counts": return route.fulfill(status=200, content_type="application/json", body=json.dumps({"ok":True,"counts":{}}))
+            # 2026-08-20 — the count list now comes from the Worker, not from the
+            # published Pages copy (which stopped being republished on 2026-08-18 and
+            # silently froze this sheet). The stub answers it so the test covers the
+            # path the crew actually uses, and `worker_worklist_hits` proves it ran.
+            if k == "get_worklist":
+                worker_worklist_hits.append(body.get("evkey"))
+                if body.get("evkey") == "not-built-2026-01-01":
+                    return route.fulfill(status=200, content_type="application/json",
+                        body=json.dumps({"ok":True,"kind":"get_worklist","worklist":[],"count":0,"built":False}))
+                return route.fulfill(status=200, content_type="application/json",
+                    body=json.dumps({"ok":True,"kind":"get_worklist","built":True,"count":1,"worklist":[
+                        {"id":29,"name":"Amuse Bloom & Shine Powder Blush","sku":"BL3132","qty":54,"barcode":"4713616471794"}]}))
             if k == "banana_read":  return route.fulfill(status=200, content_type="application/json", body=json.dumps({"ok":True,"items":[]}))
             return route.fulfill(status=200, content_type="application/json", body=json.dumps({"ok":True}))
         pg.route("https://danielle.laurenlev10.workers.dev/**", worker)
-        pg.route("https://*.themakeupblowout.com/**", lambda r: r.fulfill(
-            status=200, content_type="application/json",
-            body=json.dumps({"events":{"visalia-2026-08-14":{"worklist":[
-                {"id":29,"name":"Amuse Bloom & Shine Powder Blush","sku":"BL3132","qty":54,"barcode":"4713616471794"}]}}})))
+        def pages_copy(r):
+            if "/state/octopos_recount.json" in r.request.url:
+                pages_copy_hits.append(r.request.url)
+            r.fulfill(status=200, content_type="application/json",
+                body=json.dumps({"events":{"visalia-2026-08-14":{"worklist":[
+                    {"id":29,"name":"Amuse Bloom & Shine Powder Blush","sku":"BL3132","qty":54,"barcode":"4713616471794"}]}}}))
+        pg.route("https://*.themakeupblowout.com/**", pages_copy)
 
         pg.goto(f"http://127.0.0.1:{PORT}/recount-count/?evkey=visalia-2026-08-14&label=Visalia")
         pg.wait_for_timeout(500)
@@ -160,6 +178,29 @@ def main():
               rows == ["Amuse Bloom & Shine Powder Blush"], rows)
 
         errs = [l for l in logs if l.startswith("PAGEERROR")]
+        # 9 — the list came from the Worker, and the published Pages copy was NOT read.
+        #     That copy has not been republished since 2026-08-18; reading it is the bug.
+        check("9. worklist read through the Worker", worker_worklist_hits == ["visalia-2026-08-14"],
+              worker_worklist_hits)
+        check("9b. published Pages copy of octopos_recount.json not read",
+              pages_copy_hits == [], pages_copy_hits)
+        check("9c. the Worker's list rendered on the sheet",
+              "Amuse Bloom & Shine Powder Blush" in (pg.inner_text("#list") or ""),
+              pg.inner_text("#list")[:120])
+
+        # 10 — an event with no pre-event build says so, instead of "nothing to count".
+        pg2 = ctx.new_page()
+        pg2.route("https://danielle.laurenlev10.workers.dev/**", worker)
+        pg2.route("https://*.themakeupblowout.com/**", pages_copy)
+        pg2.goto(f"http://127.0.0.1:{PORT}/recount-count/?evkey=not-built-2026-01-01&label=NotBuilt")
+        pg2.wait_for_timeout(700)
+        empty_txt = pg2.inner_text("#empty") or ""
+        check("10. un-built event says the list was not built yet",
+              "not been built yet" in empty_txt, empty_txt[:140])
+        check("10b. un-built event does NOT claim there is nothing to count",
+              "Nothing to count" not in empty_txt, empty_txt[:140])
+        pg2.close()
+
         check("8. no page errors", not errs, errs)
         br.close()
 

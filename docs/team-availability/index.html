@@ -65,10 +65,27 @@ function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,
 function fmtDate(iso){ if(!iso) return ""; var p=iso.split("-"); return p[1]+"/"+p[2]; }
 async function init(){
   try{ var rc=await fetch("https://dashboard.themakeupblowout.com/manager-report/config.json?_="+Date.now(),{cache:"no-store"}); if(rc.ok){ var ep=((await rc.json()).save_endpoint||"").trim(); if(ep) ENDPOINT=ep; } }catch(e){}
+  // 🛑 2026-08-20 — same trap that emptied the crew count sheet. The hub's pages.yml
+  // stopped republishing docs/state/** on 2026-08-18, so the PUBLISHED copy of this
+  // roster only changes when some unrelated docs/ commit happens to rebuild the site.
+  // The dashboards were rerouted through the Worker in that change; this page is another
+  // repo on another domain and nothing shimmed it. It has not bitten yet only because
+  // the roster last changed in June — which is luck, not a design. The Worker reads it
+  // from git; the published copy stays as a fail-soft fallback.
   try{
-    var r=await fetch("https://dashboard.themakeupblowout.com/state/team_roster_public.json?_="+Date.now(),{cache:"no-store"});
-    ROSTER=await r.json();
-  }catch(e){ document.getElementById("ev-list").textContent="⚠️ Could not load events — please try again later."; return; }
+    var rw=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({kind:"get_team_roster"})});
+    if(!rw.ok) throw new Error("worker "+rw.status);
+    var dw=await rw.json();
+    if(!dw||dw.ok!==true||!dw.roster) throw new Error("worker refused");
+    ROSTER=dw.roster;
+  }catch(e){
+    try{
+      var r=await fetch("https://dashboard.themakeupblowout.com/state/team_roster_public.json?_="+Date.now(),{cache:"no-store"});
+      ROSTER=await r.json();
+    }catch(e2){ document.getElementById("ev-list").textContent="⚠️ Could not load events — please try again later."; return; }
+  }
+  if(!ROSTER||!ROSTER.members){ document.getElementById("ev-list").textContent="⚠️ Could not load events — please try again later."; return; }
   var sel=document.getElementById("f-who");
   Object.keys(ROSTER.members).filter(function(s){return ROSTER.members[s].active!==false;})
     .sort(function(a,b){ return (ROSTER.members[a].name||"").localeCompare(ROSTER.members[b].name||""); })

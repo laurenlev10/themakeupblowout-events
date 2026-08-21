@@ -161,6 +161,7 @@
 <div class="wrap">
   <div id="tally" class="tally" style="display:none;"></div>
   <div id="list"></div>
+  <div id="staleBanner" style="display:none;margin:10px 12px;padding:10px 12px;border-radius:10px;background:#fff4e5;border:1px solid #f0b37e;color:#7a4a12;font-size:14px;font-weight:600;">⚠️ Showing a saved copy of the list — it may be out of date.</div>
   <div id="empty" class="empty" style="display:none;"><div class="big">✅</div><p>Nothing to count right now.</p></div>
 </div>
 
@@ -280,12 +281,46 @@
   $("changeName").onclick = function(){ $("nameInput").value = EMPLOYEE; $("nameModal").classList.add("open"); setTimeout(function(){ $("nameInput").focus(); }, 100); };
 
   // ---- data ----
+  // 🛑 2026-08-20 — this list came up EMPTY for Riverside while every check was green.
+  // It used to read the PUBLISHED copy at dashboard.themakeupblowout.com/state/…json.
+  // On 2026-08-18 the hub's pages.yml stopped republishing docs/state/** (54.6% of its
+  // commits touched nothing else, and each one rebuilt a 56MB site). The dashboards were
+  // rerouted to read state through the Worker in that same change — but that reroute is a
+  // script loaded by pages on the DASHBOARD domain. This page is another repo on another
+  // domain, so nothing shimmed it, and it kept serving whatever an unrelated commit last
+  // happened to bake in. The URL still answered 200, so nothing anywhere went red.
+  //
+  // The Worker reads the file from git and hands back ONE event's slice. It is the
+  // authority; the published copy stays only as a fail-soft fallback for the case where
+  // the Worker itself is down, and it is clearly marked as possibly-stale when used.
+  // `built:false` means the Thursday pre-event build has not run for this evkey yet —
+  // that is a different thing from "nothing to count", and the crew is told which it is.
+  var WORKLIST_BUILT = true, WORKLIST_STALE = false;
   async function loadWorklist(){
+    try{
+      var rw = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ kind:"get_worklist", evkey:EVKEY }) });
+      if(!rw.ok) throw new Error("worker "+rw.status);
+      var dw = await rw.json();
+      if(!dw || dw.ok !== true) throw new Error(dw && dw.error ? dw.error : "worker refused");
+      WORKLIST_BUILT = (dw.built !== false);
+      WORKLIST_STALE = false;
+      applyWorklist(dw.worklist || []);
+      return;
+    }catch(e){
+      // fall through to the published copy — better a stale sheet than no sheet, as long
+      // as the page says so.
+    }
     var r = await fetch(RAW+"state/octopos_recount.json?_="+Date.now(), {cache:"no-store"});
     if(!r.ok) throw new Error("worklist "+r.status);
     var d = await r.json();
     var ev = (d.events||{})[EVKEY] || {};
-    WORKLIST = (ev.worklist||[]).map(function(w){
+    WORKLIST_BUILT = !!(ev && Array.isArray(ev.worklist));
+    WORKLIST_STALE = true;
+    applyWorklist(ev.worklist || []);
+  }
+  function applyWorklist(rows){
+    WORKLIST = (rows||[]).map(function(w){
       return { pid:Number(w.id), name:w.name||("#"+w.id), sku:w.sku||"", supplier:w.supplier||"",
                stock:(w.qty==null?null:Number(w.qty)), barcode:w.barcode||"", slow:!!w.slow,
                sold_out:!!w.sold_out, sold_out_by:w.sold_out_by||"", sold_out_at:w.sold_out_at||"" };
@@ -310,8 +345,19 @@
     $("loc").textContent = LABEL || EVKEY || "Event";
     document.title = "RECOUNT — " + (LABEL || EVKEY || "");
     var list = $("list"); list.innerHTML = "";
-    if(!WORKLIST.length){ $("empty").style.display="block"; }
+    if(!WORKLIST.length){
+      // "not built yet" and "nothing to count" look identical on a phone unless the page
+      // says which one it is. An empty sheet on a Friday morning is a build that did not
+      // run, not a warehouse with nothing in it.
+      $("empty").style.display="block";
+      $("empty").innerHTML = WORKLIST_BUILT
+        ? '<div class="big">\u2705</div><p>Nothing to count right now.</p>'
+        : '<div class="big">\u23f3</div><p>The count list for this event has not been built yet.'
+          + '<br>It is prepared Thursday evening \u2014 check back, or ask Lauren to run it.</p>';
+    }
     else { $("empty").style.display="none"; }
+    var sb = $("staleBanner");
+    if(sb) sb.style.display = WORKLIST_STALE ? "block" : "none";
     var done = 0, soldOutN = 0;
     WORKLIST.forEach(function(w){
       var c = COUNTS[String(w.pid)];
