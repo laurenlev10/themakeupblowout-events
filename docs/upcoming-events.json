@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-08-24T21:39:44Z",
+  "_updated_at": "2026-08-24T21:43:38Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -329,7 +329,8 @@
       "venue_address": "500 N Sierra St, Reno, NV 89503",
       "form_id": "694094957e67765257b8e1f1",
       "subscribe_url": "/events/reno-nv-2026/",
-      "ig_url": "https://www.instagram.com/reel/DccC9EPxOAi/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+      "ig_url": "https://www.instagram.com/reel/DccC9EPxOAi/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7677716428752981278?is_from_webapp=1&sender_device=pc"
     },
     {
       "city": "Santa Fe",
