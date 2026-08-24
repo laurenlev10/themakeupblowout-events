@@ -3,15 +3,27 @@
 Cross-repo sync: pull authoritative event data from lauren-agent-hub-data
 into themakeupblowout-events/docs/upcoming-events.json.
 
-Sources (all fetched from public Pages-served URLs — no auth needed):
+Sources — the two REQUIRED ones come from git through the Worker (no auth needed;
+the Worker holds the token), the third from a Pages-served URL:
   - launch/notes.json     → ig_url / fb_url / tiktok_url  (IRON RULE #5, authoritative)
+                            via Worker {kind:"get_launch_notes"}
   - event_form_ids.json   → form_id per event
+                            via Worker {kind:"get_event_form_ids"}
   - data/venue_details.md → venue_name, venue_address per event
+                            over Pages — docs/data/ IS published and this file changes
+                            on a human timescale, so no deploy race can reach it
+
+🛑 A hub file that must be CURRENT is never read over dashboard.themakeupblowout.com.
+Two separate ways that URL lies, both measured, both fixed here on 2026-08-24:
+the Pages deploy lags the commit that woke us by minutes (Reno's FB reel link), and
+docs/state/** is not in the Pages build at all since 2026-08-18 (event_form_ids.json),
+so that path answers 200 with whatever an unrelated deploy last baked in. Guarded by
+`hub-state-is-not-read-over-pages` in the hub repo.
 
 🛑 EVERY fetch here MUST carry a real User-Agent. dashboard.themakeupblowout.com
 sits behind Cloudflare, which 403s the default `Python-urllib/3.x` UA. That is
 exactly how this script spent weeks reporting SUCCESS while syncing nothing —
-see the 2026-08-18 note on fetch_json below.
+see the 2026-08-18 note below.
 
 For each event in upcoming-events.json:
   - If form_id starts with "TODO_" or is missing, fill from event_form_ids.json
@@ -44,7 +56,22 @@ EVENTS_JSON = REPO / "docs/upcoming-events.json"
 # which write here. We mirror them into upcoming-events.json so build.py can
 # put the REAL per-event reel into the SHARE / landing / tiktok page buttons
 # (instead of the generic brand-channel fallback).
-NOTES_URL = f"{HUB_PAGES}/launch/notes.json"
+#
+# 🛑 2026-08-24 — this is read through the Worker, NOT over HUB_PAGES.
+# ~~NOTES_URL = f"{HUB_PAGES}/launch/notes.json"~~ lost Reno's 📘 FB Reel link.
+# Lauren pasted it at 21:43:17; the hub's notify workflow fired the dispatch at
+# 21:43:22; this script ran at 21:43:39 and read the Pages copy — which was still
+# mid-deploy and therefore still the PREVIOUS notes.json. It had the IG and TikTok
+# links (pasted 2 and 4 minutes earlier, already deployed) and no fb_url. The sync
+# reported ✅, committed, and the SHARE button kept the generic brand link.
+#
+# The dispatch is ~20s behind the commit and a Pages deploy takes minutes, so the
+# fast path could never win — a faster notification only made the read staler. The
+# Worker serves the file out of git, so what we read IS the commit that woke us.
+# There is no Pages fallback on purpose: falling back would restore exactly the
+# stale read this replaces, and a wrong reel link is worse than a failed job.
+# Guarded by `hub-state-is-not-read-over-pages` in the hub repo.
+WORKER_URL = "https://danielle.laurenlev10.workers.dev/"
 
 
 def _slugify(s):
@@ -91,13 +118,16 @@ def reel_links_from_notes(note):
 # Measured that day: no UA → 403, any real UA → 200, on all three dashboard
 # paths (events.themakeupblowout.com is NOT affected — no bot rule there).
 #
-# The 403 was not the dangerous part. `fetch_json(...) or {}` turned a dead
+# The 403 was not the dangerous part. A `fetch_json(...) or {}` turned a dead
 # source into an EMPTY one, the loop then found nothing to change, and the
 # workflow exited 0. A green check mark on a job that did nothing is worse than
 # a red one: nobody looks. So notes.json and event_form_ids.json are now HARD
 # REQUIRED — if they cannot be read, this script raises and the workflow fails
 # loudly (and texts Lauren). Never re-add an `or {}` fallback to a required
 # source; a reel link that does not reach the buttons must never be silent.
+# (2026-08-24: both of those sources moved to worker_read(), which has the same
+# refusal built in and no url argument to point back at Pages. fetch_json itself
+# was deleted — with no callers left it was only a way to reintroduce the bug.)
 UA = "Mozilla/5.0 (compatible; makeupblowout-sync/1.0; +https://events.themakeupblowout.com)"
 
 
@@ -108,19 +138,33 @@ def _get(url, timeout=20):
         return resp.read().decode("utf-8")
 
 
-def fetch_json(url, required=False):
-    """Fetch JSON. required=True → raise instead of degrading to None."""
+def worker_read(kind, field):
+    """Read one hub file from git through the Worker. Never Pages, never a fallback.
+
+    Every source this script calls REQUIRED comes through here, so the failure is
+    one shape in one place: anything short of `ok:true` plus a populated payload
+    raises, and the workflow goes red. A fallback to the published copy is exactly
+    the stale read this replaces — see the 2026-08-24 note on WORKER_URL.
+    """
+    body = json.dumps({"kind": kind}).encode("utf-8")
+    req = urllib.request.Request(
+        WORKER_URL, data=body, method="POST",
+        headers={"User-Agent": UA, "Content-Type": "application/json"})
     try:
-        return json.loads(_get(url))
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
     except Exception as e:
-        if required:
-            raise RuntimeError(
-                f"REQUIRED source unreadable: {url} → {type(e).__name__}: {e}. "
-                "Refusing to 'succeed' with nothing synced — the SHARE-page reel "
-                "buttons would silently keep the previous (or generic) link."
-            ) from e
-        print(f"  ⚠ couldn't fetch {url}: {e}")
-        return None
+        raise RuntimeError(
+            f"REQUIRED source unreadable: Worker {kind} → {type(e).__name__}: {e}. "
+            "Refusing to 'succeed' with nothing synced — the SHARE-page reel buttons "
+            "would silently keep the previous (or generic) link."
+        ) from e
+    got = payload.get(field)
+    if not payload.get("ok") or not isinstance(got, dict) or not got:
+        raise RuntimeError(
+            f"REQUIRED source unreadable: Worker {kind} answered "
+            f"{payload.get('error') or payload!r} — refusing to sync nothing.")
+    return got
 
 
 def fetch_text(url, required=False):
@@ -197,9 +241,8 @@ def match_venue(event, venues):
 def main():
     print("Fetching upstream data sources...")
     # required=True: an unreadable source fails the run instead of syncing nothing.
-    form_ids = fetch_json(f"{HUB_PAGES}/state/event_form_ids.json", required=True)
-    notes = fetch_json(NOTES_URL, required=True)
-    notes_mt = notes.get("MANUAL_TASKS", notes) if isinstance(notes, dict) else {}
+    form_ids = worker_read("get_event_form_ids", "form_ids")
+    notes_mt = worker_read("get_launch_notes", "notes")
     venue_md = fetch_text(VENUE_URL, required=True)
     venues = parse_venue_details(venue_md)
     print(f"  form_ids: {len(form_ids.get('events',{}))} entries")
