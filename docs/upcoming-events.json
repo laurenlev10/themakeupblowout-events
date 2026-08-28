@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-08-24T21:57:39Z",
+  "_updated_at": "2026-08-28T19:58:03Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -287,7 +287,7 @@
       "venue_address": "7699 W Spectrum St, Boise, ID 83709",
       "form_id": "6930ef9e2cfb0f607babe990",
       "subscribe_url": "/events/boise-id-2026/",
-      "ig_url": "https://www.instagram.com/reel/Db6LdRNRdak/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "ig_url": "https://www.instagram.com/reel/DcmKeNqRI3-/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/IX7EmobTXl/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7672836882576739614"
     },
