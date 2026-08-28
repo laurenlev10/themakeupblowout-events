@@ -9,7 +9,10 @@ Proves, in a real browser, that:
   4. scanning an ADDITIONAL (secondary) barcode locates it too,
   5. an unknown code says so instead of showing a wrong product,
   6. the count-screen barcode field still fills from the camera (no regression),
-  7. closing the search modal releases the camera.
+  7. closing the search modal releases the camera,
+  11. every product-search row shows how many are in the system, the snapshot number
+      paints first and is marked as a snapshot, and the LIVE number replaces it
+      (Lauren 2026-08-28).
 
 The camera and the worker are both stubbed — no OCTOPOS, no hardware.
 """
@@ -19,14 +22,18 @@ from playwright.sync_api import sync_playwright
 DOCS = str(pathlib.Path(__file__).resolve().parent.parent / "docs")
 PORT = 8731
 
-CATALOG = {"ok": True, "kind": "get_catalog", "count": 3, "products": [
+# `stock` = the daily snapshot qty get_catalog carries; LIVE_STOCK below = what OCTOPOS
+# says right now. They deliberately DISAGREE here, because the whole point of the
+# 2026-08-28 change is that the page must end up showing the live one.
+CATALOG = {"ok": True, "kind": "get_catalog", "count": 3, "as_of": "2026-08-24T22:56:51Z", "products": [
     {"id": 29,   "name": "Amuse Bloom & Shine Powder Blush", "sku": "BL3132", "supplier": "Amuse",
-     "threshold": 15, "barcode": "4713616471794", "barcodes": []},
+     "threshold": 15, "barcode": "4713616471794", "barcodes": [], "stock": 54},
     {"id": 1245, "name": "Amuse Makeup Cleansing wipes - charcoal", "sku": "AM624-Charcoal",
-     "supplier": "Amuse", "threshold": 72, "barcode": "4713616470216", "barcodes": ["9999900000011"]},
+     "supplier": "Amuse", "threshold": 72, "barcode": "4713616470216", "barcodes": ["9999900000011"], "stock": 12},
     {"id": 77,   "name": "Zoe Lip Gloss Set", "sku": "ZG-100", "supplier": "Zoe",
-     "threshold": 10, "barcode": "1234567890123", "barcodes": []},
+     "threshold": 10, "barcode": "1234567890123", "barcodes": [], "stock": 8},
 ]}
+LIVE_STOCK = {29: 41, 1245: 3, 77: -2}
 
 def serve():
     h = functools.partial(http.server.SimpleHTTPRequestHandler, directory=DOCS)
@@ -75,6 +82,8 @@ def main():
 
         worker_worklist_hits = []
         pages_copy_hits = []
+        live_stock_hits = []
+        live_stock_down = {"on": False}
 
         # worker stub
         def worker(route):
@@ -94,6 +103,19 @@ def main():
                 return route.fulfill(status=200, content_type="application/json",
                     body=json.dumps({"ok":True,"kind":"get_worklist","built":True,"count":1,"worklist":[
                         {"id":29,"name":"Amuse Bloom & Shine Powder Blush","sku":"BL3132","qty":54,"barcode":"4713616471794"}]}))
+            if k == "get_live_stock":
+                pids = [int(x) for x in (body.get("pids") or [])]
+                live_stock_hits.append(pids)
+                if live_stock_down["on"]:
+                    return route.fulfill(status=502, content_type="application/json",
+                                         body=json.dumps({"error": "octopos down"}))
+                if len(pids) > 45:
+                    return route.fulfill(status=400, content_type="application/json",
+                                         body=json.dumps({"error": "too many pids"}))
+                return route.fulfill(status=200, content_type="application/json", body=json.dumps(
+                    {"ok": True, "kind": "get_live_stock",
+                     "stock": {str(p): LIVE_STOCK[p] for p in pids if p in LIVE_STOCK},
+                     "missing": [p for p in pids if p not in LIVE_STOCK]}))
             if k == "banana_read":  return route.fulfill(status=200, content_type="application/json", body=json.dumps({"ok":True,"items":[]}))
             return route.fulfill(status=200, content_type="application/json", body=json.dumps({"ok":True}))
         pg.route("https://danielle.laurenlev10.workers.dev/**", worker)
@@ -200,6 +222,49 @@ def main():
         check("10b. un-built event does NOT claim there is nothing to count",
               "Nothing to count" not in empty_txt, empty_txt[:140])
         pg2.close()
+
+        # 11 — "how many are in the system", on every search row (Lauren 2026-08-28).
+        pg.click("#soBack"); pg.wait_for_timeout(300)
+        pg.click("#countAny"); pg.wait_for_timeout(600)
+        pills = pg.eval_on_selector_all(".sorow [data-stockpid]", "els => els.map(e => e.textContent.trim())")
+        check("11. every search row carries an 'in sys' number",
+              len(pills) == 3 and all(" in sys" in t for t in pills), pills)
+        pg.wait_for_timeout(1200)
+        live = pg.eval_on_selector_all(".sorow [data-stockpid]",
+                                       "els => els.map(e => e.textContent.trim())")
+        check("11b. the LIVE number replaces the snapshot on every row",
+              live == ["41 in sys", "3 in sys", "-2 in sys"], live)
+        check("11c. a live row is no longer marked as a snapshot",
+              pg.eval_on_selector_all(".sorow [data-stockpid]",
+                                      "els => els.every(e => !e.classList.contains('snap'))"))
+        check("11d. one batched call, not one per row",
+              len(live_stock_hits) >= 1 and all(len(h) <= 45 for h in live_stock_hits), live_stock_hits)
+        # the count list shows the SAME number as the search list — one source of truth
+        pg.click("#soBack"); pg.wait_for_timeout(400)
+        check("11e. the count list agrees with the search list",
+              "41 in sys" in (pg.inner_text("#list") or ""), pg.inner_text("#list")[:200])
+
+        # 11f — a live read that FAILS must leave the snapshot on screen, still marked as
+        # one. A failed read is not permission to present a stale number as current.
+        live_stock_down["on"] = True
+        pg3 = ctx.new_page()
+        pg3.route("https://danielle.laurenlev10.workers.dev/**", worker)
+        pg3.route("https://*.themakeupblowout.com/**", pages_copy)
+        pg3.add_init_script("localStorage.setItem('recount_employee_name','TestCrew')")
+        pg3.goto(f"http://127.0.0.1:{PORT}/recount-count/?evkey=visalia-2026-08-14&label=Visalia")
+        pg3.wait_for_timeout(600)
+        if pg3.is_visible("#nameInput"):
+            pg3.fill("#nameInput", "TestCrew"); pg3.click("#nameSave"); pg3.wait_for_timeout(400)
+        pg3.click("#countAny"); pg3.wait_for_timeout(1800)
+        down = pg3.eval_on_selector_all(".sorow [data-stockpid]",
+                                        "els => els.map(e => e.textContent.trim())")
+        check("11f. a failed live read keeps the snapshot number visible",
+              down and all(" in sys" in t for t in down), down)
+        check("11g. …and keeps it marked as a snapshot, not as live",
+              pg3.eval_on_selector_all(".sorow [data-stockpid]",
+                                       "els => els.length > 0 && els.every(e => e.classList.contains('snap'))"))
+        pg3.close()
+        live_stock_down["on"] = False
 
         check("8. no page errors", not errs, errs)
         br.close()

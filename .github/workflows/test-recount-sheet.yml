@@ -1,0 +1,42 @@
+name: Test the crew count sheet
+
+# scripts/test_recount_scan.py is a real headless browser proof of
+# docs/recount-count/index.html — the sheet the crew counts on at an event.
+#
+# 🛑 2026-08-28 — until today NOTHING ran it. It was written on 2026-08-15, passed
+# once by hand, and then sat there: a test that only runs when somebody remembers is a
+# test that is green because nobody asked (IRON RULE #41 — a check that is not measured
+# does not exist; IRON RULE #31 — a check that stopped running is louder than one that
+# returned zero). It runs here on every push that touches the page or the test, and on
+# demand. No cron: nothing about this page changes on a clock, so a cron would buy
+# nothing and cost a job every day (IRON RULE #40).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/recount-count/**'
+      - 'scripts/test_recount_scan.py'
+      - '.github/workflows/test-recount-sheet.yml'
+  pull_request:
+    paths:
+      - 'docs/recount-count/**'
+      - 'scripts/test_recount_scan.py'
+  workflow_dispatch: {}
+
+jobs:
+  headless:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Playwright + Chromium
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install playwright
+          python3 -m playwright install --with-deps chromium
+      - name: Run the count-sheet headless proof
+        run: python3 scripts/test_recount_scan.py

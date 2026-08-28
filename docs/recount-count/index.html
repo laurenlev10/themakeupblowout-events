@@ -33,6 +33,15 @@
   .row .sku{ font-variant-numeric:tabular-nums; }
   .row .rt{ text-align:right; flex-shrink:0; }
   .stockpill{ font-size:12px; font-weight:700; padding:3px 9px; border-radius:999px; background:#ede9fe; color:#5b21b6; white-space:nowrap; }
+  /* 🛑 Lauren 2026-08-28 — the SAME pill now appears in the search list, and there it is
+     read on the floor while the floor is selling. Two states, because a number nobody
+     has confirmed and a number OCTOPOS just gave us are not the same number:
+       .snap  = the daily snapshot (grey, with a ⏳) — still refreshing
+       plain  = live from OCTOPOS this minute (purple)
+     Grey is not decoration: it is the page refusing to present a stale figure as current
+     (IRON RULE #37 — a belief about an external system carries its measurement date). */
+  .stockpill.snap{ background:#f1f5f9; color:#64748b; }
+  .sorow .stockline{ margin-top:6px; }
   .donepill{ font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; background:#16a34a; color:#fff; white-space:nowrap; }
   .doneby{ font-size:11px; color:var(--green); margin-top:4px; font-weight:600; }
   .edithint{ font-size:11px; color:var(--accent); margin-top:3px; font-weight:700; }
@@ -259,6 +268,116 @@
   var WORKLIST = [], COUNTS = {}, byId = {}, CUR = null, EMPLOYEE = "";
   var CATALOG = null, CAT_LOADING = false, SOFLAG = {};   // SOLD OUT: product catalog + locally-flagged pids
   var CATALOG_MODE = "soldout";   // "soldout" = flag sold-out · "count" = search a product to COUNT it
+  var CATALOG_AS_OF = "";         // when the snapshot behind get_catalog was taken
+
+  // ═══ "how many are in the system" — ONE definition, every surface ═══════════════
+  // 🛑 Lauren 2026-08-28: "ליד כל מוצר שברשימה, גם כמה יש ממנו במערכת בזמן החיפוש."
+  // The count list, the product-search list and the count screen all answer that same
+  // question, so they all call stockPill() — one markup, one rule for which number wins
+  // (IRON RULE #27: a value duplicated in N places is N things that rot apart; the same
+  // product must never show 12 on one surface and 4 on another).
+  //
+  // Two sources, in order:
+  //   LIVESTOCK[pid]  — what get_live_stock read out of OCTOPOS, at most 90s old
+  //   the snapshot    — worklist qty / catalog stock, which on 28.08 was four days old
+  // The snapshot paints instantly so a row is never blank, and it is drawn GREY until
+  // the live value lands on top of it. A number in the crew's hands that is presented
+  // as current when it is four days old is the failure this is written against.
+  var LIVESTOCK = {};             // pid -> {q, at}  live in_stock_qty from OCTOPOS
+  var LIVE_QUEUE = {};            // pid -> true     seen on screen, not yet asked for
+  var LIVE_PENDING = {};          // pid -> true     a request for it is in flight
+  var LIVE_TIMER = null;
+  var LIVE_STALE_MS = 90000;      // re-ask after this; the Worker answers from its own
+                                  // 5-min cache unless a write invalidated the pid, so a
+                                  // re-ask is cheap and a teammate's count shows up fast.
+  var LIVE_BATCH = 45;            // the Worker's cap: 45 ids + one token mint < CF's 50
+
+  function stockPill(pid, fallback){
+    var rec = LIVESTOCK[String(pid)];
+    var live = !!rec;
+    var v = live ? rec.q : (fallback == null ? null : fallback);
+    var tip = live ? "Live from OCTOPOS"
+                   : ("Last stock snapshot" + (CATALOG_AS_OF ? " · " + fmtWhen(CATALOG_AS_OF) : "") + " — refreshing…");
+    return '<span class="stockpill'+(live?'':' snap')+'" data-stockpid="'+Number(pid)+'" title="'+esc(tip)+'">' +
+           (v==null ? "?" : v) + ' in sys' + (live ? '' : ' ⏳') + '</span>';
+  }
+
+  // Repaint every pill on screen from LIVESTOCK, without re-rendering any list (a
+  // re-render under a finger is how a tap lands on the wrong row).
+  function paintStockPills(){
+    Array.prototype.forEach.call(document.querySelectorAll("[data-stockpid]"), function(el){
+      var rec = LIVESTOCK[el.getAttribute("data-stockpid")];
+      if(!rec) return;
+      el.textContent = rec.q + " in sys";
+      el.classList.remove("snap");
+      el.title = "Live from OCTOPOS";
+    });
+  }
+
+  // A pill asks for its live number when it actually reaches the screen — so a search
+  // that renders 200 rows costs one batched call for the handful the crew can see, and
+  // the rest are paid for only if they scroll to them.
+  var STOCK_IO = ("IntersectionObserver" in window) ? new IntersectionObserver(function(entries){
+    var touched = false;
+    entries.forEach(function(en){
+      if(!en.isIntersecting) return;
+      var pid = en.target.getAttribute("data-stockpid");
+      STOCK_IO.unobserve(en.target);
+      if(!pid) return;
+      var rec = LIVESTOCK[pid];
+      if(rec && (Date.now() - rec.at) < LIVE_STALE_MS) return;
+      if(LIVE_PENDING[pid]) return;
+      LIVE_QUEUE[pid] = true; touched = true;
+    });
+    if(touched){ clearTimeout(LIVE_TIMER); LIVE_TIMER = setTimeout(drainLiveStock, 300); }
+  }, { rootMargin: "220px" }) : null;
+
+  function observeStockPills(root){
+    if(!STOCK_IO) {
+      // No IntersectionObserver (very old browser): ask for what was just rendered,
+      // capped the same way. A missing browser feature must not mean missing numbers.
+      var all = (root||document).querySelectorAll("[data-stockpid]");
+      Array.prototype.slice.call(all, 0, LIVE_BATCH).forEach(function(el){
+        LIVE_QUEUE[el.getAttribute("data-stockpid")] = true;
+      });
+      clearTimeout(LIVE_TIMER); LIVE_TIMER = setTimeout(drainLiveStock, 300);
+      return;
+    }
+    Array.prototype.forEach.call((root||document).querySelectorAll("[data-stockpid]"), function(el){
+      STOCK_IO.observe(el);
+    });
+  }
+
+  async function drainLiveStock(){
+    var want = Object.keys(LIVE_QUEUE).map(Number).filter(function(n){ return n && !isNaN(n); });
+    LIVE_QUEUE = {};
+    want = want.filter(function(pid){
+      var rec = LIVESTOCK[String(pid)];
+      if(LIVE_PENDING[String(pid)]) return false;
+      return !(rec && (Date.now() - rec.at) < LIVE_STALE_MS);
+    });
+    var rest = want.slice(LIVE_BATCH);
+    want = want.slice(0, LIVE_BATCH);
+    rest.forEach(function(pid){ LIVE_QUEUE[String(pid)] = true; });   // next drain takes them
+    if(!want.length) return;
+    want.forEach(function(pid){ LIVE_PENDING[String(pid)] = true; });
+    try{
+      var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ kind:"get_live_stock", pids: want }) });
+      var j = await r.json().catch(function(){ return {}; });
+      if(!r.ok || !j.ok || !j.stock) throw new Error(j.error || ("HTTP "+r.status));
+      var at = Date.now();
+      Object.keys(j.stock).forEach(function(pid){ LIVESTOCK[String(pid)] = { q: Number(j.stock[pid]), at: at }; });
+      paintStockPills();
+    }catch(e){
+      // Fail-soft on purpose: the snapshot number stays on screen, still grey and still
+      // marked ⏳, so a failed read never silently becomes a confident number
+      // (IRON RULE #18 — a read that failed is not permission to write a default).
+    }finally{
+      want.forEach(function(pid){ delete LIVE_PENDING[String(pid)]; });
+      if(rest.length){ clearTimeout(LIVE_TIMER); LIVE_TIMER = setTimeout(drainLiveStock, 300); }
+    }
+  }
 
   function $(id){ return document.getElementById(id); }
   function esc(s){ var d=document.createElement("div"); d.textContent=(s==null?"":String(s)); return d.innerHTML; }
@@ -368,7 +487,7 @@
       row.className = "row" + (so?" soldout":(c?" done":""));
       var right = so ? '<span class="sopill">SOLD OUT</span>'
                      : (c ? '<span class="donepill">DONE</span>'
-                          : '<span class="stockpill">'+(w.stock==null?"?":w.stock)+' in sys</span>');
+                          : stockPill(w.pid, w.stock));
       row.innerHTML =
         '<div class="info">' +
           '<div class="name">'+esc(w.name)+'</div>' +
@@ -407,6 +526,7 @@
     $("progTxt").textContent = done + " of " + countable + " counted" + (soldOutN ? "  ·  🚨 " + soldOutN + " sold out" : "") + (extras.length ? "  ·  ➕ " + extras.length + " extra" : "");
     $("progBar").style.width = countable ? Math.round(done/countable*100)+"%" : "0%";
     renderTally();
+    observeStockPills(list);
   }
 
   // Who has counted so far + how many each — refreshes on every load / poll.
@@ -479,7 +599,11 @@
     $("scName").textContent = w.name;
     $("scSku").textContent = skuLine(w.sku, w.barcode);
     $("scSup").textContent = w.supplier || "—";
-    $("scStock").textContent = (w.stock==null?"?":w.stock);
+    // The same number the two lists show — read through the one helper, so the count
+    // screen can never disagree with the row the crew just tapped.
+    var scRec = LIVESTOCK[String(w.pid)];
+    $("scStock").textContent = scRec ? scRec.q : (w.stock==null?"?":w.stock);
+    if(!scRec){ LIVE_QUEUE[String(w.pid)] = true; clearTimeout(LIVE_TIMER); LIVE_TIMER = setTimeout(drainLiveStock, 200); }
     var c = COUNTS[String(w.pid)];
     if(c){ $("scPrev").style.display="block"; $("scPrev").innerHTML = "Already counted: <b>"+esc(c.out_of_stock?"OUT OF STOCK":c.qty)+"</b> by "+esc(c.employee)+" ("+esc(fmtWhen(c.at))+"). Re-counting will overwrite it."; }
     else { $("scPrev").style.display="none"; }
@@ -758,6 +882,10 @@
       // optimistic local update (include name/sku so off-list "extra" rows can render)
       COUNTS[String(w.pid)] = { pid:w.pid, qty:qty, out_of_stock:oos, employee:EMPLOYEE, at:new Date().toISOString(),
                                 name:w.name, sku:w.sku, supplier:w.supplier||"" };
+      // The save just wrote this quantity into OCTOPOS, so it IS the system stock now.
+      // Recording it here is what stops the search list from showing the pre-count number
+      // back to the next person who looks the product up.
+      LIVESTOCK[String(w.pid)] = { q: qty, at: Date.now() };
       render();
       $("screen").classList.remove("open"); CUR=null;
       toast(oos ? "✅ Set OUT OF STOCK" : ("✅ Counted "+qty));
@@ -839,6 +967,7 @@
       var j = await r.json().catch(function(){ return {}; });
       if(!r.ok || !j.ok || !Array.isArray(j.products)) throw new Error(j.error || ("HTTP "+r.status));
       CATALOG = j.products;
+      CATALOG_AS_OF = String(j.as_of || "");
       renderSoList($("soSearch").value||"");
       setTimeout(function(){ $("soSearch").focus(); }, 100);
     }catch(e){
@@ -890,7 +1019,12 @@
     box.innerHTML = capped.map(function(it){
       var p = it.p;
       var bcLine = it.bc ? '<div class="bcmatch">🏷️ '+esc(it.bc)+'</div>' : '';
-      var meta = '<div class="meta">'+esc(p.sku||"—")+(p.supplier?' · '+esc(p.supplier):'')+'</div>'+bcLine;
+      // 🛑 Lauren 2026-08-28 — how many are in the system, on every search result. The
+      // crew searches a product exactly when it is in their hands, and "count it" without
+      // "the system thinks there are N" is the crew doing arithmetic the page already
+      // knows. Same pill, same source-of-truth rule as the count list above.
+      var stockLine = '<div class="stockline">'+stockPill(p.id, p.stock)+'</div>';
+      var meta = '<div class="meta">'+esc(p.sku||"—")+(p.supplier?' · '+esc(p.supplier):'')+'</div>'+bcLine+stockLine;
       if(isCount){
         var counted = !!COUNTS[String(p.id)];
         var btnTxt = counted ? '✓ COUNTED' : 'COUNT';
@@ -905,6 +1039,7 @@
         '<button type="button" data-pid="'+p.id+'">'+(flagged?'✓ FLAGGED':'SOLD OUT')+'</button>' +
       '</div>';
     }).join('') + (items.length>200 ? '<div class="sohint">Showing first 200 — keep typing to narrow.</div>' : '');
+    observeStockPills(box);
     Array.prototype.forEach.call(box.querySelectorAll("button[data-pid]"), function(b){
       b.onclick = function(){
         var pid = Number(b.getAttribute("data-pid"));
@@ -915,7 +1050,7 @@
           // open the normal count screen for an off-list product, then it saves like any count
           stopCam();
           $("soModal").classList.remove("open");
-          openScreen({ pid:p.id, name:p.name, sku:p.sku||"", supplier:p.supplier||"", stock:null, barcode:p.barcode||"", extra:true });
+          openScreen({ pid:p.id, name:p.name, sku:p.sku||"", supplier:p.supplier||"", stock:(p.stock==null?null:p.stock), barcode:p.barcode||"", extra:true });
         } else {
           flagSoldOut(p, b);
         }
@@ -935,6 +1070,7 @@
       btn.disabled = false; btn.textContent = "✓ FLAGGED";
       // optimistic: reflect it on the main count list right away (if it's on the list)
       if(byId[p.id]){ byId[p.id].sold_out = true; byId[p.id].sold_out_by = EMPLOYEE; byId[p.id].sold_out_at = new Date().toISOString(); render(); }
+      if(j.zeroed){ LIVESTOCK[String(p.id)] = { q: 0, at: Date.now() }; paintStockPills(); }
       if(j.zeroed){ toast("🚨 "+p.name+" — SOLD OUT, stock set to 0"); }
       else { toast("🚨 "+p.name+" flagged SOLD OUT (stock NOT zeroed — tell Lauren)", true); }
     }catch(e){
