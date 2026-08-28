@@ -287,6 +287,7 @@
   var LIVE_QUEUE = {};            // pid -> true     seen on screen, not yet asked for
   var LIVE_PENDING = {};          // pid -> true     a request for it is in flight
   var LIVE_TIMER = null;
+  var SAVING = false;             // a count is on the wire → background pills hold off
   var LIVE_STALE_MS = 90000;      // re-ask after this; the Worker answers from its own
                                   // 5-min cache unless a write invalidated the pid, so a
                                   // re-ask is cheap and a teammate's count shows up fast.
@@ -349,6 +350,10 @@
   }
 
   async function drainLiveStock(){
+    // A pill is decoration; a count is the job. While a save is on the wire the pills
+    // wait — the Worker reserves budget for the count path too, but the cheapest
+    // request is the one nobody sends.
+    if(SAVING){ clearTimeout(LIVE_TIMER); LIVE_TIMER = setTimeout(drainLiveStock, 1500); return; }
     var want = Object.keys(LIVE_QUEUE).map(Number).filter(function(n){ return n && !isNaN(n); });
     LIVE_QUEUE = {};
     want = want.filter(function(pid){
@@ -870,14 +875,31 @@
     submit(CUR, Math.round(Number(v)), false);
   };
 
+  // 🛑 28.08.2026, San Jose — a count that is REFUSED is not a count that failed.
+  // OCTOPOS allows 40 requests a minute per token, shared by the whole crew; when the
+  // budget is spent it answers 429 and the Worker never gets past its first read, so
+  // nothing is written. The crew saw a red "Failed: octopos error: get 429" and had no
+  // way to tell it from a bad barcode. A refusal is safe to repeat, so the phone waits
+  // out the window and repeats it — twice — and only then asks a person for help.
   async function submit(w, qty, oos){
     $("btnOos").disabled = true; $("btnSave").disabled = true;
-    toast("Saving…");
+    SAVING = true;
     var body = { kind:"recount_set_qty", evkey:EVKEY, pid:w.pid, qty:qty, out_of_stock:oos,
                  employee:EMPLOYEE, sku:w.sku, name:w.name };
     try{
-      var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
-      var j = await r.json().catch(function(){ return {}; });
+      var r, j, waited = 0;
+      for(var attempt = 1; ; attempt++){
+        toast(attempt === 1 ? "Saving…" : ("OCTOPOS עמוס — מנסה שוב (" + attempt + "/3)…"));
+        r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
+        j = await r.json().catch(function(){ return {}; });
+        if(!(r.status === 429 && j && j.throttled) || attempt >= 3) break;
+        var pause = 9000;
+        waited += pause;
+        await new Promise(function(res){ setTimeout(res, pause); });
+      }
+      if(r.status === 429 && j && j.throttled){
+        throw new Error("OCTOPOS עמוס. הספירה לא נשמרה ולא השתנה כלום — נסי שוב עוד דקה.");
+      }
       if(!r.ok || !j.ok){ throw new Error(j.error || ("HTTP "+r.status)); }
       // optimistic local update (include name/sku so off-list "extra" rows can render)
       COUNTS[String(w.pid)] = { pid:w.pid, qty:qty, out_of_stock:oos, employee:EMPLOYEE, at:new Date().toISOString(),
@@ -892,6 +914,8 @@
     }catch(e){
       toast("Failed: "+(e.message||e), true);
       $("btnOos").disabled = false; $("btnSave").disabled = false;
+    }finally{
+      SAVING = false;
     }
   }
 
