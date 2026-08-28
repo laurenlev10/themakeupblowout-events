@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-08-28T19:58:03Z",
+  "_updated_at": "2026-08-28T20:02:37Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -342,7 +342,8 @@
       "venue_name": "Courtyard Santa Fe",
       "venue_address": "3347 Cerrillos Rd, Santa Fe, NM 87507",
       "form_id": "694094c09d097c01a11dbfbe",
-      "subscribe_url": "/events/santa-fe-nm-2026/"
+      "subscribe_url": "/events/santa-fe-nm-2026/",
+      "ig_url": "https://www.instagram.com/reel/DcmLBJjxG9_/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
     },
     {
       "city": "Albuquerque",
