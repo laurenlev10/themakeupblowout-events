@@ -84,6 +84,7 @@ def main():
         pages_copy_hits = []
         live_stock_hits = []
         live_stock_down = {"on": False}
+        saved = []                       # every recount_set_qty body the page sent
 
         # worker stub
         def worker(route):
@@ -116,6 +117,13 @@ def main():
                     {"ok": True, "kind": "get_live_stock",
                      "stock": {str(p): LIVE_STOCK[p] for p in pids if p in LIVE_STOCK},
                      "missing": [p for p in pids if p not in LIVE_STOCK]}))
+            # 30.08.2026 — every count the phone sends is kept, so the test can ask what
+            # the crew's gesture actually put on the wire (check 12).
+            if k == "recount_set_qty":
+                saved.append(body)
+                return route.fulfill(status=200, content_type="application/json", body=json.dumps(
+                    {"ok":True,"kind":"recount_set_qty","pid":body.get("pid"),"qty":body.get("qty"),
+                     "octopos":{"set_qty":body.get("qty"),"tag_removed":True,"tag_attempts":1}}))
             if k == "banana_read":  return route.fulfill(status=200, content_type="application/json", body=json.dumps({"ok":True,"items":[]}))
             return route.fulfill(status=200, content_type="application/json", body=json.dumps({"ok":True}))
         pg.route("https://danielle.laurenlev10.workers.dev/**", worker)
@@ -265,6 +273,26 @@ def main():
                                        "els => els.length > 0 && els.every(e => e.classList.contains('snap'))"))
         pg3.close()
         live_stock_down["on"] = False
+
+        # 12 — A TYPED 0 IS OUT OF STOCK (Lauren 30.08.2026: "לפעמים הם לוחצים על הכפתור
+        #      OUT OF STOCK ולפעמים פשוט את הספרה 0 — אני רוצה ששתי הפעולות יראו
+        #      OUT OF STOCK במערכת"). Until that day the red button and a typed 0 left the
+        #      phone as two different facts, and 6 real counts on record read "נספר: 0".
+        #      This types the 0 the way the crew does and follows it all the way out.
+        pg.reload(); pg.wait_for_timeout(900)
+        if pg.is_visible("#nameInput"):
+            pg.fill("#nameInput", "TestCrew"); pg.click("#nameSave"); pg.wait_for_timeout(400)
+        saved.clear()
+        pg.click(".row"); pg.wait_for_timeout(500)
+        pg.fill("#scInput", "0"); pg.click("#btnSave"); pg.wait_for_timeout(900)
+        check("12. a typed 0 leaves the phone as out_of_stock",
+              len(saved) == 1 and saved[0].get("out_of_stock") is True, saved)
+        check("12b. …and still as a quantity of 0, so OCTOPOS is set to zero",
+              len(saved) == 1 and int(saved[0].get("qty")) == 0, saved)
+        check("12c. the crew is told OUT OF STOCK, not 'Counted 0'",
+              "OUT OF STOCK" in (pg.inner_text("#toast") or ""), pg.inner_text("#toast"))
+        check("12d. the row reads OUT OF STOCK afterwards",
+              "OUT OF STOCK" in (pg.inner_text("#list") or ""), pg.inner_text("#list")[:200])
 
         check("8. no page errors", not errs, errs)
         br.close()

@@ -293,6 +293,17 @@
                                   // re-ask is cheap and a teammate's count shows up fast.
   var LIVE_BATCH = 45;            // the Worker's cap: 45 ids + one token mint < CF's 50
 
+  // ═══ "אזל" — הגדרה אחת, כל המסכים ══════════════════════════════════════════════
+  // 🛑 Lauren 30.08.2026: "לפעמים הם לוחצים על הכפתור OUT OF STOCK ולפעמים פשוט את
+  // הספרה 0 — אני רוצה ששתי הפעולות יראו OUT OF STOCK במערכת."
+  // The two gestures are the same fact, so the page must not read them as two facts.
+  // countIsOut() is the ONLY place that decides, and both the flag the Worker stored and
+  // a zero quantity answer yes — which also means a count recorded before today (typed
+  // 0, out_of_stock:false) renders correctly here without waiting for any repair.
+  // (IRON RULE #27 — a rule spelled out in N render sites is N things that rot apart.)
+  function countIsOut(c){ return !!c && (c.out_of_stock === true || Number(c.qty) === 0); }
+  function countLabel(c){ return countIsOut(c) ? "OUT OF STOCK" : ("Counted: " + c.qty); }
+
   function stockPill(pid, fallback){
     var rec = LIVESTOCK[String(pid)];
     var live = !!rec;
@@ -498,7 +509,7 @@
           '<div class="name">'+esc(w.name)+'</div>' +
           '<div class="meta"><span class="sku">'+esc(w.sku||"—")+'</span>'+(w.supplier?' · '+esc(w.supplier):'')+'</div>' +
           (so ? '<div class="soby">🚨 SOLD OUT — by '+esc(w.sold_out_by||"?")+(w.sold_out_at?' · '+esc(fmtWhen(w.sold_out_at)):'')+'</div>'
-              : (c ? '<div class="doneby">✅ '+esc(c.out_of_stock?"OUT OF STOCK":("Counted: "+c.qty))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div><div class="edithint">✏️ Tap to re-count / fix</div>' : '')) +
+              : (c ? '<div class="doneby">✅ '+esc(countLabel(c))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div><div class="edithint">✏️ Tap to re-count / fix</div>' : '')) +
         '</div>' +
         '<div class="rt">' + right + '</div>';
       if(!so) row.onclick = function(){ openScreen(w); };
@@ -519,7 +530,7 @@
           '<div class="info">' +
             '<div class="name">'+esc(c.name||("#"+pid))+'</div>' +
             '<div class="meta"><span class="sku">'+esc(c.sku||"—")+'</span>'+(c.supplier?' · '+esc(c.supplier):'')+'</div>' +
-            '<div class="doneby">✅ '+esc(c.out_of_stock?"OUT OF STOCK":("Counted: "+c.qty))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div><div class="edithint">✏️ Tap to re-count / fix</div>' +
+            '<div class="doneby">✅ '+esc(countLabel(c))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div><div class="edithint">✏️ Tap to re-count / fix</div>' +
           '</div>' +
           '<div class="rt"><span class="donepill">DONE</span></div>';
         row.onclick = function(){ openScreen({ pid:Number(pid), name:c.name, sku:c.sku, supplier:c.supplier||"", stock:null, barcode:"", extra:true }); };
@@ -610,7 +621,7 @@
     $("scStock").textContent = scRec ? scRec.q : (w.stock==null?"?":w.stock);
     if(!scRec){ LIVE_QUEUE[String(w.pid)] = true; clearTimeout(LIVE_TIMER); LIVE_TIMER = setTimeout(drainLiveStock, 200); }
     var c = COUNTS[String(w.pid)];
-    if(c){ $("scPrev").style.display="block"; $("scPrev").innerHTML = "Already counted: <b>"+esc(c.out_of_stock?"OUT OF STOCK":c.qty)+"</b> by "+esc(c.employee)+" ("+esc(fmtWhen(c.at))+"). Re-counting will overwrite it."; }
+    if(c){ $("scPrev").style.display="block"; $("scPrev").innerHTML = "Already counted: <b>"+esc(countIsOut(c)?"OUT OF STOCK":c.qty)+"</b> by "+esc(c.employee)+" ("+esc(fmtWhen(c.at))+"). Re-counting will overwrite it."; }
     else { $("scPrev").style.display="none"; }
     $("scInput").value = "";
     $("scBarcode").value = w.barcode || "";
@@ -882,6 +893,11 @@
   // way to tell it from a bad barcode. A refusal is safe to repeat, so the phone waits
   // out the window and repeats it — twice — and only then asks a person for help.
   async function submit(w, qty, oos){
+    // A typed 0 and the red button are the same answer (Lauren 30.08.2026). Decided here,
+    // once, so the request that leaves the phone, the toast the crew reads and the row
+    // that re-renders all say the same thing — and the Worker derives it again on its own
+    // side, because a browser is never the last word on what gets stored.
+    oos = !!oos || Number(qty) === 0;
     $("btnOos").disabled = true; $("btnSave").disabled = true;
     SAVING = true;
     var body = { kind:"recount_set_qty", evkey:EVKEY, pid:w.pid, qty:qty, out_of_stock:oos,
