@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-09-01T19:08:03Z",
+  "_updated_at": "2026-09-01T19:11:01Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -345,7 +345,7 @@
       "subscribe_url": "/events/santa-fe-nm-2026/",
       "ig_url": "https://www.instagram.com/reel/DcmLBJjxG9_/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/JmSWWY9s7t/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7680645385244740895"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7679176348019019039"
     },
     {
       "city": "Albuquerque",
