@@ -85,9 +85,11 @@ jobs:
         if: steps.commit.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
         run: |
           python3 - <<'PY'
-          import json, re, sys, urllib.request
+          import json, os, re, sys, urllib.request
           HOST = "events.themakeupblowout.com"
-          KEY = ""
+          KEY = "e8f9046261fb4b04a7efa9b888e7141b"
+          if not KEY or not os.path.exists(f"docs/{KEY}.txt") or open(f"docs/{KEY}.txt").read().strip() != KEY:
+              sys.exit("IndexNow key is empty or docs/<key>.txt does not carry it — the ping would be refused")
           sm = open("docs/sitemap.xml", encoding="utf-8").read()
           urls = re.findall(r"<loc>(.*?)</loc>", sm)
           if not urls:
