@@ -2,7 +2,7 @@
   "slug": "tucson-az-2026",
   "CITY": "Tucson, AZ",
   "STREET": "445 S Alvernon Way, Tucson, AZ 85711",
-  "HOTEL": "DoubleTree by Hilton Tucson \u2014 Reid Park",
+  "HOTEL": "DoubleTree by Hilton Tucson — Reid Park",
   "MONTH": "November",
   "START_DAY": "20th",
   "END_DAY": "22nd",
@@ -13,5 +13,14 @@
   "FB_URL": "https://www.facebook.com/themakeupblowoutsale/",
   "TIKTOK_URL": "https://www.tiktok.com/@themakeupblowoutsale",
   "EVENT_SLUG": "tucson-az-2026",
-  "HERO_IMAGE": "/_assets/events/tucson-az-2026/hero.png"
+  "HERO_IMAGE": "/_assets/events/tucson-az-2026/hero.png",
+  "HOURS_LABEL": "10AM – 5PM",
+  "HOURS_SHORT": "10AM–5PM",
+  "PAGE_TITLE": "Makeup Blowout Sale Tucson, AZ — November 20–22, 2026 · Up to 75% Off · Free Entry",
+  "_PAGE_TITLE_ES": "Makeup Blowout Sale Tucson, AZ — November 20–22, 2026 · Hasta 75% de descuento · Entrada gratis",
+  "start_iso": "2026-11-20T10:00:00-0700",
+  "end_iso": "2026-11-22T17:00:00-0700",
+  "tz": "America/Phoenix",
+  "canonical": "https://events.themakeupblowout.com/events/tucson-az-2026/",
+  "jsonld_image": "https://events.themakeupblowout.com/_assets/shared/women-bags-poster.jpg"
 }

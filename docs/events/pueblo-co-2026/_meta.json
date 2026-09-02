@@ -13,5 +13,14 @@
   "FB_URL": "https://www.facebook.com/themakeupblowoutsale/",
   "TIKTOK_URL": "https://www.tiktok.com/@themakeupblowoutsale",
   "EVENT_SLUG": "pueblo-co-2026",
-  "HERO_IMAGE": "/_assets/events/pueblo-co-2026/hero.png"
+  "HERO_IMAGE": "/_assets/events/pueblo-co-2026/hero.png",
+  "HOURS_LABEL": "10AM – 5PM",
+  "HOURS_SHORT": "10AM–5PM",
+  "PAGE_TITLE": "Makeup Blowout Sale Pueblo, CO — October 30 – November 1, 2026 · Up to 75% Off · Free Entry",
+  "_PAGE_TITLE_ES": "Makeup Blowout Sale Pueblo, CO — October 30 – November 1, 2026 · Hasta 75% de descuento · Entrada gratis",
+  "start_iso": "2026-10-30T10:00:00-0600",
+  "end_iso": "2026-11-01T17:00:00-0700",
+  "tz": "America/Denver",
+  "canonical": "https://events.themakeupblowout.com/events/pueblo-co-2026/",
+  "jsonld_image": "https://events.themakeupblowout.com/_assets/shared/women-bags-poster.jpg"
 }

@@ -13,5 +13,14 @@
   "FB_URL": "https://fb.watch/J4rxg-8Dey/",
   "TIKTOK_URL": "https://www.tiktok.com/@makeupblowoutsale/video/7675457605661117727?is_from_webapp=1&sender_device=pc",
   "EVENT_SLUG": "bakersfield-ca-2026",
-  "HERO_IMAGE": "/_assets/events/bakersfield-ca-2026/hero.png"
+  "HERO_IMAGE": "/_assets/events/bakersfield-ca-2026/hero.png",
+  "HOURS_LABEL": "10AM – 5PM",
+  "HOURS_SHORT": "10AM–5PM",
+  "PAGE_TITLE": "Makeup Blowout Sale Bakersfield, CA — October 2–4, 2026 · Up to 75% Off · Free Entry",
+  "_PAGE_TITLE_ES": "Makeup Blowout Sale Bakersfield, CA — October 2–4, 2026 · Hasta 75% de descuento · Entrada gratis",
+  "start_iso": "2026-10-02T10:00:00-0700",
+  "end_iso": "2026-10-04T17:00:00-0700",
+  "tz": "America/Los_Angeles",
+  "canonical": "https://events.themakeupblowout.com/events/bakersfield-ca-2026/",
+  "jsonld_image": "https://events.themakeupblowout.com/_assets/shared/women-bags-poster.jpg"
 }

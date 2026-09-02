@@ -13,5 +13,14 @@
   "FB_URL": "https://fb.watch/JmSWWY9s7t/",
   "TIKTOK_URL": "https://www.tiktok.com/@makeupblowoutsale/video/7679176348019019039",
   "EVENT_SLUG": "santa-fe-nm-2026",
-  "HERO_IMAGE": "/_assets/events/santa-fe-nm-2026/hero.png"
+  "HERO_IMAGE": "/_assets/events/santa-fe-nm-2026/hero.png",
+  "HOURS_LABEL": "10AM – 5PM",
+  "HOURS_SHORT": "10AM–5PM",
+  "PAGE_TITLE": "Makeup Blowout Sale Santa Fe, NM — October 16–18, 2026 · Up to 75% Off · Free Entry",
+  "_PAGE_TITLE_ES": "Makeup Blowout Sale Santa Fe, NM — October 16–18, 2026 · Hasta 75% de descuento · Entrada gratis",
+  "start_iso": "2026-10-16T10:00:00-0600",
+  "end_iso": "2026-10-18T17:00:00-0600",
+  "tz": "America/Denver",
+  "canonical": "https://events.themakeupblowout.com/events/santa-fe-nm-2026/",
+  "jsonld_image": "https://events.themakeupblowout.com/_assets/shared/women-bags-poster.jpg"
 }

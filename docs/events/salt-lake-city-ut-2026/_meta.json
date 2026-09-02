@@ -13,5 +13,14 @@
   "FB_URL": "https://fb.watch/J4riLN0I7w/",
   "TIKTOK_URL": "https://www.tiktok.com/@makeupblowoutsale/video/7675456247054732575?is_from_webapp=1&sender_device=pc",
   "EVENT_SLUG": "salt-lake-city-ut-2026",
-  "HERO_IMAGE": "/_assets/events/salt-lake-city-ut-2026/hero.png"
+  "HERO_IMAGE": "/_assets/events/salt-lake-city-ut-2026/hero.png",
+  "HOURS_LABEL": "10AM – 5PM",
+  "HOURS_SHORT": "10AM–5PM",
+  "PAGE_TITLE": "Makeup Blowout Sale Salt Lake City, UT — September 25–27, 2026 · Up to 75% Off · Free Entry",
+  "_PAGE_TITLE_ES": "Makeup Blowout Sale Salt Lake City, UT — September 25–27, 2026 · Hasta 75% de descuento · Entrada gratis",
+  "start_iso": "2026-09-25T10:00:00-0600",
+  "end_iso": "2026-09-27T17:00:00-0600",
+  "tz": "America/Denver",
+  "canonical": "https://events.themakeupblowout.com/events/salt-lake-city-ut-2026/",
+  "jsonld_image": "https://events.themakeupblowout.com/_assets/shared/women-bags-poster.jpg"
 }
