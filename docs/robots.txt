@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /_template/
+Disallow: /oauth/
+Disallow: /recount-count/
+Disallow: /team-availability/
+Disallow: /manager-report/
+Disallow: /collab/
+Disallow: /scout-plan/
+Disallow: /influencer-brief/
+Disallow: /preview/
+
+Sitemap: https://events.themakeupblowout.com/sitemap.xml

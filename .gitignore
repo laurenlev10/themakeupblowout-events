@@ -1,1 +1,4 @@
 scripts/__pycache__/
+
+# Actions checks lauren-agent-infra out here for lib/venue_tz.py — never committed
+infra/

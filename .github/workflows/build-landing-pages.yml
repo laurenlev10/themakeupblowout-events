@@ -32,6 +32,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 🛑 IRON RULE #23 / #27 — build.py computes every JSON-LD startDate/endDate
+      # through lauren-agent-infra/lib/venue_tz.py (the ONE state→timezone table).
+      # A checkout, not a copy: a second copy of the table here would rot against
+      # the original, exactly like clone_traffic_pair.py's hard-coded -07:00 did.
+      # build.py refuses to run when infra/lib/venue_tz.py is absent.
+      - name: Checkout infra (lib/venue_tz.py)
+        uses: actions/checkout@v4
+        with:
+          repository: laurenlev10/lauren-agent-infra
+          token: ${{ secrets.INFRA_PAT }}
+          path: infra
+          sparse-checkout: lib
+          sparse-checkout-cone-mode: false
+
       - name: Run build.py
         env:
           GA4_MEASUREMENT_ID: ${{ secrets.GA4_MEASUREMENT_ID }}
@@ -45,7 +59,9 @@ jobs:
         run: |
           git config user.email "lauren@noreply.github.com"
           git config user.name "Lauren (via build-landing-pages)"
-          git add docs/events/
+          # docs/events/ carries the per-city pages AND docs/events/index.html;
+          # sitemap.xml / robots.txt are rebuilt from the same facts every run.
+          git add docs/events/ docs/sitemap.xml docs/robots.txt
           if ! git diff --cached --quiet; then
             git commit -m "build: regenerate landing pages [skip-build]"
             git pull --rebase origin main || true
