@@ -56,6 +56,7 @@ jobs:
           python3 scripts/build.py "$(pwd)"
 
       - name: Commit + push if anything changed
+        id: commit
         run: |
           git config user.email "lauren@noreply.github.com"
           git config user.name "Lauren (via build-landing-pages)"
@@ -67,6 +68,36 @@ jobs:
             git pull --rebase origin main || true
             git push origin main
             echo "✓ pushed regenerated pages"
+            echo "changed=1" >> "$GITHUB_OUTPUT"
           else
             echo "no changes to commit"
+            echo "changed=0" >> "$GITHUB_OUTPUT"
           fi
+
+      # ── IndexNow (Lauren 2026-09-02) ─────────────────────────────────────────────
+      # Bing is ChatGPT's search index (and Copilot's, and Yandex's). IndexNow is the
+      # one push door those engines offer: POST the changed URLs and they are crawled
+      # within minutes instead of whenever the sitemap is next read. The key is public
+      # by design (it only proves we control the host — the key file sits at the root).
+      # Runs only when pages actually changed, and on a manual dispatch. A refused
+      # ping fails the step loudly — a sitemap nobody re-reads is the silent version.
+      - name: IndexNow — tell Bing (ChatGPT) the pages changed
+        if: steps.commit.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+        run: |
+          python3 - <<'PY'
+          import json, re, sys, urllib.request
+          HOST = "events.themakeupblowout.com"
+          KEY = ""
+          sm = open("docs/sitemap.xml", encoding="utf-8").read()
+          urls = re.findall(r"<loc>(.*?)</loc>", sm)
+          if not urls:
+              sys.exit("sitemap.xml lists no URLs — refusing to ping IndexNow with nothing")
+          body = json.dumps({"host": HOST, "key": KEY, "keyLocation": f"https://{HOST}/{KEY}.txt", "urlList": urls}).encode()
+          req = urllib.request.Request("https://api.indexnow.org/indexnow", data=body, method="POST",
+                                       headers={"Content-Type": "application/json; charset=utf-8", "User-Agent": "makeupblowout-build/1.0"})
+          try:
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  print(f"IndexNow HTTP {r.status} — {len(urls)} URLs submitted")
+          except urllib.error.HTTPError as e:
+              sys.exit(f"IndexNow refused: HTTP {e.code} {e.read()[:200]!r}")
+          PY
