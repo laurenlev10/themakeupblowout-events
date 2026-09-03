@@ -287,6 +287,9 @@
   var LIVE_QUEUE = {};            // pid -> true     seen on screen, not yet asked for
   var LIVE_PENDING = {};          // pid -> true     a request for it is in flight
   var LIVE_TIMER = null;
+  var LIVE_MISSES = {};           // pid -> how many times OCTOPOS answered nothing for it
+  var LIVE_MISS_MAX = 3;          // after this many, the pill says so instead of ⏳ forever
+  var LIVE_RETRY_MS = 2000;       // pace for re-asking deferred/missing ids (IRON RULE #46)
   var SAVING = false;             // a count is on the wire → background pills hold off
   var LIVE_STALE_MS = 90000;      // re-ask after this; the Worker answers from its own
                                   // 5-min cache unless a write invalidated the pid, so a
@@ -323,6 +326,15 @@
       el.textContent = rec.q + " in sys";
       el.classList.remove("snap");
       el.title = "Live from OCTOPOS";
+    });
+  }
+
+  // OCTOPOS answered nothing for this id LIVE_MISS_MAX times: stop promising a refresh.
+  // Grey stays (the number is still the snapshot's), the ⏳ becomes a plain statement.
+  function markPillUnanswered(pid){
+    Array.prototype.forEach.call(document.querySelectorAll('[data-stockpid="'+Number(pid)+'"]'), function(el){
+      el.textContent = el.textContent.replace(" ⏳", " · no live answer");
+      el.title = "OCTOPOS gave no answer for this product " + LIVE_MISS_MAX + " times — snapshot number, not live";
     });
   }
 
@@ -385,6 +397,26 @@
       var at = Date.now();
       Object.keys(j.stock).forEach(function(pid){ LIVESTOCK[String(pid)] = { q: Number(j.stock[pid]), at: at }; });
       paintStockPills();
+      // 🛑 2026-09-03 (Lauren: "למה יש חלק מהמוצרים עם שעון חול?"). The Worker answers the
+      // RECOUNT-tagged ids from one index call and reads at most 8 untagged ids directly
+      // per request; the rest come back as `deferred_pids`. Until today nobody asked for
+      // them again — the observer had already let go of the row — so every untagged
+      // product past the 8th in a batch stayed ⏳ until a reload. Portland 04.09: the
+      // BB&W pencils Infatuated and Love Deeply, 44 and 42 on the shelf, grey for good.
+      // Re-queue exactly those, paced so a background pill never outbids a count
+      // (IRON RULE #46 — 40 OCTOPOS requests a minute, shared by everyone).
+      // `missing` (OCTOPOS gave nothing for the id) is asked again too, a bounded number
+      // of times, and then says so on the pill instead of pretending to still refresh.
+      var again = (j.deferred_pids || []).slice();
+      (j.missing || []).forEach(function(pid){
+        LIVE_MISSES[String(pid)] = (LIVE_MISSES[String(pid)] || 0) + 1;
+        if(LIVE_MISSES[String(pid)] < LIVE_MISS_MAX) again.push(pid);
+        else markPillUnanswered(pid);
+      });
+      if(again.length){
+        again.forEach(function(pid){ LIVE_QUEUE[String(pid)] = true; });
+        clearTimeout(LIVE_TIMER); LIVE_TIMER = setTimeout(drainLiveStock, LIVE_RETRY_MS);
+      }
     }catch(e){
       // Fail-soft on purpose: the snapshot number stays on screen, still grey and still
       // marked ⏳, so a failed read never silently becomes a confident number
