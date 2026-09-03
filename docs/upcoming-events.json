@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-09-03T19:32:58Z",
+  "_updated_at": "2026-09-03T19:36:07Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -358,7 +358,8 @@
       "form_id": "694094d39d097c01a11dccd0",
       "subscribe_url": "/events/albuquerque-nm-2026/",
       "ig_url": "https://www.instagram.com/reel/Dc1j3I4xxsa/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7681394009964662047"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7681394009964662047",
+      "fb_url": "https://fb.watch/JpxpAETgtB/"
     },
     {
       "city": "Pueblo",
