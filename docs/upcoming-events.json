@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-09-01T19:11:01Z",
+  "_updated_at": "2026-09-03T19:24:49Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -301,7 +301,7 @@
       "venue_address": "110 West 600 South, Salt Lake City, UT 84101",
       "form_id": "6a1c5db094c6509a1aec974e",
       "subscribe_url": "/events/salt-lake-city-ut-2026/",
-      "ig_url": "https://www.instagram.com/reel/DcMEC8Pxr51/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "ig_url": "https://www.instagram.com/reel/Dc1jbElxMi_/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/J4riLN0I7w/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7675456247054732575?is_from_webapp=1&sender_device=pc"
     },
