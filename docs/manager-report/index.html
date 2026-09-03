@@ -424,9 +424,15 @@ var MB_PENDING = [], MB_PACKED = [];
 async function loadMysteryBox(){
   var box = document.getElementById("mb-list"); if(!box) return;
   try{
-    var r = await fetch(saveEndpoint(), { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_mysterybox_list" }) });
+    // evkey scopes the "Packed" history to THIS event. Without it the worker answers
+    // every event's history and the form showed Richmond's six rows under Portland's
+    // header (Lauren, 2026-09-03). A page with no evkey has no event to show.
+    var ek = qp("evkey");
+    if(!ek) throw new Error("no evkey in the URL — cannot tell which event's list to show");
+    var r = await fetch(saveEndpoint(), { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_mysterybox_list", evkey: ek }) });
     var j = await r.json();
     if(!j || !j.ok) throw new Error((j && j.error) || "load failed");
+    if(j.scope !== ek) throw new Error("worker answered scope '"+(j.scope||"?")+"' for event '"+ek+"'");
     MB_PENDING = j.pending || []; MB_PACKED = j.packed || [];
     renderMysteryBox();
   }catch(e){
@@ -446,7 +452,7 @@ function renderMysteryBox(){
          '</div>';
   });
   if(MB_PACKED.length){
-    h += '<div style="font-size:12px;font-weight:700;color:var(--muted);margin-top:12px;">✅ Packed ('+MB_PACKED.length+')</div>';
+    h += '<div style="font-size:12px;font-weight:700;color:var(--muted);margin-top:12px;">✅ Packed at this event ('+MB_PACKED.length+')</div>';
     MB_PACKED.forEach(function(p){
       h += '<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;font-size:12px;color:var(--muted);border-bottom:1px solid #f3f4f6;">'+
              '<span>✅ '+esc(p.name||("#"+p.pid))+(p.qty_collected!=null?(" — "+p.qty_collected+" units"):"")+'</span>'+
