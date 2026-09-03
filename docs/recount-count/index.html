@@ -425,7 +425,11 @@
         again.forEach(function(pid){ LIVE_QUEUE[String(pid)] = true; });
         later.forEach(function(pid){ LIVE_QUEUE[String(pid)] = true; });
         clearTimeout(LIVE_TIMER);
-        LIVE_TIMER = setTimeout(drainLiveStock, again.length ? LIVE_RETRY_MS : LIVE_THROTTLE_MS);
+        // One throttled id means the budget is at its floor for everyone in the batch —
+        // a deferred id cannot be served either until it refills. Measured 2026-09-03:
+        // with the 2s pace here, a sheet at the floor sent a no-op request every 3s
+        // (ans 0 · thr 8 · def 13, thirteen times in a row) until the minute rolled.
+        LIVE_TIMER = setTimeout(drainLiveStock, later.length ? LIVE_THROTTLE_MS : LIVE_RETRY_MS);
       }
     }catch(e){
       // Fail-soft on purpose: the snapshot number stays on screen, still grey and still
