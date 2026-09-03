@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-09-03T19:24:49Z",
+  "_updated_at": "2026-09-03T19:29:11Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -356,7 +356,8 @@
       "venue_name": "Crowne Plaza",
       "venue_address": "1901 University Boulevard NE, Albuquerque, NM 87102",
       "form_id": "694094d39d097c01a11dccd0",
-      "subscribe_url": "/events/albuquerque-nm-2026/"
+      "subscribe_url": "/events/albuquerque-nm-2026/",
+      "ig_url": "https://www.instagram.com/reel/Dc1j3I4xxsa/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
     },
     {
       "city": "Pueblo",
