@@ -288,8 +288,9 @@
   var LIVE_PENDING = {};          // pid -> true     a request for it is in flight
   var LIVE_TIMER = null;
   var LIVE_MISSES = {};           // pid -> how many times OCTOPOS answered nothing for it
-  var LIVE_MISS_MAX = 3;          // after this many, the pill says so instead of ⏳ forever
-  var LIVE_RETRY_MS = 2000;       // pace for re-asking deferred/missing ids (IRON RULE #46)
+  var LIVE_MISS_MAX = 2;          // a 404 seen this many times is an answer; the pill says so
+  var LIVE_RETRY_MS = 2000;       // pace for re-asking ids the Worker deferred (IRON RULE #46)
+  var LIVE_THROTTLE_MS = 8000;    // pace for ids the shared OCTOPOS budget refused — it refills by the minute
   var SAVING = false;             // a count is on the wire → background pills hold off
   var LIVE_STALE_MS = 90000;      // re-ask after this; the Worker answers from its own
                                   // 5-min cache unless a write invalidated the pid, so a
@@ -329,12 +330,12 @@
     });
   }
 
-  // OCTOPOS answered nothing for this id LIVE_MISS_MAX times: stop promising a refresh.
+  // OCTOPOS said 404 for this id LIVE_MISS_MAX times: the product is not there to read.
   // Grey stays (the number is still the snapshot's), the ⏳ becomes a plain statement.
   function markPillUnanswered(pid){
     Array.prototype.forEach.call(document.querySelectorAll('[data-stockpid="'+Number(pid)+'"]'), function(el){
-      el.textContent = el.textContent.replace(" ⏳", " · no live answer");
-      el.title = "OCTOPOS gave no answer for this product " + LIVE_MISS_MAX + " times — snapshot number, not live";
+      el.textContent = el.textContent.replace(" ⏳", " · not in OCTOPOS");
+      el.title = "OCTOPOS answered 404 for this product " + LIVE_MISS_MAX + " times — snapshot number; the product may have been deleted";
     });
   }
 
@@ -405,17 +406,26 @@
       // BB&W pencils Infatuated and Love Deeply, 44 and 42 on the shelf, grey for good.
       // Re-queue exactly those, paced so a background pill never outbids a count
       // (IRON RULE #46 — 40 OCTOPOS requests a minute, shared by everyone).
-      // `missing` (OCTOPOS gave nothing for the id) is asked again too, a bounded number
-      // of times, and then says so on the pill instead of pretending to still refresh.
+      // Three different "not in stock{}" answers, three different next steps:
+      //   deferred_pids  — cut by the Worker's per-request cap, never asked → ask again soon
+      //   throttled_pids — the shared OCTOPOS budget refused the read → ask again, slower
+      //                    (the budget refills by the minute; a pill must not chase it)
+      //   missing        — OCTOPOS said 404 → a real answer; confirmed once more, then
+      //                    the pill says so instead of pretending to still refresh.
+      // The first version of this lumped throttled into missing and, after three refused
+      // reads inside one busy minute, labelled two products that exist "no live answer".
       var again = (j.deferred_pids || []).slice();
+      var later = (j.throttled_pids || []).slice();
       (j.missing || []).forEach(function(pid){
         LIVE_MISSES[String(pid)] = (LIVE_MISSES[String(pid)] || 0) + 1;
-        if(LIVE_MISSES[String(pid)] < LIVE_MISS_MAX) again.push(pid);
+        if(LIVE_MISSES[String(pid)] < LIVE_MISS_MAX) later.push(pid);
         else markPillUnanswered(pid);
       });
-      if(again.length){
+      if(again.length || later.length){
         again.forEach(function(pid){ LIVE_QUEUE[String(pid)] = true; });
-        clearTimeout(LIVE_TIMER); LIVE_TIMER = setTimeout(drainLiveStock, LIVE_RETRY_MS);
+        later.forEach(function(pid){ LIVE_QUEUE[String(pid)] = true; });
+        clearTimeout(LIVE_TIMER);
+        LIVE_TIMER = setTimeout(drainLiveStock, again.length ? LIVE_RETRY_MS : LIVE_THROTTLE_MS);
       }
     }catch(e){
       // Fail-soft on purpose: the snapshot number stays on screen, still grey and still
