@@ -50,9 +50,12 @@
   <div class="card">
     <h2>Apply</h2>
     <label>Full name *</label><input type="text" id="f-name" autocomplete="name">
-    <label>@handle *</label><input type="text" id="f-handle" placeholder="@yourhandle">
     <label>Main platform *</label>
-    <select id="f-platform"><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>Other</option></select>
+    <select id="f-platform"><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>Facebook</option><option>Other</option></select>
+    <label>@username *</label><input type="text" id="f-handle" placeholder="@yourusername" autocapitalize="none" autocorrect="off" spellcheck="false">
+    <div class="small">Your @username on that platform — not your display name.</div>
+    <label>Link to your profile *</label><input type="url" id="f-profile" placeholder="https://www.instagram.com/yourusername" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false">
+    <div class="small">Open your profile → Share → <b>Copy link</b>, then paste it here. We open this link to see your page.</div>
     <label>Follower count *</label><input type="text" id="f-followers" placeholder="e.g. 8,500" inputmode="numeric">
     <label>Your city / area *</label><input type="text" id="f-city" placeholder="e.g. Modesto, CA">
     <label>Which event? *</label><select id="f-event"></select>
@@ -104,17 +107,27 @@
   btn.addEventListener("click", function(){
     errEl.style.display = "none";
     var name = document.getElementById("f-name").value.trim();
-    var handle = document.getElementById("f-handle").value.trim();
+    var handle = document.getElementById("f-handle").value.trim().replace(/^@+/, "");
+    var profile = document.getElementById("f-profile").value.trim();
     var followers = document.getElementById("f-followers").value.trim();
     var city = document.getElementById("f-city").value.trim();
     var email = document.getElementById("f-email").value.trim();
-    if (!name || !handle || !followers || !city || !email) return fail("Please fill all the required fields (*)");
-    if (!/@?.+/.test(handle)) return fail("Please enter your @handle.");
+    if (!name || !handle || !profile || !followers || !city || !email) return fail("Please fill all the required fields (*)");
+    /* 09.09.2026 — a username has no spaces. "Samantha Noel Krista" (platform: Other)
+       was accepted as a handle and the PR dashboard built instagram.com/samanthanoelkrista
+       from it — a page that does not exist. The link Lauren clicks must be the one the
+       creator pasted, so it is required, and the username is checked for shape. */
+    if (!/^[A-Za-z0-9._\-]{2,60}$/.test(handle)) return fail("Please enter your @username (letters, numbers, dots, underscores — no spaces). Not your display name.");
+    var PROFILE_HOSTS = /(^|\.)(instagram\.com|tiktok\.com|youtube\.com|youtu\.be|facebook\.com|fb\.com|threads\.net|snapchat\.com|pinterest\.com|linktr\.ee|beacons\.ai)$/i;
+    if (!/^https?:\/\//i.test(profile)) profile = "https://" + profile;
+    var host = "";
+    try { host = new URL(profile).hostname.toLowerCase(); } catch (e) { host = ""; }
+    if (!host || !PROFILE_HOSTS.test(host)) return fail("Please paste the full link to your profile (Instagram, TikTok, YouTube or Facebook) — open your profile → Share → Copy link.");
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return fail("Please enter a valid email.");
     btn.disabled = true; btn.textContent = "Sending…";
     var payload = {
       kind: "influencer_application",
-      full_name: name, handle: handle,
+      full_name: name, handle: handle, profile_url: profile,
       platform: document.getElementById("f-platform").value,
       followers: followers, city: city, email: email,
       phone: document.getElementById("f-phone").value.trim(),
