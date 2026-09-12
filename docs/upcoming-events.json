@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-09-12T18:58:43Z",
+  "_updated_at": "2026-09-12T19:07:11Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -372,7 +372,8 @@
       "form_id": "6a44396d253e4ab3b19eb3c3",
       "subscribe_url": "/events/pueblo-co-2026/",
       "ig_url": "https://www.instagram.com/reel/DdMrFTPR2a6/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==",
-      "fb_url": "https://fb.watch/v/5fOJu48DL/"
+      "fb_url": "https://fb.watch/v/5fOJu48DL/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7684725272150658334"
     },
     {
       "city": "South Denver",
