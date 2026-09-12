@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-09-03T19:36:07Z",
+  "_updated_at": "2026-09-12T18:45:06Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -315,7 +315,7 @@
       "venue_address": "5101 California Ave, Bakersfield, CA 93309",
       "form_id": "694094aa767a56645e882207",
       "subscribe_url": "/events/bakersfield-ca-2026/",
-      "ig_url": "https://www.instagram.com/reel/DcMYFdsRyYt/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "ig_url": "https://www.instagram.com/reel/DdMp89cxSfE/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/J4rxg-8Dey/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7675457605661117727?is_from_webapp=1&sender_device=pc"
     },
