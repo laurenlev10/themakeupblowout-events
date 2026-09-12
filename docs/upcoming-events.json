@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-09-12T18:45:06Z",
+  "_updated_at": "2026-09-12T18:58:22Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -370,7 +370,8 @@
       "venue_name": "Pueblo Convention Center - Hall A West",
       "venue_address": "320 Central Main St, Pueblo, CO 81003",
       "form_id": "6a44396d253e4ab3b19eb3c3",
-      "subscribe_url": "/events/pueblo-co-2026/"
+      "subscribe_url": "/events/pueblo-co-2026/",
+      "ig_url": "https://www.instagram.com/reel/DdMrFTPR2a6/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA=="
     },
     {
       "city": "South Denver",
