@@ -144,11 +144,35 @@
     leadEl.textContent = 'הקוד למטה תקף ל-10 דקות. תעתיקי אותו עכשיו ושלחי לצ\'אט של Claude — הוא יחליף אותו ל-access token.';
     fieldsEl.appendChild(makeField('auth_code', authCode, true));
     if (state) fieldsEl.appendChild(makeField('state (verification)', state, false));
-    nextEl.innerHTML = '<div class="next-steps"><strong>צעדים הבאים:</strong><ol>' +
-      '<li>לחצי Copy ליד <code class="inline">auth_code</code></li>' +
-      '<li>חזרי לצ\'אט של Claude</li>' +
-      '<li>הדביקי וכתבי: "הנה ה-auth_code"</li>' +
-      '<li>אל תסגרי את ה-tab עד שהוא מאשר קליטה</li></ol></div>';
+
+    // 🛑 14.09.2026 — עד היום הדף הזה אמר "תשלחי ל-Claude בצ'אט". זה ממסר שעובר
+    // דרך בן אדם וצ'אט פתוח, על קוד שחי 10 דקות: אם לורן מאשרת ברגע שהיא לא ליד
+    // המחשב, הקוד מת והיא לא חוזרת לזה. כשה-state יודע לאיזו משימה הקוד שייך,
+    // הדף שולח אותה ישר לריצה שיודעת לסיים — בלי צ'אט ובלי סוכן באמצע.
+    var JOBS = {
+      'ads_read_2026': {
+        url: 'https://github.com/laurenlev10/lauren-agent-hub-data/actions/workflows/tiktok-ads-read-auth.yml',
+        what: 'קריאת תקציבים אמיתיים מטיקטוק'
+      }
+    };
+    var job = JOBS[state];
+    if (job) {
+      leadEl.textContent = 'הקוד למטה תקף ל-10 דקות. לחצי Copy, ואז על הכפתור — ' +
+        'זה פותח את הריצה שמסיימת את העבודה (' + job.what + ').';
+      nextEl.innerHTML = '<div class="next-steps"><strong>צעד אחרון:</strong><ol>' +
+        '<li>לחצי <strong>Copy</strong> ליד <code class="inline">auth_code</code></li>' +
+        '<li>לחצי על הכפתור למטה → <strong>Run workflow</strong></li>' +
+        '<li>הדביקי את הקוד בשדה, ולחצי <strong>Run workflow</strong> הירוק</li>' +
+        '<li>תקבלי טקסט עם התוצאה. אם הקוד פג — פשוט תאשרי שוב מאותו לינק</li>' +
+        '</ol><p style="margin-top:14px"><a class="copy-btn" style="display:inline-block;text-decoration:none" ' +
+        'href="' + job.url + '" target="_blank" rel="noopener">פתחי את הריצה ←</a></p></div>';
+    } else {
+      nextEl.innerHTML = '<div class="next-steps"><strong>צעדים הבאים:</strong><ol>' +
+        '<li>לחצי Copy ליד <code class="inline">auth_code</code></li>' +
+        '<li>חזרי לצ\'אט של Claude</li>' +
+        '<li>הדביקי וכתבי: "הנה ה-auth_code"</li>' +
+        '<li>אל תסגרי את ה-tab עד שהוא מאשר קליטה</li></ol></div>';
+    }
   } else {
     statusEl.className = 'status err';
     statusEl.innerHTML = '<div class="icon">!</div><div>No OAuth parameters received</div>';

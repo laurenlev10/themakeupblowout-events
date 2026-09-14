@@ -1,0 +1,42 @@
+name: Test the OAuth callback page
+
+# scripts/test_oauth_callback_routing.mjs renders docs/oauth/callback/index.html for
+# real and checks where it sends Lauren after she approves an app.
+#
+# 🛑 14.09.2026 — this page used to tell her, for every authorization, to copy the
+# code and send it to a chat. An auth_code lives ten minutes, so an approval made at
+# the wrong moment simply died, and the task slid by a month. It now links straight to
+# the run that finishes the job when it recognizes the `state`. That routing is one
+# object literal; if a future edit drops it, nothing looks broken — the page still
+# renders, still shows the code, and quietly sends her back to a dead end. So it is
+# tested, and something runs the test (IRON RULE #25 step 4).
+#
+# No cron: nothing here changes on a clock, and a daily run would cost a job for
+# nothing (IRON RULE #40).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/oauth/callback/**'
+      - 'scripts/test_oauth_callback_routing.mjs'
+      - '.github/workflows/test-oauth-callback.yml'
+  pull_request:
+    paths:
+      - 'docs/oauth/callback/**'
+      - 'scripts/test_oauth_callback_routing.mjs'
+  workflow_dispatch: {}
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install jsdom
+        run: npm install --no-save jsdom
+      - name: Render the callback page and check where it sends her
+        run: node scripts/test_oauth_callback_routing.mjs
