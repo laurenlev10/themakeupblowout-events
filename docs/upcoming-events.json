@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-09-12T19:07:11Z",
+  "_updated_at": "2026-09-16T22:31:39Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -385,7 +385,8 @@
       "slug": "south-denver-co-2026",
       "venue_name": "Embassy Suites by Hilton Denver Tech Center",
       "venue_address": "10250 E Costilla Ave, Centennial, CO 80112",
-      "form_id": "6930efcc5c4c2f0a2f7b9eee"
+      "form_id": "6930efcc5c4c2f0a2f7b9eee",
+      "ig_url": "https://www.instagram.com/reel/DdXXJk4xMy9/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA=="
     },
     {
       "city": "Westminster",
