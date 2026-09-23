@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-09-23T23:54:43Z",
+  "_updated_at": "2026-09-23T23:58:02Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -400,7 +400,9 @@
       "venue_address": "8773 Yates Drive, Westminster, CO 80031",
       "form_id": "6930efee4da0131a26568f16",
       "subscribe_url": "/events/westminster-co-2026/",
-      "ig_url": "https://www.instagram.com/reel/DdpiQ0_Rwyn/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA=="
+      "ig_url": "https://www.instagram.com/reel/DdpiQ0_Rwyn/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==",
+      "fb_url": "https://fb.watch/v/5kNJR-fJ8/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7688884025619926302"
     },
     {
       "city": "Tucson",
