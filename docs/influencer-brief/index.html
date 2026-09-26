@@ -35,7 +35,7 @@
   <div class="hero">
     <h1>THE MAKEUP BLOWOUT SALE</h1>
     <div class="sub">INFLUENCER COLLAB BRIEF</div>
-    <div class="sub" id="ev-line" style="font-weight:400;font-size:13px;">Sign before claiming your $100 product basket ✨</div>
+    <div class="sub" id="ev-line" style="font-weight:400;font-size:13px;">Sign before claiming your $60 product basket ✨</div>
   </div>
 
   <div class="card" id="ev-card">
@@ -57,12 +57,23 @@
     <label>Follower count *</label><input type="text" id="f-followers" placeholder="e.g. 8,500" inputmode="numeric">
     <label>Email *</label><input type="email" id="f-email" autocomplete="email">
     <label>Phone</label><input type="tel" id="f-phone" autocomplete="tel">
+    <!-- 26.09.2026 — Lauren: the second half of the reward is a Mystery Box MAILED to her once her
+         video file arrives. The address is required here so nobody has to chase it later. -->
+    <label>Shipping address for your Mystery Box *</label>
+    <input type="text" id="f-street" placeholder="Street address, apt" autocomplete="street-address">
+    <div style="display:flex;gap:6px;margin-top:6px">
+      <input type="text" id="f-city" placeholder="City" autocomplete="address-level2" style="flex:2">
+      <input type="text" id="f-state" placeholder="State" autocomplete="address-level1" style="flex:1">
+      <input type="text" id="f-zip" placeholder="ZIP" autocomplete="postal-code" inputmode="numeric" style="flex:1">
+    </div>
   </div>
 
   <div class="card">
     <h2>The deal</h2>
     <div class="deal">
-      <b>I receive:</b> a $100 product basket — I pick up to $100 worth of products at this event today, no return required.<br><br>
+      <b>I receive:</b><br>
+      1. A <b>$60 product basket</b> — I pick up to $60 worth of products at this event today.<br>
+      2. A <b>Mystery Box worth $100+ in products</b>, mailed to me once The Makeup Blowout receives my video file.<br><br>
       <b>In exchange, I agree to ALL of the following:</b>
     </div>
     <div class="chk"><input type="checkbox" class="req"><span>Post <b>ONE filmed + edited video</b> (reel / TikTok / short — my choice of platform) featuring this event <b>within 14 days of attending the event</b>.</span></div>
@@ -70,8 +81,8 @@
     <div class="chk"><input type="checkbox" class="req"><span>Use the hashtag <b>#MakeupBlowoutSale</b>.</span></div>
     <div class="chk"><input type="checkbox" class="req"><span>On Instagram, add <b>@themakeupblowoutsale as a collaborator</b> on the video (Tag people → <b>Invite collaborator</b>) so it appears on both our profiles. On TikTok / Facebook / YouTube, tagging is enough.</span></div>
     <div class="chk"><input type="checkbox" class="req"><span>Include this spoken line in the video: <b>"I'm at The Makeup Blowout Sale!"</b></span></div>
-    <div class="chk"><input type="checkbox" class="req"><span>Send the link to <b>pr@makeupblowoutsalegroup.com</b> within 24 hours of posting.</span></div>
-    <div class="chk"><input type="checkbox" class="req"><span><b>If I don't deliver within 14 days:</b> I'll either (a) return unopened products, or (b) pay the $100 retail value via Venmo or Zelle. I understand non-delivery without settlement may exclude me from future MBS collabs.</span></div>
+    <div class="chk"><input type="checkbox" class="req"><span>Send the <b>video file</b> (attached to an email, not only a link) to <b>pr@makeupblowoutsalegroup.com</b> within 14 days of the event — plus the link if I posted it. My Mystery Box ships once the file arrives.</span></div>
+    <div class="chk"><input type="checkbox" class="req"><span><b>If I don't deliver within 14 days:</b> I'll either (a) return the unopened products, or (b) pay their $60 value via Venmo or Zelle, and no Mystery Box is sent. I understand non-delivery without settlement may exclude me from future MBS collabs.</span></div>
     <div class="chk"><input type="checkbox" class="req"><span>I allow The Makeup Blowout Sale Group to <b>re-share and use my video</b> (including in ads).</span></div>
     <div class="chk"><input type="checkbox" id="ev-ok"><span><b>I picked the correct event</b> (city + dates shown above).</span></div>
   </div>
@@ -94,7 +105,7 @@
 <div id="done" class="wrap">
   <div class="big">🎉</div>
   <h2>You're all set!</h2>
-  <p style="font-size:15px;">Go pick your <b>$100 product basket</b> — and don't forget:<br><b>tag @themakeupblowoutsale · #MakeupBlowoutSale</b><br>on Instagram: <b>Invite collaborator → @themakeupblowoutsale</b><br>video due in 14 days 💕</p>
+  <p style="font-size:15px;">Go pick your <b>$60 product basket</b> — and don't forget:<br><b>tag @themakeupblowoutsale · #MakeupBlowoutSale</b><br>on Instagram: <b>Invite collaborator → @themakeupblowoutsale</b><br>email the <b>video file</b> to pr@makeupblowoutsalegroup.com within 14 days — and your <b>Mystery Box ($100+)</b> ships to you 💕</p>
 </div>
 
 <script>
@@ -147,7 +158,7 @@
     document.getElementById("ev-details").innerHTML =
       "📅 " + e.start_date + " → " + (e.end_date || "") +
       (e.venue_name ? "<br>📍 " + e.venue_name + (e.venue_address ? ", " + e.venue_address : "") : "");
-    document.getElementById("ev-line").textContent = e.city + ", " + (e.state || "") + " — sign before claiming your $100 basket ✨";
+    document.getElementById("ev-line").textContent = e.city + ", " + (e.state || "") + " — sign before claiming your $60 basket ✨";
     document.getElementById("ev-confirm").innerHTML = "✔ You are signing for: <u>" + e.city + ", " + (e.state || "") + " · " + e.start_date + "</u><br><span style='font-weight:400;font-size:12px'>Not your event? Pick the right one from the list above.</span>";
   }
   sel.addEventListener("change", renderEv);
@@ -192,8 +203,11 @@
     var handle = document.getElementById("f-handle").value.trim();
     var email = document.getElementById("f-email").value.trim();
     var followers = document.getElementById("f-followers").value.trim();
+    var addr = { street: document.getElementById("f-street").value.trim(), city: document.getElementById("f-city").value.trim(),
+                 state: document.getElementById("f-state").value.trim(), zip: document.getElementById("f-zip").value.trim() };
     if (!e) return fail("Pick the event.");
     if (!name || !handle || !email || !followers) return fail("Name, @handle, follower count and email are required.");
+    if (!addr.street || !addr.city || !addr.state || !addr.zip) return fail("Please add your shipping address — it is where your Mystery Box goes.");
     var boxes = document.querySelectorAll(".req");
     for (var i = 0; i < boxes.length; i++) if (!boxes[i].checked) return fail("Please check ALL the boxes — every one is part of the deal.");
     if (!document.getElementById("ev-ok").checked) return fail("Please confirm you picked the correct event (the yellow box).");
@@ -211,9 +225,10 @@
       full_name: name, handle: handle,
       platform: document.getElementById("f-platform").value,
       followers: followers,
+      ship_to: addr,
       email: email, phone: document.getElementById("f-phone").value.trim(),
       mbs_rep: document.getElementById("f-rep").value.trim(),
-      terms_version: "2026-09-09 (IG collab invite added; spoken line without city)",
+      terms_version: "2026-09-26 ($60 basket + Mystery Box after the video file; shipping address)",
       signed_at_local: new Date().toString(),
       signature: small.toDataURL("image/png")
     };
