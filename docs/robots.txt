@@ -8,6 +8,7 @@ Disallow: /manager-report/
 Disallow: /collab/
 Disallow: /scout-plan/
 Disallow: /influencer-brief/
+Disallow: /reply/
 Disallow: /preview/
 
 Sitemap: https://events.themakeupblowout.com/sitemap.xml

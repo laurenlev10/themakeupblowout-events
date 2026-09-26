@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Your answer — The Makeup Blowout Sale</title>
+<!--
+  26.09.2026 — the landing page for the buttons in our mails to creators ("when are you
+  coming?" / "when will you send the video?"). The link carries the event, her handle,
+  the question, the answer and a per-woman token the mailer stored on her record.
+
+  🛑 Opening the link does NOT save anything. Mail scanners (Outlook Safe Links, company
+  gateways) open every link in a message to check it — a GET that saved would record all
+  four day buttons, and the last one scanned would win. So the page shows her choice and
+  saves only when she taps Confirm (a POST to the danielle Worker, which checks the token).
+-->
+<style>
+  :root { --pink:#EC4899; --gold:#FFD700; --ink:#111; --muted:#6b7280; --bg:#FFF0F7; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif; color:var(--ink); }
+  .wrap { max-width:480px; margin:0 auto; padding:16px; }
+  .hero { background:linear-gradient(135deg,#EC4899 0%,#FFD700 100%); border-radius:14px; padding:22px 14px; text-align:center; color:#fff; }
+  .hero h1 { margin:0; font-size:22px; }
+  .card { background:#fff; border-radius:12px; padding:18px 16px; margin-top:12px; box-shadow:0 2px 8px rgba(0,0,0,.06); text-align:center; }
+  .q { font-size:14px; color:var(--muted); }
+  .pick { font-size:20px; font-weight:800; margin:10px 0 4px; }
+  .pick-es { font-size:14px; color:var(--muted); }
+  .btn { display:block; width:100%; background:#000; color:var(--gold); border:none; border-radius:26px; padding:15px; font-size:16px; font-weight:800; cursor:pointer; margin-top:16px; }
+  .btn[disabled] { opacity:.5; }
+  .msg { margin-top:12px; font-size:14px; font-weight:700; }
+  .ok { color:#15803d; } .err { color:#dc2626; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero"><h1>The Makeup Blowout 💄</h1></div>
+  <div class="card" id="card">
+    <div class="q" id="q"></div>
+    <div class="pick" id="pick"></div>
+    <div class="pick-es" id="pick-es"></div>
+    <button class="btn" id="go">Confirm · Confirmar</button>
+    <div class="msg" id="msg"></div>
+  </div>
+</div>
+<script>
+(function () {
+  var ENDPOINT = "https://danielle.laurenlev10.workers.dev/";
+  var p = new URLSearchParams(location.search);
+  var body = { kind: "influencer_reply", e: p.get("e") || "", h: p.get("h") || "", q: p.get("q") || "",
+               a: p.get("a") || "", t: p.get("t") || "", l: p.get("l") || "" };
+  var Q = { day: "When are you coming? · ¿Cuándo vienes?",
+            content_eta: "When will you send your video? · ¿Cuándo enviarás tu video?" };
+  var parts = String(body.l || body.a).split(" · ");
+  var $ = function (id) { return document.getElementById(id); };
+  var msg = $("msg"), go = $("go");
+  if (!Q[body.q] || !body.a || !body.t) {
+    $("pick").textContent = "This link is incomplete.";
+    $("pick-es").textContent = "Este enlace está incompleto.";
+    go.style.display = "none";
+    return;
+  }
+  $("q").textContent = Q[body.q];
+  $("pick").textContent = parts[0];
+  $("pick-es").textContent = parts[1] || "";
+  go.addEventListener("click", function () {
+    go.disabled = true;
+    msg.className = "msg"; msg.textContent = "Saving… · Guardando…";
+    fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { r: r, j: j }; }); })
+      .then(function (x) {
+        if (x.r.ok && x.j.ok) {
+          msg.className = "msg ok";
+          msg.textContent = "Thank you! We got your answer 💕 · ¡Gracias! Recibimos tu respuesta 💕";
+          go.style.display = "none";
+        } else {
+          go.disabled = false;
+          msg.className = "msg err";
+          msg.textContent = (x.r.status === 403
+            ? "This link is not valid any more — just reply to our email. · Este enlace ya no es válido — responde a nuestro correo."
+            : "Something went wrong — please try again, or reply to our email. · Algo salió mal — inténtalo de nuevo o responde a nuestro correo.");
+        }
+      })
+      .catch(function () {
+        go.disabled = false;
+        msg.className = "msg err";
+        msg.textContent = "No connection — please try again. · Sin conexión — inténtalo de nuevo.";
+      });
+  });
+})();
+</script>
+</body>
+</html>
