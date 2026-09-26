@@ -51,6 +51,10 @@
     <label>@handle *</label><input type="text" id="f-handle" placeholder="@yourhandle" autocomplete="off">
     <label>Platform *</label>
     <select id="f-platform"><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>Other</option></select>
+    <!-- 26.09.2026 — Lauren: the follower count matters on every creator's card, and a creator who
+         came straight to this form (never through /collab/) arrived without one. Same field and
+         wording as /collab/, required like it. -->
+    <label>Follower count *</label><input type="text" id="f-followers" placeholder="e.g. 8,500" inputmode="numeric">
     <label>Email *</label><input type="email" id="f-email" autocomplete="email">
     <label>Phone</label><input type="tel" id="f-phone" autocomplete="tel">
   </div>
@@ -187,8 +191,9 @@
     var name = document.getElementById("f-name").value.trim();
     var handle = document.getElementById("f-handle").value.trim();
     var email = document.getElementById("f-email").value.trim();
+    var followers = document.getElementById("f-followers").value.trim();
     if (!e) return fail("Pick the event.");
-    if (!name || !handle || !email) return fail("Name, @handle and email are required.");
+    if (!name || !handle || !email || !followers) return fail("Name, @handle, follower count and email are required.");
     var boxes = document.querySelectorAll(".req");
     for (var i = 0; i < boxes.length; i++) if (!boxes[i].checked) return fail("Please check ALL the boxes — every one is part of the deal.");
     if (!document.getElementById("ev-ok").checked) return fail("Please confirm you picked the correct event (the yellow box).");
@@ -205,6 +210,7 @@
       venue: (e.venue_name || "") + (e.venue_address ? ", " + e.venue_address : ""),
       full_name: name, handle: handle,
       platform: document.getElementById("f-platform").value,
+      followers: followers,
       email: email, phone: document.getElementById("f-phone").value.trim(),
       mbs_rep: document.getElementById("f-rep").value.trim(),
       terms_version: "2026-09-09 (IG collab invite added; spoken line without city)",
