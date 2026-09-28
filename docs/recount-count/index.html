@@ -44,6 +44,8 @@
   .sorow .stockline{ margin-top:6px; }
   .donepill{ font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; background:#16a34a; color:#fff; white-space:nowrap; }
   .doneby{ font-size:11px; color:var(--green); margin-top:4px; font-weight:600; }
+  .syncpill{ font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; background:#d97706; color:#fff; white-space:nowrap; }
+  .syncby{ font-size:11px; color:#b45309; margin-top:4px; font-weight:600; }
   .edithint{ font-size:11px; color:var(--accent); margin-top:3px; font-weight:700; }
   .extrahdr{ font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:16px 2px 8px; }
   .empty{ text-align:center; color:var(--muted); padding:50px 20px; }
@@ -308,6 +310,21 @@
   function countIsOut(c){ return !!c && (c.out_of_stock === true || Number(c.qty) === 0); }
   function countLabel(c){ return countIsOut(c) ? "OUT OF STOCK" : ("Counted: " + c.qty); }
 
+  // ═══ ⏳ saved, syncing — a count OCTOPOS has not taken YET (28.09.2026) ═══════════
+  // Salt Lake City, 27.09: OCTOPOS refused every write for hours and the crew saw
+  // "Failed: octopos error: get 401" on each one, so they wrote counts in WhatsApp and
+  // those never reached the system. The Worker now keeps every count as a pending write
+  // and applies it by itself when OCTOPOS comes back (octopos_pending.js). A pending
+  // count is SAVED — it is shown as done, in amber, with its number, never as an error.
+  // The 20-second refresh turns it green once the Worker has read it back from OCTOPOS.
+  function countIsPending(c){ return !!c && c.octopos === "pending"; }
+  function donePill(c){ return countIsPending(c) ? '<span class="syncpill">⏳ SYNCING</span>' : '<span class="donepill">DONE</span>'; }
+  function doneLine(c){
+    return countIsPending(c)
+      ? '<div class="syncby">⏳ '+esc(countLabel(c))+' — saved, syncing to OCTOPOS — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div>'
+      : '<div class="doneby">✅ '+esc(countLabel(c))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div>';
+  }
+
   function stockPill(pid, fallback){
     var rec = LIVESTOCK[String(pid)];
     var live = !!rec;
@@ -548,14 +565,14 @@
       var row = document.createElement("div");
       row.className = "row" + (so?" soldout":(c?" done":""));
       var right = so ? '<span class="sopill">SOLD OUT</span>'
-                     : (c ? '<span class="donepill">DONE</span>'
+                     : (c ? donePill(c)
                           : stockPill(w.pid, w.stock));
       row.innerHTML =
         '<div class="info">' +
           '<div class="name">'+esc(w.name)+'</div>' +
           '<div class="meta"><span class="sku">'+esc(w.sku||"—")+'</span>'+(w.supplier?' · '+esc(w.supplier):'')+'</div>' +
           (so ? '<div class="soby">🚨 SOLD OUT — by '+esc(w.sold_out_by||"?")+(w.sold_out_at?' · '+esc(fmtWhen(w.sold_out_at)):'')+'</div>'
-              : (c ? '<div class="doneby">✅ '+esc(countLabel(c))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div><div class="edithint">✏️ Tap to re-count / fix</div>' : '')) +
+              : (c ? doneLine(c)+'<div class="edithint">✏️ Tap to re-count / fix</div>' : '')) +
         '</div>' +
         '<div class="rt">' + right + '</div>';
       if(!so) row.onclick = function(){ openScreen(w); };
@@ -576,9 +593,9 @@
           '<div class="info">' +
             '<div class="name">'+esc(c.name||("#"+pid))+'</div>' +
             '<div class="meta"><span class="sku">'+esc(c.sku||"—")+'</span>'+(c.supplier?' · '+esc(c.supplier):'')+'</div>' +
-            '<div class="doneby">✅ '+esc(countLabel(c))+' — by '+esc(c.employee)+' · '+esc(fmtWhen(c.at))+'</div><div class="edithint">✏️ Tap to re-count / fix</div>' +
+            doneLine(c)+'<div class="edithint">✏️ Tap to re-count / fix</div>' +
           '</div>' +
-          '<div class="rt"><span class="donepill">DONE</span></div>';
+          '<div class="rt">'+donePill(c)+'</div>';
         row.onclick = function(){ openScreen({ pid:Number(pid), name:c.name, sku:c.sku, supplier:c.supplier||"", stock:null, barcode:"", extra:true }); };
         list.appendChild(row);
       });
@@ -715,8 +732,8 @@
       CUR.barcode = bc;
       if(byId[CUR.pid]) byId[CUR.pid].barcode = bc;
       $("scSku").textContent = skuLine(CUR.sku, bc);
-      btn.textContent = "✓ Saved"; setTimeout(function(){ btn.disabled=false; btn.textContent="💾 Save barcode"; }, 1500);
-      toast("✅ Barcode saved");
+      btn.textContent = j.pending ? "⏳ Saved" : "✓ Saved"; setTimeout(function(){ btn.disabled=false; btn.textContent="💾 Save barcode"; }, 1500);
+      toast(j.pending ? "⏳ Barcode saved — OCTOPOS is busy, it will update automatically" : "✅ Barcode saved");
     }catch(e){
       btn.disabled=false; btn.textContent="💾 Save barcode";
       var m = String(e.message||e);
@@ -746,6 +763,13 @@
       body: JSON.stringify(Object.assign({ kind:"banana_write", pid: CUR.pid }, body)) });
     var j = await r.json().catch(function(){ return {}; });
     if(!r.ok || !j.ok) throw new Error(j.error || failMsg || ("HTTP "+r.status));
+    // ⏳ queued (OCTOPOS busy): the Worker could not read the product, so it cannot send
+    // the list back — show what WILL be there, from what this screen already knows.
+    if(j.pending && !j.barcodes){
+      var mine = (CUR.barcodes || []).slice();
+      if(body.code && mine.indexOf(body.code) === -1) mine.push(body.code);
+      j.barcodes = body.list || mine;
+    }
     CUR.barcodes = j.barcodes || [];
     if(byId[CUR.pid]) byId[CUR.pid].barcodes = CUR.barcodes;
     renderExtras();
@@ -771,7 +795,7 @@
     if(!code){ toast("Scan or type a barcode first", true); return; }
     var btn = this; btn.disabled = true; btn.textContent = "…";
     if (await blockedByDuplicate(code)){ btn.disabled = false; btn.textContent = "✓ Add"; return; }
-    try { await bananaWrite({ code: code }); toast("✅ Barcode added"); closeBcNew(); }
+    try { var jb = await bananaWrite({ code: code }); toast(jb.pending ? "⏳ Barcode saved — it will reach OCTOPOS automatically" : "✅ Barcode added"); closeBcNew(); }
     catch(e){ toast("Failed: "+(e.message||e), true); }
     btn.disabled = false; btn.textContent = "✓ Add";
   };
@@ -779,7 +803,7 @@
   async function removeExtra(code){
     if(!CUR || !confirm("Remove barcode " + code + "?")) return;
     var keep = ((CUR.barcodes)||[]).filter(function(c){ return c !== code; });
-    try { await bananaWrite({ list: keep }); toast("✅ Barcode removed"); }
+    try { var jr = await bananaWrite({ list: keep }); toast(jr.pending ? "⏳ Removal saved — it will reach OCTOPOS automatically" : "✅ Barcode removed"); }
     catch(e){ toast("Failed: "+(e.message||e), true); }
   }
 
@@ -963,16 +987,19 @@
         throw new Error("OCTOPOS עמוס. הספירה לא נשמרה ולא השתנה כלום — נסי שוב עוד דקה.");
       }
       if(!r.ok || !j.ok){ throw new Error(j.error || ("HTTP "+r.status)); }
+      var pending = j.pending === true;
       // optimistic local update (include name/sku so off-list "extra" rows can render)
       COUNTS[String(w.pid)] = { pid:w.pid, qty:qty, out_of_stock:oos, employee:EMPLOYEE, at:new Date().toISOString(),
-                                name:w.name, sku:w.sku, supplier:w.supplier||"" };
+                                name:w.name, sku:w.sku, supplier:w.supplier||"", octopos: pending ? "pending" : "applied" };
       // The save just wrote this quantity into OCTOPOS, so it IS the system stock now.
       // Recording it here is what stops the search list from showing the pre-count number
-      // back to the next person who looks the product up.
-      LIVESTOCK[String(w.pid)] = { q: qty, at: Date.now() };
+      // back to the next person who looks the product up. A PENDING count is not in the
+      // system yet, so the pill keeps saying what OCTOPOS says.
+      if(!pending) LIVESTOCK[String(w.pid)] = { q: qty, at: Date.now() };
       render();
       $("screen").classList.remove("open"); CUR=null;
-      toast(oos ? "✅ Set OUT OF STOCK" : ("✅ Counted "+qty));
+      toast(pending ? ("⏳ Saved " + (oos ? "OUT OF STOCK" : qty) + " — OCTOPOS is busy, it will update automatically. No need to write it down.")
+                    : (oos ? "✅ Set OUT OF STOCK" : ("✅ Counted "+qty)));
     }catch(e){
       toast("Failed: "+(e.message||e), true);
       $("btnOos").disabled = false; $("btnSave").disabled = false;
@@ -1157,7 +1184,8 @@
       // optimistic: reflect it on the main count list right away (if it's on the list)
       if(byId[p.id]){ byId[p.id].sold_out = true; byId[p.id].sold_out_by = EMPLOYEE; byId[p.id].sold_out_at = new Date().toISOString(); render(); }
       if(j.zeroed){ LIVESTOCK[String(p.id)] = { q: 0, at: Date.now() }; paintStockPills(); }
-      if(j.zeroed){ toast("🚨 "+p.name+" — SOLD OUT, stock set to 0"); }
+      if(j.pending){ toast("🚨 "+p.name+" — SOLD OUT. OCTOPOS is busy; stock will be set to 0 automatically"); }
+      else if(j.zeroed){ toast("🚨 "+p.name+" — SOLD OUT, stock set to 0"); }
       else { toast("🚨 "+p.name+" flagged SOLD OUT (stock NOT zeroed — tell Lauren)", true); }
     }catch(e){
       btn.disabled = false; btn.textContent = "SOLD OUT";
