@@ -151,7 +151,7 @@ var SECTIONS = [
   },
   { title: "📦 On hand — count / level", icon:"",
     fields: [
-      { key:"lipgloss",         label:"Lipgloss on hand",                  type:"select", options:BOX, legacy:["glitters"] },
+      { key:"glitters",         label:"Lipgloss on hand",                  type:"select", options:BOX },
       { key:"eyeshadow_gifts",  label:"Eyeshadows gifts on hand",          type:"select", options:BOX },
       { key:"brush_set_gifts",  label:"$5 Brush Set gifts on hand",        type:"select", options:BOX },
       { key:"xime_pixie_glow", label:"Xime Pixie Glow Body Spray", type:"number", hint:"How many?" },
@@ -166,8 +166,6 @@ function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ ret
 function b64enc(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
 function b64dec(s){ s=String(s).replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="="; return JSON.parse(decodeURIComponent(escape(atob(s)))); }
 function toast(msg){ var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){ t.classList.remove("show"); }, 2200); }
-/* answer for field f — falls back to legacy keys (renamed gifts) so old report links keep their data */
-function ansOf(p,f){ var a=p&&p.answers?p.answers:{}; if(a[f.key]!=null&&a[f.key]!=="") return a[f.key]; var L=f.legacy||[]; for(var i=0;i<L.length;i++){ if(a[L[i]]!=null&&a[L[i]]!=="") return a[L[i]]; } return a[f.key]; }
 function fieldByKey(k){ for(var i=0;i<SECTIONS.length;i++){ for(var j=0;j<SECTIONS[i].fields.length;j++){ if(SECTIONS[i].fields[j].key===k) return SECTIONS[i].fields[j]; } } return null; }
 async function copyText(text){
   try{ await navigator.clipboard.writeText(text); return true; }
@@ -569,7 +567,7 @@ function reportText(p){
   for(var s=0;s<SECTIONS.length;s++){
     lines.push("— " + SECTIONS[s].title.replace(/^[^A-Za-z0-9]+/,"").trim() + " —");
     for(var i=0;i<SECTIONS[s].fields.length;i++){
-      var f = SECTIONS[s].fields[i]; var val = ansOf(p,f);
+      var f = SECTIONS[s].fields[i]; var val = p.answers[f.key];
       if(f.type==="yesno") val = val==="yes" ? "YES — need it" : (val==="no" ? "no" : "—");
       if(val===""||val==null) val = "—";
       lines.push("• " + f.label + ": " + val);
@@ -773,7 +771,7 @@ function renderReadonly(payload){
   for(var s=0;s<SECTIONS.length;s++){
     html += '<div class="card"><div class="sec-title">'+esc(SECTIONS[s].title)+'</div>';
     for(var i=0;i<SECTIONS[s].fields.length;i++){
-      var f = SECTIONS[s].fields[i]; var raw = ansOf(p,f);
+      var f = SECTIONS[s].fields[i]; var raw = p.answers ? p.answers[f.key] : "";
       var cls = "", disp = raw;
       if(f.type==="yesno"){ if(raw==="yes"){cls="yes";disp="✅ Yes — need it";} else if(raw==="no"){cls="no";disp="No";} else disp="—"; }
       if(disp===""||disp==null) disp="—";
@@ -893,7 +891,7 @@ function route(){
       team:[{name:"Brit",base:1000,bonus:100,extra:800,total:1900},{name:"Goni",base:800,bonus:100,extra:600,total:1500}],
       expenses:[{desc:"Dinner",amount:150}],
       cash:{payouts_total:3550,total_cash:9701,deposit:2252,register_coins:32,register_bills:268},
-      answers:{plastic_bags:"1 full box",trash_bags:"yes",lipgloss:"1/2 box"},
+      answers:{plastic_bags:"1 full box",trash_bags:"yes",glitters:"1/2 box"},
       notes:"This is a demo — it confirms reports open correctly.", photo_count:0,
       submitted_at:new Date().toISOString(), source:"demo" });
     return;
