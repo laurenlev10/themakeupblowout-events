@@ -41,6 +41,8 @@
      Grey is not decoration: it is the page refusing to present a stale figure as current
      (IRON RULE #37 — a belief about an external system carries its measurement date). */
   .stockpill.snap{ background:#f1f5f9; color:#64748b; }
+  .pricetag{ display:inline-block; font-size:12px; font-weight:800; padding:1px 8px; border-radius:999px; background:#ecfdf5; color:#047857; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .pricetag.none{ background:#f1f5f9; color:#94a3b8; font-weight:600; }
   .sorow .stockline{ margin-top:6px; }
   .donepill{ font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; background:#16a34a; color:#fff; white-space:nowrap; }
   .doneby{ font-size:11px; color:var(--green); margin-top:4px; font-weight:600; }
@@ -185,6 +187,7 @@
     <div class="facts">
       <div class="fact"><div class="l">Supplier</div><div class="v" id="scSup">—</div></div>
       <div class="fact"><div class="l">System stock</div><div class="v" id="scStock">—</div></div>
+      <div class="fact" style="grid-column:1/-1;"><div class="l">Retail price</div><div class="v" id="scPrice">—</div></div>
     </div>
     <div class="prev" id="scPrev" style="display:none;"></div>
     <h3>Barcode</h3>
@@ -333,6 +336,41 @@
                    : ("Last stock snapshot" + (CATALOG_AS_OF ? " · " + fmtWhen(CATALOG_AS_OF) : "") + " — refreshing…");
     return '<span class="stockpill'+(live?'':' snap')+'" data-stockpid="'+Number(pid)+'" title="'+esc(tip)+'">' +
            (v==null ? "?" : v) + ' in sys' + (live ? '' : ' ⏳') + '</span>';
+  }
+
+  // ═══ 💲 Retail price — ONE helper, every screen (Lauren 02.10.2026) ═══════════════
+  // "ליד כל מוצר יהיה את המחיר לצרכן שלו" — the count list, the search list, the barcode
+  // list and the count screen all write the price through priceTag(), from PRICES, which
+  // holds what the Worker read from OCTOPOS sale_price (get_prices / get_catalog — one
+  // builder there). A product with no known price says so; it is never shown as $0.
+  var PRICES = {};                // pid -> retail price (number)
+  var PRICES_AS_OF = "";
+  function notePrice(pid, v){ if(pid != null && v != null && isFinite(Number(v)) && Number(v) > 0) PRICES[String(pid)] = Number(v); }
+  function priceText(pid){ var v = PRICES[String(pid)]; return v == null ? "" : ("$" + v.toFixed(2)); }
+  function priceTag(pid){
+    var t = priceText(pid);
+    return '<span class="pricetag'+(t?'':' none')+'" data-pricepid="'+Number(pid)+'" title="Retail price'+(PRICES_AS_OF?' · '+esc(fmtWhen(PRICES_AS_OF)):'')+'">'+(t||'$ —')+'</span>';
+  }
+  function paintPriceTags(){
+    Array.prototype.forEach.call(document.querySelectorAll("[data-pricepid]"), function(el){
+      var t = priceText(el.getAttribute("data-pricepid"));
+      if(!t) return;
+      el.textContent = t; el.classList.remove("none");
+    });
+    if(CUR && $("scPrice")){ var t = priceText(CUR.pid); $("scPrice").textContent = t || "—"; }
+  }
+  async function loadPrices(){
+    try{
+      var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({kind:"get_prices"}) });
+      var j = await r.json().catch(function(){ return {}; });
+      if(!r.ok || !j.ok || !j.prices) throw new Error(j.error || ("HTTP "+r.status));
+      Object.keys(j.prices).forEach(function(pid){ notePrice(pid, j.prices[pid]); });
+      PRICES_AS_OF = String(j.as_of || "");
+      paintPriceTags();
+    }catch(e){
+      // Not silent: the tags stay "$ —" and the page says why, once.
+      toast("⚠️ Prices could not load — " + (e && e.message || e), true);
+    }
   }
 
   // Repaint every pill on screen from LIVESTOCK, without re-rendering any list (a
@@ -570,7 +608,7 @@
       row.innerHTML =
         '<div class="info">' +
           '<div class="name">'+esc(w.name)+'</div>' +
-          '<div class="meta"><span class="sku">'+esc(w.sku||"—")+'</span>'+(w.supplier?' · '+esc(w.supplier):'')+'</div>' +
+          '<div class="meta"><span class="sku">'+esc(w.sku||"—")+'</span>'+(w.supplier?' · '+esc(w.supplier):'')+' '+priceTag(w.pid)+'</div>' +
           (so ? '<div class="soby">🚨 SOLD OUT — by '+esc(w.sold_out_by||"?")+(w.sold_out_at?' · '+esc(fmtWhen(w.sold_out_at)):'')+'</div>'
               : (c ? doneLine(c)+'<div class="edithint">✏️ Tap to re-count / fix</div>' : '')) +
         '</div>' +
@@ -592,7 +630,7 @@
         row.innerHTML =
           '<div class="info">' +
             '<div class="name">'+esc(c.name||("#"+pid))+'</div>' +
-            '<div class="meta"><span class="sku">'+esc(c.sku||"—")+'</span>'+(c.supplier?' · '+esc(c.supplier):'')+'</div>' +
+            '<div class="meta"><span class="sku">'+esc(c.sku||"—")+'</span>'+(c.supplier?' · '+esc(c.supplier):'')+' '+priceTag(pid)+'</div>' +
             doneLine(c)+'<div class="edithint">✏️ Tap to re-count / fix</div>' +
           '</div>' +
           '<div class="rt">'+donePill(c)+'</div>';
@@ -678,6 +716,7 @@
     $("scName").textContent = w.name;
     $("scSku").textContent = skuLine(w.sku, w.barcode);
     $("scSup").textContent = w.supplier || "—";
+    $("scPrice").textContent = priceText(w.pid) || "—";
     // The same number the two lists show — read through the one helper, so the count
     // screen can never disagree with the row the crew just tapped.
     var scRec = LIVESTOCK[String(w.pid)];
@@ -1038,10 +1077,11 @@
       if(!r.ok || !j.ok || !Array.isArray(j.items)) throw new Error(j.error || ("HTTP "+r.status));
       if(!j.items.length){ $("bcLogList").innerHTML = '<div class="sohint">✅ Nothing here right now.</div>'; return; }
       var box = $("bcLogList"); box.innerHTML = "";
+      j.items.forEach(function(it){ notePrice(it.pid, it.price); });
       j.items.forEach(function(it){
         var row = document.createElement("div"); row.className = "lgrow"; row.style.cursor = "pointer";
         row.innerHTML = '<div class="name">'+esc(it.name||("#"+it.pid))+'</div>' +
-          '<div class="sub">'+esc(it.sku||"")+(it.supplier?' · '+esc(it.supplier):'')+'</div>' +
+          '<div class="sub">'+esc(it.sku||"")+(it.supplier?' · '+esc(it.supplier):'')+' '+priceTag(it.pid)+'</div>' +
           '<div class="meta">🏷️ Tap to add a barcode</div>';
         row.onclick = function(){ $("bcLog").classList.remove("open"); openScreen({ pid:it.pid, name:it.name, sku:it.sku||"", supplier:it.supplier||"", stock:null, barcode:"", extra:true }); };
         box.appendChild(row);
@@ -1081,6 +1121,7 @@
       if(!r.ok || !j.ok || !Array.isArray(j.products)) throw new Error(j.error || ("HTTP "+r.status));
       CATALOG = j.products;
       CATALOG_AS_OF = String(j.as_of || "");
+      CATALOG.forEach(function(p){ notePrice(p.id, p.price); });
       renderSoList($("soSearch").value||"");
       setTimeout(function(){ $("soSearch").focus(); }, 100);
     }catch(e){
@@ -1137,7 +1178,7 @@
       // "the system thinks there are N" is the crew doing arithmetic the page already
       // knows. Same pill, same source-of-truth rule as the count list above.
       var stockLine = '<div class="stockline">'+stockPill(p.id, p.stock)+'</div>';
-      var meta = '<div class="meta">'+esc(p.sku||"—")+(p.supplier?' · '+esc(p.supplier):'')+'</div>'+bcLine+stockLine;
+      var meta = '<div class="meta">'+esc(p.sku||"—")+(p.supplier?' · '+esc(p.supplier):'')+' '+priceTag(p.id)+'</div>'+bcLine+stockLine;
       if(isCount){
         var counted = !!COUNTS[String(p.id)];
         var btnTxt = counted ? '✓ COUNTED' : 'COUNT';
@@ -1199,6 +1240,7 @@
     try{
       // optional: pull the live save endpoint from config
       try{ var rc=await fetch(RAW+"manager-report/config.json?_="+Date.now(),{cache:"no-store"}); if(rc.ok){ var ep=((await rc.json()).save_endpoint||"").trim(); if(ep) ENDPOINT=ep; } }catch(e){}
+      loadPrices();   // not awaited — the list must not wait for a price; tags fill in when it lands
       await loadWorklist();
       await loadCounts();
       render();
