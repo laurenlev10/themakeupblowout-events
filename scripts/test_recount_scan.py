@@ -33,7 +33,7 @@ CATALOG = {"ok": True, "kind": "get_catalog", "count": 3, "as_of": "2026-08-24T2
     {"id": 77,   "name": "Zoe Lip Gloss Set", "sku": "ZG-100", "supplier": "Zoe",
      "threshold": 10, "barcode": "1234567890123", "barcodes": [], "stock": 8},
 ]}
-LIVE_STOCK = {29: 41, 1245: 3, 77: -2}
+LIVE_STOCK = {29: 41, 1245: 3, 77: -2, 1437: 7}
 
 def serve():
     h = functools.partial(http.server.SimpleHTTPRequestHandler, directory=DOCS)
@@ -85,12 +85,17 @@ def main():
         live_stock_hits = []
         live_stock_down = {"on": False}
         saved = []                       # every recount_set_qty body the page sent
+        catalog_hits = []
+        late_products = []               # products OCTOPOS gained after the phone loaded its list
 
         # worker stub
         def worker(route):
             body = json.loads(route.request.post_data or "{}")
             k = body.get("kind")
-            if k == "get_catalog":  return route.fulfill(status=200, content_type="application/json", body=json.dumps(CATALOG))
+            if k == "get_catalog":
+                catalog_hits.append(1)
+                cat = dict(CATALOG, products=CATALOG["products"] + late_products)
+                return route.fulfill(status=200, content_type="application/json", body=json.dumps(cat))
             if k == "get_field_counts": return route.fulfill(status=200, content_type="application/json", body=json.dumps({"ok":True,"counts":{}}))
             # 2026-08-20 — the count list now comes from the Worker, not from the
             # published Pages copy (which stopped being republished on 2026-08-18 and
@@ -174,7 +179,24 @@ def main():
         rows = pg.eval_on_selector_all(".sorow .name", "els => els.map(e => e.textContent)")
         toast = pg.inner_text("#toast")
         check("4. unknown code shows no product", rows == [], rows)
-        check("4b. unknown code says so", "no product" in toast.lower(), toast)
+        check("4b. unknown code says so", "not found" in toast.lower(), toast)
+        # 4c — 04.10.2026 Bakersfield: a product created after the phone loaded its list
+        # ("Clearance! BC PASTEL Primer" was simply not in it). A miss on a list older than a
+        # minute re-reads the catalog before telling the crew the product does not exist.
+        late_products.append({"id": 1437, "name": "Late Product Created Saturday", "sku": "LATE1",
+                              "supplier": "", "threshold": 0, "barcode": "6676195371760",
+                              "barcodes": [], "stock": 5, "price": 4})
+        before = len(catalog_hits)
+        pg.evaluate("(function(){ var real = Date.now; Date.now = function(){ return real() + 5*60*1000; }; })()")
+        pg.fill("#soSearch", ""); pg.wait_for_timeout(200)
+        scan("6676195371760")
+        pg.wait_for_timeout(800)
+        toast = pg.inner_text("#toast")
+        check("4c. a miss on an old list re-reads the catalog", len(catalog_hits) > before, len(catalog_hits))
+        check("4d. ...and finds the product created after it", "Late Product Created Saturday" in toast, toast)
+        pg.fill("#soSearch", "zzz-nothing"); pg.wait_for_timeout(300)
+        hint = pg.inner_text("#soList")
+        check("4e. a miss no longer blames a missing barcode", "no barcode saved yet" not in hint and "OCTOPOS" in hint, hint)
 
         # 5 — COUNT ANOTHER mode
         pg.click("#soBack"); pg.wait_for_timeout(300)
@@ -236,12 +258,12 @@ def main():
         pg.click("#countAny"); pg.wait_for_timeout(600)
         pills = pg.eval_on_selector_all(".sorow [data-stockpid]", "els => els.map(e => e.textContent.trim())")
         check("11. every search row carries an 'in sys' number",
-              len(pills) == 3 and all(" in sys" in t for t in pills), pills)
+              len(pills) == len(CATALOG["products"]) + len(late_products) and all(" in sys" in t for t in pills), pills)
         pg.wait_for_timeout(1200)
         live = pg.eval_on_selector_all(".sorow [data-stockpid]",
                                        "els => els.map(e => e.textContent.trim())")
         check("11b. the LIVE number replaces the snapshot on every row",
-              live == ["41 in sys", "3 in sys", "-2 in sys"], live)
+              live == ["41 in sys", "3 in sys", "-2 in sys", "7 in sys"], live)
         check("11c. a live row is no longer marked as a snapshot",
               pg.eval_on_selector_all(".sorow [data-stockpid]",
                                       "els => els.every(e => !e.classList.contains('snap'))"))

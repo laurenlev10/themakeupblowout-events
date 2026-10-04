@@ -274,6 +274,9 @@
   var CATALOG = null, CAT_LOADING = false, SOFLAG = {};   // SOLD OUT: product catalog + locally-flagged pids
   var CATALOG_MODE = "soldout";   // "soldout" = flag sold-out · "count" = search a product to COUNT it
   var CATALOG_AS_OF = "";         // when the snapshot behind get_catalog was taken
+  var CATALOG_AT = 0;             // when THIS phone last loaded it (ms) — a stale list is re-read, not trusted
+  var CATALOG_TAIL = null;        // the Worker's live read of products newer than the snapshot
+  var CATALOG_RELOAD_MS = 3 * 60 * 1000;
 
   // ═══ "how many are in the system" — ONE definition, every surface ═══════════════
   // 🛑 Lauren 2026-08-28: "ליד כל מוצר שברשימה, גם כמה יש ממנו במערכת בזמן החיפוש."
@@ -1055,7 +1058,10 @@
     $("soSearch").placeholder = (mode === "count") ? "Search or 📷 scan a product to count…" : "Search or 📷 scan a product…";
     $("soModal").classList.add("open");
     $("soSearch").value = "";
-    if(CATALOG){ renderSoList(""); setTimeout(function(){ $("soSearch").focus(); }, 100); }
+    if(CATALOG){ renderSoList(""); setTimeout(function(){ $("soSearch").focus(); }, 100);
+      // 🛑 04.10.2026 — a phone keeps this page open all weekend. A product created in
+      // OCTOPOS on Saturday was never in the list it loaded on Friday. Re-read it.
+      if(Date.now() - CATALOG_AT > CATALOG_RELOAD_MS) loadCatalog(true); }
     else { loadCatalog(); }
   }
   // ---- SOLD OUT: flag any product as sold out ----
@@ -1111,21 +1117,26 @@
     }
   }
 
-  async function loadCatalog(){
+  async function loadCatalog(quiet){
     if(CAT_LOADING) return;
     CAT_LOADING = true;
-    $("soList").innerHTML = '<div class="sohint">Loading products…</div>';
+    if(!quiet) $("soList").innerHTML = '<div class="sohint">Loading products…</div>';
     try{
       var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({kind:"get_catalog"}) });
       var j = await r.json().catch(function(){ return {}; });
       if(!r.ok || !j.ok || !Array.isArray(j.products)) throw new Error(j.error || ("HTTP "+r.status));
       CATALOG = j.products;
       CATALOG_AS_OF = String(j.as_of || "");
+      CATALOG_TAIL = j.tail || null;
+      CATALOG_AT = Date.now();
       CATALOG.forEach(function(p){ notePrice(p.id, p.price); });
       renderSoList($("soSearch").value||"");
-      setTimeout(function(){ $("soSearch").focus(); }, 100);
+      if(!quiet) setTimeout(function(){ $("soSearch").focus(); }, 100);
+      return true;
     }catch(e){
-      $("soList").innerHTML = '<div class="sohint">⚠️ Could not load products.<br>'+esc(e.message||e)+'</div>';
+      // A background re-read that failed keeps the list already on screen (IRON RULE #18).
+      if(!quiet || !CATALOG) $("soList").innerHTML = '<div class="sohint">⚠️ Could not load products.<br>'+esc(e.message||e)+'</div>';
+      return false;
     }finally{ CAT_LOADING = false; }
   }
 
@@ -1146,7 +1157,16 @@
     var hits = byBarcode(code);
     if(hits.length === 1){ toast("📷 " + hits[0].name); }
     else if(hits.length > 1){ toast("📷 " + hits.length + " products carry " + code); }
-    else { toast("📷 " + code + " — no product has this barcode. Search by name instead.", true); }
+    else if(Date.now() - CATALOG_AT > 60 * 1000){
+      // Not in the list this phone holds — re-read it once before saying "no product".
+      loadCatalog(true).then(function(ok){
+        var again = byBarcode(code);
+        if(again.length === 1) toast("📷 " + again[0].name);
+        else if(again.length > 1) toast("📷 " + again.length + " products carry " + code);
+        else toast("📷 " + code + " — not found in OCTOPOS. Search by name instead.", true);
+      });
+    }
+    else { toast("📷 " + code + " — not found in OCTOPOS. Search by name instead.", true); }
   }
 
   function renderSoList(q){
@@ -1167,7 +1187,21 @@
         if(hit) items.push({ p:p, bc:hit });
       });
     }
-    if(!items.length){ box.innerHTML = '<div class="sohint">No products match “'+esc(q)+'”.<br>If you scanned a barcode, this product has no barcode saved yet — find it by name and add one.</div>'; return; }
+    if(!items.length){
+      // 🛑 04.10.2026 — the old text said "this product has no barcode saved yet" for every
+      // miss. On Bakersfield's floor the real reason was that the product was missing from
+      // the list (no supplier in OCTOPOS, or created after the snapshot), and the crew went
+      // hunting for a barcode problem that did not exist. Say what is actually known.
+      var tl = CATALOG_TAIL;
+      var gap = (tl && (!tl.ok || !tl.complete))
+        ? '<br>⚠️ Products added to OCTOPOS after ' + esc(fmtWhen(CATALOG_AS_OF) || "the last snapshot")
+          + ' could not all be checked right now' + (tl.error ? ' (' + esc(tl.error) + ')' : '') + ' — try again in a few minutes.'
+        : '';
+      box.innerHTML = '<div class="sohint">No product in OCTOPOS matches “'+esc(q)+'”.'
+        + '<br>Scanned a sticker? Search the product by name — its barcode in OCTOPOS may be different or missing; open it and save this one.'
+        + gap + '</div>';
+      return;
+    }
     var capped = items.slice(0, 200);
     var isCount = (CATALOG_MODE === "count");
     box.innerHTML = capped.map(function(it){
