@@ -259,7 +259,7 @@ def render_event(ev):
         "SHARE_URL":  "share.html",  # relative within the event folder
         "IG_URL":     ev.get("ig_url",    "https://www.instagram.com/themakeupblowoutsale/"),
         "FB_URL":     ev.get("fb_url",    "https://www.facebook.com/themakeupblowoutsale/"),
-        "TIKTOK_URL": ev.get("tiktok_url","https://www.tiktok.com/@themakeupblowoutsale"),
+        "TIKTOK_URL": ev.get("tiktok_url","https://www.tiktok.com/@makeupblowoutsale"),
         "EVENT_SLUG": slug,
         "HERO_IMAGE": f"/_assets/events/{slug}/hero.png",
         "HOURS_LABEL": HOURS_LABEL,
