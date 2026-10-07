@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-10-07T18:02:53Z",
+  "_updated_at": "2026-10-07T18:05:45Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -429,7 +429,8 @@
       "form_id": "6a1c5dd2c93ce37da2078b0d",
       "subscribe_url": "/events/santa-ana-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/DeM8qxNRdh8/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==",
-      "fb_url": "https://fb.watch/v/4G1iV3GwR/"
+      "fb_url": "https://fb.watch/v/4G1iV3GwR/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7693987991336914207"
     },
     {
       "city": "Anaheim",
