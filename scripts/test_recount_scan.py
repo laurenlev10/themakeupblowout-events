@@ -10,6 +10,9 @@ Proves, in a real browser, that:
   5. an unknown code says so instead of showing a wrong product,
   6. the count-screen barcode field still fills from the camera (no regression),
   7. closing the search modal releases the camera,
+  13. adding a barcode (primary or additional) leaves a GREEN "added successfully" note
+      right under the barcode fields, a failed add does not, and the next product
+      opens clean (Lauren 2026-10-09).
   11. every product-search row shows how many are in the system, the snapshot number
       paints first and is marked as a snapshot, and the LIVE number replaces it
       (Lauren 2026-08-28).
@@ -129,6 +132,9 @@ def main():
                 return route.fulfill(status=200, content_type="application/json", body=json.dumps(
                     {"ok":True,"kind":"recount_set_qty","pid":body.get("pid"),"qty":body.get("qty"),
                      "octopos":{"set_qty":body.get("qty"),"tag_removed":True,"tag_attempts":1}}))
+            # 13 — a code the test wants OCTOPOS to refuse
+            if k == "banana_write" and body.get("code") == "5550009990000":
+                return route.fulfill(status=500, content_type="application/json", body=json.dumps({"error":"refused"}))
             if k == "banana_read":  return route.fulfill(status=200, content_type="application/json", body=json.dumps({"ok":True,"items":[]}))
             return route.fulfill(status=200, content_type="application/json", body=json.dumps({"ok":True}))
         pg.route("https://danielle.laurenlev10.workers.dev/**", worker)
@@ -315,6 +321,27 @@ def main():
               "OUT OF STOCK" in (pg.inner_text("#toast") or ""), pg.inner_text("#toast"))
         check("12d. the row reads OUT OF STOCK afterwards",
               "OUT OF STOCK" in (pg.inner_text("#list") or ""), pg.inner_text("#list")[:200])
+
+        # 13 — Lauren 2026-10-09: "ברגע שמוסיפים ברקוד — הערה בירוק שהברקוד התווסף בהצלחה"
+        def note():
+            return pg.evaluate("""() => { var b = document.getElementById('bcOk');
+                var cs = getComputedStyle(b); return { shown: cs.display !== 'none',
+                text: b.textContent, bg: cs.backgroundColor, fg: cs.color }; }""")
+        if not pg.is_visible("#scBarcode"):
+            pg.click(".row"); pg.wait_for_timeout(500)
+        check("13. no note before anything is added", not note()["shown"], note())
+        pg.fill("#scBarcode", "5550001112223"); pg.click("#btnBarcode"); pg.wait_for_timeout(700)
+        n = note()
+        check("13b. saving the barcode shows the note", n["shown"] and "5550001112223" in n["text"] and "added successfully" in n["text"], n)
+        check("13c. …and it is green", n["bg"] == "rgb(220, 252, 231)" and n["fg"] == "rgb(22, 101, 52)", n)
+        pg.click("#btnBcExtra"); pg.fill("#scBcNew", "5550004445556"); pg.click("#btnBcNewSave"); pg.wait_for_timeout(700)
+        n = note()
+        check("13d. adding ANOTHER barcode shows the note for that code", n["shown"] and "5550004445556" in n["text"], n)
+        pg.click("#btnBcExtra"); pg.fill("#scBcNew", "5550009990000"); pg.click("#btnBcNewSave"); pg.wait_for_timeout(700)
+        check("13e. a refused add does not leave a green 'success' note", not note()["shown"], note())
+        pg.click("#scBack"); pg.wait_for_timeout(300)
+        pg.click(".row"); pg.wait_for_timeout(500)
+        check("13f. the next product opens without the old note", not note()["shown"], note())
 
         check("8. no page errors", not errs, errs)
         br.close()

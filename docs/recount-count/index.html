@@ -97,6 +97,11 @@
   .bcextra-chip button{ background:#e2e8f0; border:0; border-radius:999px; width:20px; height:20px; line-height:1; font-size:12px; cursor:pointer; color:#334155; }
   .bcextra-add{ background:#fff; border:2px dashed var(--line); border-radius:12px; padding:9px 13px; font-size:13px; font-weight:700; color:#475569; cursor:pointer; margin-top:8px; }
   .bcextra-add:disabled{ opacity:.5; }
+  /* ✅ Lauren 2026-10-09: "ברגע שמוסיפים ברקוד — הערה בירוק שהברקוד התווסף בהצלחה".
+     The toast disappears in 2.6s at the bottom of the screen and the crew missed it.
+     This box sits right under the barcode fields and stays until the next product. */
+  .bcok{ display:none; background:#dcfce7; border:1px solid #86efac; color:#166534; border-radius:12px; padding:10px 14px; font-size:14px; font-weight:700; margin:-4px 0 14px; }
+  .bcok.show{ display:block; }
   /* 🛑 Lauren 2026-08-15 — ONE camera panel for the whole page, fixed above every
      overlay (count screen z50, search modal z60), below the toast (z100). It used to
      sit inline inside the count screen, which meant the search modal could not use it
@@ -210,6 +215,7 @@
         <button class="bcsave" id="btnBcNewCancel" type="button" style="background:#94a3b8;">✕</button>
       </div>
     </div>
+    <div class="bcok" id="bcOk" role="status" aria-live="polite"></div>
     <h3>Out of stock?</h3>
     <button class="bigbtn oos" id="btnOos" type="button">🚫 OUT OF STOCK — set to 0</button>
     <h3>Or enter the counted quantity</h3>
@@ -735,6 +741,7 @@
     // Extra barcodes (Lauren 2026-08-14): show what's already on the product, then pull the
     // authoritative list from OCTOPOS. Fail-soft — if the fetch fails the crew still counts.
     closeBcNew();
+    bcOk("");
     CUR.barcodes = Array.isArray(w.barcodes) ? w.barcodes.slice() : [];
     renderExtras();
     loadExtras(w.pid);
@@ -776,7 +783,9 @@
       $("scSku").textContent = skuLine(CUR.sku, bc);
       btn.textContent = j.pending ? "⏳ Saved" : "✓ Saved"; setTimeout(function(){ btn.disabled=false; btn.textContent="💾 Save barcode"; }, 1500);
       toast(j.pending ? "⏳ Barcode saved — OCTOPOS is busy, it will update automatically" : "✅ Barcode saved");
+      bcOk(j.pending ? "✅ Barcode " + bc + " saved — it will reach OCTOPOS automatically" : "✅ Barcode " + bc + " added successfully");
     }catch(e){
+      bcOk("");
       btn.disabled=false; btn.textContent="💾 Save barcode";
       var m = String(e.message||e);
       toast(/put 4\d\d|duplicat|exist|taken|unique/i.test(m)
@@ -817,6 +826,9 @@
     renderExtras();
     return j;
   }
+  // The ONE place the green "barcode added" confirmation is written (Lauren 2026-10-09).
+  // Both save paths — primary and additional — go through it; openScreen clears it.
+  function bcOk(msg){ var b = $("bcOk"); b.textContent = msg || ""; b.classList.toggle("show", !!msg); }
   function closeBcNew(){
     stopCam();
     $("bcNewRow").style.display = "none";
@@ -837,14 +849,16 @@
     if(!code){ toast("Scan or type a barcode first", true); return; }
     var btn = this; btn.disabled = true; btn.textContent = "…";
     if (await blockedByDuplicate(code)){ btn.disabled = false; btn.textContent = "✓ Add"; return; }
-    try { var jb = await bananaWrite({ code: code }); toast(jb.pending ? "⏳ Barcode saved — it will reach OCTOPOS automatically" : "✅ Barcode added"); closeBcNew(); }
-    catch(e){ toast("Failed: "+(e.message||e), true); }
+    try { var jb = await bananaWrite({ code: code }); toast(jb.pending ? "⏳ Barcode saved — it will reach OCTOPOS automatically" : "✅ Barcode added"); closeBcNew();
+      bcOk(jb.pending ? "✅ Barcode " + code + " saved — it will reach OCTOPOS automatically" : "✅ Barcode " + code + " added successfully"); }
+    catch(e){ bcOk(""); toast("Failed: "+(e.message||e), true); }
     btn.disabled = false; btn.textContent = "✓ Add";
   };
   $("scBcNew").addEventListener("keydown", function(e){ if(e.key === "Enter") $("btnBcNewSave").click(); });
   async function removeExtra(code){
     if(!CUR || !confirm("Remove barcode " + code + "?")) return;
     var keep = ((CUR.barcodes)||[]).filter(function(c){ return c !== code; });
+    bcOk("");
     try { var jr = await bananaWrite({ list: keep }); toast(jr.pending ? "⏳ Removal saved — it will reach OCTOPOS automatically" : "✅ Barcode removed"); }
     catch(e){ toast("Failed: "+(e.message||e), true); }
   }
