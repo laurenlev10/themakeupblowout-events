@@ -343,6 +343,26 @@ def main():
         pg.click(".row"); pg.wait_for_timeout(500)
         check("13f. the next product opens without the old note", not note()["shown"], note())
 
+        # 14 — Lauren 2026-10-11: "אם איש צוות לא יודע מה המוצר אז הוא יכול ללחוץ על תמונה"
+        # The expected URL is spelled out HERE, not read from the page's helper (IRON RULE #42).
+        from urllib.parse import quote
+        gimg = lambda q: "https://www.google.com/search?udm=2&q=" + quote(q, safe="")
+        NAME, BC = "Amuse Bloom & Shine Powder Blush", "5550001112223"   # 13b saved this barcode on the product
+        pg.click("#scBack"); pg.wait_for_timeout(300)
+        row_links = pg.eval_on_selector_all("#list .row a.photo", "as => as.map(a => ({h: a.href, t: a.target}))")
+        check("14. every list row carries a 📷 Photo link for exactly that product",
+              len(row_links) >= 1 and row_links[0]["h"] == gimg(NAME) and row_links[0]["t"] == "_blank", row_links)
+        pg.context.route("https://www.google.com/**", lambda r: r.fulfill(status=200, body="photo"))
+        with pg.context.expect_page() as newp:
+            pg.click("#list .row a.photo")
+        newp.value.close()
+        check("14b. tapping the photo opens a new tab and does NOT open the count screen",
+              not pg.evaluate("document.getElementById('screen').classList.contains('open')"))
+        pg.click("#list .row .name"); pg.wait_for_timeout(500)
+        sc = pg.eval_on_selector_all("#scPhoto a.photo", "as => as.map(a => a.href)")
+        check("14c. the count screen shows the photo by name and by barcode", sc == [gimg(NAME), gimg(BC)], sc)
+        pg.click("#scBack"); pg.wait_for_timeout(200)
+
         check("8. no page errors", not errs, errs)
         br.close()
 

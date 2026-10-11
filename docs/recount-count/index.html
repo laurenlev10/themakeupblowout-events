@@ -30,6 +30,9 @@
   .row .info{ flex:1; min-width:0; }
   .row .name{ font-weight:700; font-size:15px; line-height:1.25; }
   .row .meta{ font-size:12px; color:var(--muted); margin-top:3px; }
+  a.photo{ display:inline-block; font-size:12px; font-weight:700; color:#be185d; text-decoration:none; border:1px solid #f9a8d4; border-radius:999px; padding:1px 8px; margin-inline-start:4px; background:#fff; }
+  .scphoto{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .scphoto a.photo{ font-size:15px; padding:6px 12px; }
   .row .sku{ font-variant-numeric:tabular-nums; }
   .row .rt{ text-align:right; flex-shrink:0; }
   .stockpill{ font-size:12px; font-weight:700; padding:3px 9px; border-radius:999px; background:#ede9fe; color:#5b21b6; white-space:nowrap; }
@@ -163,6 +166,8 @@
   .lgrow .meta{ font-size:12px; color:#be185d; margin-top:3px; font-weight:600; }
   .lgrow .sub{ font-size:11px; color:var(--muted); margin-top:2px; }
 </style>
+<!-- 11.10.2026 — the ONE rule for "open this product online" (shared with /pricing/ on the dashboard). -->
+<script src="/_assets/product-photo.js"></script>
 </head>
 <body>
 <header>
@@ -189,6 +194,7 @@
   <div class="body">
     <div class="pname" id="scName">—</div>
     <div class="psku" id="scSku">—</div>
+    <div class="scphoto" id="scPhoto"></div>
     <div class="facts">
       <div class="fact"><div class="l">Supplier</div><div class="v" id="scSup">—</div></div>
       <div class="fact"><div class="l">System stock</div><div class="v" id="scStock">—</div></div>
@@ -617,13 +623,13 @@
       row.innerHTML =
         '<div class="info">' +
           '<div class="name">'+esc(w.name)+'</div>' +
-          '<div class="meta"><span class="sku">'+esc(w.sku||"—")+'</span>'+(w.supplier?' · '+esc(w.supplier):'')+' '+priceTag(w.pid)+'</div>' +
+          '<div class="meta"><span class="sku">'+esc(w.sku||"—")+'</span>'+(w.supplier?' · '+esc(w.supplier):'')+' '+priceTag(w.pid)+' '+photoLink(w.name,"📷 Photo")+'</div>' +
           (so ? '<div class="soby">🚨 SOLD OUT — by '+esc(w.sold_out_by||"?")+(w.sold_out_at?' · '+esc(fmtWhen(w.sold_out_at)):'')+'</div>'
               : (c ? doneLine(c)+'<div class="edithint">✏️ Tap to re-count / fix</div>' : '')) +
         '</div>' +
         '<div class="rt">' + right + '</div>';
-      if(!so) row.onclick = function(){ openScreen(w); };
-      else row.onclick = function(){ toast("🚨 Already marked SOLD OUT by "+(w.sold_out_by||"a teammate")); };
+      if(!so) row.onclick = function(ev){ if(ev && ev.target.closest && ev.target.closest("a.photo")) return; openScreen(w); };
+      else row.onclick = function(ev){ if(ev && ev.target.closest && ev.target.closest("a.photo")) return; toast("🚨 Already marked SOLD OUT by "+(w.sold_out_by||"a teammate")); };
       list.appendChild(row);
     });
     // Extra products counted in the field that were NOT on the requested list (Lauren
@@ -639,11 +645,11 @@
         row.innerHTML =
           '<div class="info">' +
             '<div class="name">'+esc(c.name||("#"+pid))+'</div>' +
-            '<div class="meta"><span class="sku">'+esc(c.sku||"—")+'</span>'+(c.supplier?' · '+esc(c.supplier):'')+' '+priceTag(pid)+'</div>' +
+            '<div class="meta"><span class="sku">'+esc(c.sku||"—")+'</span>'+(c.supplier?' · '+esc(c.supplier):'')+' '+priceTag(pid)+' '+photoLink(c.name,"📷 Photo")+'</div>' +
             doneLine(c)+'<div class="edithint">✏️ Tap to re-count / fix</div>' +
           '</div>' +
           '<div class="rt">'+donePill(c)+'</div>';
-        row.onclick = function(){ openScreen({ pid:Number(pid), name:c.name, sku:c.sku, supplier:c.supplier||"", stock:null, barcode:"", extra:true }); };
+        row.onclick = function(ev){ if(ev && ev.target.closest && ev.target.closest("a.photo")) return; openScreen({ pid:Number(pid), name:c.name, sku:c.sku, supplier:c.supplier||"", stock:null, barcode:"", extra:true }); };
         list.appendChild(row);
       });
     }
@@ -678,6 +684,13 @@
   // second-guess the stored value, show it and prefill it as-is.
   // What DOES break: OCTOPOS refuses to store the same value on two products, so saving a
   // code another product already owns fails. Catch that here, by name, before the save.
+  // "📷 Photo" — a tap opens a picture of the product online, so a teammate who doesn't know
+  // the item can see it (Lauren 11.10.2026). The URL rule is in /_assets/product-photo.js, once.
+  // If that file did not load the link is simply absent — never a broken link.
+  function photoLink(q, label){
+    var u = window.MbsProductPhoto && window.MbsProductPhoto.url(q);
+    return u ? '<a class="photo" href="'+esc(u)+'" target="_blank" rel="noopener">'+label+'</a>' : '';
+  }
   function skuLine(sku, bc){
     bc = String(bc == null ? "" : bc).trim();
     return bc ? (sku || "—") + "  ·  " + bc : (sku || "—");
@@ -724,6 +737,7 @@
     CUR = w;
     $("scName").textContent = w.name;
     $("scSku").textContent = skuLine(w.sku, w.barcode);
+    $("scPhoto").innerHTML = photoLink(w.name, "📷 See the product") + (w.barcode ? photoLink(w.barcode, "🔎 By barcode") : "");
     $("scSup").textContent = w.supplier || "—";
     $("scPrice").textContent = priceText(w.pid) || "—";
     // The same number the two lists show — read through the one helper, so the count
