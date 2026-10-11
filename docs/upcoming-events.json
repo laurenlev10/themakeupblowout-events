@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-10-11T23:05:39Z",
+  "_updated_at": "2026-10-11T23:09:36Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -441,7 +441,8 @@
       "venue_name": "Hotel LULU",
       "venue_address": "1850 S Harbor Blvd, Anaheim, CA 92802",
       "form_id": "6a1c6be9c2ab1b2d9176a2e1",
-      "subscribe_url": "/events/anaheim-ca-2026/"
+      "subscribe_url": "/events/anaheim-ca-2026/",
+      "ig_url": "https://www.instagram.com/reel/DeXzYY_RLa8/?utm_source=ig_web_copy_link&mdxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA=="
     }
   ],
   "_field_doc": {
