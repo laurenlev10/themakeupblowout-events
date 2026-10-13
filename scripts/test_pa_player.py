@@ -73,7 +73,8 @@ def main():
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.goto(base)
         ok(wait(page, "!document.getElementById('go').disabled"), "page loads and Start is enabled")
-        ok(page.locator("#clips .t").count() == 9, "9 announcement rows")
+        n_clips = len(json.loads((site / "pa/audio/manifest.json").read_text())["clips"])
+        ok(page.locator("#clips .t").count() == n_clips, f"{n_clips} announcement rows")
         ok(not page.locator("#err.on").count(), "no red bar on a fresh build")
 
         page.set_input_files("#pick", [str(s) for s in songs])
@@ -96,7 +97,7 @@ def main():
         ok("audio/deal_75.mp3" in v, f"the second slot is the next clip ({v})")
         ok(wait(page, "!__pa.state().busy", 30), "the announcement finishes and music goes on")
 
-        ok(page.locator("#clips button").count() == 9, "one ▶ EN+ES button per announcement")
+        ok(page.locator("#clips button").count() == n_clips, "one ▶ EN+ES button per announcement")
         page.locator("#clips button").nth(3).click()   # row 3 = share_reel
         ok(wait(page, "(__pa.state().voiceSrc||'').indexOf('audio/share_reel.mp3')>=0", 5), "the manual button plays that clip")
         ok(wait(page, "!__pa.state().busy && !document.getElementById('music').paused", 40), "the song resumes after the manual clip")

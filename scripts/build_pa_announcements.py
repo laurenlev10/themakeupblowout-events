@@ -45,7 +45,8 @@ MANIFEST = AUDIO / "manifest.json"
 MIN_MATCH = 0.80
 
 # Spoken numbers / spellings the recogniser writes differently from the script.
-NUM = {"seventy-five": "75", "setenta y cinco": "75", "ninety-five": "95", "noventa y cinco": "95",
+NUM = {"one hundred twenty": "120", "ciento veinte": "120", "forty-five": "45", "cuarenta y cinco": "45",
+       "fifteen": "15", "quince": "15", "seventy-five": "75", "setenta y cinco": "75", "ninety-five": "95", "noventa y cinco": "95",
        "twenty-two": "22", "veintidós": "22", "thirty": "30", "treinta": "30", "five": "5",
        "cinco": "5", "lip gloss": "lipgloss", "ishadow": "eyeshadow"}
 

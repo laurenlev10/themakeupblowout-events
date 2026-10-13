@@ -1,5 +1,5 @@
 {
- "source_sha256": "e787e91b5ed210ee5d6d578e828c23d6c9f5ea393d15cae8b7d5ce6231f16bce",
+ "source_sha256": "a1fdec7ccdbad5a2cf8693abd8a88b86c59496bbc0e86f4dbb8c02225290bac9",
  "verified_min_match": 0.8,
  "order": [
   "en",
@@ -122,6 +122,30 @@
      "end": 15.22,
      "text": "¿Te registraste en nuestra lista de mensajes? Muestra tu mensaje de texto en la caja y recibe una sombra de ojos gratis con tu compra.",
      "heard": "Te registraste en nuestra lista de mensajes, muestra tu mensaje de texto en la caja y recibe  una sombra de ojos gratis con tu compra.",
+     "match": 1.0
+    }
+   ]
+  },
+  {
+   "id": "mystery_box",
+   "rotation": "auto",
+   "file": "mystery_box.mp3",
+   "seconds": 27.1,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 12.67,
+     "text": "Have you seen our famous Mystery Box? It's packed with up to fifteen beauty surprises, worth over one hundred twenty dollars, for just forty-five dollars! That's even less than online. Grab yours before they're gone!",
+     "heard": "Have you seen our famous mystery box? It's packed with up to 15 beauty surprises worth  over $120 for just $45. That's even less than online. Grab yours before they're gone.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 13.37,
+     "end": 25.55,
+     "text": "¿Ya viste nuestra famosa Mystery Box? Trae hasta quince sorpresas de belleza, con un valor de más de ciento veinte dólares, ¡por solo cuarenta y cinco dólares! Es aún más barata que en línea. ¡Llévate la tuya antes de que se acaben!",
+     "heard": "Ya viste nuestra famosa Mystery Box?  Trae hasta 15 sorpresas de belleza con un valor de más de 120 dólares por solo 45 dólares.  Es aún más barata que en línea.  Llévate la tuya antes de que se acaben.",
      "match": 1.0
     }
    ]
