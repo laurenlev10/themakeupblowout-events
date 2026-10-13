@@ -3,9 +3,9 @@
 
 Runs the real page in Chromium against a local copy of docs/pa/ and asserts:
   1. it loads: 9 clip rows, Start enabled, no red bar
-  2. Start with music loaded → the first slot is an announcement (welcome, EN),
-     then a song from the phone plays
-  3. after `every_songs` song endings the next announcement plays, in the OTHER language
+  2. Start with music loaded → the first slot is an announcement (welcome — one file,
+     English then Spanish over the music bed), then a song from the phone plays
+  3. after `every_songs` song endings the NEXT announcement plays (deal_75)
   4. a manual "Announce now" button plays that clip and the song resumes
   5. tamper: announcements.json changed without a rebuild → the red OUT OF DATE bar
   6. scripts/build_pa_announcements.py check fails on that tampered copy, too
@@ -81,7 +81,8 @@ def main():
 
         page.click("#go")
         st = page.evaluate("__pa.state()")
-        ok(st["running"] and st["voiceSrc"] and "welcome_en" in st["voiceSrc"], f"Start opens with the welcome, in English ({st['voiceSrc']})")
+        ok(st["running"] and st["voiceSrc"] and "audio/welcome.mp3" in st["voiceSrc"], f"Start opens with the welcome ({st['voiceSrc']})")
+        ok("English → Español" in page.inner_text("#rotInfo"), "the page says English, then Spanish")
         ok(wait(page, "!!__pa.state().musicSrc && !__pa.state().busy", 30), "after the announcement a song plays")
 
         first_voice = page.evaluate("__pa.state().voiceSrc")
@@ -92,11 +93,12 @@ def main():
         page.evaluate("__pa.end()")
         ok(wait(page, "__pa.state().busy", 5), f"song {every} ended → an announcement starts")
         v = page.evaluate("__pa.state().voiceSrc")
-        ok("deal_75_es" in v, f"the second slot is the next clip, in Spanish ({v})")
+        ok("audio/deal_75.mp3" in v, f"the second slot is the next clip ({v})")
         ok(wait(page, "!__pa.state().busy", 30), "the announcement finishes and music goes on")
 
-        page.locator("#clips button").nth(7).click()   # share_reel ES (rows: 2 buttons each, 0-based → row 3)
-        ok(wait(page, "(__pa.state().voiceSrc||'').indexOf('share_reel_es')>=0", 5), "the manual button plays that clip")
+        ok(page.locator("#clips button").count() == 9, "one ▶ EN+ES button per announcement")
+        page.locator("#clips button").nth(3).click()   # row 3 = share_reel
+        ok(wait(page, "(__pa.state().voiceSrc||'').indexOf('audio/share_reel.mp3')>=0", 5), "the manual button plays that clip")
         ok(wait(page, "!__pa.state().busy && !document.getElementById('music').paused", 40), "the song resumes after the manual clip")
         ok(not errors, "no JavaScript errors " + ("; ".join(errors) if errors else ""))
         ok(not page.locator("#err.on").count(), "still no red bar after playing")

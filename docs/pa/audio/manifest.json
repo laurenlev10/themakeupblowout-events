@@ -1,186 +1,226 @@
 {
- "source_sha256": "3f0d58f869317a96da6810f7898c4d0bba4d33331a2d5f3196d9bfbac850b698",
+ "source_sha256": "b6ff6c688a7704af10545d5280bd4959aefc3ab1adca3efb541fdde4199d6beb",
  "verified_min_match": 0.8,
+ "order": [
+  "en",
+  "es"
+ ],
  "clips": [
   {
    "id": "welcome",
-   "lang": "en",
    "rotation": "auto",
-   "file": "welcome_en.mp3",
-   "seconds": 11.0,
-   "text": "Hey beauties, welcome to The Makeup Blowout Sale! Grab a bag, take your time, and enjoy shopping your favorite brands at up to seventy-five percent off.",
-   "heard": "Hey beauties, welcome to the Makeup Blowout sale.  Grab a bag, take your time, and enjoy shopping your favorite brands at up to 75% off.",
-   "match": 1.0
-  },
-  {
-   "id": "welcome",
-   "lang": "es",
-   "rotation": "auto",
-   "file": "welcome_es.mp3",
-   "seconds": 12.0,
-   "text": "¡Hola, bellezas! Bienvenidas a The Makeup Blowout Sale. Tomen una bolsa, tómense su tiempo y disfruten sus marcas favoritas con hasta setenta y cinco por ciento de descuento.",
-   "heard": "Hola, bellezas, bienvenidas a the Makeup Blowout Sale.  Tómen una bolsa, tómense su tiempo y disfruten sus marcas favoritas con hasta 75% de descuento.",
-   "match": 0.96
+   "file": "welcome.mp3",
+   "seconds": 23.8,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 11.88,
+     "text": "Hey beauties, welcome to The Makeup Blowout Sale! Grab a bag, take your time, and enjoy shopping your favorite brands at up to seventy-five percent off.",
+     "heard": "Hey beauties, welcome to the Makeup Blowout sale.  Grab a bag, take your time, and enjoy shopping your favorite brands at up to 75% off.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 12.58,
+     "end": 22.24,
+     "text": "¡Hola, bellezas! Bienvenidas a The Makeup Blowout Sale. Tomen una bolsa, tómense su tiempo y disfruten sus marcas favoritas con hasta setenta y cinco por ciento de descuento.",
+     "heard": "¡Hola, bellezas! Bienvenidas a the Makeup Blowout Sale.  Tómen una bolsa, tómense su tiempo y disfruten sus marcas favoritas con hasta 75% de descuento.",
+     "match": 0.96
+    }
+   ]
   },
   {
    "id": "deal_75",
-   "lang": "en",
    "rotation": "auto",
-   "file": "deal_75_en.mp3",
-   "seconds": 9.6,
-   "text": "Hot deal alert! Everything here is up to seventy-five percent off. When it's gone, it's gone, so if you love it, grab it now!",
-   "heard": "Hot deal alert. Everything here is up to 75% off. When it's gone, it's gone, so if you  love it, grab it now.",
-   "match": 1.0
-  },
-  {
-   "id": "deal_75",
-   "lang": "es",
-   "rotation": "auto",
-   "file": "deal_75_es.mp3",
-   "seconds": 9.8,
-   "text": "¡Alerta de ofertas! Todo aquí tiene hasta setenta y cinco por ciento de descuento. Cuando se acaba, se acaba. ¡Si te encanta, llévatelo ahora!",
-   "heard": "Alerta de ofertas, todo aquí tiene hasta 75% de descuento, cuando se acaba, se acaba,  si te encanta, llévatelo ahora.",
-   "match": 1.0
+   "file": "deal_75.mp3",
+   "seconds": 20.3,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 10.45,
+     "text": "Hot deal alert! Everything here is up to seventy-five percent off. When it's gone, it's gone, so if you love it, grab it now!",
+     "heard": "Hot deal alert. Everything here is up to 75% off.  When it's gone, it's gone, so if you love it, grab it now.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 11.15,
+     "end": 18.76,
+     "text": "¡Alerta de ofertas! Todo aquí tiene hasta setenta y cinco por ciento de descuento. Cuando se acaba, se acaba. ¡Si te encanta, llévatelo ahora!",
+     "heard": "Lerta de ofertas, todo aquí tiene hasta 75% de descuento, cuando se acaba, se acaba,  si te encanta, llévatelo ahora.",
+     "match": 0.95
+    }
+   ]
   },
   {
    "id": "deal_brush_set",
-   "lang": "en",
    "rotation": "auto",
-   "file": "deal_brush_set_en.mp3",
-   "seconds": 9.2,
-   "text": "Don't miss our twenty-two piece brush set, just five dollars. That's ninety-five percent off! Ask any of our team where to find it.",
-   "heard": "Don't miss our 22-piece brush set, just $5. That's 95% off. Ask any of our team where  to find it.",
-   "match": 1.0
-  },
-  {
-   "id": "deal_brush_set",
-   "lang": "es",
-   "rotation": "auto",
-   "file": "deal_brush_set_es.mp3",
-   "seconds": 11.2,
-   "text": "No te pierdas nuestro set de veintidós brochas, a solo cinco dólares. ¡Eso es noventa y cinco por ciento de descuento! Pregunta a nuestro equipo dónde encontrarlo.",
-   "heard": "No te pierdas nuestro set de 22 brochas a solo $5. Eso es 95% de descuento. Pregunta  a nuestro equipo dónde encontrarlo.",
-   "match": 1.0
+   "file": "deal_brush_set.mp3",
+   "seconds": 21.4,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 10.28,
+     "text": "Don't miss our twenty-two piece brush set, just five dollars. That's ninety-five percent off! Ask any of our team where to find it.",
+     "heard": "Don't miss our 22-piece brush set, just $5.  That's 95% off. Ask any of our team where to find it.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 10.98,
+     "end": 19.87,
+     "text": "No te pierdas nuestro set de veintidós brochas, a solo cinco dólares. ¡Eso es noventa y cinco por ciento de descuento! Pregunta a nuestro equipo dónde encontrarlo.",
+     "heard": "No te pierdas nuestro set de 22 brochas a solo 5 dólares.  Eso es 95% de descuento. Pregunta a nuestro equipo dónde encontrarlo.",
+     "match": 1.0
+    }
+   ]
   },
   {
    "id": "share_reel",
-   "lang": "en",
    "rotation": "auto",
-   "file": "share_reel_en.mp3",
-   "seconds": 12.3,
-   "text": "Want a free lipgloss? Find our post on Instagram at The Makeup Blowout Sale, share it with your friends or on your story, and show it to our cashier. Your free lipgloss is waiting!",
-   "heard": "Want a free lip gloss?  Find our post on Instagram at the Makeup Blowout sale, share it with your friends or  on your story, and show it to our cashier.  Your free lip gloss is waiting.",
-   "match": 1.0
-  },
-  {
-   "id": "share_reel",
-   "lang": "es",
-   "rotation": "auto",
-   "file": "share_reel_es.mp3",
-   "seconds": 13.1,
-   "text": "¿Quieres un lipgloss gratis? Busca nuestra publicación en Instagram, The Makeup Blowout Sale, compártela con tus amigas o en tu historia y muéstrasela a nuestra cajera. ¡Tu lipgloss gratis te espera!",
-   "heard": "¿Quieres un lip gloss gratis? Busca nuestra publicación en Instagram, da Makeup Blowout  Sale, compártela con tus amigas o en tu historia y muéstrase la nuestra cajera.  Tu lip gloss gratis te espera.",
-   "match": 0.9
+   "file": "share_reel.mp3",
+   "seconds": 26.5,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 13.37,
+     "text": "Want a free lipgloss? Find our post on Instagram at The Makeup Blowout Sale, share it with your friends or on your story, and show it to our cashier. Your free lipgloss is waiting!",
+     "heard": "Want a free lip gloss? Find our post on Instagram at the makeup blowout sale,  share it with your friends or on your story, and show it to our cashier. Your free lip gloss is waiting.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 14.07,
+     "end": 24.95,
+     "text": "¿Quieres un lipgloss gratis? Busca nuestra publicación en Instagram, The Makeup Blowout Sale, compártela con tus amigas o en tu historia y muéstrasela a nuestra cajera. ¡Tu lipgloss gratis te espera!",
+     "heard": "¿Quieres un lip gloss gratis?  Busca nuestra publicación en Instagram,  da Makeup Blowout Sale,  compártela con tus amigas o en tu historia  y muéstrase la nuestra cajera.  Tu lip gloss gratis te espera.",
+     "match": 0.9
+    }
+   ]
   },
   {
    "id": "signup_eyeshadow",
-   "lang": "en",
    "rotation": "auto",
-   "file": "signup_eyeshadow_en.mp3",
-   "seconds": 7.9,
-   "text": "Did you sign up for our text list? Show your text message at checkout and get a free eyeshadow with your purchase!",
-   "heard": "Did you sign up for our text list?  Show your text message at checkout and get a free iShadow with your purchase.",
-   "match": 1.0
-  },
-  {
-   "id": "signup_eyeshadow",
-   "lang": "es",
-   "rotation": "auto",
-   "file": "signup_eyeshadow_es.mp3",
-   "seconds": 9.5,
-   "text": "¿Te registraste en nuestra lista de mensajes? Muestra tu mensaje de texto en la caja y recibe una sombra de ojos gratis con tu compra.",
-   "heard": "Te registraste en nuestra lista de mensajes, muestra tu mensaje de texto en la caja y recibe  una sombra de ojos gratis con tu compra.",
-   "match": 1.0
+   "file": "signup_eyeshadow.mp3",
+   "seconds": 17.9,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 8.38,
+     "text": "Did you sign up for our text list? Show your text message at checkout and get a free eyeshadow with your purchase!",
+     "heard": "Did you sign up for our text list?  Show your text message at checkout and get a free iShadow with your purchase.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 9.08,
+     "end": 16.4,
+     "text": "¿Te registraste en nuestra lista de mensajes? Muestra tu mensaje de texto en la caja y recibe una sombra de ojos gratis con tu compra.",
+     "heard": "Te registraste en nuestra lista de mensajes, muestra tu mensaje de texto en la caja y recibe  una sombra de ojos gratis con tu compra.",
+     "match": 1.0
+    }
+   ]
   },
   {
    "id": "bring_friends",
-   "lang": "en",
    "rotation": "auto",
-   "file": "bring_friends_en.mp3",
-   "seconds": 10.2,
-   "text": "We're here all weekend! Text your sister, your bestie, your mom. Tell them The Makeup Blowout Sale is in town, but only for a few days.",
-   "heard": "We're here all weekend.  Text your sister, your bestie, your mom.  Tell them the makeup blowout sale is in town, but only for a few days.",
-   "match": 1.0
-  },
-  {
-   "id": "bring_friends",
-   "lang": "es",
-   "rotation": "auto",
-   "file": "bring_friends_es.mp3",
-   "seconds": 11.3,
-   "text": "¡Estamos aquí todo el fin de semana! Escríbele a tu hermana, a tu mejor amiga, a tu mamá. Diles que The Makeup Blowout Sale está en la ciudad, pero solo por unos días.",
-   "heard": "Estamos aquí todo el fin de semana. Escríbele a tu hermana, a tu mejor amiga, a tu mamá.  Diles que la Makeup Blowout Sale está en la ciudad, pero solo por unos días.",
-   "match": 0.97
+   "file": "bring_friends.mp3",
+   "seconds": 22.5,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 11.15,
+     "text": "We're here all weekend! Text your sister, your bestie, your mom. Tell them The Makeup Blowout Sale is in town, but only for a few days.",
+     "heard": "We're here all weekend.  Text your sister, your bestie, your mom.  Tell them the makeup blowout sale is in town, but only for a few days.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 11.85,
+     "end": 20.92,
+     "text": "¡Estamos aquí todo el fin de semana! Escríbele a tu hermana, a tu mejor amiga, a tu mamá. Diles que The Makeup Blowout Sale está en la ciudad, pero solo por unos días.",
+     "heard": "Estamos aquí todo el fin de semana. Escríbele a tu hermana, a tu mejor amiga, a tu mamá.  Diles que de Makeup Blowout Sale está en la ciudad, pero solo por unos días.",
+     "match": 0.97
+    }
+   ]
   },
   {
    "id": "tag_us",
-   "lang": "en",
    "rotation": "auto",
-   "file": "tag_us_en.mp3",
-   "seconds": 7.8,
-   "text": "Show us your haul! Tag us on Instagram at The Makeup Blowout Sale, with hashtag Makeup Blowout Sale.",
-   "heard": "Show us your haul. Tag us on Instagram at the Makeup Blowout sale with hashtag Makeup  Blowout sale.",
-   "match": 1.0
-  },
-  {
-   "id": "tag_us",
-   "lang": "es",
-   "rotation": "auto",
-   "file": "tag_us_es.mp3",
-   "seconds": 8.2,
-   "text": "¡Muéstranos tus compras! Etiquétanos en Instagram, The Makeup Blowout Sale, con el hashtag Makeup Blowout Sale.",
-   "heard": "Muestranos tus compras, etiquétanos en Instagram, da Makeup Blowout Sale con el hashtag Makeup  Blowout Sale.",
-   "match": 0.88
+   "file": "tag_us.mp3",
+   "seconds": 17.2,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 8.93,
+     "text": "Show us what you got today! Tag us on Instagram at The Makeup Blowout Sale, with hashtag Makeup Blowout Sale.",
+     "heard": "Show us what you got today. Tag us on Instagram at the Makeup Blowout sale with hashtag Makeup Blowout sale.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 9.63,
+     "end": 15.65,
+     "text": "¡Muéstranos tus compras! Etiquétanos en Instagram, The Makeup Blowout Sale, con el hashtag Makeup Blowout Sale.",
+     "heard": "Muéstranos tus compras. Etiquétanos en Instagram  da Makeup Blowout Sale con el hashtag Makeup Blowout Sale.",
+     "match": 0.94
+    }
+   ]
   },
   {
    "id": "last_day",
-   "lang": "en",
    "rotation": "manual",
-   "file": "last_day_en.mp3",
-   "seconds": 8.1,
-   "text": "Today is our last day in town! This is your final chance to stock up at up to seventy-five percent off.",
-   "heard": "Today is our last day in town. This is your final chance to stock up at up to 75% off.",
-   "match": 1.0
-  },
-  {
-   "id": "last_day",
-   "lang": "es",
-   "rotation": "manual",
-   "file": "last_day_es.mp3",
-   "seconds": 9.4,
-   "text": "¡Hoy es nuestro último día en la ciudad! Es tu última oportunidad de llevarte todo con hasta setenta y cinco por ciento de descuento.",
-   "heard": "Hoy es nuestro último día en la ciudad, es tu última oportunidad de llevarte todo  con hasta 75% de descuento.",
-   "match": 1.0
-  },
-  {
-   "id": "closing_30",
-   "lang": "en",
-   "rotation": "manual",
-   "file": "closing_30_en.mp3",
-   "seconds": 8.8,
-   "text": "Attention shoppers, we close in thirty minutes. Please bring your final picks to the register. Thank you for shopping with us!",
-   "heard": "Attention shoppers, we close in 30 minutes.  Please bring your final picks to the register.  Thank you for shopping with us.",
-   "match": 1.0
+   "file": "last_day.mp3",
+   "seconds": 18.1,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 8.68,
+     "text": "Today is our last day in town! This is your final chance to stock up at up to seventy-five percent off.",
+     "heard": "Today is our last day in town. This is your final chance to stock up at up to 75% off.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 9.38,
+     "end": 16.5,
+     "text": "¡Hoy es nuestro último día en la ciudad! Es tu última oportunidad de llevarte todo con hasta setenta y cinco por ciento de descuento.",
+     "heard": "Hoy es nuestro último día en la ciudad, es tu última oportunidad de llevarte todo con  hasta 75% de descuento.",
+     "match": 1.0
+    }
+   ]
   },
   {
    "id": "closing_30",
-   "lang": "es",
    "rotation": "manual",
-   "file": "closing_30_es.mp3",
-   "seconds": 9.1,
-   "text": "Atención, cerramos en treinta minutos. Por favor lleven sus últimas compras a la caja. ¡Gracias por comprar con nosotros!",
-   "heard": "Atención, cerramos en 30 minutos. Por favor, lleven sus últimas compras a la caja. Gracias  por comprar con nosotros.",
-   "match": 1.0
+   "file": "closing_30.mp3",
+   "seconds": 18.9,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 9.81,
+     "text": "Attention shoppers, we close in thirty minutes. Please bring your final picks to the register. Thank you for shopping with us!",
+     "heard": "Attention shoppers, we close in 30 minutes.  Please bring your final picks to the register.  Thank you for shopping with us.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 10.51,
+     "end": 17.34,
+     "text": "Atención, cerramos en treinta minutos. Por favor lleven sus últimas compras a la caja. ¡Gracias por comprar con nosotros!",
+     "heard": "Atención, cerramos en 30 minutos, por favor lleven sus últimas compras a la caja, gracias  por comprar con nosotros.",
+     "match": 1.0
+    }
+   ]
   }
  ]
 }

@@ -5,14 +5,17 @@ Lauren: "רשימת השמעה של שירים באירוע ... ובין לבי�
 הסבר על השיתוף של הריל, ועוד כמה דברים קבועים שיוכרזו ברמקולים".
 
 ONE source: docs/pa/announcements.json (wording, voices, pronunciations, rotation).
-This script turns it into docs/pa/audio/<clip>_<lang>.mp3 + manifest.json, and the
-crew page docs/pa/ plays them between songs.
+This script turns it into docs/pa/audio/<clip>.mp3 + manifest.json — ONE file per clip:
+chime, then each language in `order` (EN, then ES), over one continuous music bed
+(scripts/pa_bed.py, composed in code). The crew page docs/pa/ plays them between songs.
 
   build   python3 scripts/build_pa_announcements.py build --models <dir>
-          Renders every clip with Kokoro (offline TTS, voices af_heart / ef_dora),
-          chime + voice, loudness -16 LUFS, mp3. Then VERIFIES each clip by
-          transcribing it back (faster-whisper "small") and comparing to the text;
-          any clip under MIN_MATCH fails the whole build and writes nothing.
+          Renders every language of every clip with Kokoro (offline TTS; voices,
+          blends, speed and pitch from the source), mixes them over the bed,
+          loudness -16 LUFS, mp3. Then VERIFIES every language section of the
+          FINAL mix (music included) by transcribing it back (faster-whisper
+          "small"): under MIN_MATCH, or a `must_hear` phrase missing, fails the
+          whole build and writes nothing.
           On success writes the mp3s and manifest.json stamped with the sha256 of
           announcements.json.
   check   python3 scripts/build_pa_announcements.py check
@@ -31,7 +34,7 @@ word for word in every clip that contains them (negative test 13.10.2026).
 Models (download once, ~350 MB):
   https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
   https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
-  pip install kokoro-onnx soundfile faster-whisper
+  pip install kokoro-onnx soundfile faster-whisper      (+ ffmpeg with rubberband)
 """
 import argparse, difflib, hashlib, json, pathlib, re, shutil, subprocess, sys, tempfile
 
@@ -61,12 +64,19 @@ def norm(s):
 
 
 def expected_files(spec):
-    return {f"{c['id']}_{lang}.mp3" for c in spec["clips"] for lang in spec["voices"]}
+    return {f"{c['id']}.mp3" for c in spec["clips"]}
+
+
+def joined(words):
+    """'makeup blowout sale' and the handle 'makeupblowoutsale' are the same words heard."""
+    return "".join(words)
 
 
 def check():
     spec = json.loads(SRC.read_text())
     errs = []
+    missing_lang = [f"{c['id']}:{l}" for c in spec["clips"] for l in spec["order"] if not c.get(l)]
+    errs += [f"{m}: no text for a language in `order`" for m in missing_lang]
     if not MANIFEST.exists():
         errs.append("audio/manifest.json missing — run build")
     else:
@@ -82,6 +92,8 @@ def check():
         for f in sorted(listed):
             if not (AUDIO / f).exists():
                 errs.append(f"{f}: listed but the file is missing")
+        extra = sorted(p.name for p in AUDIO.glob("*.mp3") if p.name not in listed)
+        errs += [f"{f}: an mp3 nothing lists (left over from an older build)" for f in extra]
     for e in errs:
         print("❌", e)
     print("✓ PA audio matches its source" if not errs else f"{len(errs)} problem(s)")
@@ -92,6 +104,8 @@ def build(models):
     import numpy as np, soundfile as sf
     from kokoro_onnx import Kokoro
     from faster_whisper import WhisperModel
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from pa_bed import bed, SR
 
     spec = json.loads(SRC.read_text())
     src_hash = sha256(SRC)
@@ -99,47 +113,97 @@ def build(models):
     asr = WhisperModel("small", device="cpu", compute_type="int8")
     tmp = pathlib.Path(tempfile.mkdtemp())
     stage = tmp / "out"; stage.mkdir()
+    B = spec["bed"]
+
+    def run(*a):
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *a], check=True)
+
+    def load(path):
+        x, _ = sf.read(str(path), dtype="float32")
+        return x if x.ndim == 1 else x.mean(axis=1)
+
+    def rms(x):
+        x = x[np.abs(x) > 1e-3]
+        return float(np.sqrt(np.mean(np.square(x)))) if len(x) else 1e-6
+
+    def voice_of(cfg):
+        v = cfg["voice"]
+        if isinstance(v, dict):
+            return sum(k.get_voice_style(n) * w for n, w in v.items()).astype(np.float32)
+        return v
 
     chime = tmp / "chime.wav"
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error",
-        "-f", "lavfi", "-i", "sine=frequency=880:duration=0.35",
+    run("-f", "lavfi", "-i", "sine=frequency=880:duration=0.35",
         "-f", "lavfi", "-i", "sine=frequency=1318.5:duration=0.6", "-filter_complex",
         "[0]afade=t=out:st=0.05:d=0.3,volume=0.35[a];[1]afade=t=out:st=0.05:d=0.55,volume=0.35,adelay=280[b];"
-        "[a][b]amix=inputs=2:normalize=0,apad=pad_dur=0.35,aresample=24000,pan=mono|c0=c0",
-        str(chime)], check=True)
+        f"[a][b]amix=inputs=2:normalize=0,aresample={SR},pan=mono|c0=c0", str(chime))
+    chime_x = load(chime)
 
     clips, bad = [], []
     for clip in spec["clips"]:
-        for lang, cfg in spec["voices"].items():
-            text = clip[lang]
-            spoken = text
+        parts, segs, t = [], [], 0.0
+        parts.append(np.zeros(int(B["lead_s"] * SR), np.float32)); t += B["lead_s"]
+        parts.append(chime_x); t += len(chime_x) / SR
+        parts.append(np.zeros(int(0.25 * SR), np.float32)); t += 0.25
+        vrms = []
+        for i, lang in enumerate(spec["order"]):
+            cfg = spec["voices"][lang]
+            spoken = clip[lang]
             for written, said in spec.get("say", {}).get(lang, {}).items():
                 spoken = spoken.replace(written, said)
-            samples, sr = k.create(spoken, voice=cfg["voice"], speed=cfg["speed"], lang=cfg["lang"])
-            wav = tmp / f"{clip['id']}_{lang}.wav"
-            sf.write(wav, samples, sr)
-            name = f"{clip['id']}_{lang}.mp3"
-            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(chime), "-i", str(wav),
-                "-filter_complex", "[0][1]concat=n=2:v=0:a=1,apad=pad_dur=0.6,loudnorm=I=-16:TP=-1.5:LRA=11",
-                "-ar", "44100", "-ac", "1", "-b:a", "128k", str(stage / name)], check=True)
-            dur = float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries",
-                "format=duration", "-of", "csv=p=0", str(stage / name)]).decode())
-            pcm = np.frombuffer(subprocess.check_output(["ffmpeg", "-loglevel", "error", "-i",
-                str(stage / name), "-f", "s16le", "-ac", "1", "-ar", "16000", "-"]), np.int16).astype(np.float32) / 32768
-            segs, _ = asr.transcribe(pcm, language=lang)
-            heard = " ".join(s.text for s in segs).strip()
-            match = difflib.SequenceMatcher(None, norm(text), norm(heard)).ratio()
+            samples, sr = k.create(spoken, voice=voice_of(cfg), speed=cfg["speed"], lang=cfg["lang"])
+            raw = tmp / "v.wav"; sf.write(raw, samples, sr)
+            flt = f"aresample={SR}"
+            if cfg.get("pitch_semitones"):
+                flt += f",rubberband=pitch={2 ** (cfg['pitch_semitones'] / 12):.5f}:formant=preserved"
+            shaped = tmp / "v2.wav"; run("-i", str(raw), "-af", flt, "-ac", "1", str(shaped))
+            v = load(shaped); vrms.append(rms(v))
+            if i:
+                parts.append(np.zeros(int(B["gap_s"] * SR), np.float32)); t += B["gap_s"]
+            segs.append({"lang": lang, "start": round(t, 2), "end": round(t + len(v) / SR, 2), "text": clip[lang]})
+            parts.append(v); t += len(v) / SR
+        parts.append(np.zeros(int(B["tail_s"] * SR), np.float32))
+        voice_track = np.concatenate(parts)
+        music = bed(len(voice_track) / SR, bpm=B["bpm"])[: len(voice_track)]
+        music = music * (min(vrms) / rms(music)) * 10 ** (-B["under_voice_db"] / 20)
+        # 🛑 ducking (13.10.2026): with a flat bed a kick landed on the soft first vowel of
+        #    "¡Alerta" and the recogniser heard "Lerta" — it passed the ratio, a listener would
+        #    hear it too. The bed now dips `duck_db` while a voice speaks, starting `duck_lead_s`
+        #    BEFORE each onset, and comes back up in the lead, the gap and the tail.
+        act = (np.abs(voice_track) > 0.01).astype(np.float32)
+        w = int(0.12 * SR); act = np.convolve(act, np.ones(w) / w, mode="same") > 0
+        lead = int(B["duck_lead_s"] * SR)
+        act = np.maximum(act, np.concatenate([act[lead:], np.zeros(lead, bool)]))  # look ahead
+        g = np.where(act, 10 ** (-B["duck_db"] / 20), 1.0).astype(np.float32)
+        sm = int(0.08 * SR); g = np.convolve(g, np.ones(sm) / sm, mode="same")       # no clicks
+        music = music * g
+        mix = tmp / "mix.wav"; sf.write(mix, voice_track + music, SR)
+        name = f"{clip['id']}.mp3"
+        run("-i", str(mix), "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "44100", "-ac", "1",
+            "-b:a", "128k", str(stage / name))
+        dur = float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries",
+            "format=duration", "-of", "csv=p=0", str(stage / name)]).decode())
+
+        # verify every language section of the FINAL file — music and all
+        pcm = np.frombuffer(subprocess.check_output(["ffmpeg", "-loglevel", "error", "-i",
+            str(stage / name), "-f", "s16le", "-ac", "1", "-ar", "16000", "-"]), np.int16).astype(np.float32) / 32768
+        for sg in segs:
+            a, b = int(max(0, sg["start"] - 0.15) * 16000), int((sg["end"] + 0.3) * 16000)
+            out, _ = asr.transcribe(pcm[a:b], language=sg["lang"])
+            heard = " ".join(x.text for x in out).strip()
+            match = difflib.SequenceMatcher(None, norm(sg["text"]), norm(heard)).ratio()
             missing = [ph for ph in spec.get("must_hear", [])
-                       if ph.lower() in text.lower() and " ".join(norm(ph)) not in " ".join(norm(heard))]
+                       if ph.lower() in sg["text"].lower() and joined(norm(ph)) not in joined(norm(heard))]
             ok = match >= MIN_MATCH and not missing
-            print(f"{'OK ' if ok else 'LOW'} {match:.2f} {name} {dur:.1f}s :: {heard}"
+            print(f"{'OK ' if ok else 'LOW'} {match:.2f} {name}[{sg['lang']}] :: {heard}"
                   + (f"  ← not heard: {', '.join(missing)}" if missing else ""))
             if not ok:
-                bad.append(name)
-            clips.append({"id": clip["id"], "lang": lang, "rotation": clip["rotation"], "file": name,
-                          "seconds": round(dur, 1), "text": text, "heard": heard, "match": round(match, 2)})
+                bad.append(f"{name}[{sg['lang']}]")
+            sg.update({"heard": heard, "match": round(match, 2)})
+        clips.append({"id": clip["id"], "rotation": clip["rotation"], "file": name,
+                      "seconds": round(dur, 1), "segments": segs})
     if bad:
-        print(f"❌ {len(bad)} clip(s) do not sound like their text: {', '.join(bad)} — nothing written."
+        print(f"❌ {len(bad)} section(s) do not sound like their text: {', '.join(bad)} — nothing written."
               " Fix the wording or add a pronunciation under `say` in announcements.json.")
         return 1
     AUDIO.mkdir(parents=True, exist_ok=True)
@@ -148,8 +212,9 @@ def build(models):
     for f in stage.glob("*.mp3"):
         shutil.move(str(f), AUDIO / f.name)
     MANIFEST.write_text(json.dumps({"source_sha256": src_hash, "verified_min_match": MIN_MATCH,
-                                    "clips": clips}, ensure_ascii=False, indent=1) + "\n")
-    print(f"✓ {len(clips)} clips built and verified")
+                                    "order": spec["order"], "clips": clips},
+                                   ensure_ascii=False, indent=1) + "\n")
+    print(f"✓ {len(clips)} clips built and verified ({len(spec['order'])} languages each)")
     return check()
 
 

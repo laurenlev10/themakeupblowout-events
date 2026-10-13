@@ -1,22 +1,42 @@
 {
- "_about": "Single source of the event PA announcements and how often they play. scripts/build_pa_announcements.py renders every clip (EN+ES) from this file into docs/pa/audio/ and stamps this file's sha256 into the audio manifest; docs/pa/ shows a red banner when the two disagree. Edit wording or timing HERE only, then run the build.",
+ "_about": "Single source of the event PA announcements and how often they play. scripts/build_pa_announcements.py renders ONE file per clip — chime, then every language in `order`, over one continuous music bed — into docs/pa/audio/, verifies each language by transcription, and stamps this file's sha256 into the audio manifest; docs/pa/ shows a red banner when the two disagree. Edit wording, voices or timing HERE only, then run the build.",
  "rotation": {
-  "_about": "auto clips play round-robin. With music loaded: one announcement after every `every_songs` songs. Without music: one every `every_minutes_without_music` minutes. language: alternate | both | en | es.",
+  "_about": "auto clips play round-robin. With music loaded: one announcement after every `every_songs` songs. Without music: one every `every_minutes_without_music` minutes.",
   "every_songs": 3,
-  "every_minutes_without_music": 5,
-  "language": "alternate"
+  "every_minutes_without_music": 5
  },
+ "order": [
+  "en",
+  "es"
+ ],
+ "_order": "Lauren 13.10.2026: every announcement in English AND Spanish — English first, then Spanish.",
+ "_voices": "voice = a Kokoro voice name or a blend {name: weight}. pitch_semitones > 0 = younger/brighter (rubberband, formants preserved). Lauren 13.10.2026 asked for cuter, younger girls' voices: sample D (EN) and F (ES).",
  "voices": {
   "en": {
-   "voice": "af_heart",
+   "voice": {
+    "af_bella": 0.6,
+    "af_nicole": 0.4
+   },
    "lang": "en-us",
-   "speed": 1.0
+   "speed": 1.08,
+   "pitch_semitones": 1.0
   },
   "es": {
    "voice": "ef_dora",
    "lang": "es",
-   "speed": 1.0
+   "speed": 1.08,
+   "pitch_semitones": 1.5
   }
+ },
+ "bed": {
+  "_about": "Original music bed under each announcement (scripts/pa_bed.py, composed in code — ours). Level is relative to the voice.",
+  "bpm": 112,
+  "under_voice_db": 13,
+  "duck_db": 6,
+  "duck_lead_s": 0.25,
+  "lead_s": 0.7,
+  "gap_s": 0.7,
+  "tail_s": 1.5
  },
  "_say": "How the voice must pronounce a written phrase, per language. The text keeps the real spelling (for display and the transcription check); only the audio uses this.",
  "say": {
@@ -69,7 +89,7 @@
   {
    "id": "tag_us",
    "rotation": "auto",
-   "en": "Show us your haul! Tag us on Instagram at The Makeup Blowout Sale, with hashtag Makeup Blowout Sale.",
+   "en": "Show us what you got today! Tag us on Instagram at The Makeup Blowout Sale, with hashtag Makeup Blowout Sale.",
    "es": "¡Muéstranos tus compras! Etiquétanos en Instagram, The Makeup Blowout Sale, con el hashtag Makeup Blowout Sale."
   },
   {
