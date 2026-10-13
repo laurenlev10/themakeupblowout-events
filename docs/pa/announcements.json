@@ -10,16 +10,13 @@
   "es"
  ],
  "_order": "Lauren 13.10.2026: every announcement in English AND Spanish — English first, then Spanish.",
- "_voices": "voice = a Kokoro voice name or a blend {name: weight}. pitch_semitones > 0 = younger/brighter (rubberband, formants preserved). Lauren 13.10.2026 asked for cuter, younger girls' voices: sample D (EN) and F (ES).",
+ "_voices": "voice = a Kokoro voice name or a blend {name: weight}. pitch_semitones > 0 = younger/brighter (rubberband, formants preserved). Lauren 13.10.2026 asked for cuter, younger girls' voices: sample D (EN) and F (ES). 13.10 later: Lauren — the English voice 'sounds like she's going to sleep'. Measured on deal_75 (librosa pyin): the bella+nicole blend had 2.04 st intonation and 8.6 s; af_nicole alone 1.97 st (whispery). af_jessica: 3.79 st, 6.1 s, 211 Hz → chosen. Measure before choosing a voice.",
  "voices": {
   "en": {
-   "voice": {
-    "af_bella": 0.6,
-    "af_nicole": 0.4
-   },
+   "voice": "af_jessica",
    "lang": "en-us",
    "speed": 1.08,
-   "pitch_semitones": 1.0
+   "pitch_semitones": 0
   },
   "es": {
    "voice": "ef_dora",
