@@ -1,0 +1,41 @@
+name: Test the event speaker page
+
+# docs/pa/ — the PA player the crew runs on the speaker at an event (13.10.2026).
+# Two proofs on every push that touches it:
+#   1. build_pa_announcements.py check — the audio was built from the CURRENT
+#      announcements.json (sha256 stamp), every clip has its mp3, nothing extra.
+#   2. test_pa_player.py — the real page in headless Chromium: welcome first, an
+#      announcement after every N songs alternating EN/ES, the manual buttons, and
+#      the red OUT OF DATE bar when the text changes without a rebuild.
+# The TTS build itself is not run here (≈350 MB of models); it runs where the text is
+# edited, and its own transcription check refuses to write audio that does not sound
+# like the text. No cron: nothing here changes on a clock (IRON RULE #40).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/pa/**'
+      - 'scripts/build_pa_announcements.py'
+      - 'scripts/test_pa_player.py'
+      - '.github/workflows/test-pa-player.yml'
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: The audio matches its source
+        run: python3 scripts/build_pa_announcements.py check
+      - name: Install Playwright + Chromium
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install playwright
+          python3 -m playwright install --with-deps chromium
+      - name: Headless proof of the page
+        run: python3 scripts/test_pa_player.py

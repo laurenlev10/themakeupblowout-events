@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Event Speaker — The Makeup Blowout</title>
+<!-- 13.10.2026 — the event PA player. Music from THIS phone (licensed library only — licensed
+     files are never hosted on a public URL), announcements from audio/ between songs.
+     ONE source: announcements.json (wording + how often). The audio is built from it by
+     scripts/build_pa_announcements.py, which stamps the source's sha256 into audio/manifest.json;
+     this page recomputes that hash and shows a red bar when they disagree — stale audio is never
+     silent. Nothing here is stored on the device: the settings live in announcements.json. -->
+<style>
+  :root{--pink:#ec4899;--pink-d:#be185d;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--bg:#fdf2f8;
+        --card:#fff;--green:#16a34a;--red:#dc2626;--amber:#b45309}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.45;-webkit-text-size-adjust:100%}
+  .wrap{max-width:640px;margin:0 auto;padding:14px 16px 60px}
+  header.top{background:linear-gradient(135deg,#ec4899,#be185d);color:#fff;border-radius:16px;
+       padding:18px;box-shadow:0 6px 18px rgba(190,24,93,.28);margin-bottom:14px}
+  header.top .brand{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:.9}
+  header.top h1{margin:6px 0 2px;font-size:22px;line-height:1.15}
+  header.top .meta{font-size:13px;opacity:.95}
+  .alert{border-radius:12px;padding:11px 13px;font-size:14px;font-weight:600;margin-bottom:12px;display:none}
+  .alert.on{display:block}
+  .alert.red{background:#fef2f2;border:1.5px solid var(--red);color:#991b1b}
+  .alert.amber{background:#fffbeb;border:1.5px solid #f59e0b;color:var(--amber)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;
+       box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .sec{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--pink-d);margin:0 0 10px}
+  .hint{font-size:13px;color:var(--muted)}
+  button{font:inherit;cursor:pointer;border:none;border-radius:12px}
+  #go{width:100%;padding:18px;font-size:20px;font-weight:800;color:#fff;background:var(--green)}
+  #go.stop{background:var(--red)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .small{padding:9px 12px;font-size:14px;font-weight:700;background:#fce7f3;color:var(--pink-d)}
+  .now{font-size:15px;font-weight:700;margin:12px 0 2px;word-break:break-word}
+  .next{font-size:13px;color:var(--muted)}
+  label.file{display:block;text-align:center;padding:14px;border:2px dashed var(--pink);border-radius:12px;
+       font-weight:700;color:var(--pink-d);cursor:pointer}
+  label.file input{display:none}
+  .toggle{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;padding:6px 0}
+  .toggle input{width:22px;height:22px;accent-color:var(--pink)}
+  .clips{display:grid;grid-template-columns:1fr auto auto;gap:8px 8px;align-items:center}
+  .clips .t{font-size:14px;font-weight:600}
+  .clips .t small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+  .clips button{padding:8px 11px;font-size:14px;font-weight:800;background:#fdf2f8;color:var(--pink-d);
+       border:1.5px solid #fbcfe8}
+  .clips button.playing{background:var(--pink);color:#fff}
+  .tag{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:20px;background:#e0f2fe;color:#075985;margin-left:6px}
+  details summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--pink-d)}
+  details a{color:#0b5f8a;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">The Makeup Blowout Sale</div>
+    <h1>🎙 Event Speaker</h1>
+    <div class="meta">Music + announcements in English &amp; Spanish, between songs.</div>
+  </header>
+
+  <div id="err" class="alert red"></div>
+  <div id="warn" class="alert amber"></div>
+
+  <div class="card">
+    <div class="sec">1 · Music</div>
+    <label class="file">🎵 Load our licensed music from this phone
+      <input id="pick" type="file" accept="audio/*" multiple>
+    </label>
+    <p class="hint" id="musicInfo">Only use songs from the company's licensed music library.
+      No music loaded → announcements play on their own every few minutes.</p>
+  </div>
+
+  <div class="card">
+    <div class="sec">2 · Play</div>
+    <button id="go" disabled>Loading…</button>
+    <div class="now" id="now"></div>
+    <div class="next" id="next"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="small" id="skip" disabled>⏭ Next song</button>
+    </div>
+    <label class="toggle"><input type="checkbox" id="lastDay"> Today is the LAST day of the sale</label>
+    <p class="hint" id="rotInfo"></p>
+  </div>
+
+  <div class="card">
+    <div class="sec">3 · Announce now</div>
+    <p class="hint">Tap to play right away — the music fades out and comes back after.</p>
+    <div class="clips" id="clips"></div>
+  </div>
+
+  <details class="card">
+    <summary>Audio files (for upload to a music service)</summary>
+    <div id="files" style="margin-top:8px"></div>
+  </details>
+</div>
+
+<audio id="music" preload="auto"></audio>
+<audio id="voice" preload="auto"></audio>
+
+<script>
+(function(){
+  var SRC = 'announcements.json', MAN = 'audio/manifest.json';
+  var $ = function(id){ return document.getElementById(id); };
+  var music = $('music'), voice = $('voice');
+  var spec = null, man = null, ver = '';
+  var tracks = [], order = [], pos = 0;          // music from this phone
+  var running = false, busy = false, songsSince = 0, autoIdx = 0, langFlip = 0, timer = null, wake = null;
+
+  function showErr(m){ var e=$('err'); e.innerHTML = (e.innerHTML ? e.innerHTML+'<br>' : '') + '⚠ ' + m; e.classList.add('on'); }
+  function showWarn(m){ var e=$('warn'); e.textContent = m; e.classList.toggle('on', !!m); }
+
+  function hex(buf){ return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0'+b.toString(16)).slice(-2); }).join(''); }
+
+  // ---------- load: the source, the manifest, and are they the same version? ----------
+  Promise.all([
+    fetch(SRC, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(SRC+' '+r.status); return r.arrayBuffer(); }),
+    fetch(MAN, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(MAN+' '+r.status); return r.json(); })
+  ]).then(function(res){
+    spec = JSON.parse(new TextDecoder().decode(res[0])); man = res[1];
+    ver = (man.source_sha256 || '').slice(0, 10);
+    var check = (window.crypto && crypto.subtle) ? crypto.subtle.digest('SHA-256', res[0]).then(hex) : Promise.resolve(null);
+    return check.then(function(h){
+      if (h === null) showWarn('This browser cannot verify the audio version.');
+      else if (h !== man.source_sha256)
+        showErr('The announcement audio is OUT OF DATE — the text was changed but the audio was not rebuilt. Tell Lauren. (Playing the last built version.)');
+      ready();
+    });
+  }).catch(function(e){
+    showErr('Could not load the announcements (' + e.message + '). Check the internet connection and reload.');
+    $('go').textContent = 'Not available';
+  });
+
+  function clipsOf(id){ return man.clips.filter(function(c){ return c.id === id; }); }
+  function clip(id, lang){ return man.clips.filter(function(c){ return c.id === id && c.lang === lang; })[0]; }
+  function url(c){ return 'audio/' + c.file + '?v=' + ver; }
+  var LANG = {en:'English', es:'Español'};
+
+  function ready(){
+    var rot = spec.rotation;
+    $('rotInfo').textContent = 'Announcement after every ' + rot.every_songs + ' songs (every ' +
+      rot.every_minutes_without_music + ' min without music) · language: ' + rot.language + '.';
+    var box = $('clips'), files = $('files'), seen = {};
+    man.clips.forEach(function(c){
+      files.insertAdjacentHTML('beforeend', '<div><a href="' + url(c) + '" download="' + c.file + '">' + c.file + '</a> · ' + c.seconds + 's</div>');
+      if (seen[c.id]) return; seen[c.id] = 1;
+      var en = clip(c.id,'en');
+      var row = document.createElement('div'); row.className = 't';
+      row.innerHTML = c.id.replace(/_/g,' ') + (c.rotation === 'manual' ? '<span class="tag">tap only</span>' : '') +
+                      '<small>' + (en ? en.text : '') + '</small>';
+      box.appendChild(row);
+      ['en','es'].forEach(function(l){
+        var b = document.createElement('button'); b.textContent = l.toUpperCase();
+        var cc = clip(c.id, l);
+        if (!cc) { b.disabled = true; } else b.onclick = function(){ announceNow([cc], b); };
+        box.appendChild(b);
+      });
+    });
+    $('go').disabled = false; $('go').textContent = '▶ Start';
+  }
+
+  // ---------- music from this phone ----------
+  $('pick').onchange = function(){
+    tracks.forEach(function(t){ URL.revokeObjectURL(t.url); });
+    tracks = Array.prototype.map.call(this.files, function(f){ return {name: f.name.replace(/\.[^.]+$/,''), url: URL.createObjectURL(f)}; });
+    shuffle();
+    $('musicInfo').textContent = tracks.length ? ('✓ ' + tracks.length + ' songs loaded (shuffled).') : 'No music loaded.';
+    $('skip').disabled = !tracks.length || !running;
+    if (running) { clearInterval(timer); timer = null; if (tracks.length && music.paused && !busy) nextSong(); else armTimer(); }
+  };
+  function shuffle(){ order = tracks.map(function(_, i){ return i; });
+    for (var i = order.length - 1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t = order[i]; order[i] = order[j]; order[j] = t; }
+    pos = 0; }
+
+  function nextSong(){
+    if (!running || !tracks.length) return;
+    if (pos >= order.length) shuffle();
+    var t = tracks[order[pos++]];
+    music.src = t.url; music.volume = 1;
+    $('now').textContent = '🎵 ' + t.name;
+    music.play().catch(function(e){ showErr('The phone blocked playback (' + e.name + '). Tap Start again.'); stop(); });
+    updateNext();
+  }
+  music.addEventListener('ended', function(){
+    songsSince++;
+    if (songsSince >= spec.rotation.every_songs) { songsSince = 0; announceSlot(nextSong); }
+    else nextSong();
+  });
+  music.addEventListener('error', function(){
+    if (!music.getAttribute('src')) return;
+    showErr('A song could not be played and was skipped.'); setTimeout(nextSong, 500);
+  });
+
+  // ---------- the rotation ----------
+  function autoIds(){
+    var ids = [], seen = {};
+    man.clips.forEach(function(c){ if (c.rotation === 'auto' && !seen[c.id]) { seen[c.id] = 1; ids.push(c.id); } });
+    if ($('lastDay').checked) ids.unshift('last_day');
+    return ids;
+  }
+  function langsForSlot(){
+    var m = spec.rotation.language;
+    if (m === 'both') return ['en','es'];
+    if (m === 'en' || m === 'es') return [m];
+    return [(langFlip++ % 2) ? 'es' : 'en'];
+  }
+  function announceSlot(then){
+    var ids = autoIds(); var id = ids[autoIdx++ % ids.length];
+    var list = langsForSlot().map(function(l){ return clip(id, l); }).filter(Boolean);
+    playVoices(list, null, then);
+  }
+  function updateNext(){
+    if (!running) { $('next').textContent = ''; return; }
+    $('next').textContent = tracks.length
+      ? 'Next announcement after ' + (spec.rotation.every_songs - songsSince) + ' more song(s).'
+      : 'No music — an announcement every ' + spec.rotation.every_minutes_without_music + ' min.';
+  }
+  function armTimer(){
+    clearInterval(timer);
+    if (!running || tracks.length) return;
+    timer = setInterval(function(){ if (!busy) announceSlot(function(){}); }, spec.rotation.every_minutes_without_music * 60000);
+    updateNext();
+  }
+
+  // ---------- playing announcements ----------
+  function playVoices(list, btn, then){
+    busy = true; var i = 0;
+    function one(){
+      if (i >= list.length) { busy = false; if (btn) btn.classList.remove('playing'); $('now').textContent = running && !tracks.length ? '🎙 Announcements only' : $('now').textContent; then && then(); return; }
+      var c = list[i++];
+      $('now').textContent = '🎙 ' + c.id.replace(/_/g,' ') + ' · ' + LANG[c.lang];
+      voice.src = url(c);
+      voice.onended = one;
+      voice.onerror = function(){ showErr('Announcement "' + c.file + '" could not be loaded — skipped.'); one(); };
+      voice.play().catch(function(e){ showErr('The phone blocked the announcement (' + e.name + ').'); one(); });
+    }
+    one();
+  }
+  function fade(to, ms, done){
+    var from = music.volume, t0 = performance.now();
+    (function step(t){ var k = Math.min(1, (t - t0) / ms); music.volume = from + (to - from) * k;
+      if (k < 1) requestAnimationFrame(step); else done && done(); })(t0);
+  }
+  function announceNow(list, btn){
+    if (busy) return;
+    if (btn) btn.classList.add('playing');
+    var wasPlaying = !music.paused && !!music.getAttribute('src');
+    var resumeTitle = $('now').textContent;
+    var after = function(){
+      if (wasPlaying && running) { $('now').textContent = resumeTitle; music.volume = 0; music.play().then(function(){ fade(1, 1200); }).catch(function(){}); }
+    };
+    if (wasPlaying) fade(0, 1200, function(){ music.pause(); playVoices(list, btn, after); });
+    else playVoices(list, btn, after);
+  }
+
+  // ---------- start / stop ----------
+  function keepAwake(){ if ('wakeLock' in navigator && running) navigator.wakeLock.request('screen').then(function(w){ wake = w; }).catch(function(){}); }
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') keepAwake(); });
+  function start(){
+    running = true; songsSince = 0;
+    $('go').textContent = '■ Stop'; $('go').classList.add('stop'); $('skip').disabled = !tracks.length;
+    keepAwake();
+    announceSlot(function(){ if (tracks.length) nextSong(); else { $('now').textContent = '🎙 Announcements only'; armTimer(); } });
+  }
+  function stop(){
+    running = false; clearInterval(timer); timer = null;
+    music.pause(); voice.pause(); busy = false;
+    $('go').textContent = '▶ Start'; $('go').classList.remove('stop'); $('skip').disabled = true;
+    $('now').textContent = ''; updateNext();
+    if (wake) { wake.release().catch(function(){}); wake = null; }
+  }
+  $('go').onclick = function(){ running ? stop() : start(); };
+  $('skip').onclick = function(){ if (!busy) { music.pause(); nextSong(); } };
+
+  // for scripts/test_pa_player.py
+  window.__pa = {state: function(){ return {running: running, busy: busy, songsSince: songsSince, autoIdx: autoIdx,
+    tracks: tracks.length, voiceSrc: voice.getAttribute('src'), musicSrc: music.getAttribute('src'), err: $('err').textContent}; },
+    end: function(){ music.dispatchEvent(new Event('ended')); }};
+})();
+</script>
+</body>
+</html>

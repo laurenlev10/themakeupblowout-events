@@ -1,0 +1,88 @@
+{
+ "_about": "Single source of the event PA announcements and how often they play. scripts/build_pa_announcements.py renders every clip (EN+ES) from this file into docs/pa/audio/ and stamps this file's sha256 into the audio manifest; docs/pa/ shows a red banner when the two disagree. Edit wording or timing HERE only, then run the build.",
+ "rotation": {
+  "_about": "auto clips play round-robin. With music loaded: one announcement after every `every_songs` songs. Without music: one every `every_minutes_without_music` minutes. language: alternate | both | en | es.",
+  "every_songs": 3,
+  "every_minutes_without_music": 5,
+  "language": "alternate"
+ },
+ "voices": {
+  "en": {
+   "voice": "af_heart",
+   "lang": "en-us",
+   "speed": 1.0
+  },
+  "es": {
+   "voice": "ef_dora",
+   "lang": "es",
+   "speed": 1.0
+  }
+ },
+ "_say": "How the voice must pronounce a written phrase, per language. The text keeps the real spelling (for display and the transcription check); only the audio uses this.",
+ "say": {
+  "es": {
+   "The Makeup Blowout Sale": "Da Méikap Blóuaut Séil",
+   "Makeup Blowout Sale": "Méikap Blóuaut Séil"
+  }
+ },
+ "_must_hear": "Phrases that must come back word for word when a clip is transcribed, in every clip whose text contains them. The overall match ratio cannot catch a broken brand name inside a long sentence (13.10.2026: 'tema Queub Blowout Sale' scored 0.88 and passed); this can.",
+ "must_hear": [
+  "Makeup Blowout Sale"
+ ],
+ "clips": [
+  {
+   "id": "welcome",
+   "rotation": "auto",
+   "en": "Hey beauties, welcome to The Makeup Blowout Sale! Grab a bag, take your time, and enjoy shopping your favorite brands at up to seventy-five percent off.",
+   "es": "¡Hola, bellezas! Bienvenidas a The Makeup Blowout Sale. Tomen una bolsa, tómense su tiempo y disfruten sus marcas favoritas con hasta setenta y cinco por ciento de descuento."
+  },
+  {
+   "id": "deal_75",
+   "rotation": "auto",
+   "en": "Hot deal alert! Everything here is up to seventy-five percent off. When it's gone, it's gone, so if you love it, grab it now!",
+   "es": "¡Alerta de ofertas! Todo aquí tiene hasta setenta y cinco por ciento de descuento. Cuando se acaba, se acaba. ¡Si te encanta, llévatelo ahora!"
+  },
+  {
+   "id": "deal_brush_set",
+   "rotation": "auto",
+   "en": "Don't miss our twenty-two piece brush set, just five dollars. That's ninety-five percent off! Ask any of our team where to find it.",
+   "es": "No te pierdas nuestro set de veintidós brochas, a solo cinco dólares. ¡Eso es noventa y cinco por ciento de descuento! Pregunta a nuestro equipo dónde encontrarlo."
+  },
+  {
+   "id": "share_reel",
+   "rotation": "auto",
+   "en": "Want a free lipgloss? Find our post on Instagram at The Makeup Blowout Sale, share it with your friends or on your story, and show it to our cashier. Your free lipgloss is waiting!",
+   "es": "¿Quieres un lipgloss gratis? Busca nuestra publicación en Instagram, The Makeup Blowout Sale, compártela con tus amigas o en tu historia y muéstrasela a nuestra cajera. ¡Tu lipgloss gratis te espera!"
+  },
+  {
+   "id": "signup_eyeshadow",
+   "rotation": "auto",
+   "en": "Did you sign up for our text list? Show your text message at checkout and get a free eyeshadow with your purchase!",
+   "es": "¿Te registraste en nuestra lista de mensajes? Muestra tu mensaje de texto en la caja y recibe una sombra de ojos gratis con tu compra."
+  },
+  {
+   "id": "bring_friends",
+   "rotation": "auto",
+   "en": "We're here all weekend! Text your sister, your bestie, your mom. Tell them The Makeup Blowout Sale is in town, but only for a few days.",
+   "es": "¡Estamos aquí todo el fin de semana! Escríbele a tu hermana, a tu mejor amiga, a tu mamá. Diles que The Makeup Blowout Sale está en la ciudad, pero solo por unos días."
+  },
+  {
+   "id": "tag_us",
+   "rotation": "auto",
+   "en": "Show us your haul! Tag us on Instagram at The Makeup Blowout Sale, with hashtag Makeup Blowout Sale.",
+   "es": "¡Muéstranos tus compras! Etiquétanos en Instagram, The Makeup Blowout Sale, con el hashtag Makeup Blowout Sale."
+  },
+  {
+   "id": "last_day",
+   "rotation": "manual",
+   "en": "Today is our last day in town! This is your final chance to stock up at up to seventy-five percent off.",
+   "es": "¡Hoy es nuestro último día en la ciudad! Es tu última oportunidad de llevarte todo con hasta setenta y cinco por ciento de descuento."
+  },
+  {
+   "id": "closing_30",
+   "rotation": "manual",
+   "en": "Attention shoppers, we close in thirty minutes. Please bring your final picks to the register. Thank you for shopping with us!",
+   "es": "Atención, cerramos en treinta minutos. Por favor lleven sus últimas compras a la caja. ¡Gracias por comprar con nosotros!"
+  }
+ ]
+}
