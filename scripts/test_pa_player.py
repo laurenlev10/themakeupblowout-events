@@ -103,6 +103,21 @@ def main():
         ok(not errors, "no JavaScript errors " + ("; ".join(errors) if errors else ""))
         ok(not page.locator("#err.on").count(), "still no red bar after playing")
 
+        # `when`: the $5 brush set rotates ONLY Friday before 12:00 (Lauren 13.10.2026)
+        for label, iso, expect in (("Fri 10:30", "2026-10-16T10:30:00", True),
+                                   ("Fri 12:30", "2026-10-16T12:30:00", False),
+                                   ("Sat 11:00", "2026-10-17T11:00:00", False)):
+            ctx = b.new_context()
+            ctx.add_init_script("""(() => { const T = new Date('%s').getTime(), R = Date;
+              class F extends R { constructor(...a){ super(...(a.length ? a : [T])); } static now(){ return T; } }
+              window.Date = F; })();""" % iso)
+            pg = ctx.new_page(); pg.goto(base)
+            wait(pg, "!document.getElementById('go').disabled")
+            ids = pg.evaluate("__pa.autoIds()")
+            ok(("deal_brush_set" in ids) == expect,
+               f"{label}: brush-set deal {'in' if expect else 'NOT in'} the rotation ({len(ids)} clips)")
+            ctx.close()
+
         # tamper: text changed, audio not rebuilt
         src = site / "pa/announcements.json"
         src.write_text(src.read_text().replace("Hey beauties", "Hi beauties"))

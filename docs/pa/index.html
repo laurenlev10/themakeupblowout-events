@@ -150,7 +150,9 @@
     man.clips.forEach(function(c){
       files.insertAdjacentHTML('beforeend', '<div><a href="' + url(c) + '" download="' + c.file + '">' + c.file + '</a> · ' + c.seconds + 's</div>');
       var row = document.createElement('div'); row.className = 't';
-      row.innerHTML = c.id.replace(/_/g,' ') + (c.rotation === 'manual' ? '<span class="tag">tap only</span>' : '') +
+      var src = (spec.clips || []).filter(function(x){ return x.id === c.id; })[0], w = src && src.when;
+      var wtag = w ? '<span class="tag">' + ((w.days || []).join('/') || 'daily') + (w.from ? ' from ' + w.from : '') + (w.until ? ' until ' + w.until : '') + '</span>' : '';
+      row.innerHTML = c.id.replace(/_/g,' ') + (c.rotation === 'manual' ? '<span class="tag">tap only</span>' : '') + wtag +
                       '<small>' + textOf(c, 'en') + '</small>';
       box.appendChild(row);
       var b = document.createElement('button'); b.textContent = '▶ EN+ES';
@@ -193,9 +195,22 @@
   });
 
   // ---------- the rotation ----------
+  // `when` (announcements.json): {days:[mon..sun], from:'HH:MM', until:'HH:MM'} in the venue's local time —
+  // the speaker phone's own clock at the event. Lauren 13.10.2026: the $5 brush set only Friday until 12:00.
+  var DAYS = ['sun','mon','tue','wed','thu','fri','sat'];
+  function hm(s){ var p = s.split(':'); return (+p[0]) * 60 + (+p[1]); }
+  function inWindow(id, now){
+    var src = (spec.clips || []).filter(function(c){ return c.id === id; })[0], w = src && src.when;
+    if (!w) return true;
+    now = now || new Date(); var mins = now.getHours() * 60 + now.getMinutes();
+    if (w.days && w.days.indexOf(DAYS[now.getDay()]) < 0) return false;
+    if (w.from && mins < hm(w.from)) return false;
+    if (w.until && mins >= hm(w.until)) return false;
+    return true;
+  }
   function autoIds(){
     var ids = [], seen = {};
-    man.clips.forEach(function(c){ if (c.rotation === 'auto' && !seen[c.id]) { seen[c.id] = 1; ids.push(c.id); } });
+    man.clips.forEach(function(c){ if (c.rotation === 'auto' && !seen[c.id] && inWindow(c.id)) { seen[c.id] = 1; ids.push(c.id); } });
     if ($('lastDay').checked) ids.unshift('last_day');
     return ids;
   }
@@ -274,7 +289,7 @@
   // for scripts/test_pa_player.py
   window.__pa = {state: function(){ return {running: running, busy: busy, songsSince: songsSince, autoIdx: autoIdx,
     tracks: tracks.length, voiceSrc: voice.getAttribute('src'), musicSrc: music.getAttribute('src'), err: $('err').textContent}; },
-    end: function(){ music.dispatchEvent(new Event('ended')); }};
+    end: function(){ music.dispatchEvent(new Event('ended')); }, autoIds: function(){ return autoIds(); }};
 })();
 </script>
 </body>

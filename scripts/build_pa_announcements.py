@@ -76,6 +76,21 @@ def check():
     spec = json.loads(SRC.read_text())
     errs = []
     missing_lang = [f"{c['id']}:{l}" for c in spec["clips"] for l in spec["order"] if not c.get(l)]
+    days_ok = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"}
+    for c in spec["clips"]:
+        w = c.get("when")
+        if w is None:
+            continue
+        if not isinstance(w, dict) or set(w) - {"days", "from", "until"}:
+            errs.append(f"{c['id']}: `when` may only hold days / from / until")
+            continue
+        if set(w.get("days", [])) - days_ok:
+            errs.append(f"{c['id']}: `when.days` must be from {sorted(days_ok)}")
+        for k in ("from", "until"):
+            if k in w and not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", str(w[k])):
+                errs.append(f"{c['id']}: `when.{k}` must be HH:MM, got {w[k]!r}")
+        if "from" in w and "until" in w and w["from"] >= w["until"]:
+            errs.append(f"{c['id']}: `when.from` must be before `when.until`")
     errs += [f"{m}: no text for a language in `order`" for m in missing_lang]
     if not MANIFEST.exists():
         errs.append("audio/manifest.json missing — run build")

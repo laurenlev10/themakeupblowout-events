@@ -46,6 +46,7 @@
  "must_hear": [
   "Makeup Blowout Sale"
  ],
+ "_when": "A clip may carry `when`: {days: [mon..sun], from: 'HH:MM', until: 'HH:MM'} — all optional, event-local time (the speaker phone's clock at the venue). Outside it the clip is skipped by the rotation; its manual button still plays it. Mirror it in the Soundtrack campaign (domains/events-social.md).",
  "clips": [
   {
    "id": "welcome",
@@ -63,7 +64,14 @@
    "id": "deal_brush_set",
    "rotation": "auto",
    "en": "Don't miss our twenty-two piece brush set, just five dollars. That's ninety-five percent off! Ask any of our team where to find it.",
-   "es": "No te pierdas nuestro set de veintidós brochas, a solo cinco dólares. ¡Eso es noventa y cinco por ciento de descuento! Pregunta a nuestro equipo dónde encontrarlo."
+   "es": "No te pierdas nuestro set de veintidós brochas, a solo cinco dólares. ¡Eso es noventa y cinco por ciento de descuento! Pregunta a nuestro equipo dónde encontrarlo.",
+   "when": {
+    "days": [
+     "fri"
+    ],
+    "until": "12:00"
+   },
+   "_when": "Lauren 13.10.2026: the $5 brush-set deal is announced ONLY on Friday morning, until 12:00 (event-local time)."
   },
   {
    "id": "share_reel",
