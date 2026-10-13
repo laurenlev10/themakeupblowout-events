@@ -10,7 +10,7 @@ Runs the real page in Chromium against a local copy of docs/pa/ and asserts:
   5. tamper: announcements.json changed without a rebuild → the red OUT OF DATE bar
   6. scripts/build_pa_announcements.py check fails on that tampered copy, too
 
-usage: python3 scripts/test_pa_player.py     (needs: pip install playwright; ffmpeg)
+usage: python3 scripts/test_pa_player.py     (needs: pip install playwright)
 """
 import functools, http.server, json, pathlib, shutil, subprocess, sys, tempfile, threading, time
 from playwright.sync_api import sync_playwright
@@ -36,8 +36,14 @@ def serve(root):
 
 
 def song(path, secs):
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i",
-                    f"sine=frequency=440:duration={secs}", str(path)], check=True)
+    # pure Python, no ffmpeg: the GitHub runner image does not promise one (13.10.2026 —
+    # the first CI run failed here while the same test passed in the session).
+    import math, struct, wave
+    rate = 8000
+    with wave.open(str(path), "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(rate)
+        w.writeframes(b"".join(struct.pack("<h", int(8000 * math.sin(2 * math.pi * 440 * i / rate)))
+                               for i in range(rate * secs)))
 
 
 def wait(page, js, secs=20):
@@ -53,7 +59,7 @@ def main():
     tmp = pathlib.Path(tempfile.mkdtemp())
     site = tmp / "site"
     shutil.copytree(ROOT / "docs/pa", site / "pa")
-    songs = [tmp / f"song{i}.mp3" for i in range(3)]
+    songs = [tmp / f"song{i}.wav" for i in range(3)]
     for s in songs:
         song(s, 60)
     srv = serve(site)
