@@ -83,7 +83,7 @@
   <div id="banner" class="banner" style="display:none"></div>
 
   <div class="card" id="who-card">
-    <label>Your name / Tu nombre</label>
+    <label>Your name / Tu nombre (so Lauren knows who is driving)</label>
     <input id="driver" placeholder="e.g. Daniel" autocomplete="name">
     <div class="note">Lauren and Eli get a text when you start, when you arrive at each vendor, and when you finish.<br>Lauren y Eli reciben un mensaje cuando empiezas, cuando llegas a cada proveedor y cuando terminas.</div>
     <button class="btn ok" id="btn-start" onclick="startRoute()">🚚 Start route · Empezar ruta</button>
@@ -192,12 +192,17 @@ function saveQueue(){ ls("pickup_queue", JSON.stringify(QUEUE)); syncLine(); }
 function syncLine(){ document.getElementById("sync-line").innerHTML = QUEUE.length ? '<b>⏳ ' + QUEUE.length + ' not sent yet</b> — retrying' : '✓ synced'; }
 function report(ev, vendorId, auto){
   DRIVER = document.getElementById("driver").value.trim(); ls("pickup_driver", DRIVER);
-  if (!DRIVER && ev!=="navigate" && !auto){ alert("Please type your name first · Escribe tu nombre primero"); document.getElementById("driver").focus(); return; }
+  // 14.10.2026, first real run: Eli tapped Waze without typing a name or pressing "Start route",
+  // so nothing was texted. The buttons never block on the name (the record says "Driver"), and
+  // the first Navigate / Arrived of the day starts the route by itself.
+  if (!DRIVER) DRIVER = "Driver";
+  if (ev !== "started" && ev !== "done" && !EVENTS.some(function(e){ return e.event === "started"; })) report("started", "", true);
   var body = { kind:"pickup_event", event:ev, vendor_id:vendorId||"", driver:DRIVER, plan_date:PLAN.plan.date||"", auto:!!auto,
                lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, _at: new Date().toISOString() };
   // optimistic: the list updates now; the Worker's answer (or the retry) is the record
   if (ev==="navigate") ping(true);
   if (ev!=="navigate") EVENTS.push({ at: body._at, plan_date: body.plan_date, vendor_id: vendorId, event: ev, driver: DRIVER, auto: !!auto });
+  if (ev==="navigate" && !EVENTS.some(function(e){ return e.event==="navigate" && e.vendor_id===vendorId; })) EVENTS.push({ at: body._at, plan_date: body.plan_date, vendor_id: vendorId, event: ev, driver: DRIVER, auto: !!auto });
   render();
   QUEUE.push(body); saveQueue(); flush();
 }
