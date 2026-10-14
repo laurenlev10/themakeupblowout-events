@@ -83,6 +83,12 @@
     <input id="driver" placeholder="e.g. Daniel" autocomplete="name">
     <div class="note">Lauren and Eli get a text when you start, when you arrive at each vendor, and when you finish.<br>Lauren y Eli reciben un mensaje cuando empiezas, cuando llegas a cada proveedor y cuando terminas.</div>
     <button class="btn ok" id="btn-start" onclick="startRoute()">🚚 Start route · Empezar ruta</button>
+    <a class="btn sec" id="btn-live" href="https://wa.me/14243547625?text=%F0%9F%9A%9A%20Starting%20the%20pickup%20route%20%E2%80%94%20sharing%20my%20live%20location" target="_blank" rel="noopener" onclick="liveHint()">📡 Share live location with Lauren<span class="es">Compartir ubicación en vivo</span></a>
+    <div class="note" id="live-hint" style="display:none;background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;padding:8px 10px;color:#4c1d95">
+      In WhatsApp: tap <b>📎</b> (or <b>+</b>) → <b>Location</b> → <b>Share live location</b> → <b>8 hours</b> → send.<br>
+      En WhatsApp: <b>📎</b> → <b>Ubicación</b> → <b>Compartir ubicación en tiempo real</b> → <b>8 horas</b>.<br>
+      Lauren then sees where you are all day, even while you're in Waze.
+    </div>
     <div id="started-line" class="note" style="display:none"></div>
   </div>
 
@@ -210,6 +216,7 @@ async function flush(){
   finally{ FLUSHING = false; }
 }
 function startRoute(){ report("started", ""); }
+function liveHint(){ document.getElementById("live-hint").style.display="block"; }
 function finishRoute(){ if (confirm("Finish the route? Lauren gets a summary.")) report("done", ""); }
 
 // ── GPS: auto "Arrived" while the page is in the foreground ──────────────────
