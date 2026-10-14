@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Makeup Blowout — Pickup Route</title>
+<!--
+  events.themakeupblowout.com/pickup/ — the DRIVER's page (14.10.2026). Public on purpose:
+  no login, any driver opens it from the link Lauren sends. It shows ONLY the vendors Lauren
+  ticked for this week, in the order she set in dashboard /pickup/, and reads that plan through
+  the danielle Worker (kind get_pickup_plan — the plan file itself stays behind Cloudflare
+  Access). Every tap here — Start · Navigate · Arrived · Picked up · Skip · Finish — is POSTed
+  to the Worker (kind pickup_event) with the phone's position; the Worker logs it and texts
+  Lauren/Eli per the plan's alert switches. While this page is open in the foreground, the
+  phone's GPS marks "Arrived" by itself within ~150 m of a stop (600 m when the address was
+  only resolved to the street); when the driver is inside Waze the page is in the background
+  and the buttons are the record — the page says so.
+  No credential of any kind lives here (IRON RULE #32). A tap that cannot reach the Worker
+  waits in localStorage and is retried every 20 s, so a tunnel does not lose a stop.
+-->
+<style>
+  :root{ --pink:#ec4899; --purple:#7c3aed; --ink:#1f2937; --muted:#6b7280; --bg:#f6f7fb; --ok:#16a34a; --warn:#d97706; --bad:#dc2626; --line:#e5e7eb; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
+  .hdr{background:linear-gradient(135deg,#ec4899 0%,#7c3aed 100%);color:#fff;padding:16px 16px 14px;text-align:center}
+  .hdr h1{margin:0;font-size:20px;font-weight:900}
+  .hdr p{margin:4px 0 0;font-size:13px;opacity:.93}
+  .wrap{max-width:560px;margin:0 auto;padding:12px 12px 80px}
+  .card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:12px}
+  .card h2{margin:0 0 8px;font-size:15px}
+  label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin:0 0 4px}
+  input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px;font-family:inherit;background:#fafafa}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:13px;padding:14px;font-size:16px;font-weight:900;cursor:pointer;background:var(--purple);color:#fff;text-decoration:none;margin-top:8px}
+  .btn.sec{background:#eef0f4;color:var(--ink)}
+  .btn.ok{background:var(--ok)}
+  .btn.warn{background:var(--warn)}
+  .btn.bad{background:#fee2e2;color:#991b1b}
+  .btn.sm{padding:10px;font-size:14px;border-radius:10px}
+  .btn:disabled{opacity:.5}
+  .two{display:flex;gap:8px}
+  .two .btn{flex:1}
+  .note{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+  .banner{background:#fef3c7;border:1px solid #f59e0b;color:#92400e;border-radius:12px;padding:10px 12px;font-size:13.5px;font-weight:700;margin-bottom:12px;white-space:pre-wrap}
+  .stop{background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:10px;border:2px solid transparent}
+  .stop.cur{border-color:var(--purple)}
+  .stop.done{opacity:.6}
+  .stop .top{display:flex;gap:10px;align-items:flex-start}
+  .stop .num{width:30px;height:30px;border-radius:50%;background:var(--purple);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .stop.done .num{background:var(--ok)}
+  .stop.skip .num{background:var(--bad)}
+  .stop .name{font-weight:900;font-size:17px}
+  .stop .meta{font-size:14px;color:#374151;margin-top:2px;line-height:1.5}
+  .stop .meta a{color:var(--purple);font-weight:700;text-decoration:none}
+  .stop .vnote{font-size:13px;color:#7c3aed;background:#faf5ff;border-radius:8px;padding:6px 8px;margin-top:6px}
+  .stop .st{font-size:13px;font-weight:800;margin-top:6px}
+  .stop .st.arrived{color:var(--warn)} .stop .st.picked{color:var(--ok)} .stop .st.skipped{color:var(--bad)}
+  .stop .acts{margin-top:4px}
+  .pill{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;background:#eef0f4;color:#374151;margin-left:6px}
+  .pill.gps{background:#dcfce7;color:#166534}
+  .pill.nogps{background:#fee2e2;color:#991b1b}
+  .foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 12px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .foot b{color:var(--ink)}
+  .empty{color:var(--muted);font-size:14px;padding:12px;text-align:center}
+  .es{display:block;font-size:11.5px;font-weight:600;opacity:.8}
+  .btn .es{display:inline;margin-left:4px}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>🚚 Pickup Route</h1>
+  <p id="hdr-sub">The Makeup Blowout Sale · loading…</p>
+</div>
+<div class="wrap">
+  <div id="banner" class="banner" style="display:none"></div>
+
+  <div class="card" id="who-card">
+    <label>Your name / Tu nombre</label>
+    <input id="driver" placeholder="e.g. Daniel" autocomplete="name">
+    <div class="note">Lauren and Eli get a text when you start, when you arrive at each vendor, and when you finish.<br>Lauren y Eli reciben un mensaje cuando empiezas, cuando llegas a cada proveedor y cuando terminas.</div>
+    <button class="btn ok" id="btn-start" onclick="startRoute()">🚚 Start route · Empezar ruta</button>
+    <div id="started-line" class="note" style="display:none"></div>
+  </div>
+
+  <div class="card" id="next-card" style="display:none">
+    <h2 id="next-title">Next stop</h2>
+    <div id="next-body"></div>
+  </div>
+
+  <div id="stops"></div>
+
+  <div class="card" id="finish-card" style="display:none">
+    <button class="btn" id="btn-done" onclick="finishRoute()">🏁 Finish route · Terminar ruta</button>
+    <div class="note">Tap when the last pickup is loaded. Lauren gets a summary.</div>
+  </div>
+  <div class="note" style="text-align:center;margin-top:16px">Problem with the page? Call Lauren: <a href="tel:4243547625">(424) 354-7625</a></div>
+</div>
+<div class="foot"><span id="gps-line">📡 GPS: off</span><span id="sync-line"></span></div>
+
+<script>
+"use strict";
+var WORKER = "https://danielle.laurenlev10.workers.dev/";
+var PLAN = null, EVENTS = [], STOPS = [], DRIVER = "", POS = null, WATCH = null, QUEUE = [];
+var AUTO_ARRIVE_SENT = {};           // vendor_id → true once the geofence fired this session
+var RADIUS = { house: 150, street: 600, none: 0 };
+var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+function ls(k, v){ try{ if (v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
+function fmtTime(iso){ try{ return new Date(iso).toLocaleTimeString("en-US",{timeZone:"America/Los_Angeles",hour:"numeric",minute:"2-digit"}); }catch(e){ return iso; } }
+function meters(a,b){ var R=6371000,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180,x=Math.sin(dLat/2),y=Math.sin(dLng/2); var h=x*x+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*y*y; return 2*R*Math.asin(Math.sqrt(h)); }
+function wazeUrl(v){ return (v.lat!=null && v.geo_precision==="house") ? "https://waze.com/ul?ll=" + v.lat + "," + v.lng + "&navigate=yes" : "https://waze.com/ul?q=" + encodeURIComponent(v.address||v.name) + "&navigate=yes"; }
+function gmapsUrl(v){ return "https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=" + encodeURIComponent(v.address||v.name); }
+function banner(msg){ var b=document.getElementById("banner"); if(!msg){ b.style.display="none"; return; } b.textContent=msg; b.style.display="block"; }
+
+// ── load the plan (through the Worker: main ⊕ queue, no login) ──────────────
+async function load(){
+  var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_pickup_plan" }) });
+  var j = await r.json();
+  if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+  PLAN = j.plan; EVENTS = j.events || [];
+  STOPS = (PLAN.plan.stops||[]).map(function(id){ return (PLAN.vendors||[]).find(function(v){ return v.id===id; }); }).filter(Boolean);
+  render();
+}
+function status(id){
+  var st = { arrived:null, picked:null, skipped:null, navigate:null };
+  EVENTS.forEach(function(e){ if (e.vendor_id===id && st.hasOwnProperty(e.event)) st[e.event]=e.at; });
+  return st;
+}
+function render(){
+  var p = PLAN.plan, d = p.date ? new Date(p.date + "T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}) : "";
+  document.getElementById("hdr-sub").textContent = (p.title ? p.title + " · " : "") + (d || "no date") + " · " + STOPS.length + " stop" + (STOPS.length===1?"":"s");
+  banner(p.driver_note ? "📝 " + p.driver_note : "");
+  var started = EVENTS.filter(function(e){ return e.event==="started"; })[0];
+  var sl = document.getElementById("started-line");
+  if (started){ sl.style.display="block"; sl.textContent = "Route started " + fmtTime(started.at) + (started.driver?" by " + started.driver:""); document.getElementById("btn-start").textContent = "🚚 Start again (new driver) · Empezar de nuevo"; }
+  if (!STOPS.length){ document.getElementById("stops").innerHTML = '<div class="empty">No pickups planned yet.<br>Lauren has not selected this week\'s vendors.<br><span class="es">Todavía no hay recogidas planeadas.</span></div>'; document.getElementById("next-card").style.display="none"; document.getElementById("finish-card").style.display="none"; return; }
+  var html = "", nextV = null;
+  STOPS.forEach(function(v, i){
+    var st = status(v.id), cls = st.picked?"done":st.skipped?"done skip":st.arrived?"cur":"";
+    if (!nextV && !st.picked && !st.skipped) { nextV = v; if (!st.arrived) cls += " cur"; }
+    var line = st.picked ? '<div class="st picked">✅ Picked up ' + fmtTime(st.picked) + '</div>' : st.skipped ? '<div class="st skipped">⏭ Skipped ' + fmtTime(st.skipped) + '</div>' : st.arrived ? '<div class="st arrived">📍 Arrived ' + fmtTime(st.arrived) + '</div>' : '';
+    html += '<div class="stop ' + cls + '" id="stop-' + esc(v.id) + '"><div class="top"><div class="num">' + (i+1) + '</div><div style="flex:1;min-width:0">' +
+      '<div class="name">' + esc(v.name) + '</div>' +
+      '<div class="meta">' + (v.contact?'👤 ' + esc(v.contact) + '<br>':'') + (v.phone?'📞 ' + v.phone.split("/").map(function(ph){ ph=ph.trim(); return '<a href="tel:' + esc(ph.replace(/[^0-9+]/g,"")) + '">' + esc(ph) + '</a>'; }).join(" / ") + '<br>':'') + '📍 ' + esc(v.address) + '</div>' +
+      (v.notes?'<div class="vnote">📝 ' + esc(v.notes) + '</div>':'') + line + '</div></div>' +
+      '<div class="acts">' +
+        '<div class="two"><a class="btn sm" href="' + wazeUrl(v) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(v.id) + '\')">🧭 Waze</a><a class="btn sm" href="' + gmapsUrl(v) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(v.id) + '\')">🗺️ Google Maps</a></div>' +
+        (st.picked ? '' :
+          '<div class="two">' + (st.arrived ? '' : '<button class="btn sm warn" onclick="report(\'arrived\',\'' + esc(v.id) + '\')">📍 Arrived<span class="es">Llegué</span></button>') +
+          '<button class="btn sm ok" onclick="report(\'picked\',\'' + esc(v.id) + '\')">✅ Picked up<span class="es">Recogido</span></button>' +
+          (st.skipped ? '' : '<button class="btn sm bad" onclick="if(confirm(\'Skip ' + esc(v.name).replace(/'/g,"") + '?\')) report(\'skipped\',\'' + esc(v.id) + '\')">⏭ Skip</button>') + '</div>') +
+      '</div></div>';
+  });
+  document.getElementById("stops").innerHTML = html;
+  var nc = document.getElementById("next-card");
+  if (nextV){
+    nc.style.display = "block";
+    document.getElementById("next-title").textContent = "➡️ Next stop · Siguiente: " + nextV.name;
+    document.getElementById("next-body").innerHTML = '<div class="meta" style="font-size:14px">📍 ' + esc(nextV.address) + (nextV.contact?' · 👤 ' + esc(nextV.contact):'') + '</div>' +
+      '<a class="btn" href="' + wazeUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">🧭 Go now — Waze · Ir ahora</a>' +
+      '<a class="btn sec sm" href="' + gmapsUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">🗺️ Google Maps instead</a>' +
+      '<div class="note">You can start from any vendor — the list below is Lauren\'s suggested order.<br>Puedes empezar por cualquier proveedor; la lista es el orden sugerido por Lauren.</div>';
+  } else nc.style.display = "none";
+  var doneEv = EVENTS.filter(function(e){ return e.event==="done"; }).length;
+  document.getElementById("finish-card").style.display = (started && !doneEv) ? "block" : "none";
+}
+
+// ── reporting (the Worker logs + texts; a failed POST waits in localStorage) ──
+function loadQueue(){ try{ QUEUE = JSON.parse(ls("pickup_queue")||"[]"); }catch(e){ QUEUE=[]; } }
+function saveQueue(){ ls("pickup_queue", JSON.stringify(QUEUE)); syncLine(); }
+function syncLine(){ document.getElementById("sync-line").innerHTML = QUEUE.length ? '<b>⏳ ' + QUEUE.length + ' not sent yet</b> — retrying' : '✓ synced'; }
+function report(ev, vendorId, auto){
+  DRIVER = document.getElementById("driver").value.trim(); ls("pickup_driver", DRIVER);
+  if (!DRIVER && ev!=="navigate" && !auto){ alert("Please type your name first · Escribe tu nombre primero"); document.getElementById("driver").focus(); return; }
+  var body = { kind:"pickup_event", event:ev, vendor_id:vendorId||"", driver:DRIVER, plan_date:PLAN.plan.date||"", auto:!!auto,
+               lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, _at: new Date().toISOString() };
+  // optimistic: the list updates now; the Worker's answer (or the retry) is the record
+  if (ev!=="navigate") EVENTS.push({ at: body._at, plan_date: body.plan_date, vendor_id: vendorId, event: ev, driver: DRIVER, auto: !!auto });
+  render();
+  QUEUE.push(body); saveQueue(); flush();
+}
+var FLUSHING = false;
+async function flush(){
+  if (FLUSHING || !QUEUE.length) return; FLUSHING = true;
+  try{
+    while (QUEUE.length){
+      var b = QUEUE[0];
+      var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(b) });
+      var j = null; try{ j = await r.json(); }catch(e){}
+      if (r.status===400){ QUEUE.shift(); saveQueue(); continue; }   // the server refused it for good; retrying forever helps nobody
+      if (!r.ok || !j || !j.ok) throw new Error((j&&j.error)||("server " + r.status));
+      QUEUE.shift(); saveQueue();
+    }
+    syncLine();
+  }catch(e){ document.getElementById("sync-line").innerHTML = '<b>⏳ ' + QUEUE.length + ' not sent</b> — ' + esc(e.message||e); }
+  finally{ FLUSHING = false; }
+}
+function startRoute(){ report("started", ""); }
+function finishRoute(){ if (confirm("Finish the route? Lauren gets a summary.")) report("done", ""); }
+
+// ── GPS: auto "Arrived" while the page is in the foreground ──────────────────
+function startGps(){
+  if (!navigator.geolocation){ document.getElementById("gps-line").textContent = "📡 GPS: not available"; return; }
+  WATCH = navigator.geolocation.watchPosition(function(p){
+    POS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:Math.round(p.coords.accuracy||0) };
+    document.getElementById("gps-line").innerHTML = '<span class="pill gps">📡 GPS on</span> ±' + POS.acc + ' m';
+    if (!PLAN || POS.acc > 300) return;
+    STOPS.forEach(function(v){
+      var rad = RADIUS[v.geo_precision||"none"] || 0; if (!rad || v.lat==null) return;
+      var st = status(v.id); if (st.arrived || st.picked || st.skipped || AUTO_ARRIVE_SENT[v.id]) return;
+      if (meters(POS, v) <= rad){ AUTO_ARRIVE_SENT[v.id] = true; report("arrived", v.id, true); }
+    });
+  }, function(err){
+    document.getElementById("gps-line").innerHTML = '<span class="pill nogps">📡 GPS off</span> ' + (err.code===1 ? "allow location to auto-mark arrivals" : "no fix");
+  }, { enableHighAccuracy:true, maximumAge:15000, timeout:20000 });
+}
+
+// ── boot ─────────────────────────────────────────────────────────────────────
+document.getElementById("driver").value = ls("pickup_driver") || "";
+loadQueue(); syncLine();
+load().then(function(){ startGps(); flush(); })
+  .catch(function(e){ document.getElementById("stops").innerHTML = '<div class="empty">❌ Could not load the route: ' + esc(e.message||e) + '<br>Please call Lauren.</div>'; });
+setInterval(function(){ flush(); }, 20000);
+setInterval(function(){ if (document.visibilityState==="visible" && !QUEUE.length) load().catch(function(){}); }, 90000);
+document.addEventListener("visibilitychange", function(){ if (document.visibilityState==="visible"){ flush(); load().catch(function(){}); } });
+</script>
+</body>
+</html>
