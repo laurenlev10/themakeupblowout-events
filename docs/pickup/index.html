@@ -83,13 +83,8 @@
     <input id="driver" placeholder="e.g. Daniel" autocomplete="name">
     <div class="note">Lauren and Eli get a text when you start, when you arrive at each vendor, and when you finish.<br>Lauren y Eli reciben un mensaje cuando empiezas, cuando llegas a cada proveedor y cuando terminas.</div>
     <button class="btn ok" id="btn-start" onclick="startRoute()">🚚 Start route · Empezar ruta</button>
-    <a class="btn sec" id="btn-live" href="https://wa.me/14243547625?text=%F0%9F%9A%9A%20Starting%20the%20pickup%20route%20%E2%80%94%20sharing%20my%20live%20location" target="_blank" rel="noopener" onclick="liveHint()">📡 Share live location with Lauren<span class="es">Compartir ubicación en vivo</span></a>
-    <div class="note" id="live-hint" style="display:none;background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;padding:8px 10px;color:#4c1d95">
-      In WhatsApp: tap <b>📎</b> (or <b>+</b>) → <b>Location</b> → <b>Share live location</b> → <b>8 hours</b> → send.<br>
-      En WhatsApp: <b>📎</b> → <b>Ubicación</b> → <b>Compartir ubicación en tiempo real</b> → <b>8 horas</b>.<br>
-      Lauren then sees where you are all day, even while you're in Waze.
-    </div>
     <div id="started-line" class="note" style="display:none"></div>
+    <div class="note" id="live-note">📡 While this page is open, Lauren's dashboard shows where you are on the map. Inside Waze the map pauses — come back to this page at each stop (or just tap the buttons).<br><span class="es">Mientras esta página está abierta, Lauren ve dónde estás en el mapa. Dentro de Waze el mapa se pausa — vuelve a esta página en cada parada.</span></div>
   </div>
 
   <div class="card" id="next-card" style="display:none">
@@ -195,6 +190,7 @@ function report(ev, vendorId, auto){
   var body = { kind:"pickup_event", event:ev, vendor_id:vendorId||"", driver:DRIVER, plan_date:PLAN.plan.date||"", auto:!!auto,
                lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, _at: new Date().toISOString() };
   // optimistic: the list updates now; the Worker's answer (or the retry) is the record
+  if (ev==="navigate") ping(true);
   if (ev!=="navigate") EVENTS.push({ at: body._at, plan_date: body.plan_date, vendor_id: vendorId, event: ev, driver: DRIVER, auto: !!auto });
   render();
   QUEUE.push(body); saveQueue(); flush();
@@ -216,8 +212,24 @@ async function flush(){
   finally{ FLUSHING = false; }
 }
 function startRoute(){ report("started", ""); }
-function liveHint(){ document.getElementById("live-hint").style.display="block"; }
 function finishRoute(){ if (confirm("Finish the route? Lauren gets a summary.")) report("done", ""); }
+
+// ── live position → Lauren's map (D1 on the Worker; no SMS, no log) ──────────
+var LAST_PING = { at: 0, lat: null, lng: null };
+function ping(force){
+  if (!POS || !PLAN) return;
+  var now = Date.now();
+  var moved = LAST_PING.lat == null || meters(POS, LAST_PING) >= 30;
+  if (!force && (now - LAST_PING.at < 30000 || !moved)) return;
+  if (document.visibilityState !== "visible" && !force) return;
+  LAST_PING = { at: now, lat: POS.lat, lng: POS.lng };
+  var body = { kind:"pickup_ping", driver: document.getElementById("driver").value.trim(), lat: POS.lat, lng: POS.lng, acc: POS.acc, plan_date: PLAN.plan.date || "" };
+  var data = JSON.stringify(body);
+  // sendBeacon survives the hand-off to Waze; fetch is the fallback. text/plain keeps the
+  // beacon a simple request (no preflight) — the Worker parses the body as JSON either way.
+  try{ if (force && navigator.sendBeacon && navigator.sendBeacon(WORKER, new Blob([data], { type:"text/plain" }))) return; }catch(e){}
+  fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: data, keepalive: !!force }).catch(function(){});
+}
 
 // ── GPS: auto "Arrived" while the page is in the foreground ──────────────────
 function startGps(){
@@ -226,6 +238,7 @@ function startGps(){
     POS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:Math.round(p.coords.accuracy||0) };
     document.getElementById("gps-line").innerHTML = '<span class="pill gps">📡 GPS on</span> ±' + POS.acc + ' m';
     if (!PLAN || POS.acc > 300) return;
+    ping(false);
     STOPS.forEach(function(v){
       var rad = RADIUS[v.geo_precision||"none"] || 0; if (!rad || v.lat==null) return;
       var st = status(v.id); if (st.arrived || st.picked || st.skipped || AUTO_ARRIVE_SENT[v.id]) return;
