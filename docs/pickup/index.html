@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7c3aed">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pickup">
 <title>Makeup Blowout — Pickup Route</title>
 <!--
   events.themakeupblowout.com/pickup/ — the DRIVER's page (14.10.2026). Public on purpose:
@@ -31,12 +35,12 @@
   .card h2{margin:0 0 8px;font-size:15px}
   label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin:0 0 4px}
   input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px;font-family:inherit;background:#fafafa}
-  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:13px;padding:14px;font-size:16px;font-weight:900;cursor:pointer;background:var(--purple);color:#fff;text-decoration:none;margin-top:8px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:13px;padding:15px;min-height:52px;font-size:17px;font-weight:900;cursor:pointer;background:var(--purple);color:#fff;text-decoration:none;margin-top:8px}
   .btn.sec{background:#eef0f4;color:var(--ink)}
   .btn.ok{background:var(--ok)}
   .btn.warn{background:var(--warn)}
   .btn.bad{background:#fee2e2;color:#991b1b}
-  .btn.sm{padding:10px;font-size:14px;border-radius:10px}
+  .btn.sm{padding:11px 8px;min-height:46px;font-size:15px;border-radius:10px}
   .btn:disabled{opacity:.5}
   .two{display:flex;gap:8px}
   .two .btn{flex:1}
@@ -50,7 +54,7 @@
   .stop.done .num{background:var(--ok)}
   .stop.skip .num{background:var(--bad)}
   .stop .name{font-weight:900;font-size:17px}
-  .stop .meta{font-size:14px;color:#374151;margin-top:2px;line-height:1.5}
+  .stop .meta{font-size:15px;color:#374151;margin-top:2px;line-height:1.55}
   .stop .meta a{color:var(--purple);font-weight:700;text-decoration:none}
   .stop .vnote{font-size:13px;color:#7c3aed;background:#faf5ff;border-radius:8px;padding:6px 8px;margin-top:6px}
   .stop .st{font-size:13px;font-weight:800;margin-top:6px}
@@ -100,7 +104,7 @@
 <script>
 "use strict";
 var WORKER = "https://danielle.laurenlev10.workers.dev/";
-var PLAN = null, EVENTS = [], STOPS = [], DRIVER = "", POS = null, WATCH = null, QUEUE = [];
+var PLAN = null, EVENTS = [], STOPS = [], DRIVER = "", POS = null, WATCH = null, QUEUE = [], OFFLINE = false;
 var AUTO_ARRIVE_SENT = {};           // vendor_id → true once the geofence fired this session
 var RADIUS = { house: 150, street: 600, none: 0 };
 var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
@@ -113,9 +117,20 @@ function banner(msg){ var b=document.getElementById("banner"); if(!msg){ b.style
 
 // ── load the plan (through the Worker: main ⊕ queue, no login) ──────────────
 async function load(){
-  var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_pickup_plan" }) });
-  var j = await r.json();
-  if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+  var j;
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_pickup_plan" }) });
+    j = await r.json();
+    if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+    ls("pickup_plan_cache", JSON.stringify({ plan:j.plan, events:j.events||[], at:new Date().toISOString() }));
+    OFFLINE = false;
+  }catch(e){
+    // No signal in the field: the last route this phone saw is better than a blank page —
+    // and it is labelled as such, never passed off as live.
+    var c = null; try{ c = JSON.parse(ls("pickup_plan_cache")||"null"); }catch(x){}
+    if (!c) throw e;
+    j = c; OFFLINE = c.at;
+  }
   PLAN = j.plan; EVENTS = j.events || [];
   STOPS = (PLAN.plan.stops||[]).map(function(id){ return (PLAN.vendors||[]).find(function(v){ return v.id===id; }); }).filter(Boolean);
   render();
@@ -128,7 +143,7 @@ function status(id){
 function render(){
   var p = PLAN.plan, d = p.date ? new Date(p.date + "T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}) : "";
   document.getElementById("hdr-sub").textContent = (p.title ? p.title + " · " : "") + (d || "no date") + " · " + STOPS.length + " stop" + (STOPS.length===1?"":"s");
-  banner(p.driver_note ? "📝 " + p.driver_note : "");
+  banner((OFFLINE ? "📵 No connection — showing the route as last loaded " + fmtTime(OFFLINE) + ". Taps are saved on this phone and sent when the signal is back.\n" : "") + (p.driver_note ? "📝 " + p.driver_note : ""));
   var started = EVENTS.filter(function(e){ return e.event==="started"; })[0];
   var sl = document.getElementById("started-line");
   if (started){ sl.style.display="block"; sl.textContent = "Route started " + fmtTime(started.at) + (started.driver?" by " + started.driver:""); document.getElementById("btn-start").textContent = "🚚 Start again (new driver) · Empezar de nuevo"; }
