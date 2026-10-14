@@ -56,6 +56,10 @@
   .stop .name{font-weight:900;font-size:17px}
   .stop .meta{font-size:15px;color:#374151;margin-top:2px;line-height:1.55}
   .stop .meta a{color:var(--purple);font-weight:700;text-decoration:none}
+  /* 14.10.2026 — Lauren: the phone and the address sit too close; a mis-tap must not dial.
+     The number is its own row with air around it, and tapping it asks first (confirmCall). */
+  .stop .phones{margin:8px 0 10px;padding:6px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
+  .stop .phones a.tel{display:inline-block;padding:6px 10px;border:1.5px solid #ddd6fe;border-radius:10px;background:#faf5ff;margin:2px 0}
   .stop .vnote{font-size:13px;color:#7c3aed;background:#faf5ff;border-radius:8px;padding:6px 8px;margin-top:6px}
   .stop .st{font-size:13px;font-weight:800;margin-top:6px}
   .stop .st.arrived{color:var(--warn)} .stop .st.picked{color:var(--ok)} .stop .st.skipped{color:var(--bad)}
@@ -156,7 +160,7 @@ function render(){
     var line = st.picked ? '<div class="st picked">✅ Picked up ' + fmtTime(st.picked) + '</div>' : st.skipped ? '<div class="st skipped">⏭ Skipped ' + fmtTime(st.skipped) + '</div>' : st.arrived ? '<div class="st arrived">📍 Arrived ' + fmtTime(st.arrived) + '</div>' : '';
     html += '<div class="stop ' + cls + '" id="stop-' + esc(v.id) + '"><div class="top"><div class="num">' + (i+1) + '</div><div style="flex:1;min-width:0">' +
       '<div class="name">' + esc(v.name) + '</div>' +
-      '<div class="meta">' + (v.contact?'👤 ' + esc(v.contact) + '<br>':'') + (v.phone?'📞 ' + v.phone.split("/").map(function(ph){ ph=ph.trim(); return '<a href="tel:' + esc(ph.replace(/[^0-9+]/g,"")) + '">' + esc(ph) + '</a>'; }).join(" / ") + '<br>':'') + '📍 ' + esc(v.address) + '</div>' +
+      '<div class="meta">' + (v.contact?'👤 ' + esc(v.contact) + '<br>':'') + (v.phone?'<div class="phones">📞 ' + v.phone.split("/").map(function(ph){ ph=ph.trim(); return '<a class="tel" href="tel:' + esc(ph.replace(/[^0-9+]/g,"")) + '" onclick="return confirmCall(this,\'' + esc((v.contact||v.name).replace(/'/g,"")) + '\',\'' + esc(ph) + '\')">' + esc(ph) + '</a>'; }).join(" · ") + '</div>':'') + '📍 ' + esc(v.address) + '</div>' +
       (v.notes?'<div class="vnote">📝 ' + esc(v.notes) + '</div>':'') + line + '</div></div>' +
       '<div class="acts">' +
         '<div class="two"><a class="btn sm" href="' + wazeUrl(v) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(v.id) + '\')">🧭 Waze</a><a class="btn sm" href="' + gmapsUrl(v) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(v.id) + '\')">🗺️ Google Maps</a></div>' +
@@ -212,6 +216,10 @@ async function flush(){
   finally{ FLUSHING = false; }
 }
 function startRoute(){ report("started", ""); }
+function confirmCall(a, who, num){
+  // a tap next to the address must not dial by itself: the call starts only after a yes
+  return confirm("Call " + who + "?\n" + num + "\n\n¿Llamar a " + who + "?");
+}
 function finishRoute(){ if (confirm("Finish the route? Lauren gets a summary.")) report("done", ""); }
 
 // ── live position → Lauren's map (D1 on the Worker; no SMS, no log) ──────────
