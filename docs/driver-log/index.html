@@ -119,9 +119,18 @@
       <button class="stbtn on" onclick="setStatus('on','Weigh station')">⚖️ Weigh station<br><span class="es">on duty · Eli gets a text<br>תחנת שקילה — אלי מקבל הודעה</span></button>
       <button class="stbtn off" onclick="setStatus('off')">☕ Off duty<br><span class="es">break, meal, hotel, done for today<br>לא בתפקיד — הפסקה, ארוחה, מלון, סיימתי להיום</span></button>
     </div>
-    <div class="note">🔔 If you stop for 5 minutes while marked Driving, or start moving while not, the phone will buzz and remind you to tap — only while this page is open on screen.<br><span class="es">אם תעצור 5 דקות כשאתה מסומן "נוהג", או תתחיל לנסוע כשלא — הטלפון ירטוט ויזכיר לך ללחוץ. עובד רק כשהדף פתוח על המסך.</span></div>
+    <div class="note">🔔 If you stop for 5 minutes while marked Driving, or start moving while not, or finish the day without signing, the phone will buzz and remind you — only while this page is open on screen. Eli gets a text each time.<br><span class="es">אם תעצור 5 דקות כשאתה מסומן "נוהג", או תתחיל לנסוע כשלא, או תסיים יום בלי לחתום — הטלפון ירטוט ויזכיר לך. עובד רק כשהדף פתוח על המסך. אלי מקבל הודעה בכל פעם.</span></div>
     <label>Note for this change (optional) · הערה</label>
     <input id="note" placeholder="e.g. fuel stop, loading at venue" maxlength="160">
+    <details id="late-box" style="margin-top:8px"><summary style="font-size:14px;font-weight:800;cursor:pointer">⏱ Forgot to tap? It happened earlier… <span class="es">שכחת ללחוץ? זה קרה קודם…</span></summary>
+      <div class="note">Pick when it really happened, then tap the status above. The log keeps the real time and notes that you entered it late.<br><span class="es">בחר מתי זה באמת קרה, ואז לחץ על המצב למעלה. היומן שומר את הזמן האמיתי ומציין שהוזן באיחור.</span></div>
+      <div class="two" style="flex-wrap:wrap">
+        <button class="btn sec sm" onclick="setLate(15)">15 min ago</button><button class="btn sec sm" onclick="setLate(30)">30 min ago</button>
+        <button class="btn sec sm" onclick="setLate(60)">1 h ago</button><button class="btn sec sm" onclick="setLate(0)">now · עכשיו</button>
+      </div>
+      <label>…or the exact time · או השעה המדויקת</label><input id="late-time" type="time" onchange="lateFromTime()">
+      <div id="late-line" class="note" style="font-weight:800"></div>
+    </details>
   </div>
 
   <div class="card" id="dest-card">
@@ -231,7 +240,7 @@ function render(){
     document.getElementById("grid").innerHTML = td.svg;
     var t = td.day.totals || {};
     document.getElementById("totals").textContent = "Off " + hm(t.off||0) + " · Sleeper " + hm(t.sb||0) + " · Driving " + hm(t.d||0) + " · On duty " + hm(t.on||0) + (t.unlogged ? " · rest of day not yet " : "");
-    document.getElementById("remarks").innerHTML = (td.day.remarks||[]).map(function(r){ return "<b>" + esc(r.hhmm) + "</b> " + esc(LABEL[r.status]) + (r.place ? " — " + esc(r.place) : "") + (r.lat != null ? ' <a href="https://maps.google.com/?q=' + r.lat + ',' + r.lng + '" target="_blank" rel="noopener">🗺️</a>' : '') + (r.note ? " <i>(" + esc(r.note) + ")</i>" : ""); }).join("<br>") || '<span class="empty">No entries yet today.</span>';
+    document.getElementById("remarks").innerHTML = (td.day.remarks||[]).map(function(r){ return "<b>" + esc(r.hhmm) + "</b> " + esc(LABEL[r.status]) + (r.place ? " — " + esc(r.place) : "") + (r.lat != null ? ' <a href="https://maps.google.com/?q=' + r.lat + ',' + r.lng + '" target="_blank" rel="noopener">🗺️</a>' : '') + (r.note ? " <i>(" + esc(r.note) + ")</i>" : "") + (r.late ? ' <span class="pill">late entry</span>' : ""); }).join("<br>") || '<span class="empty">No entries yet today.</span>';
     fillHeader(td.header || {});
     var cl = document.getElementById("cert-line");
     if (td.header && td.header.certified_at){ cl.innerHTML = "✅ Today's log was certified at " + esc(fmtTime(td.header.certified_at)) + ". Signing again replaces the signature."; }
@@ -317,9 +326,10 @@ async function setStatus(st, presetNote){
   if (presetNote) document.getElementById("note").value = presetNote;
   if (!d){ alert("Please type your name first.\nקודם תכתוב את השם שלך."); document.getElementById("driver").focus(); return; }
   if (CLOCK && CLOCK.status === st && !document.getElementById("note").value.trim()){ return; }   // a weigh-station tap carries a note, so it always goes through
-  var at = new Date().toISOString();
+  var at = LATE_AT ? new Date(LATE_AT).toISOString() : new Date().toISOString();
+  var late = !!LATE_AT; clearLate();
   var note = document.getElementById("note").value.trim(); document.getElementById("note").value = "";
-  var body = { kind:"hos_event", driver:d, status:st, at:at, note:note, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, place:"" };
+  var body = { kind:"hos_event", driver:d, status:st, at:at, late:late, note:note, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, place:"" };
   // optimistic: the status card changes now; the Worker's answer is the record
   CLOCK = Object.assign({}, CLOCK || {}, { status: st, since: at, resting: false, note: note });
   NUDGED = { stopped:false, moving:false }; hideNudge();
@@ -329,6 +339,20 @@ async function setStatus(st, presetNote){
   body.place = await placeName(POS);   // best effort, a few seconds at most; the tap is already queued with its time
   flush();
 }
+// a late entry: the driver picks when it really happened; the next status tap carries that time
+var LATE_AT = null;
+function setLate(min){
+  if (!min){ clearLate(); return; }
+  LATE_AT = Date.now() - min * 60000;
+  document.getElementById("late-line").textContent = "⏱ The next tap will be recorded at " + fmtTime(new Date(LATE_AT).toISOString()) + " · הלחיצה הבאה תירשם בשעה " + fmtTime(new Date(LATE_AT).toISOString());
+}
+function lateFromTime(){
+  var v = document.getElementById("late-time").value; if (!v) return;
+  var now = new Date(), t = new Date(now); t.setHours(Number(v.slice(0,2)), Number(v.slice(3,5)), 0, 0);
+  if (t > now) t.setDate(t.getDate() - 1);          // "23:40" entered at 00:10 means last night
+  setLate(Math.max(1, Math.round((now - t) / 60000)));
+}
+function clearLate(){ LATE_AT = null; document.getElementById("late-line").textContent = ""; document.getElementById("late-time").value = ""; document.getElementById("late-box").open = false; }
 // city + state for the Remarks line (395.8(d): "city, state at each change of duty status")
 async function placeName(p){
   if (!p) return "";
@@ -353,7 +377,12 @@ async function flush(){
       var b = QUEUE[0];
       var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(b) });
       var j = null; try{ j = await r.json(); }catch(e){}
-      if (r.status===400){ QUEUE.shift(); saveQueue(); continue; }   // refused for good; retrying forever helps nobody
+      if (r.status===400){
+        QUEUE.shift(); saveQueue();
+        if (j && j.earliest) alert("That time is before your last entry (" + fmtTime(j.earliest) + "). Pick a later time.\nהזמן הזה לפני הרישום האחרון שלך (" + fmtTime(j.earliest) + "). בחר זמן מאוחר יותר.");
+        else if (j && j.error) alert("Not recorded: " + j.error);
+        load().catch(function(){}); continue;   // refused for good; the page re-reads the truth
+      }
       if (!r.ok || !j || !j.ok) throw new Error((j&&j.error)||("server " + r.status));
       if (j.clock){ CLOCK = j.clock; if (S) S.now = new Date().toISOString(); renderNow(); renderLimits(); }
       QUEUE.shift(); saveQueue(); touched = true;
@@ -460,7 +489,9 @@ function judgeMotion(now){
     if (still && !NUDGED.stopped){ NUDGED.stopped = true; nudge("stopped", Math.round((now - win[0].t)/60000)); }
     if (!still && !spans) NUDGED.stopped = false;
     if (!still && spans && win.some(function(x){ return meters(x, last) > cfg.stop_radius_m * 3; })) NUDGED.stopped = false;   // moved on → arm again
-  } else if (!CLOCK.resting && CLOCK.shift_start){
+  } else {
+    // not Driving — including a driver who never tapped today (resting): moving at road speed
+    // with no "Driving" is exactly the forgotten tap Lauren wants to hear about
     NUDGED.stopped = false;
     // travelling: over the last move_min minutes the phone covered the distance of road speed
     var win2 = TRAIL.filter(function(x){ return now - x.t <= cfg.move_min * 60000; });
@@ -470,6 +501,22 @@ function judgeMotion(now){
     if (spans2 && kmh >= cfg.move_speed_kmh && !NUDGED.moving){ NUDGED.moving = true; nudge("moving", Math.round((now - win2[0].t)/60000)); }
     if (spans2 && kmh < cfg.move_speed_kmh / 3) NUDGED.moving = false;    // came to rest → arm again
   }
+}
+var UNCERT_NUDGED = "";
+function judgeCertification(){
+  if (!CLOCK || !S || !DRIVER || CLOCK.status !== "off" || !CLOCK.since) return;
+  var td = (S.days||[])[0]; if (!td || !td.day) return;
+  var t = td.day.totals || {}; if (!((t.d||0) + (t.on||0))) return;               // nothing to sign
+  if (td.header && td.header.certified_at) return;
+  var offMin = (Date.now() - Date.parse(CLOCK.since)) / 60000;
+  if (offMin < 60 || UNCERT_NUDGED === S.today) return;
+  UNCERT_NUDGED = S.today;
+  var n = document.getElementById("nudge");
+  n.innerHTML = '<div class="t">✍️ Done for today? Your log is not signed yet.<span class="es">סיימת להיום? היומן עוד לא חתום.</span></div><div class="two"><button class="btn sm" onclick="hideNudge();document.getElementById(\'cert-card\').scrollIntoView({behavior:\'smooth\'})">Sign now · לחתום</button><button class="btn sm sec" onclick="hideNudge()">Later · אחר כך</button></div>';
+  n.style.display = "block";
+  try{ if (navigator.vibrate) navigator.vibrate([300,100,300]); }catch(e){}
+  beep();
+  fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"hos_nudge", driver:DRIVER, nudge:"uncertified", minutes: Math.round(offMin) }) }).catch(function(){});
 }
 function nudge(kind, minutes){
   var n = document.getElementById("nudge");
@@ -493,7 +540,7 @@ function beep(){
 }
 // iOS allows sound only after a user gesture: the first tap anywhere unlocks the beep
 document.addEventListener("touchstart", function(){ try{ AUDIO = AUDIO || new (window.AudioContext || window.webkitAudioContext)(); AUDIO.resume(); }catch(e){} }, { once:true, passive:true });
-setInterval(function(){ if (document.visibilityState === "visible") judgeMotion(Date.now()); }, 20000);
+setInterval(function(){ if (document.visibilityState === "visible"){ judgeMotion(Date.now()); judgeCertification(); } }, 20000);
 
 // ── boot ─────────────────────────────────────────────────────────────────
 loadQueue(); syncLine();
