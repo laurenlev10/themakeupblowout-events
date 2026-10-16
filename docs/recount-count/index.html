@@ -1049,7 +1049,7 @@
     try{
       var r, j, waited = 0;
       for(var attempt = 1; ; attempt++){
-        toast(attempt === 1 ? "Saving…" : ("OCTOPOS עמוס — מנסה שוב (" + attempt + "/3)…"));
+        toast(attempt === 1 ? "Saving…" : ("OCTOPOS is busy — retrying (" + attempt + "/3)…"));
         r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
         j = await r.json().catch(function(){ return {}; });
         if(!(r.status === 429 && j && j.throttled) || attempt >= 3) break;
@@ -1058,7 +1058,7 @@
         await new Promise(function(res){ setTimeout(res, pause); });
       }
       if(r.status === 429 && j && j.throttled){
-        throw new Error("OCTOPOS עמוס. הספירה לא נשמרה ולא השתנה כלום — נסי שוב עוד דקה.");
+        throw new Error("OCTOPOS is busy. The count was NOT saved and nothing changed — try again in a minute.");
       }
       if(!r.ok || !j.ok){ throw new Error(j.error || ("HTTP "+r.status)); }
       var pending = j.pending === true;
