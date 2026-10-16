@@ -99,7 +99,7 @@
 
   <div class="card" id="who-card">
     <label>Who is driving? <span class="es">מי נוהג?</span></label>
-    <select id="driver" onchange="driverChanged()"><option value="">— pick your name · בחר את השם שלך —</option></select>
+    <select id="driver" onchange="driverChanged()"><option value="">בחר שם · pick your name</option></select>
     <div class="note">The log is kept under your name. Eli gets a text when you start the day, when you sign it, and before you reach a limit.<br><span class="es">היומן נשמר על השם שלך. אלי מקבל הודעה כשאתה מתחיל יום, כשאתה חותם, ולפני שאתה מגיע לגבול.</span></div>
   </div>
 
@@ -189,7 +189,7 @@ async function loadRoster(){
     if (j.settings) ls("hos_settings_cache", JSON.stringify(j.settings));
   }catch(e){ try{ names = JSON.parse(ls("hos_roster") || "[]"); }catch(x){ names = []; } }
   var cur = ls("hos_driver") || "";
-  sel.innerHTML = '<option value="">— pick your name · בחר את השם שלך —</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
+  sel.innerHTML = '<option value="">בחר שם · pick your name</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
   if (!names.length) banner("⚠️ The driver list could not be loaded and this phone has none saved — call Eli.", "warn");
 }
 // ── load: everything about hours comes from the Worker (hos.js runs there) ──
