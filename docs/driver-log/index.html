@@ -186,6 +186,8 @@ async function loadRoster(){
     var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
     names = (j.settings && j.settings.drivers) || [];
     ls("hos_roster", JSON.stringify(names));
+    // before a name is picked the page still shows where to go (the overview answer carries it)
+    if (!S){ S = j; renderDests(); }
     if (j.settings) ls("hos_settings_cache", JSON.stringify(j.settings));
   }catch(e){ try{ names = JSON.parse(ls("hos_roster") || "[]"); }catch(x){ names = []; } }
   var cur = ls("hos_driver") || "";
@@ -195,7 +197,7 @@ async function loadRoster(){
 // ── load: everything about hours comes from the Worker (hos.js runs there) ──
 async function load(){
   var d = driverName();
-  if (!d){ document.getElementById("hdr-sub").textContent = "The Makeup Blowout Sale · pick your name to start"; return; }
+  if (!d){ document.getElementById("hdr-sub").textContent = "The Makeup Blowout Sale · pick your name to start"; document.getElementById("limits").innerHTML = '<div class="empty">👆 Pick your name above to see your hours.<span class="es">בחר את השם שלך למעלה כדי לראות את השעות.</span></div>'; return; }
   var j;
   try{
     var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_driver_log", driver:d, days:8 }) });
