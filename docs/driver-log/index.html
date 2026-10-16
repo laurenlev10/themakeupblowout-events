@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Driver Log">
+<title>Makeup Blowout — Driver's Daily Log</title>
+<!--
+  events.themakeupblowout.com/driver-log/ — the truck driver's DOT log (16.10.2026). Public on
+  purpose: no login, any driver opens it from the link Lauren sends. It replaces the paper
+  Driver's Daily Log: instead of drawing the 24-hour grid, the driver taps the duty status he
+  is in — Off duty · Driving · On duty (not driving) · Sleeper — and the danielle Worker
+  (kind hos_event) writes the change with the phone's position and the city it resolved to.
+  Everything the page shows about hours — the grid, the totals, how long until the 11-hour,
+  14-hour, 30-minute and 70-hour limits — is COMPUTED BY THE WORKER (docs/_assets/hos.js, the
+  one engine) and only rendered here; the page counts down between refreshes.
+  The day's header (truck, odometer, from/to, load) and the end-of-day certification with a
+  finger signature go through kind hos_day. "Inspection" shows the last 8 days as the printed
+  form, for a roadside officer (the business logs fewer than 8 days in 30 — paper/RODS, no
+  ELD — 49 CFR 395.8). The grid runs on the home terminal's clock (Pacific), as the rule says.
+  No credential of any kind lives here (IRON RULE #32). A tap that cannot reach the Worker
+  waits in localStorage WITH ITS OWN TIME and is retried every 20 s — a tunnel does not move
+  the moment the driver stopped.
+-->
+<style>
+  :root{ --blue:#1d4ed8; --ink:#1f2937; --muted:#6b7280; --bg:#f3f5f9; --ok:#16a34a; --warn:#d97706; --bad:#dc2626; --line:#e5e7eb; --off:#64748b; --sb:#7c3aed; --d:#1d4ed8; --on:#d97706; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
+  .hdr{background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 100%);color:#fff;padding:14px 16px 12px;text-align:center}
+  .hdr h1{margin:0;font-size:19px;font-weight:900}
+  .hdr p{margin:4px 0 0;font-size:12.5px;opacity:.93}
+  .wrap{max-width:560px;margin:0 auto;padding:12px 12px 90px}
+  .card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:12px}
+  .card h2{margin:0 0 8px;font-size:15px}
+  label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin:8px 0 4px}
+  input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px;font-family:inherit;background:#fafafa}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:13px;padding:14px;min-height:52px;font-size:17px;font-weight:900;cursor:pointer;background:var(--blue);color:#fff;text-decoration:none;margin-top:8px}
+  .btn.sec{background:#eef0f4;color:var(--ink)}
+  .btn.sm{padding:10px 8px;min-height:46px;font-size:15px;border-radius:10px}
+  .btn:disabled{opacity:.5}
+  .two{display:flex;gap:8px}.two .btn{flex:1}
+  .note{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+  .es{display:block;font-size:11.5px;font-weight:600;opacity:.8}
+  .btn .es{display:inline;margin-left:4px}
+  .banner{border-radius:12px;padding:10px 12px;font-size:14px;font-weight:800;margin-bottom:12px;white-space:pre-wrap}
+  .banner.warn{background:#fef3c7;border:1px solid #f59e0b;color:#92400e}
+  .banner.bad{background:#fee2e2;border:1px solid #dc2626;color:#991b1b;font-size:16px}
+  .banner.info{background:#dbeafe;border:1px solid #93c5fd;color:#1e3a8a;font-weight:700}
+  /* the status card */
+  .now{border-radius:16px;padding:16px;color:#fff;text-align:center;margin-bottom:12px}
+  .now .st{font-size:22px;font-weight:900}
+  .now .since{font-size:40px;font-weight:900;letter-spacing:1px;margin:4px 0;font-variant-numeric:tabular-nums}
+  .now .sub{font-size:13px;opacity:.92}
+  .now.off{background:var(--off)} .now.sb{background:var(--sb)} .now.d{background:var(--d)} .now.on{background:var(--on)}
+  .stbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stbtn{border:2px solid var(--line);border-radius:14px;padding:14px 8px;font-weight:900;font-size:16px;background:#fff;cursor:pointer;min-height:70px;font-family:inherit;color:var(--ink)}
+  .stbtn .es{font-size:11px}
+  .stbtn.cur{opacity:.45}
+  .stbtn.off{border-color:var(--off)} .stbtn.sb{border-color:var(--sb)} .stbtn.d{border-color:var(--d)} .stbtn.on{border-color:var(--on)}
+  /* limit bars */
+  .lim{margin:8px 0}
+  .lim .l{display:flex;justify-content:space-between;font-size:13px;font-weight:800}
+  .lim .l .v{font-variant-numeric:tabular-nums}
+  .bar{height:10px;border-radius:999px;background:#eef0f4;overflow:hidden;margin-top:4px}
+  .bar i{display:block;height:100%;background:var(--ok);border-radius:999px;transition:width .4s}
+  .lim.warn .bar i{background:var(--warn)} .lim.bad .bar i{background:var(--bad)}
+  .lim.warn .l{color:var(--warn)} .lim.bad .l{color:var(--bad)}
+  .grid svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px}
+  .rem{font-size:13px;line-height:1.5;margin-top:8px}
+  .rem b{font-variant-numeric:tabular-nums}
+  .pad{border:1.5px dashed #9ca3af;border-radius:12px;background:#fff;touch-action:none;width:100%;height:130px;display:block}
+  .foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 12px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .foot b{color:var(--ink)}
+  .pill{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;background:#eef0f4;color:#374151}
+  .pill.gps{background:#dcfce7;color:#166534}.pill.nogps{background:#fee2e2;color:#991b1b}
+  .empty{color:var(--muted);font-size:14px;padding:12px;text-align:center}
+  details summary{cursor:pointer;font-weight:900;font-size:15px;padding:4px 0}
+  /* inspection view */
+  #inspect{display:none}
+  body.inspect .wrap, body.inspect .hdr, body.inspect .foot{display:none}
+  body.inspect #inspect{display:block;background:#fff;padding:10px}
+  #inspect .tools{display:flex;gap:8px;margin-bottom:10px}
+  @media print{ #inspect .tools{display:none} body{background:#fff} }
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>🚛 Driver's Daily Log</h1>
+  <p id="hdr-sub">The Makeup Blowout Sale · loading…</p>
+</div>
+<div class="wrap">
+  <div id="alerts"></div>
+  <div id="banner" class="banner info" style="display:none"></div>
+
+  <div class="card" id="who-card">
+    <label>Your name / Tu nombre</label>
+    <input id="driver" placeholder="e.g. Ben" autocomplete="name" onchange="driverChanged()">
+    <div class="note">The log is kept under your name. Lauren gets a text when you start the day, when you sign it, and before you reach a limit.<br><span class="es">El registro se guarda con tu nombre. Lauren recibe un mensaje cuando empiezas, cuando firmas y antes de llegar a un límite.</span></div>
+  </div>
+
+  <div id="now" class="now off"><div class="st">Off duty</div><div class="since">0:00</div><div class="sub">tap the status you are in</div></div>
+
+  <div class="card">
+    <h2>What are you doing now? <span class="es">¿Qué estás haciendo ahora?</span></h2>
+    <div class="stbtns">
+      <button class="stbtn on" onclick="setStatus('on')">🔧 On duty<br><span class="es">not driving · loading, fuel, inspection<br>En servicio sin conducir</span></button>
+      <button class="stbtn d" onclick="setStatus('d')">🚛 Driving<br><span class="es">Conduciendo</span></button>
+      <button class="stbtn off" onclick="setStatus('off')">☕ Off duty<br><span class="es">break, meal, done for today<br>Fuera de servicio</span></button>
+      <button class="stbtn sb" onclick="setStatus('sb')">🛏 Sleeper berth<br><span class="es">Litera</span></button>
+    </div>
+    <label>Note for this change (optional) / Nota</label>
+    <input id="note" placeholder="e.g. fuel stop, loading at venue" maxlength="160">
+  </div>
+
+  <div class="card" id="limits-card">
+    <h2>⏱ Hours left today <span class="es">Horas restantes</span></h2>
+    <div id="limits"><div class="empty">loading…</div></div>
+    <div class="note">11 h driving · 14 h window from your first on-duty · 30-min break by 8 h of driving · 70 h in 8 days. The page refreshes every minute; Lauren is texted 30 min before each limit.</div>
+  </div>
+
+  <div class="card" id="head-card">
+    <details id="head-details"><summary>🚚 Today's trip: truck, odometer, from → to <span class="es">Camión, odómetro, de → a</span></summary>
+      <div class="two"><div style="flex:1"><label>Truck no. / plate</label><input id="h-truck" placeholder="plate or unit no."></div><div style="flex:1"><label>Trailer no.</label><input id="h-trailer" placeholder="— if none"></div></div>
+      <div class="two"><div style="flex:1"><label>Odometer at start</label><input id="h-odo_start" inputmode="numeric" placeholder="miles"></div><div style="flex:1"><label>Odometer at end</label><input id="h-odo_end" inputmode="numeric" placeholder="miles"></div></div>
+      <div class="two"><div style="flex:1"><label>From (city, state)</label><input id="h-from" placeholder="Canoga Park, CA"></div><div style="flex:1"><label>To (city, state)</label><input id="h-to" placeholder="Reno, NV"></div></div>
+      <label>Load / shipping document</label><input id="h-shipping" placeholder="Cosmetics — Makeup Blowout Reno">
+      <label>Co-driver (if any)</label><input id="h-co_driver" placeholder="—">
+      <button class="btn sec sm" onclick="saveHeader(false)">💾 Save trip details · Guardar</button>
+      <div id="head-saved" class="note"></div>
+    </details>
+  </div>
+
+  <div class="card" id="today-card">
+    <h2>📊 Today's grid <span class="es">Cuadrícula de hoy</span></h2>
+    <div class="grid" id="grid"></div>
+    <div id="totals" class="note"></div>
+    <div class="rem" id="remarks"></div>
+  </div>
+
+  <div class="card" id="cert-card">
+    <h2>✍️ End of day — sign the log <span class="es">Fin del día — firma</span></h2>
+    <div class="note">When you are done for today: fill the odometer at end above, tap Off duty, then sign with your finger. This certifies that the entries are true and correct.<br><span class="es">Al terminar: escribe el odómetro final arriba, toca Fuera de servicio y firma con el dedo.</span></div>
+    <canvas id="pad" class="pad" width="400" height="120"></canvas>
+    <div class="two"><button class="btn sec sm" onclick="clearPad()">↺ Clear</button><button class="btn sm" id="btn-cert" onclick="certify()">✍️ Sign &amp; certify today · Firmar</button></div>
+    <div id="cert-line" class="note"></div>
+  </div>
+
+  <button class="btn sec" id="btn-inspect" onclick="openInspect()">📋 Inspection — show last 8 days as the printed form<span class="es">Inspección — últimos 8 días</span></button>
+  <div class="note" style="text-align:center;margin-top:16px">Problem with the page? Call Lauren: <a href="tel:4243547625">(424) 354-7625</a></div>
+</div>
+<div id="inspect"><div class="tools"><button class="btn sec sm" onclick="closeInspect()">← Back</button><button class="btn sm" onclick="window.print()">🖨 Print / Save as PDF</button></div><div id="forms"></div></div>
+<div class="foot"><span id="gps-line">📡 GPS: off</span><span id="sync-line"></span></div>
+
+<script>
+"use strict";
+var WORKER = "https://danielle.laurenlev10.workers.dev/";
+var S = null, CLOCK = null, DRIVER = "", POS = null, QUEUE = [], OFFLINE = false, FORM_CSS_DONE = false;
+var LABEL = { off: "Off duty", sb: "Sleeper berth", d: "Driving", on: "On duty (not driving)" };
+var LABEL_ES = { off: "Fuera de servicio", sb: "Litera", d: "Conduciendo", on: "En servicio sin conducir" };
+var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+function ls(k, v){ try{ if (v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
+function hm(min){ min = Math.max(0, Math.round(min)); return Math.floor(min/60) + "h " + String(min%60).padStart(2,"0") + "m"; }
+function hmsSince(iso){ var s = Math.max(0, Math.floor((Date.now() - Date.parse(iso))/1000)); return Math.floor(s/3600) + ":" + String(Math.floor(s%3600/60)).padStart(2,"0"); }
+function fmtTime(iso){ try{ return new Date(iso).toLocaleTimeString("en-US",{timeZone:(S&&S.settings&&S.settings.home_terminal_tz)||"America/Los_Angeles",hour:"numeric",minute:"2-digit"}); }catch(e){ return iso; } }
+function banner(msg, cls){ var b=document.getElementById("banner"); if(!msg){ b.style.display="none"; return; } b.textContent=msg; b.className="banner " + (cls||"info"); b.style.display="block"; }
+function driverName(){ DRIVER = document.getElementById("driver").value.trim(); ls("hos_driver", DRIVER); return DRIVER; }
+function driverChanged(){ driverName(); load().catch(function(){}); }
+
+// ── load: everything about hours comes from the Worker (hos.js runs there) ──
+async function load(){
+  var d = driverName();
+  if (!d){ document.getElementById("hdr-sub").textContent = "The Makeup Blowout Sale · type your name to start"; return; }
+  var j;
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_driver_log", driver:d, days:8 }) });
+    j = await r.json();
+    if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+    ls("hos_cache_" + d, JSON.stringify({ j:j, at:new Date().toISOString() }));
+    OFFLINE = false;
+  }catch(e){
+    var c = null; try{ c = JSON.parse(ls("hos_cache_" + d)||"null"); }catch(x){}
+    if (!c) throw e;
+    j = c.j; OFFLINE = c.at;
+  }
+  S = j; CLOCK = j.clock;
+  render();
+}
+function render(){
+  if (!S) return;
+  var s = S.settings || {};
+  document.getElementById("hdr-sub").textContent = (s.carrier || "The Makeup Blowout Sale") + " · " + S.today + " · " + (s.home_terminal_tz === "America/Los_Angeles" ? "Pacific time" : s.home_terminal_tz);
+  banner(OFFLINE ? "📵 No connection — showing the log as last loaded " + fmtTime(OFFLINE) + ". Taps are saved on this phone with their time and sent when the signal is back." : "", "warn");
+  renderNow(); renderLimits();
+  var td = (S.days||[])[0];
+  if (td && td.day){
+    document.getElementById("grid").innerHTML = td.svg;
+    var t = td.day.totals || {};
+    document.getElementById("totals").textContent = "Off " + hm(t.off||0) + " · Sleeper " + hm(t.sb||0) + " · Driving " + hm(t.d||0) + " · On duty " + hm(t.on||0) + (t.unlogged ? " · rest of day not yet " : "");
+    document.getElementById("remarks").innerHTML = (td.day.remarks||[]).map(function(r){ return "<b>" + esc(r.hhmm) + "</b> " + esc(LABEL[r.status]) + (r.place ? " — " + esc(r.place) : "") + (r.note ? " <i>(" + esc(r.note) + ")</i>" : ""); }).join("<br>") || '<span class="empty">No entries yet today.</span>';
+    fillHeader(td.header || {});
+    var cl = document.getElementById("cert-line");
+    if (td.header && td.header.certified_at){ cl.innerHTML = "✅ Today's log was certified at " + esc(fmtTime(td.header.certified_at)) + ". Signing again replaces the signature."; }
+    else cl.textContent = "";
+  }
+}
+function renderNow(){
+  var n = document.getElementById("now");
+  if (!CLOCK){ n.className = "now off"; return; }
+  n.className = "now " + CLOCK.status;
+  n.querySelector(".st").innerHTML = esc(LABEL[CLOCK.status]) + ' <span class="es">' + esc(LABEL_ES[CLOCK.status]) + '</span>';
+  n.querySelector(".since").textContent = CLOCK.since ? hmsSince(CLOCK.since) : "0:00";
+  n.querySelector(".sub").textContent = CLOCK.since ? "since " + fmtTime(CLOCK.since) + (CLOCK.resting ? " · 10 h rest complete — a new day can start" : "") : "tap the status you are in";
+  document.querySelectorAll(".stbtn").forEach(function(b){ b.classList.toggle("cur", b.classList.contains(CLOCK.status)); });
+}
+// countdown between refreshes: the Worker gave absolute moments (due.*) and minutes (left.*)
+function renderLimits(){
+  if (!CLOCK){ return; }
+  var now = Date.now(), base = Date.parse(S.now), drift = (now - base)/60000;
+  var driving = CLOCK.status === "d", onduty = !CLOCK.resting && CLOCK.status !== "off" && CLOCK.status !== "sb";
+  var rows = [
+    { k:"drive",  l:"Driving (11 h)",         left: CLOCK.left.drive  - (driving ? drift : 0), max: CLOCK.limits.drive },
+    { k:"break",  l:"Break due (30 min by 8 h)", left: CLOCK.left.break - (driving ? drift : 0), max: CLOCK.limits.break_after, hide: CLOCK.resting || (CLOCK.used.since_break === 0 && !driving) },
+    { k:"window", l:"On-duty window (14 h)",  left: CLOCK.left.window - (CLOCK.resting ? 0 : drift), max: CLOCK.limits.window },
+    { k:"cycle",  l:"Cycle (" + (CLOCK.limits.cycle/60) + " h / " + CLOCK.limits.cycle_days + " days)", left: CLOCK.left.cycle - (onduty ? drift : 0), max: CLOCK.limits.cycle },
+  ];
+  var warnMin = (S.settings && S.settings.warn_before_min) || 30, html = "", alerts = "";
+  rows.forEach(function(r){
+    if (r.hide) return;
+    var cls = r.left < 0 ? "bad" : r.left <= warnMin ? "warn" : "";
+    var pct = Math.max(0, Math.min(100, 100 * r.left / r.max));
+    html += '<div class="lim ' + cls + '"><div class="l"><span>' + esc(r.l) + '</span><span class="v">' + (r.left < 0 ? "OVER by " + hm(-r.left) : hm(r.left) + " left") + '</span></div><div class="bar"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
+    if (CLOCK.resting) return;
+    if (r.left < 0) alerts += '<div class="banner bad">🛑 ' + esc(r.l) + ' exceeded by ' + hm(-r.left) + '. STOP DRIVING at the next safe place.<span class="es">Límite superado — detente en el próximo lugar seguro.</span></div>';
+    else if (r.left <= warnMin && (driving || r.k === "window")) alerts += '<div class="banner warn">⏳ ' + hm(r.left) + ' until the ' + esc(r.l) + ' limit. Plan your stop.<span class="es">Planifica tu parada.</span></div>';
+  });
+  if (CLOCK.resting) html = '<div class="note" style="margin-bottom:6px">💤 10 hours of rest complete — all day limits reset.</div>' + html;
+  document.getElementById("limits").innerHTML = html;
+  document.getElementById("alerts").innerHTML = alerts;
+}
+
+// ── a duty-status tap ─────────────────────────────────────────────────────
+async function setStatus(st){
+  var d = driverName();
+  if (!d){ alert("Please type your name first.\nPor favor escribe tu nombre."); document.getElementById("driver").focus(); return; }
+  if (CLOCK && CLOCK.status === st && !document.getElementById("note").value.trim()){ return; }
+  var at = new Date().toISOString();
+  var note = document.getElementById("note").value.trim(); document.getElementById("note").value = "";
+  var body = { kind:"hos_event", driver:d, status:st, at:at, note:note, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, place:"" };
+  // optimistic: the status card changes now; the Worker's answer is the record
+  CLOCK = Object.assign({}, CLOCK || {}, { status: st, since: at, resting: false });
+  if (!CLOCK.left){ CLOCK.left = {drive:660,window:840,break:480,cycle:4200}; CLOCK.limits = {drive:660,window:840,break_after:480,cycle:4200,cycle_days:8}; CLOCK.used = {since_break:0}; }
+  renderNow();
+  QUEUE.push(body); saveQueue();
+  body.place = await placeName(POS);   // best effort, a few seconds at most; the tap is already queued with its time
+  flush();
+}
+// city + state for the Remarks line (395.8(d): "city, state at each change of duty status")
+async function placeName(p){
+  if (!p) return "";
+  try{
+    var ctl = new AbortController(); setTimeout(function(){ ctl.abort(); }, 6000);
+    var r = await fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + p.lat + "&lon=" + p.lng, { signal: ctl.signal });
+    var j = await r.json(); var a = j.address || {};
+    var city = a.city || a.town || a.village || a.hamlet || a.county || "";
+    var st = (a["ISO3166-2-lvl4"] || "").replace(/^US-/, "") || a.state || "";
+    return (city && st) ? city + ", " + st : (city || st || "");
+  }catch(e){ return ""; }
+}
+function loadQueue(){ try{ QUEUE = JSON.parse(ls("hos_queue")||"[]"); }catch(e){ QUEUE=[]; } }
+function saveQueue(){ ls("hos_queue", JSON.stringify(QUEUE)); syncLine(); }
+function syncLine(){ document.getElementById("sync-line").innerHTML = QUEUE.length ? '<b>⏳ ' + QUEUE.length + ' not sent yet</b> — retrying' : '✓ synced'; }
+var FLUSHING = false;
+async function flush(){
+  if (FLUSHING || !QUEUE.length) return; FLUSHING = true;
+  var touched = false;
+  try{
+    while (QUEUE.length){
+      var b = QUEUE[0];
+      var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(b) });
+      var j = null; try{ j = await r.json(); }catch(e){}
+      if (r.status===400){ QUEUE.shift(); saveQueue(); continue; }   // refused for good; retrying forever helps nobody
+      if (!r.ok || !j || !j.ok) throw new Error((j&&j.error)||("server " + r.status));
+      if (j.clock){ CLOCK = j.clock; if (S) S.now = new Date().toISOString(); renderNow(); renderLimits(); }
+      QUEUE.shift(); saveQueue(); touched = true;
+    }
+    syncLine();
+  }catch(e){ document.getElementById("sync-line").innerHTML = '<b>⏳ ' + QUEUE.length + ' not sent</b> — ' + esc(e.message||e); }
+  finally{ FLUSHING = false; }
+  if (touched) load().catch(function(){});
+}
+
+// ── the day's header and the certification ───────────────────────────────
+var HFIELDS = ["truck","trailer","odo_start","odo_end","from","to","shipping","co_driver"];
+function fillHeader(h){
+  HFIELDS.forEach(function(k){ var el = document.getElementById("h-" + k); if (document.activeElement !== el && h[k] != null) el.value = h[k]; });
+  if (!document.getElementById("h-truck").value && ls("hos_truck")) document.getElementById("h-truck").value = ls("hos_truck");
+  if (h.truck || h.odo_start) document.getElementById("head-details").open = true;
+}
+async function saveHeader(quiet){
+  var d = driverName(); if (!d){ alert("Please type your name first."); return; }
+  var body = { kind:"hos_day", driver:d };
+  HFIELDS.forEach(function(k){ body[k] = document.getElementById("h-" + k).value.trim(); });
+  ls("hos_truck", body.truck);
+  var out = document.getElementById("head-saved");
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body) });
+    var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+    if (!quiet) out.textContent = "✓ Saved " + fmtTime(new Date().toISOString());
+    return true;
+  }catch(e){ out.textContent = "❌ Not saved: " + (e.message||e) + " — try again when you have signal."; return false; }
+}
+// signature pad
+var PAD = document.getElementById("pad"), PCTX = PAD.getContext("2d"), STROKES = [], CUR = null;
+function padXY(ev){ var r = PAD.getBoundingClientRect(); return [Math.round((ev.clientX - r.left) * 400 / r.width), Math.round((ev.clientY - r.top) * 120 / r.height)]; }
+PAD.addEventListener("pointerdown", function(ev){ ev.preventDefault(); PAD.setPointerCapture(ev.pointerId); CUR = [padXY(ev)]; STROKES.push(CUR); });
+PAD.addEventListener("pointermove", function(ev){ if (!CUR) return; ev.preventDefault(); CUR.push(padXY(ev)); drawPad(); });
+PAD.addEventListener("pointerup", function(){ CUR = null; }); PAD.addEventListener("pointercancel", function(){ CUR = null; });
+function drawPad(){ PCTX.clearRect(0,0,400,120); PCTX.lineWidth = 2.2; PCTX.lineCap = "round"; PCTX.lineJoin = "round"; PCTX.strokeStyle = "#111";
+  STROKES.forEach(function(s){ PCTX.beginPath(); s.forEach(function(p,i){ if (i) PCTX.lineTo(p[0],p[1]); else PCTX.moveTo(p[0],p[1]); }); PCTX.stroke(); }); }
+function clearPad(){ STROKES = []; drawPad(); }
+async function certify(){
+  var d = driverName(); if (!d){ alert("Please type your name first."); return; }
+  if (!STROKES.length || STROKES.reduce(function(a,s){ return a + s.length; }, 0) < 6){ alert("Please sign with your finger first.\nPor favor firma primero."); return; }
+  if (!document.getElementById("h-odo_end").value.trim() && !confirm("Odometer at end is empty. Certify anyway?\n¿Certificar sin el odómetro final?")) return;
+  if (!(await saveHeader(true))) return;
+  var btn = document.getElementById("btn-cert"); btn.disabled = true;
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"hos_day", driver:d, certify:true, signature:{ w:400, h:120, strokes: STROKES.map(function(s){ return s.filter(function(_,i){ return i % 2 === 0 || i === s.length-1; }); }) } }) });
+    var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+    document.getElementById("cert-line").textContent = "✅ Certified " + fmtTime(new Date().toISOString()) + ". Lauren got the day's totals.";
+    clearPad(); load().catch(function(){});
+  }catch(e){ document.getElementById("cert-line").textContent = "❌ Not certified: " + (e.message||e); }
+  finally{ btn.disabled = false; }
+}
+
+// ── inspection: the last 8 days as the printed form (rendered by the Worker) ─
+function openInspect(){
+  if (!S || !S.days || !S.days.length){ alert("No log days to show yet."); return; }
+  if (!FORM_CSS_DONE){ var st = document.createElement("style"); st.textContent = S.form_css || ""; document.head.appendChild(st); FORM_CSS_DONE = true; }
+  document.getElementById("forms").innerHTML = S.days.map(function(d){ return d.form; }).join("");
+  document.body.classList.add("inspect"); window.scrollTo(0,0);
+}
+function closeInspect(){ document.body.classList.remove("inspect"); }
+
+// ── GPS: position for each tap (no auto status — a stop is the driver's call) ─
+function startGps(){
+  if (!navigator.geolocation){ document.getElementById("gps-line").textContent = "📡 GPS: not available"; return; }
+  navigator.geolocation.watchPosition(function(p){
+    POS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:Math.round(p.coords.accuracy||0) };
+    document.getElementById("gps-line").innerHTML = '<span class="pill gps">📡 GPS on</span> ±' + POS.acc + ' m';
+  }, function(err){
+    document.getElementById("gps-line").innerHTML = '<span class="pill nogps">📡 GPS off</span> ' + (err.code===1 ? "allow location so each entry carries the city" : "no fix");
+  }, { enableHighAccuracy:true, maximumAge:30000, timeout:20000 });
+}
+
+// ── boot ─────────────────────────────────────────────────────────────────
+document.getElementById("driver").value = ls("hos_driver") || "";
+loadQueue(); syncLine();
+load().then(function(){ flush(); }).catch(function(e){ document.getElementById("limits").innerHTML = '<div class="empty">❌ Could not load the log: ' + esc(e.message||e) + '<br>Please call Lauren.</div>'; });
+startGps();
+setInterval(function(){ flush(); }, 20000);
+setInterval(function(){ renderNow(); renderLimits(); }, 1000);
+setInterval(function(){ if (document.visibilityState==="visible" && !QUEUE.length) load().catch(function(){}); }, 60000);
+document.addEventListener("visibilitychange", function(){ if (document.visibilityState==="visible"){ flush(); load().catch(function(){}); } });
+</script>
+</body>
+</html>
