@@ -200,7 +200,7 @@ function render(){
     document.getElementById("grid").innerHTML = td.svg;
     var t = td.day.totals || {};
     document.getElementById("totals").textContent = "Off " + hm(t.off||0) + " · Sleeper " + hm(t.sb||0) + " · Driving " + hm(t.d||0) + " · On duty " + hm(t.on||0) + (t.unlogged ? " · rest of day not yet " : "");
-    document.getElementById("remarks").innerHTML = (td.day.remarks||[]).map(function(r){ return "<b>" + esc(r.hhmm) + "</b> " + esc(LABEL[r.status]) + (r.place ? " — " + esc(r.place) : "") + (r.note ? " <i>(" + esc(r.note) + ")</i>" : ""); }).join("<br>") || '<span class="empty">No entries yet today.</span>';
+    document.getElementById("remarks").innerHTML = (td.day.remarks||[]).map(function(r){ return "<b>" + esc(r.hhmm) + "</b> " + esc(LABEL[r.status]) + (r.place ? " — " + esc(r.place) : "") + (r.lat != null ? ' <a href="https://maps.google.com/?q=' + r.lat + ',' + r.lng + '" target="_blank" rel="noopener">🗺️</a>' : '') + (r.note ? " <i>(" + esc(r.note) + ")</i>" : ""); }).join("<br>") || '<span class="empty">No entries yet today.</span>';
     fillHeader(td.header || {});
     var cl = document.getElementById("cert-line");
     if (td.header && td.header.certified_at){ cl.innerHTML = "✅ Today's log was certified at " + esc(fmtTime(td.header.certified_at)) + ". Signing again replaces the signature."; }
