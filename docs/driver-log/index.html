@@ -116,7 +116,8 @@
       <button class="stbtn d" onclick="setStatus('d')">🚛 Driving<br><span class="es">נוהג</span></button>
       <!-- No sleeper-berth button: the truck has no berth, the crew sleeps in a hotel (Lauren 16.10) —
            hotel nights are Off duty, which is what the 10-hour rest needs. Line 2 of the grid stays empty. -->
-      <button class="stbtn off" style="grid-column:1 / -1" onclick="setStatus('off')">☕ Off duty<br><span class="es">break, meal, hotel, done for today<br>לא בתפקיד — הפסקה, ארוחה, מלון, סיימתי להיום</span></button>
+      <button class="stbtn on" onclick="setStatus('on','Weigh station')">⚖️ Weigh station<br><span class="es">on duty · Eli gets a text<br>תחנת שקילה — אלי מקבל הודעה</span></button>
+      <button class="stbtn off" onclick="setStatus('off')">☕ Off duty<br><span class="es">break, meal, hotel, done for today<br>לא בתפקיד — הפסקה, ארוחה, מלון, סיימתי להיום</span></button>
     </div>
     <div class="note">🔔 If you stop for 5 minutes while marked Driving, or start moving while not, the phone will buzz and remind you to tap — only while this page is open on screen.<br><span class="es">אם תעצור 5 דקות כשאתה מסומן "נוהג", או תתחיל לנסוע כשלא — הטלפון ירטוט ויזכיר לך ללחוץ. עובד רק כשהדף פתוח על המסך.</span></div>
     <label>Note for this change (optional) · הערה</label>
@@ -243,7 +244,7 @@ function renderNow(){
   n.className = "now " + CLOCK.status;
   n.querySelector(".st").innerHTML = esc(LABEL[CLOCK.status]) + ' <span class="es">' + esc(LABEL_HE[CLOCK.status]) + '</span>';
   n.querySelector(".since").textContent = CLOCK.since ? hmsSince(CLOCK.since) : "0:00";
-  n.querySelector(".sub").textContent = CLOCK.since ? "since " + fmtTime(CLOCK.since) + (CLOCK.resting ? " · 10 h rest complete — a new day can start" : "") : "tap the status you are in";
+  n.querySelector(".sub").textContent = CLOCK.since ? "since " + fmtTime(CLOCK.since) + (CLOCK.note ? " · " + CLOCK.note : "") + (CLOCK.resting ? " · 10 h rest complete — a new day can start" : "") : "tap the status you are in";
   document.querySelectorAll(".stbtn").forEach(function(b){ b.classList.toggle("cur", b.classList.contains(CLOCK.status)); });
 }
 // countdown between refreshes: the Worker gave absolute moments (due.*) and minutes (left.*)
@@ -311,15 +312,16 @@ function useDest(kind, addr){
 }
 
 // ── a duty-status tap ─────────────────────────────────────────────────────
-async function setStatus(st){
+async function setStatus(st, presetNote){
   var d = driverName();
+  if (presetNote) document.getElementById("note").value = presetNote;
   if (!d){ alert("Please type your name first.\nקודם תכתוב את השם שלך."); document.getElementById("driver").focus(); return; }
-  if (CLOCK && CLOCK.status === st && !document.getElementById("note").value.trim()){ return; }
+  if (CLOCK && CLOCK.status === st && !document.getElementById("note").value.trim()){ return; }   // a weigh-station tap carries a note, so it always goes through
   var at = new Date().toISOString();
   var note = document.getElementById("note").value.trim(); document.getElementById("note").value = "";
   var body = { kind:"hos_event", driver:d, status:st, at:at, note:note, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, place:"" };
   // optimistic: the status card changes now; the Worker's answer is the record
-  CLOCK = Object.assign({}, CLOCK || {}, { status: st, since: at, resting: false });
+  CLOCK = Object.assign({}, CLOCK || {}, { status: st, since: at, resting: false, note: note });
   NUDGED = { stopped:false, moving:false }; hideNudge();
   if (!CLOCK.left){ CLOCK.left = {drive:660,window:840,break:480,cycle:4200}; CLOCK.limits = {drive:660,window:840,break_after:480,cycle:4200,cycle_days:8}; CLOCK.used = {since_break:0}; }
   renderNow();
