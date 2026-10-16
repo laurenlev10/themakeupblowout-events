@@ -789,7 +789,7 @@
     if (await blockedByDuplicate(bc)){ btn.disabled = false; btn.textContent = "💾 Save barcode"; return; }
     try{
       var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({ kind:"set_barcode", evkey:EVKEY, pid:CUR.pid, barcode:bc }) });
+        body:JSON.stringify({ kind:"set_barcode", evkey:EVKEY, pid:CUR.pid, barcode:bc, employee:EMPLOYEE }) });
       var j = await r.json().catch(function(){ return {}; });
       if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP "+r.status));
       CUR.barcode = bc;
@@ -798,6 +798,10 @@
       btn.textContent = j.pending ? "⏳ Saved" : "✓ Saved"; setTimeout(function(){ btn.disabled=false; btn.textContent="💾 Save barcode"; }, 1500);
       toast(j.pending ? "⏳ Barcode saved — OCTOPOS is busy, it will update automatically" : "✅ Barcode saved");
       bcOk(j.pending ? "✅ Barcode " + bc + " saved — it will reach OCTOPOS automatically" : "✅ Barcode " + bc + " added successfully");
+      // 16.10.2026 — the barcode landed but the "New" tag did not come off: the product would
+      // stay on "Products needing a barcode" with nobody told why. Say it on the phone.
+      if (bc && !j.pending && j.new_tag_dropped === false)
+        toast("⚠️ Barcode saved, but the product is still marked New — it will stay on the barcode list. Tell Lauren.", true);
     }catch(e){
       bcOk("");
       btn.disabled=false; btn.textContent="💾 Save barcode";
