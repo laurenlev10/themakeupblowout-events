@@ -147,10 +147,10 @@
 
   <div class="card" id="head-card">
     <details id="head-details"><summary>🚚 Today's trip: truck, odometer, from → to <span class="es">משאית, אודומטר, מאיפה → לאן</span></summary>
-      <div class="two"><div style="flex:1"><label>Truck no. / plate</label><input id="h-truck" placeholder="plate or unit no."></div><div style="flex:1"><label>Trailer no.</label><input id="h-trailer" placeholder="— if none"></div></div>
+      <label>Truck no. / plate</label><input id="h-truck" placeholder="plate or unit no.">
       <div class="two"><div style="flex:1"><label>Odometer at start</label><input id="h-odo_start" inputmode="numeric" placeholder="miles"></div><div style="flex:1"><label>Odometer at end</label><input id="h-odo_end" inputmode="numeric" placeholder="miles"></div></div>
       <div class="two"><div style="flex:1"><label>From (city, state)</label><input id="h-from" placeholder="Canoga Park, CA"></div><div style="flex:1"><label>To (city, state)</label><input id="h-to" placeholder="Reno, NV"></div></div>
-      <label>Load / shipping document</label><input id="h-shipping" placeholder="Cosmetics — Makeup Blowout Reno">
+      <label>Load / shipping document</label><input id="h-shipping" readonly tabindex="-1" style="opacity:.8" title="fixed by the carrier">
       <label>Co-driver (if any)</label><input id="h-co_driver" placeholder="—">
       <button class="btn sec sm" onclick="saveHeader(false)">💾 Save trip details · שמור</button>
       <div id="head-saved" class="note"></div>
@@ -384,9 +384,10 @@ async function flush(){
 }
 
 // ── the day's header and the certification ───────────────────────────────
-var HFIELDS = ["truck","trailer","odo_start","odo_end","from","to","shipping","co_driver"];
+var HFIELDS = ["truck","odo_start","odo_end","from","to","co_driver"]; // shipping = settings.load, read-only; no trailer
 function fillHeader(h){
   HFIELDS.forEach(function(k){ var el = document.getElementById("h-" + k); if (document.activeElement !== el && h[k] != null) el.value = h[k]; });
+  document.getElementById("h-shipping").value = (S && S.settings && S.settings.load) || h.shipping || "";
   if (!document.getElementById("h-truck").value && ls("hos_truck")) document.getElementById("h-truck").value = ls("hos_truck");
   if (h.truck || h.odo_start) document.getElementById("head-details").open = true;
 }
