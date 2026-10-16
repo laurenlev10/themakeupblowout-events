@@ -44,7 +44,7 @@
   .btn:disabled{opacity:.5}
   .two{display:flex;gap:8px}.two .btn{flex:1}
   .note{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.45}
-  .es{display:block;font-size:11.5px;font-weight:600;opacity:.8}
+  .es{display:block;font-size:12px;font-weight:600;opacity:.85;direction:rtl;unicode-bidi:isolate}
   .btn .es{display:inline;margin-left:4px}
   .banner{border-radius:12px;padding:10px 12px;font-size:14px;font-weight:800;margin-bottom:12px;white-space:pre-wrap}
   .banner.warn{background:#fef3c7;border:1px solid #f59e0b;color:#92400e}
@@ -99,57 +99,57 @@
   <div class="card" id="who-card">
     <label>Your name / Tu nombre</label>
     <input id="driver" placeholder="e.g. Ben" autocomplete="name" onchange="driverChanged()">
-    <div class="note">The log is kept under your name. Lauren gets a text when you start the day, when you sign it, and before you reach a limit.<br><span class="es">El registro se guarda con tu nombre. Lauren recibe un mensaje cuando empiezas, cuando firmas y antes de llegar a un límite.</span></div>
+    <div class="note">The log is kept under your name. Lauren gets a text when you start the day, when you sign it, and before you reach a limit.<br><span class="es">היומן נשמר על השם שלך. לורן מקבלת הודעה כשאתה מתחיל יום, כשאתה חותם, ולפני שאתה מגיע לגבול.</span></div>
   </div>
 
   <div id="now" class="now off"><div class="st">Off duty</div><div class="since">0:00</div><div class="sub">tap the status you are in</div></div>
 
   <div class="card">
-    <h2>What are you doing now? <span class="es">¿Qué estás haciendo ahora?</span></h2>
+    <h2>What are you doing now? <span class="es">מה אתה עושה עכשיו?</span></h2>
     <div class="stbtns">
-      <button class="stbtn on" onclick="setStatus('on')">🔧 On duty<br><span class="es">not driving · loading, fuel, inspection<br>En servicio sin conducir</span></button>
-      <button class="stbtn d" onclick="setStatus('d')">🚛 Driving<br><span class="es">Conduciendo</span></button>
-      <button class="stbtn off" onclick="setStatus('off')">☕ Off duty<br><span class="es">break, meal, done for today<br>Fuera de servicio</span></button>
-      <button class="stbtn sb" onclick="setStatus('sb')">🛏 Sleeper berth<br><span class="es">Litera</span></button>
+      <button class="stbtn on" onclick="setStatus('on')">🔧 On duty<br><span class="es">not driving · loading, fuel, inspection<br>בתפקיד, לא נוהג</span></button>
+      <button class="stbtn d" onclick="setStatus('d')">🚛 Driving<br><span class="es">נוהג</span></button>
+      <button class="stbtn off" onclick="setStatus('off')">☕ Off duty<br><span class="es">break, meal, done for today<br>לא בתפקיד</span></button>
+      <button class="stbtn sb" onclick="setStatus('sb')">🛏 Sleeper berth<br><span class="es">שינה בתא</span></button>
     </div>
     <label>Note for this change (optional) / Nota</label>
     <input id="note" placeholder="e.g. fuel stop, loading at venue" maxlength="160">
   </div>
 
   <div class="card" id="limits-card">
-    <h2>⏱ Hours left today <span class="es">Horas restantes</span></h2>
+    <h2>⏱ Hours left today <span class="es">שעות שנותרו</span></h2>
     <div id="limits"><div class="empty">loading…</div></div>
     <div class="note">11 h driving · 14 h window from your first on-duty · 30-min break by 8 h of driving · 70 h in 8 days. The page refreshes every minute; Lauren is texted 30 min before each limit.</div>
   </div>
 
   <div class="card" id="head-card">
-    <details id="head-details"><summary>🚚 Today's trip: truck, odometer, from → to <span class="es">Camión, odómetro, de → a</span></summary>
+    <details id="head-details"><summary>🚚 Today's trip: truck, odometer, from → to <span class="es">משאית, אודומטר, מאיפה → לאן</span></summary>
       <div class="two"><div style="flex:1"><label>Truck no. / plate</label><input id="h-truck" placeholder="plate or unit no."></div><div style="flex:1"><label>Trailer no.</label><input id="h-trailer" placeholder="— if none"></div></div>
       <div class="two"><div style="flex:1"><label>Odometer at start</label><input id="h-odo_start" inputmode="numeric" placeholder="miles"></div><div style="flex:1"><label>Odometer at end</label><input id="h-odo_end" inputmode="numeric" placeholder="miles"></div></div>
       <div class="two"><div style="flex:1"><label>From (city, state)</label><input id="h-from" placeholder="Canoga Park, CA"></div><div style="flex:1"><label>To (city, state)</label><input id="h-to" placeholder="Reno, NV"></div></div>
       <label>Load / shipping document</label><input id="h-shipping" placeholder="Cosmetics — Makeup Blowout Reno">
       <label>Co-driver (if any)</label><input id="h-co_driver" placeholder="—">
-      <button class="btn sec sm" onclick="saveHeader(false)">💾 Save trip details · Guardar</button>
+      <button class="btn sec sm" onclick="saveHeader(false)">💾 Save trip details · שמור</button>
       <div id="head-saved" class="note"></div>
     </details>
   </div>
 
   <div class="card" id="today-card">
-    <h2>📊 Today's grid <span class="es">Cuadrícula de hoy</span></h2>
+    <h2>📊 Today's grid <span class="es">הרשת של היום</span></h2>
     <div class="grid" id="grid"></div>
     <div id="totals" class="note"></div>
     <div class="rem" id="remarks"></div>
   </div>
 
   <div class="card" id="cert-card">
-    <h2>✍️ End of day — sign the log <span class="es">Fin del día — firma</span></h2>
-    <div class="note">When you are done for today: fill the odometer at end above, tap Off duty, then sign with your finger. This certifies that the entries are true and correct.<br><span class="es">Al terminar: escribe el odómetro final arriba, toca Fuera de servicio y firma con el dedo.</span></div>
+    <h2>✍️ End of day — sign the log <span class="es">סוף היום — חתימה</span></h2>
+    <div class="note">When you are done for today: fill the odometer at end above, tap Off duty, then sign with your finger. This certifies that the entries are true and correct.<br><span class="es">כשסיימת: מלא את האודומטר בסוף למעלה, לחץ "לא בתפקיד", וחתום עם האצבע.</span></div>
     <canvas id="pad" class="pad" width="400" height="120"></canvas>
-    <div class="two"><button class="btn sec sm" onclick="clearPad()">↺ Clear</button><button class="btn sm" id="btn-cert" onclick="certify()">✍️ Sign &amp; certify today · Firmar</button></div>
+    <div class="two"><button class="btn sec sm" onclick="clearPad()">↺ Clear</button><button class="btn sm" id="btn-cert" onclick="certify()">✍️ Sign &amp; certify today · חתום</button></div>
     <div id="cert-line" class="note"></div>
   </div>
 
-  <button class="btn sec" id="btn-inspect" onclick="openInspect()">📋 Inspection — show last 8 days as the printed form<span class="es">Inspección — últimos 8 días</span></button>
+  <button class="btn sec" id="btn-inspect" onclick="openInspect()">📋 Inspection — show last 8 days as the printed form<span class="es">ביקורת — 8 הימים האחרונים</span></button>
   <div class="note" style="text-align:center;margin-top:16px">Problem with the page? Call Lauren: <a href="tel:4243547625">(424) 354-7625</a></div>
 </div>
 <div id="inspect"><div class="tools"><button class="btn sec sm" onclick="closeInspect()">← Back</button><button class="btn sm" onclick="window.print()">🖨 Print / Save as PDF</button></div><div id="forms"></div></div>
@@ -160,7 +160,7 @@
 var WORKER = "https://danielle.laurenlev10.workers.dev/";
 var S = null, CLOCK = null, DRIVER = "", POS = null, QUEUE = [], OFFLINE = false, FORM_CSS_DONE = false;
 var LABEL = { off: "Off duty", sb: "Sleeper berth", d: "Driving", on: "On duty (not driving)" };
-var LABEL_ES = { off: "Fuera de servicio", sb: "Litera", d: "Conduciendo", on: "En servicio sin conducir" };
+var LABEL_HE = { off: "לא בתפקיד", sb: "שינה בתא", d: "נוהג", on: "בתפקיד (לא נוהג)" };
 var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
 function ls(k, v){ try{ if (v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
 function hm(min){ min = Math.max(0, Math.round(min)); return Math.floor(min/60) + "h " + String(min%60).padStart(2,"0") + "m"; }
@@ -211,7 +211,7 @@ function renderNow(){
   var n = document.getElementById("now");
   if (!CLOCK){ n.className = "now off"; return; }
   n.className = "now " + CLOCK.status;
-  n.querySelector(".st").innerHTML = esc(LABEL[CLOCK.status]) + ' <span class="es">' + esc(LABEL_ES[CLOCK.status]) + '</span>';
+  n.querySelector(".st").innerHTML = esc(LABEL[CLOCK.status]) + ' <span class="es">' + esc(LABEL_HE[CLOCK.status]) + '</span>';
   n.querySelector(".since").textContent = CLOCK.since ? hmsSince(CLOCK.since) : "0:00";
   n.querySelector(".sub").textContent = CLOCK.since ? "since " + fmtTime(CLOCK.since) + (CLOCK.resting ? " · 10 h rest complete — a new day can start" : "") : "tap the status you are in";
   document.querySelectorAll(".stbtn").forEach(function(b){ b.classList.toggle("cur", b.classList.contains(CLOCK.status)); });
@@ -234,10 +234,13 @@ function renderLimits(){
     var pct = Math.max(0, Math.min(100, 100 * r.left / r.max));
     html += '<div class="lim ' + cls + '"><div class="l"><span>' + esc(r.l) + '</span><span class="v">' + (r.left < 0 ? "OVER by " + hm(-r.left) : hm(r.left) + " left") + '</span></div><div class="bar"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
     if (CLOCK.resting) return;
-    if (r.left < 0) alerts += '<div class="banner bad">🛑 ' + esc(r.l) + ' exceeded by ' + hm(-r.left) + '. STOP DRIVING at the next safe place.<span class="es">Límite superado — detente en el próximo lugar seguro.</span></div>';
-    else if (r.left <= warnMin && (driving || r.k === "window")) alerts += '<div class="banner warn">⏳ ' + hm(r.left) + ' until the ' + esc(r.l) + ' limit. Plan your stop.<span class="es">Planifica tu parada.</span></div>';
+    if (r.left < 0) alerts += '<div class="banner bad">🛑 ' + esc(r.l) + ' exceeded by ' + hm(-r.left) + '. STOP DRIVING at the next safe place.<span class="es">עברת את הגבול — עצור במקום הבטוח הקרוב.</span></div>';
+    else if (r.left <= warnMin && (driving || r.k === "window")) alerts += '<div class="banner warn">⏳ ' + hm(r.left) + ' until the ' + esc(r.l) + ' limit. Plan your stop.<span class="es">תכנן את העצירה.</span></div>';
   });
   if (CLOCK.resting) html = '<div class="note" style="margin-bottom:6px">💤 10 hours of rest complete — all day limits reset.</div>' + html;
+  // the ELD line: more than 8 log days in any 30 → an ELD is required (the Worker counts)
+  if (S.log_days){ var ld = S.log_days, lcls = ld.over ? "bad" : ld.near ? "warn" : "";
+    html += '<div class="lim ' + lcls + '"><div class="l"><span>Log days in the last 30 (max 8 without an ELD)</span><span class="v">' + ld.count + ' / 8</span></div><div class="bar"><i style="width:' + Math.min(100, 100*ld.count/8).toFixed(0) + '%"></i></div>' + (ld.over ? '<div class="note" style="color:var(--bad)">Over 8 — an ELD is required. Tell Lauren.<span class="es">מעל 8 — נדרש מכשיר ELD. תגיד ללורן.</span></div>' : '') + '</div>'; }
   document.getElementById("limits").innerHTML = html;
   document.getElementById("alerts").innerHTML = alerts;
 }
@@ -245,7 +248,7 @@ function renderLimits(){
 // ── a duty-status tap ─────────────────────────────────────────────────────
 async function setStatus(st){
   var d = driverName();
-  if (!d){ alert("Please type your name first.\nPor favor escribe tu nombre."); document.getElementById("driver").focus(); return; }
+  if (!d){ alert("Please type your name first.\nקודם תכתוב את השם שלך."); document.getElementById("driver").focus(); return; }
   if (CLOCK && CLOCK.status === st && !document.getElementById("note").value.trim()){ return; }
   var at = new Date().toISOString();
   var note = document.getElementById("note").value.trim(); document.getElementById("note").value = "";
@@ -324,8 +327,8 @@ function drawPad(){ PCTX.clearRect(0,0,400,120); PCTX.lineWidth = 2.2; PCTX.line
 function clearPad(){ STROKES = []; drawPad(); }
 async function certify(){
   var d = driverName(); if (!d){ alert("Please type your name first."); return; }
-  if (!STROKES.length || STROKES.reduce(function(a,s){ return a + s.length; }, 0) < 6){ alert("Please sign with your finger first.\nPor favor firma primero."); return; }
-  if (!document.getElementById("h-odo_end").value.trim() && !confirm("Odometer at end is empty. Certify anyway?\n¿Certificar sin el odómetro final?")) return;
+  if (!STROKES.length || STROKES.reduce(function(a,s){ return a + s.length; }, 0) < 6){ alert("Please sign with your finger first.\nקודם תחתום עם האצבע."); return; }
+  if (!document.getElementById("h-odo_end").value.trim() && !confirm("Odometer at end is empty. Certify anyway?\nהאודומטר בסוף ריק. לחתום בכל זאת?")) return;
   if (!(await saveHeader(true))) return;
   var btn = document.getElementById("btn-cert"); btn.disabled = true;
   try{
