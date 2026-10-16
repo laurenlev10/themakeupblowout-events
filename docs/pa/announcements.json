@@ -40,13 +40,15 @@
   "es": {
    "The Makeup Blowout Sale": "Da Méikap Blóuaut Séil",
    "Makeup Blowout Sale": "Méikap Blóuaut Séil",
-   "Mystery Box": "Místeri Box"
+   "Mystery Box": "Místeri Box",
+   "Best Sellers": "Best Sélers"
   }
  },
  "_must_hear": "Phrases that must come back word for word when a clip is transcribed, in every clip whose text contains them. The overall match ratio cannot catch a broken brand name inside a long sentence (13.10.2026: 'tema Queub Blowout Sale' scored 0.88 and passed); this can.",
  "must_hear": [
   "Makeup Blowout Sale",
-  "Mystery Box"
+  "Mystery Box",
+  "Best Sellers"
  ],
  "_when": "A clip may carry `when`: {days: [mon..sun], from: 'HH:MM', until: 'HH:MM'} — all optional, event-local time (the speaker phone's clock at the venue). Outside it the clip is skipped by the rotation; its manual button still plays it. Mirror it in the Soundtrack campaign (domains/events-social.md).",
  "clips": [
@@ -93,6 +95,13 @@
    "en": "Have you seen our famous Mystery Box? It's packed with up to fifteen beauty surprises, worth over one hundred twenty dollars, for just forty-five dollars! That's even less than online. Grab yours before they're gone!",
    "es": "¿Ya viste nuestra famosa Mystery Box? Trae hasta quince sorpresas de belleza, con un valor de más de ciento veinte dólares, ¡por solo cuarenta y cinco dólares! Es aún más barata que en línea. ¡Llévate la tuya antes de que se acaben!",
    "_facts": "Lauren 13.10.2026: $45 at the event ($49.95 online). Contents from the online store page (box.themakeupblowout.com, read 10.10.2026): up to 15 products, worth $120+."
+  },
+  {
+   "id": "best_sellers",
+   "rotation": "auto",
+   "en": "Looking for the best deals? Find our Best Sellers barcode and scan it with your phone camera. You'll see today's top offers right away! Scan it, shop it, love it!",
+   "es": "¿Buscas las mejores ofertas? Busca nuestro código de Best Sellers y escanéalo con la cámara de tu teléfono. ¡Verás al instante las mejores ofertas de hoy! ¡Escanea, compra y disfruta!",
+   "_facts": "Lauren 16.10.2026, her text: 'Looking for the best deals? Scan our BEST SELLERS barcode and grab today's top offers!' — reworded for the speaker, meaning kept."
   },
   {
    "id": "bring_friends",
