@@ -51,6 +51,10 @@
   .banner.warn{background:#fef3c7;border:1px solid #f59e0b;color:#92400e}
   .banner.bad{background:#fee2e2;border:1px solid #dc2626;color:#991b1b;font-size:16px}
   .banner.info{background:#dbeafe;border:1px solid #93c5fd;color:#1e3a8a;font-weight:700}
+  .nudge{position:fixed;left:10px;right:10px;top:10px;z-index:60;background:#111827;color:#fff;border-radius:16px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.35);animation:nudgepulse 1.2s infinite}
+  .nudge .t{font-size:18px;font-weight:900}
+  .nudge .two .btn{margin-top:10px}
+  @keyframes nudgepulse{0%,100%{box-shadow:0 6px 24px rgba(0,0,0,.35)}50%{box-shadow:0 0 0 6px rgba(220,38,38,.45)}}
   /* the status card */
   .now{border-radius:16px;padding:16px;color:#fff;text-align:center;margin-bottom:12px}
   .now .st{font-size:22px;font-weight:900}
@@ -114,7 +118,8 @@
            hotel nights are Off duty, which is what the 10-hour rest needs. Line 2 of the grid stays empty. -->
       <button class="stbtn off" style="grid-column:1 / -1" onclick="setStatus('off')">☕ Off duty<br><span class="es">break, meal, hotel, done for today<br>לא בתפקיד — הפסקה, ארוחה, מלון, סיימתי להיום</span></button>
     </div>
-    <label>Note for this change (optional) / Nota</label>
+    <div class="note">🔔 If you stop for 5 minutes while marked Driving, or start moving while not, the phone will buzz and remind you to tap — only while this page is open on screen.<br><span class="es">אם תעצור 5 דקות כשאתה מסומן "נוהג", או תתחיל לנסוע כשלא — הטלפון ירטוט ויזכיר לך ללחוץ. עובד רק כשהדף פתוח על המסך.</span></div>
+    <label>Note for this change (optional) · הערה</label>
     <input id="note" placeholder="e.g. fuel stop, loading at venue" maxlength="160">
   </div>
 
@@ -160,6 +165,7 @@
   <button class="btn sec" id="btn-inspect" onclick="openInspect()">📋 Inspection — show last 8 days as the printed form<span class="es">ביקורת — 8 הימים האחרונים</span></button>
   <div class="note" style="text-align:center;margin-top:16px">Problem with the page? Call Lauren: <a href="tel:4243547625">(424) 354-7625</a></div>
 </div>
+<div id="nudge" class="nudge" style="display:none"></div>
 <div id="inspect"><div class="tools"><button class="btn sec sm" onclick="closeInspect()">← Back</button><button class="btn sm" onclick="window.print()">🖨 Print / Save as PDF</button></div><div id="forms"></div></div>
 <div class="foot"><span id="gps-line">📡 GPS: off</span><span id="sync-line"></span></div>
 
@@ -314,6 +320,7 @@ async function setStatus(st){
   var body = { kind:"hos_event", driver:d, status:st, at:at, note:note, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, place:"" };
   // optimistic: the status card changes now; the Worker's answer is the record
   CLOCK = Object.assign({}, CLOCK || {}, { status: st, since: at, resting: false });
+  NUDGED = { stopped:false, moving:false }; hideNudge();
   if (!CLOCK.left){ CLOCK.left = {drive:660,window:840,break:480,cycle:4200}; CLOCK.limits = {drive:660,window:840,break_after:480,cycle:4200,cycle_days:8}; CLOCK.used = {since_break:0}; }
   renderNow();
   QUEUE.push(body); saveQueue();
@@ -414,10 +421,77 @@ function startGps(){
   navigator.geolocation.watchPosition(function(p){
     POS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:Math.round(p.coords.accuracy||0) };
     document.getElementById("gps-line").innerHTML = '<span class="pill gps">📡 GPS on</span> ±' + POS.acc + ' m';
+    trackMotion(p);
   }, function(err){
     document.getElementById("gps-line").innerHTML = '<span class="pill nogps">📡 GPS off</span> ' + (err.code===1 ? "allow location so each entry carries the city" : "no fix");
   }, { enableHighAccuracy:true, maximumAge:30000, timeout:20000 });
 }
+
+// ── motion vs status: the phone notices what the driver forgot to tap (Lauren 16.10) ──
+// Driving but standing still for nudge.stop_min → "did you stop?"; not Driving but moving at
+// road speed for nudge.move_min → "are you driving?". A reminder shakes the phone, beeps, shows
+// a banner with the two taps, and tells the Worker (which texts Lauren/Eli, 30-min throttle).
+// 🛑 Only while this page is in the foreground — iOS stops a web page's GPS behind Waze/other
+// apps, so a gap in fixes is "the page was in the background", never "the truck stood still".
+// The thresholds are the settings' (one place); the status is never changed by a sensor.
+var TRAIL = [], NUDGED = { stopped:false, moving:false };
+function meters(a,b){ var R=6371000,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180,x=Math.sin(dLat/2),y=Math.sin(dLng/2); var h=x*x+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*y*y; return 2*R*Math.asin(Math.sqrt(h)); }
+function trackMotion(p){
+  if ((p.coords.accuracy||0) > 100) return;                     // a 300 m fix cannot say "stood still"
+  var now = Date.now();
+  TRAIL.push({ t: now, lat: p.coords.latitude, lng: p.coords.longitude, v: isFinite(p.coords.speed) && p.coords.speed != null ? p.coords.speed : null });
+  TRAIL = TRAIL.filter(function(x){ return now - x.t <= 15 * 60000; });
+  if (document.visibilityState !== "visible") return;
+  judgeMotion(now);
+}
+function judgeMotion(now){
+  if (!CLOCK || !S || !DRIVER) return;
+  var cfg = (S.settings && S.settings.nudge) || { stop_min:5, stop_radius_m:60, move_min:3, move_speed_kmh:25 };
+  var last = TRAIL[TRAIL.length-1]; if (!last) return;
+  if (CLOCK.status === "d"){
+    NUDGED.moving = false;
+    // standing: every fix of the last stop_min minutes is within stop_radius_m of the latest one,
+    // and the window really is that long (a page opened 1 minute ago cannot judge 5)
+    var win = TRAIL.filter(function(x){ return now - x.t <= cfg.stop_min * 60000; });
+    var spans = win.length >= 3 && (now - win[0].t) >= cfg.stop_min * 60000 - 20000;
+    var still = spans && win.every(function(x){ return meters(x, last) <= cfg.stop_radius_m; });
+    if (still && !NUDGED.stopped){ NUDGED.stopped = true; nudge("stopped", Math.round((now - win[0].t)/60000)); }
+    if (!still && !spans) NUDGED.stopped = false;
+    if (!still && spans && win.some(function(x){ return meters(x, last) > cfg.stop_radius_m * 3; })) NUDGED.stopped = false;   // moved on → arm again
+  } else if (!CLOCK.resting && CLOCK.shift_start){
+    NUDGED.stopped = false;
+    // travelling: over the last move_min minutes the phone covered the distance of road speed
+    var win2 = TRAIL.filter(function(x){ return now - x.t <= cfg.move_min * 60000; });
+    var spans2 = win2.length >= 3 && (now - win2[0].t) >= cfg.move_min * 60000 - 20000;
+    var dist = spans2 ? meters(win2[0], last) : 0;
+    var kmh = spans2 ? dist / ((now - win2[0].t)/3600000) / 1000 : 0;
+    if (spans2 && kmh >= cfg.move_speed_kmh && !NUDGED.moving){ NUDGED.moving = true; nudge("moving", Math.round((now - win2[0].t)/60000)); }
+    if (spans2 && kmh < cfg.move_speed_kmh / 3) NUDGED.moving = false;    // came to rest → arm again
+  }
+}
+function nudge(kind, minutes){
+  var n = document.getElementById("nudge");
+  n.innerHTML = kind === "stopped"
+    ? '<div class="t">🛑 You have been stopped for ' + minutes + ' min — still marked Driving.<span class="es">אתה עומד כבר ' + minutes + ' דק\' ועדיין מסומן "נוהג".</span></div><div class="two"><button class="btn sm" style="background:var(--on)" onclick="setStatus(\'on\');hideNudge()">🔧 On duty · בתפקיד</button><button class="btn sm sec" onclick="setStatus(\'off\');hideNudge()">☕ Off duty · הפסקה</button></div><button class="btn sm sec" style="margin-top:8px" onclick="hideNudge()">Still driving (traffic) · עדיין נוהג</button>'
+    : '<div class="t">🚛 You are moving — did you forget to tap Driving?<span class="es">אתה בנסיעה — שכחת ללחוץ "נוהג"?</span></div><div class="two"><button class="btn sm" onclick="setStatus(\'d\');hideNudge()">🚛 Driving · נוהג</button><button class="btn sm sec" onclick="hideNudge()">I am a passenger · אני נוסע, לא נוהג</button></div>';
+  n.style.display = "block";
+  try{ if (navigator.vibrate) navigator.vibrate([400,150,400,150,400]); }catch(e){}
+  beep();
+  // tell the Worker (it texts Lauren/Eli, throttled); the status itself stays what the driver tapped
+  fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"hos_nudge", driver:DRIVER, nudge:kind, minutes:minutes, lat: POS?POS.lat:null, lng: POS?POS.lng:null, place: "" }) }).catch(function(){});
+  placeName(POS).then(function(pl){ if (pl) ls("hos_last_place", pl); });
+}
+function hideNudge(){ document.getElementById("nudge").style.display = "none"; }
+var AUDIO = null;
+function beep(){
+  try{
+    AUDIO = AUDIO || new (window.AudioContext || window.webkitAudioContext)();
+    for (var i = 0; i < 3; i++){ var o = AUDIO.createOscillator(), g = AUDIO.createGain(); o.frequency.value = 880; o.connect(g); g.connect(AUDIO.destination); g.gain.value = 0.25; o.start(AUDIO.currentTime + i*0.5); o.stop(AUDIO.currentTime + i*0.5 + 0.3); }
+  }catch(e){}
+}
+// iOS allows sound only after a user gesture: the first tap anywhere unlocks the beep
+document.addEventListener("touchstart", function(){ try{ AUDIO = AUDIO || new (window.AudioContext || window.webkitAudioContext)(); AUDIO.resume(); }catch(e){} }, { once:true, passive:true });
+setInterval(function(){ if (document.visibilityState === "visible") judgeMotion(Date.now()); }, 20000);
 
 // ── boot ─────────────────────────────────────────────────────────────────
 loadQueue(); syncLine();
