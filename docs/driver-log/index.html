@@ -136,7 +136,7 @@
   <div class="card" id="dest-card">
     <h2>🧭 Where to? <span class="es">לאן נוסעים?</span></h2>
     <div id="dests"><div class="empty">loading…</div></div>
-    <div class="note">Tap Waze or Maps to navigate, 📋 to copy the address. "Use" fills the From → To of today's trip.<br><span class="es">Waze או Maps לניווט, 📋 להעתקת הכתובת. "Use" ממלא את מאיפה → לאן של הנסיעה.</span></div>
+    <div class="note">Copy the address into your navigation app.<span class="es">העתק את הכתובת לאפליקציית הניווט שלך.</span></div>
   </div>
 
   <div class="card" id="limits-card">
@@ -287,25 +287,22 @@ function renderLimits(){
 }
 
 // ── destinations: the next events' venues + home base (Lauren 16.10) ──────────
-function destRow(label, sub, addr, kind){
-  var w = "https://waze.com/ul?q=" + encodeURIComponent(addr) + "&navigate=yes";
-  var g = "https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=" + encodeURIComponent(addr);
+function destRow(label, sub, addr){
+  // the driver navigates in his own app (Lauren 16.10): the address and one Copy button, nothing else
   var a = esc(addr).replace(/'/g, "&#39;");
   return '<div class="stop" style="margin-bottom:8px"><div class="name">' + esc(label) + '</div>' + (sub ? '<div class="meta">' + esc(sub) + '</div>' : '') +
-    '<div class="meta" style="font-size:14px">📍 ' + esc(addr) + '</div>' +
-    '<div class="two" style="margin-top:6px"><a class="btn sm" href="' + w + '" target="_blank" rel="noopener">🧭 Waze</a><a class="btn sec sm" href="' + g + '" target="_blank" rel="noopener">🗺️ Maps</a></div>' +
-    '<div class="two"><button class="btn sec sm" onclick="copyText(\'' + a + '\')">📋 Copy · העתק</button><button class="btn sec sm" onclick="useDest(\'' + kind + '\',\'' + a + '\')">↪ Use as ' + (kind === "to" ? "To · לאן" : "From · מאיפה") + '</button></div></div>';
+    '<div class="meta" style="font-size:15px;user-select:all">📍 ' + esc(addr) + '</div>' +
+    '<button class="btn sm" style="margin-top:6px" onclick="copyText(\'' + a + '\')">📋 Copy address · העתק כתובת</button></div>';
 }
 function renderDests(){
   if (!S) return;
   var html = "";
   if (S.next_events === null) html += '<div class="banner warn">⚠️ The events list could not be read right now — ask Eli for the venue address.<span class="es">רשימת האירועים לא נקראה — תבקש מאלי את הכתובת.</span></div>';
-  (S.next_events || []).forEach(function(e, i){
-    var d = e.start_date ? new Date(e.start_date + "T12:00:00").toLocaleDateString("en-US", { month:"short", day:"numeric" }) : "";
-    html += destRow((i === 0 ? "➡️ Next event · האירוע הקרוב: " : "Then · אחר כך: ") + e.city + ", " + e.state + (d ? " · " + d : ""), e.venue, e.address, "to");
-  });
+  var e = (S.next_events || [])[0];
+  if (e){ var d = e.start_date ? new Date(e.start_date + "T12:00:00").toLocaleDateString("en-US", { month:"short", day:"numeric" }) : "";
+    html += destRow("➡️ Next event · האירוע הקרוב: " + e.city + ", " + e.state + (d ? " · " + d : ""), e.venue, e.address); }
   var hb = S.settings && S.settings.home_base;
-  if (hb && hb.address) html += destRow("🏠 " + (hb.label || "Home / base") + " · חזרה הביתה", "", hb.address, "from");
+  if (hb && hb.address) html += destRow("🏠 " + (hb.label || "Home / base") + " · חזרה הביתה", "", hb.address);
   document.getElementById("dests").innerHTML = html || '<div class="empty">No upcoming event with an address.</div>';
 }
 function copyText(t){
@@ -313,13 +310,6 @@ function copyText(t){
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, function(){ prompt("Copy · העתק:", t); });
   else prompt("Copy · העתק:", t);
 }
-function useDest(kind, addr){
-  var city = addr.split(",").slice(-2).map(function(x){ return x.trim().replace(/\s*\d{5}(-\d{4})?$/, ""); }).join(", ");
-  document.getElementById(kind === "to" ? "h-to" : "h-from").value = city || addr;
-  document.getElementById("head-details").open = true;
-  saveHeader(false);
-}
-
 // ── a duty-status tap ─────────────────────────────────────────────────────
 async function setStatus(st, presetNote){
   var d = driverName();
