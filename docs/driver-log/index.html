@@ -110,8 +110,9 @@
     <div class="stbtns">
       <button class="stbtn on" onclick="setStatus('on')">🔧 On duty<br><span class="es">not driving · loading, fuel, inspection<br>בתפקיד, לא נוהג</span></button>
       <button class="stbtn d" onclick="setStatus('d')">🚛 Driving<br><span class="es">נוהג</span></button>
-      <button class="stbtn off" onclick="setStatus('off')">☕ Off duty<br><span class="es">break, meal, done for today<br>לא בתפקיד</span></button>
-      <button class="stbtn sb" onclick="setStatus('sb')">🛏 Sleeper berth<br><span class="es">שינה בתא</span></button>
+      <!-- No sleeper-berth button: the truck has no berth, the crew sleeps in a hotel (Lauren 16.10) —
+           hotel nights are Off duty, which is what the 10-hour rest needs. Line 2 of the grid stays empty. -->
+      <button class="stbtn off" style="grid-column:1 / -1" onclick="setStatus('off')">☕ Off duty<br><span class="es">break, meal, hotel, done for today<br>לא בתפקיד — הפסקה, ארוחה, מלון, סיימתי להיום</span></button>
     </div>
     <label>Note for this change (optional) / Nota</label>
     <input id="note" placeholder="e.g. fuel stop, loading at venue" maxlength="160">
