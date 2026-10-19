@@ -150,6 +150,20 @@
     <div class="note">Copy the address into your navigation app.<span class="es">העתק את הכתובת לאפליקציית הניווט שלך.</span></div>
   </div>
 
+  <div class="card" id="track-card">
+    <div id="track-line" style="font-weight:800;font-size:15px">📡 Background GPS… <span class="es">מעקב ברקע…</span></div>
+    <details id="track-setup" style="margin-top:6px"><summary style="font-size:14px">How to set it up (one time) · איך מחברים (פעם אחת)</summary>
+      <ol style="font-size:14px;line-height:1.7;padding-inline-start:20px;margin:6px 0">
+        <li>Install <b>Traccar Client</b> (free — App Store / Google Play).<span class="es">להתקין Traccar Client (חינם).</span></li>
+        <li><b>Device identifier</b>: your name exactly as in the list above — <b id="track-name">your name</b>.<span class="es">Device identifier: השם שלך בדיוק כמו ברשימה.</span></li>
+        <li><b>Server URL</b>: <span style="user-select:all;direction:ltr;background:#eef0f4;border-radius:6px;padding:2px 6px">https://danielle.laurenlev10.workers.dev/traccar</span> <button class="btn sm" type="button" onclick="copyText('https://danielle.laurenlev10.workers.dev/traccar')">📋</button></li>
+        <li>Frequency 60 seconds, high accuracy. Location permission: <b>Always</b>.<span class="es">תדירות 60 שניות, דיוק גבוה, הרשאת מיקום "תמיד".</span></li>
+        <li>Turn the service <b>ON</b>. Leave it on during trips — it works with the page closed and your driving app open.<span class="es">להדליק את השירות ולהשאיר אותו דולק בנסיעות — עובד גם כשהדף סגור והניווט פתוח.</span></li>
+      </ol>
+      <div class="note">GPS only shows where the truck is. Your hours still come from the buttons on this page — tap them as before.<span class="es">המיקום רק מראה איפה המשאית. השעות עדיין נרשמות מהכפתורים בדף הזה.</span></div>
+    </details>
+  </div>
+
   <div class="card" id="limits-card">
     <h2>⏱ Hours left today <span class="es">שעות שנותרו</span></h2>
     <div id="limits"><div class="empty">loading…</div></div>
@@ -246,7 +260,7 @@ function render(){
   var s = S.settings || {};
   document.getElementById("hdr-sub").textContent = (s.carrier || "The Makeup Blowout Sale") + " · " + S.today + " · " + (s.home_terminal_tz === "America/Los_Angeles" ? "Pacific time" : s.home_terminal_tz);
   banner(OFFLINE ? "📵 No connection — showing the log as last loaded " + fmtTime(OFFLINE) + ". Taps are saved on this phone with their time and sent when the signal is back." : "", "warn");
-  renderNow(); renderLimits();
+  renderNow(); renderLimits(); renderTrack();
   var td = (S.days||[])[0];
   if (td && td.day){
     document.getElementById("grid").innerHTML = td.svg;
@@ -343,6 +357,17 @@ function headSummary(){
   var done = g("truck") && g("to") && g("odo_start");
   el.className = done ? "done" : "todo";
   el.textContent = parts.length ? parts.join(" · ") + (done ? "" : "  — missing details, tap · חסרים פרטים") : "Not filled yet — tap to fill · עוד לא מולא — לחץ למילוי";
+}
+// the background tracker (Traccar Client app → the Worker), as the Worker last saw it
+function renderTrack(){
+  var el = document.getElementById("track-line"); if (!el || !S) return;
+  document.getElementById("track-name").textContent = S.driver || driverName() || "your name";
+  var L = S.live, last = L && L.last;
+  if (L && L.error){ el.innerHTML = '⚠️ Background GPS: could not be checked right now.<span class="es">לא ניתן לבדוק את המעקב כרגע.</span>'; return; }
+  if (!last){ el.innerHTML = '⚠️ Background GPS is OFF — set it up below so Eli sees the truck live.<span class="es">המעקב ברקע כבוי — חבר אותו למטה כדי שאלי יראה את המשאית בזמן אמת.</span>'; document.getElementById("track-setup").open = true; return; }
+  var m = Math.round((Date.now() - Date.parse(last.at)) / 60000);
+  el.innerHTML = m <= 10 ? '✅ Background GPS is ON — last position ' + (m < 1 ? "just now" : m + " min ago") + '.<span class="es">המעקב ברקע פועל.</span>'
+    : '⚠️ Background GPS: no position for ' + (m < 120 ? m + " min" : Math.round(m/60) + " h") + ' — is Traccar turned on?<span class="es">אין מיקום מהאפליקציה — Traccar דולק?</span>';
 }
 function renderDests(){
   if (!S) return;
