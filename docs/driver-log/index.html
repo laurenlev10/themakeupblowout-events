@@ -84,6 +84,17 @@
   .pill.gps{background:#dcfce7;color:#166534}.pill.nogps{background:#fee2e2;color:#991b1b}
   .empty{color:var(--muted);font-size:14px;padding:12px;text-align:center}
   details summary{cursor:pointer;font-weight:900;font-size:15px;padding:4px 0}
+  /* the trip card opens like a button and says what is filled (Lauren 18.10: "לא ברור שזה נפתח") */
+  #head-details > summary{list-style:none;display:flex;align-items:center;gap:10px;padding:6px 0}
+  #head-details > summary::-webkit-details-marker{display:none}
+  #head-details > summary .chev{margin-inline-start:auto;flex:none;font-size:13px;font-weight:900;background:#eef0f4;border-radius:999px;padding:6px 12px;white-space:nowrap}
+  #head-details[open] > summary .chev .closed, #head-details:not([open]) > summary .chev .opened{display:none}
+  #head-sum{font-size:14px;font-weight:700;margin-top:3px}
+  #head-sum.todo{color:var(--warn)} #head-sum.done{color:var(--ok)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
+  .chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;color:var(--ink)}
+  .chip.sel{border-color:var(--ok);background:#dcfce7}
+  .chip small{font-weight:600;opacity:.75}
   /* inspection view */
   #inspect{display:none}
   body.inspect .wrap, body.inspect .hdr, body.inspect .foot{display:none}
@@ -146,10 +157,11 @@
   </div>
 
   <div class="card" id="head-card">
-    <details id="head-details"><summary>🚚 Today's trip: truck, odometer, from → to <span class="es">משאית, אודומטר, מאיפה → לאן</span></summary>
-      <label>Truck no. / plate</label><input id="h-truck" placeholder="plate or unit no.">
+    <details id="head-details"><summary><div>🚚 Today's trip <span class="es">הנסיעה של היום</span><div id="head-sum" class="todo">Not filled yet — tap to fill · עוד לא מולא — לחץ למילוי</div></div><span class="chev"><span class="closed">▼ Open · פתח</span><span class="opened">▲ Close · סגור</span></span></summary>
+      <label>Truck no. / plate</label><input id="h-truck" placeholder="plate or unit no." oninput="tripChanged()">
       <div class="two"><div style="flex:1"><label>Odometer at start</label><input id="h-odo_start" inputmode="numeric" placeholder="miles"></div><div style="flex:1"><label>Odometer at end</label><input id="h-odo_end" inputmode="numeric" placeholder="miles"></div></div>
-      <div class="two"><div style="flex:1"><label>From (city, state)</label><input id="h-from" placeholder="Canoga Park, CA"></div><div style="flex:1"><label>To (city, state)</label><input id="h-to" placeholder="Reno, NV"></div></div>
+      <label>To — where are you driving? · לאן נוסעים?</label><div class="chips" id="to-chips"></div><input id="h-to" placeholder="or type: city, state · או תקליד" oninput="tripChanged()">
+      <label>From — where did you start? · מאיפה יצאת?</label><div class="chips" id="from-chips"></div><input id="h-from" placeholder="or type: city, state · או תקליד" oninput="tripChanged()">
       <label>Load / shipping document</label><input id="h-shipping" readonly tabindex="-1" style="opacity:.8" title="fixed by the carrier">
       <label>Co-driver (if any)</label><input id="h-co_driver" placeholder="—">
       <button class="btn sec sm" onclick="saveHeader(false)">💾 Save trip details · שמור</button>
@@ -203,7 +215,7 @@ async function loadRoster(){
     names = (j.settings && j.settings.drivers) || [];
     ls("hos_roster", JSON.stringify(names));
     // before a name is picked the page still shows where to go (the overview answer carries it)
-    if (!S){ S = j; renderDests(); }
+    if (!S){ S = j; renderDests(); renderChips(); }
     if (j.settings) ls("hos_settings_cache", JSON.stringify(j.settings));
   }catch(e){ try{ names = JSON.parse(ls("hos_roster") || "[]"); }catch(x){ names = []; } }
   var cur = ls("hos_driver") || "";
@@ -294,13 +306,53 @@ function destRow(label, sub, addr){
     '<div class="meta" style="font-size:15px;user-select:all">📍 ' + esc(addr) + '</div>' +
     '<button class="btn sm" style="margin-top:6px" onclick="copyText(\'' + a + '\')">📋 Copy address · העתק כתובת</button></div>';
 }
+// the "To"/"From" choices: the coming cities from the Worker (Lauren 18.10: "כל הערים הבאות שמגיעים
+// אליהם בקרוב"), the event the truck just left, home, and where the phone is now. A tap fills the field.
+function cityOf(e){ return e.city + ", " + e.state; }
+function shortDate(iso){ return iso ? new Date(iso + "T12:00:00").toLocaleDateString("en-US", { month:"short", day:"numeric" }) : ""; }
+function chipHtml(field, value, label, sub){
+  var v = esc(value).replace(/'/g, "&#39;");
+  var cur = (document.getElementById("h-" + field).value || "").trim().toLowerCase() === String(value).toLowerCase();
+  return '<button type="button" class="chip' + (cur ? ' sel' : '') + '" onclick="pickTrip(\'' + field + '\',\'' + v + '\')">' + esc(label) + (sub ? ' <small>' + esc(sub) + '</small>' : '') + '</button>';
+}
+function renderChips(){
+  if (!S) return;
+  var hb = S.settings && S.settings.home_base, home = hb && hb.address ? homeCity(hb.address) : "";
+  var to = (S.next_events || []).map(function(e){ return chipHtml("to", cityOf(e), cityOf(e), shortDate(e.start_date)); });
+  if (home) to.push(chipHtml("to", home, "🏠 Home", home));
+  document.getElementById("to-chips").innerHTML = to.join("") || '<span class="note">No coming events — type the city.</span>';
+  var fr = [];
+  if (HERE) fr.push(chipHtml("from", HERE, "📍 Here now", HERE));
+  if (S.prev_event) fr.push(chipHtml("from", cityOf(S.prev_event), cityOf(S.prev_event), "ended " + shortDate(S.prev_event.end_date)));
+  if (home) fr.push(chipHtml("from", home, "🏠 Home", home));
+  document.getElementById("from-chips").innerHTML = fr.join("");
+}
+function homeCity(addr){ var p = String(addr).split(",").map(function(x){ return x.trim(); }); return p.length >= 3 ? p[p.length-2] + ", " + p[p.length-1].replace(/\s*\d{5}(-\d{4})?$/, "") : addr; }
+var HERE = "", HERE_AT = 0;
+// "📍 Here now" for the From choices: the phone's city, looked up at most every 10 minutes
+function hereName(){ if (!POS || Date.now() - HERE_AT < 600000) return; HERE_AT = Date.now();
+  placeName(POS).then(function(pl){ if (pl && pl !== HERE){ HERE = pl; renderChips(); } }); }
+function pickTrip(field, value){ document.getElementById("h-" + field).value = value; tripChanged(); saveHeader(false); }
+function tripChanged(){ renderChips(); renderDests(); headSummary(); }
+function headSummary(){
+  var g = function(k){ return (document.getElementById("h-" + k).value || "").trim(); };
+  var el = document.getElementById("head-sum"), parts = [];
+  if (g("truck")) parts.push("🚚 " + g("truck"));
+  if (g("from") || g("to")) parts.push((g("from") || "?") + " → " + (g("to") || "?"));
+  if (g("odo_start")) parts.push(g("odo_start") + (g("odo_end") ? "–" + g("odo_end") : "") + " mi");
+  var done = g("truck") && g("to") && g("odo_start");
+  el.className = done ? "done" : "todo";
+  el.textContent = parts.length ? parts.join(" · ") + (done ? "" : "  — missing details, tap · חסרים פרטים") : "Not filled yet — tap to fill · עוד לא מולא — לחץ למילוי";
+}
 function renderDests(){
   if (!S) return;
   var html = "";
   if (S.next_events === null) html += '<div class="banner warn">⚠️ The events list could not be read right now — ask Eli for the venue address.<span class="es">רשימת האירועים לא נקראה — תבקש מאלי את הכתובת.</span></div>';
-  var e = (S.next_events || [])[0];
+  // the address shown follows the "To" the driver picked; otherwise the next event
+  var toV = ((document.getElementById("h-to") || {}).value || "").trim().toLowerCase();
+  var e = (S.next_events || []).filter(function(x){ return cityOf(x).toLowerCase() === toV; })[0] || (S.next_events || [])[0];
   if (e){ var d = e.start_date ? new Date(e.start_date + "T12:00:00").toLocaleDateString("en-US", { month:"short", day:"numeric" }) : "";
-    html += destRow("➡️ Next event · האירוע הקרוב: " + e.city + ", " + e.state + (d ? " · " + d : ""), e.venue, e.address); }
+    html += destRow("➡️ " + (cityOf(e).toLowerCase() === toV ? "Driving to · נוסעים אל" : "Next event · האירוע הקרוב") + ": " + e.city + ", " + e.state + (d ? " · " + d : ""), e.venue, e.address); }
   var hb = S.settings && S.settings.home_base;
   if (hb && hb.address) html += destRow("🏠 " + (hb.label || "Home / base") + " · חזרה הביתה", "", hb.address);
   document.getElementById("dests").innerHTML = html || '<div class="empty">No upcoming event with an address.</div>';
@@ -389,7 +441,7 @@ function fillHeader(h){
   HFIELDS.forEach(function(k){ var el = document.getElementById("h-" + k); if (document.activeElement !== el && h[k] != null) el.value = h[k]; });
   document.getElementById("h-shipping").value = (S && S.settings && S.settings.load) || h.shipping || "";
   if (!document.getElementById("h-truck").value && ls("hos_truck")) document.getElementById("h-truck").value = ls("hos_truck");
-  if (h.truck || h.odo_start) document.getElementById("head-details").open = true;
+  tripChanged();
 }
 async function saveHeader(quiet){
   var d = driverName(); if (!d){ alert("Please type your name first."); return; }
@@ -442,6 +494,7 @@ function startGps(){
   if (!navigator.geolocation){ document.getElementById("gps-line").textContent = "📡 GPS: not available"; return; }
   navigator.geolocation.watchPosition(function(p){
     POS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:Math.round(p.coords.accuracy||0) };
+    hereName();
     document.getElementById("gps-line").innerHTML = '<span class="pill gps">📡 GPS on</span> ±' + POS.acc + ' m';
     trackMotion(p);
   }, function(err){
