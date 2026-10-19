@@ -60,6 +60,11 @@
   .now .st{font-size:22px;font-weight:900}
   .now .since{font-size:40px;font-weight:900;letter-spacing:1px;margin:4px 0;font-variant-numeric:tabular-nums}
   .now .sub{font-size:13px;opacity:.92}
+  .now-pending{display:none;margin-top:10px;border-radius:12px;padding:10px 12px;font-weight:900;font-size:15px;line-height:1.35}
+  .now-pending.wait{display:block;background:#fef3c7;color:#92400e;border:2px solid #f59e0b;animation:pendpulse 1.4s ease-in-out infinite}
+  .now-pending.ok{display:block;background:#dcfce7;color:#166534}
+  .now-pending .es{display:block;font-size:12.5px;font-weight:800;margin-top:2px}
+  @keyframes pendpulse{50%{opacity:.6}}
   .now.off{background:var(--off)} .now.sb{background:var(--sb)} .now.d{background:var(--d)} .now.on{background:var(--on)}
   .stbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .stbtn{border:2px solid var(--line);border-radius:14px;padding:14px 8px;font-weight:900;font-size:16px;background:#fff;cursor:pointer;min-height:70px;font-family:inherit;color:var(--ink)}
@@ -118,7 +123,8 @@
     <div class="note">The log is kept under your name. Eli gets a text when you start the day, when you sign it, and before you reach a limit.<br><span class="es">היומן נשמר על השם שלך. אלי מקבל הודעה כשאתה מתחיל יום, כשאתה חותם, ולפני שאתה מגיע לגבול.</span></div>
   </div>
 
-  <div id="now" class="now off"><div class="st">Off duty</div><div class="since">0:00</div><div class="sub">tap the status you are in</div></div>
+  <div id="now" class="now off"><div class="st">Off duty</div><div class="since">0:00</div><div class="sub">tap the status you are in</div>
+      <div id="now-pending" class="now-pending"></div></div>
 
   <div class="card">
     <h2>What are you doing now? <span class="es">מה אתה עושה עכשיו?</span></h2>
@@ -280,6 +286,18 @@ function renderNow(){
   n.querySelector(".st").innerHTML = esc(LABEL[CLOCK.status]) + ' <span class="es">' + esc(LABEL_HE[CLOCK.status]) + '</span>';
   n.querySelector(".since").textContent = CLOCK.since ? hmsSince(CLOCK.since) : "0:00";
   n.querySelector(".sub").textContent = CLOCK.since ? "since " + fmtTime(CLOCK.since) + (CLOCK.note ? " · " + CLOCK.note : "") + (CLOCK.resting ? " · 10 h rest complete — a new day can start" : "") : "tap the status you are in";
+  // 19.10.2026 — Andre believed he tapped Off duty; the office never got it. The card switched to
+  // "Off duty" the moment he tapped (optimistic), so nothing told him it was still on his phone.
+  // Now the card says, in a way you cannot miss, whether the office has the tap.
+  var pend = document.getElementById("now-pending");
+  var mine = QUEUE.filter(function(b){ return b.kind === "hos_event" && b.driver === DRIVER; });
+  if (mine.length){
+    pend.className = "now-pending wait";
+    pend.innerHTML = "⏳ NOT SENT YET — keep this page open until it says ✓ received" + '<span class="es">עוד לא נשלח למשרד — אל תסגור את הדף עד שיופיע ✓ התקבל</span>';
+  } else if (LAST_ACK && Date.now() - LAST_ACK.t < 10 * 60000){
+    pend.className = "now-pending ok";
+    pend.innerHTML = "✓ Received by the office · " + esc(LAST_ACK.label) + " " + fmtTime(LAST_ACK.at) + '<span class="es">התקבל במשרד</span>';
+  } else { pend.className = "now-pending"; pend.innerHTML = ""; }
   document.querySelectorAll(".stbtn").forEach(function(b){ b.classList.toggle("cur", b.classList.contains(CLOCK.status)); });
 }
 // countdown between refreshes: the Worker gave absolute moments (due.*) and minutes (left.*)
@@ -435,7 +453,7 @@ async function placeName(p){
 function loadQueue(){ try{ QUEUE = JSON.parse(ls("hos_queue")||"[]"); }catch(e){ QUEUE=[]; } }
 function saveQueue(){ ls("hos_queue", JSON.stringify(QUEUE)); syncLine(); }
 function syncLine(){ document.getElementById("sync-line").innerHTML = QUEUE.length ? '<b>⏳ ' + QUEUE.length + ' not sent yet</b> — retrying' : '✓ synced'; }
-var FLUSHING = false;
+var FLUSHING = false, LAST_ACK = null;
 async function flush(){
   if (FLUSHING || !QUEUE.length) return; FLUSHING = true;
   var touched = false;
@@ -451,8 +469,10 @@ async function flush(){
         load().catch(function(){}); continue;   // refused for good; the page re-reads the truth
       }
       if (!r.ok || !j || !j.ok) throw new Error((j&&j.error)||("server " + r.status));
-      if (j.clock){ CLOCK = j.clock; if (S) S.now = new Date().toISOString(); renderNow(); renderLimits(); }
+      if (j.clock){ CLOCK = j.clock; if (S) S.now = new Date().toISOString(); }
       QUEUE.shift(); saveQueue(); touched = true;
+      if (b.kind === "hos_event") LAST_ACK = { t: Date.now(), at: b.at, label: LABEL[b.status] || b.status };
+      renderNow(); renderLimits();
     }
     syncLine();
   }catch(e){ document.getElementById("sync-line").innerHTML = '<b>⏳ ' + QUEUE.length + ' not sent</b> — ' + esc(e.message||e); }
@@ -618,7 +638,18 @@ startGps();
 setInterval(function(){ flush(); }, 20000);
 setInterval(function(){ renderNow(); renderLimits(); }, 1000);
 setInterval(function(){ if (document.visibilityState==="visible" && !QUEUE.length) load().catch(function(){}); }, 60000);
-document.addEventListener("visibilitychange", function(){ if (document.visibilityState==="visible"){ flush(); load().catch(function(){}); } });
+document.addEventListener("visibilitychange", function(){ if (document.visibilityState==="visible"){ flush(); load().catch(function(){}); } else beaconQueue(); });
+window.addEventListener("pagehide", beaconQueue);
+// 19.10.2026 — a fetch started just before the driver switches to his driving app is often killed
+// with the page. sendBeacon is the one request the browser finishes after the page is gone. The
+// taps STAY queued (a beacon has no answer); when the page opens again they are sent normally and
+// the Worker drops the copy — same driver, same status, same time = a duplicate (2-minute rule).
+function beaconQueue(){
+  try{
+    if (!QUEUE.length || !navigator.sendBeacon) return;
+    QUEUE.slice(0, 5).forEach(function(b){ navigator.sendBeacon(WORKER, new Blob([JSON.stringify(b)], { type:"text/plain" })); });
+  }catch(e){}
+}
 </script>
 </body>
 </html>
