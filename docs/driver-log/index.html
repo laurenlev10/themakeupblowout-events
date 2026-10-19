@@ -177,7 +177,8 @@
   </div>
 
   <div class="card" id="head-card">
-    <details id="head-details"><summary><div>🚚 Today's trip <span class="es">הנסיעה של היום</span><div id="head-sum" class="todo">Not filled yet — tap to fill · עוד לא מולא — לחץ למילוי</div></div><span class="chev"><span class="closed">▼ Open · פתח</span><span class="opened">▲ Close · סגור</span></span></summary>
+    <div id="wd-banner" class="banner warn" style="display:none;margin:0 0 8px"></div>
+    <details id="head-details"><summary><div>🚚 Trip · <span id="wd-trip">Today</span> <span class="es">פרטי הנסיעה</span><div id="head-sum" class="todo">Not filled yet — tap to fill · עוד לא מולא — לחץ למילוי</div></div><span class="chev"><span class="closed">▼ Open · פתח</span><span class="opened">▲ Close · סגור</span></span></summary>
       <label>Truck no. / plate</label><input id="h-truck" placeholder="plate or unit no." oninput="tripChanged()">
       <div class="two"><div style="flex:1"><label>Odometer at start</label><input id="h-odo_start" inputmode="numeric" placeholder="miles"></div><div style="flex:1"><label>Odometer at end</label><input id="h-odo_end" inputmode="numeric" placeholder="miles"></div></div>
       <label>To — where are you driving? · לאן נוסעים?</label><div class="chips" id="to-chips"></div><input id="h-to" placeholder="or type: city, state · או תקליד" oninput="tripChanged()">
@@ -190,7 +191,7 @@
   </div>
 
   <div class="card" id="today-card">
-    <h2>📊 Today's grid <span class="es">הרשת של היום</span></h2>
+    <h2>📊 Grid · <span id="wd-grid">Today</span> <span class="es">הרשת של היום</span></h2>
     <div class="grid" id="grid"></div>
     <div id="totals" class="note"></div>
     <div class="rem" id="remarks"></div>
@@ -267,7 +268,16 @@ function render(){
   document.getElementById("hdr-sub").textContent = (s.carrier || "The Makeup Blowout Sale") + " · " + S.today + " · " + (s.home_terminal_tz === "America/Los_Angeles" ? "Pacific time" : s.home_terminal_tz);
   banner(OFFLINE ? "📵 No connection — showing the log as last loaded " + fmtTime(OFFLINE) + ". Taps are saved on this phone with their time and sent when the signal is back." : "", "warn");
   renderNow(); renderLimits(); renderTrack();
-  var td = (S.days||[])[0];
+  var td = workDay();
+  WD_DATE = td ? td.date : S.today;
+  var isToday = !td || td.date === S.today;
+  var dLabel = isToday ? "Today" : dayName(td.date);
+  document.getElementById("wd-trip").textContent = dLabel;
+  document.getElementById("wd-grid").textContent = dLabel;
+  document.getElementById("btn-cert").innerHTML = "✍️ Sign &amp; certify " + esc(isToday ? "today" : dayName(td.date)) + " · חתום";
+  var wb = document.getElementById("wd-banner");
+  wb.style.display = isToday ? "none" : "block";
+  if (!isToday) wb.innerHTML = "📅 " + esc(dayName(td.date)) + " is not signed yet — the trip details and signature below are for that day." + '<span class="es">היום של ' + esc(td.date) + ' עוד לא חתום — פרטי הנסיעה והחתימה למטה שייכים ליום ההוא.</span>';
   if (td && td.day){
     document.getElementById("grid").innerHTML = td.svg;
     var t = td.day.totals || {};
@@ -275,10 +285,25 @@ function render(){
     document.getElementById("remarks").innerHTML = (td.day.remarks||[]).map(function(r){ return "<b>" + esc(r.hhmm) + "</b> " + esc(LABEL[r.status]) + (r.place ? " — " + esc(r.place) : "") + (r.lat != null ? ' <a href="https://maps.google.com/?q=' + r.lat + ',' + r.lng + '" target="_blank" rel="noopener">🗺️</a>' : '') + (r.note ? " <i>(" + esc(r.note) + ")</i>" : "") + (r.late ? ' <span class="pill">late entry</span>' : ""); }).join("<br>") || '<span class="empty">No entries yet today.</span>';
     fillHeader(td.header || {});
     var cl = document.getElementById("cert-line");
-    if (td.header && td.header.certified_at){ cl.innerHTML = "✅ Today's log was certified at " + esc(fmtTime(td.header.certified_at)) + ". Signing again replaces the signature."; }
+    if (td.header && td.header.certified_at){ cl.innerHTML = "✅ " + esc(isToday ? "Today's" : dayName(td.date) + "'s") + " log was certified at " + esc(fmtTime(td.header.certified_at)) + ". Signing again replaces the signature."; }
     else cl.textContent = "";
   }
 }
+// 19.10.2026 — Andre drove 18.10 evening, opened the page the next morning, filled the odometer and
+// signed: it all went to 19.10 (the page always saved "today"), and the day he drove stayed unsigned.
+// The day the trip card and the signature belong to = the OLDEST of the last 3 days that has
+// driving / on-duty time and no signature; when every such day is signed, today.
+var WD_DATE = null;
+function workDay(){
+  var days = (S && S.days) || [], today = days[0] || null;
+  var open = days.filter(function(x){
+    var t = (x.day && x.day.totals) || {};
+    var ageDays = (Date.parse(S.today + "T12:00:00") - Date.parse(x.date + "T12:00:00")) / 86400000;
+    return ageDays <= 2 && ((t.d||0) + (t.on||0)) > 0 && !(x.header && x.header.certified_at);
+  });
+  return open.length ? open[open.length - 1] : today;
+}
+function dayName(date){ try{ return new Date(date + "T12:00:00").toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" }); }catch(e){ return date; } }
 function renderNow(){
   var n = document.getElementById("now");
   if (!CLOCK){ n.className = "now off"; return; }
@@ -490,7 +515,7 @@ function fillHeader(h){
 }
 async function saveHeader(quiet){
   var d = driverName(); if (!d){ alert("Please type your name first."); return; }
-  var body = { kind:"hos_day", driver:d };
+  var body = { kind:"hos_day", driver:d, date: WD_DATE || undefined };
   HFIELDS.forEach(function(k){ body[k] = document.getElementById("h-" + k).value.trim(); });
   ls("hos_truck", body.truck);
   var out = document.getElementById("head-saved");
@@ -517,7 +542,7 @@ async function certify(){
   if (!(await saveHeader(true))) return;
   var btn = document.getElementById("btn-cert"); btn.disabled = true;
   try{
-    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"hos_day", driver:d, certify:true, signature:{ w:400, h:120, strokes: STROKES.map(function(s){ return s.filter(function(_,i){ return i % 2 === 0 || i === s.length-1; }); }) } }) });
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"hos_day", driver:d, date: WD_DATE || undefined, certify:true, signature:{ w:400, h:120, strokes: STROKES.map(function(s){ return s.filter(function(_,i){ return i % 2 === 0 || i === s.length-1; }); }) } }) });
     var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
     document.getElementById("cert-line").textContent = "✅ Certified " + fmtTime(new Date().toISOString()) + ". Eli got the day's totals.";
     clearPad(); load().catch(function(){});
@@ -594,7 +619,7 @@ function judgeMotion(now){
 var UNCERT_NUDGED = "";
 function judgeCertification(){
   if (!CLOCK || !S || !DRIVER || CLOCK.status !== "off" || !CLOCK.since) return;
-  var td = (S.days||[])[0]; if (!td || !td.day) return;
+  var td = workDay(); if (!td || !td.day) return;                                  // the day that needs signing (19.10)
   var t = td.day.totals || {}; if (!((t.d||0) + (t.on||0))) return;               // nothing to sign
   if (td.header && td.header.certified_at) return;
   var offMin = (Date.now() - Date.parse(CLOCK.since)) / 60000;
