@@ -102,6 +102,12 @@
     <div class="note">קודם בוחרים מה העבודה, ואז לוחצים "הגעתי". המיקום של הטלפון נשמר עם הלחיצה.<span class="en">Pick the task first, then tap "Clock in". The phone's position is saved with the tap.</span></div>
   </div>
 
+  <div class="card" id="note-card">
+    <label>הערה על המשמרת (לא חובה) <span class="en">A note about the shift (optional)</span></label>
+    <textarea id="note" rows="2" maxlength="160" placeholder="למשל: סיימתי את כל ה-Mystery Box, נשארו 3 ארגזים של ULINE"></textarea>
+    <div class="note">נשלח עם הלחיצה הבאה (הגעתי / יצאתי) ולורן רואה אותו ליד המשמרת.<span class="en">Sent with your next tap; Lauren sees it next to the shift.</span></div>
+  </div>
+
   <div class="card" id="out-card">
     <button class="btn big out" id="btn-out" onclick="tap('out')">🏁 יצאתי · Clock out</button>
     <details id="late-box" style="margin-top:10px"><summary>⏱ שכחת ללחוץ? זה קרה קודם… <span class="en">Forgot to tap? It happened earlier…</span></summary>
@@ -197,7 +203,8 @@ function render(){
   var days = S.days || [];
   document.getElementById("days").innerHTML = days.length ? days.map(function(d){
     return '<div class="day"><b>' + esc(fmtDay(d.date)) + '</b> — <b>' + hm(d.minutes) + '</b>' + d.shifts.map(function(s){
-      return '<div class="note">' + esc(taskLabel(s.task)) + ': ' + esc(s.in_hhmm || "?") + ' → ' + (s.open ? '<span class="pill">עדיין בעבודה</span>' : esc(s.out_hhmm || "?")) +
+      var notes = [s.in && s.in.note, s.out && s.out.note].filter(Boolean).map(esc).join(" · ");
+      return '<div class="note">' + esc(taskLabel(s.task)) + ': ' + esc(s.in_hhmm || "?") + ' → ' + (s.open ? '<span class="pill">עדיין בעבודה</span>' : esc(s.out_hhmm || "?")) + (notes ? ' 💬 ' + notes : '') + (s.open ? '' : (s.paid ? ' <span class="pill" style="background:#dcfce7;color:#166534">שולם</span>' : '')) +
         (s.flags.indexOf("no_out") >= 0 ? ' <span class="pill bad">בלי יציאה — לא נספר</span>' : '') + (s.flags.indexOf("no_in") >= 0 ? ' <span class="pill bad">יציאה בלי כניסה</span>' : '') + (s.flags.indexOf("too_long") >= 0 ? ' <span class="pill bad">יותר מ-' + ((S.settings && S.settings.max_shift_h) || 12) + ' שעות?</span>' : '') + '</div>';
     }).join("") + '</div>';
   }).join("") : '<div class="empty">עדיין אין שעות רשומות.</div>';
@@ -226,7 +233,8 @@ async function tap(k){
   if (SUM && SUM.status === (k === "in" ? "in" : "out") && !LATE_AT){ return; }
   var at = LATE_AT ? new Date(LATE_AT).toISOString() : new Date().toISOString();
   var late = !!LATE_AT; clearLate();
-  var body = { kind:"wh_event", worker:d, tap:k, at:at, late:late, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null };
+  var note = document.getElementById("note").value.trim(); document.getElementById("note").value = "";
+  var body = { kind:"wh_event", worker:d, tap:k, at:at, late:late, note:note, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null };
   if (k === "in") body.task = TASK;
   // optimistic: the card changes now; the Worker's answer is the record
   SUM = Object.assign({}, SUM || { today:{minutes:0}, week:{minutes:0}, prev_week:{minutes:0}, month:{minutes:0} }, { status: k, since: at, open_task: k === "in" ? TASK : null });
