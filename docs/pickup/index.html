@@ -221,12 +221,12 @@ function report(ev, vendorId, auto){
   // the first Navigate / Arrived of the day starts the route by itself.
   if (!DRIVER) DRIVER = "Driver";
   if (ev !== "started" && ev !== "done" && !EVENTS.some(function(e){ return e.event === "started"; })) report("started", "", true);
-  var body = { kind:"pickup_event", event:ev, vendor_id:vendorId||"", driver:DRIVER, plan_date:PLAN.plan.date||"", auto:!!auto,
+  var body = { kind:"pickup_event", event:ev, vendor_id:vendorId||"", driver:DRIVER, auto:!!auto,
                lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, _at: new Date().toISOString() };
   // optimistic: the list updates now; the Worker's answer (or the retry) is the record
   if (ev==="navigate") ping(true);
-  if (ev!=="navigate") EVENTS.push({ at: body._at, plan_date: body.plan_date, vendor_id: vendorId, event: ev, driver: DRIVER, auto: !!auto });
-  if (ev==="navigate" && !EVENTS.some(function(e){ return e.event==="navigate" && e.vendor_id===vendorId; })) EVENTS.push({ at: body._at, plan_date: body.plan_date, vendor_id: vendorId, event: ev, driver: DRIVER, auto: !!auto });
+  if (ev!=="navigate") EVENTS.push({ at: body._at, vendor_id: vendorId, event: ev, driver: DRIVER, auto: !!auto });
+  if (ev==="navigate" && !EVENTS.some(function(e){ return e.event==="navigate" && e.vendor_id===vendorId; })) EVENTS.push({ at: body._at, vendor_id: vendorId, event: ev, driver: DRIVER, auto: !!auto });
   render();
   QUEUE.push(body); saveQueue(); flush();
 }
@@ -293,7 +293,7 @@ function ping(force){
   if (!force && (now - LAST_PING.at < 30000 || !moved)) return;
   if (document.visibilityState !== "visible" && !force) return;
   LAST_PING = { at: now, lat: POS.lat, lng: POS.lng };
-  var body = { kind:"pickup_ping", driver: driverValue(), lat: POS.lat, lng: POS.lng, acc: POS.acc, plan_date: PLAN.plan.date || "" };
+  var body = { kind:"pickup_ping", driver: driverValue(), lat: POS.lat, lng: POS.lng, acc: POS.acc };
   var data = JSON.stringify(body);
   // sendBeacon survives the hand-off to Waze; fetch is the fallback. text/plain keeps the
   // beacon a simple request (no preflight) — the Worker parses the body as JSON either way.
