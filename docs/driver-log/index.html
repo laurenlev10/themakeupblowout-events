@@ -130,6 +130,12 @@
 <div class="wrap">
   <div id="alerts"></div>
   <div id="banner" class="banner info" style="display:none"></div>
+  <!-- 20.10.2026 — the hours sheet (/warehouse-hours/) is asked, never assumed: Start trip → "clock in as
+       LONG DISTANCE?"; signing the day → "clock out?". Same shape as the pickup page. -->
+  <div id="wh-ask" class="banner" style="display:none;background:#ccfbf1;border-color:#5eead4;color:#134e4a">
+    <div id="wh-ask-text" style="font-size:15px"></div>
+    <div class="two" style="margin-top:8px"><button class="btn sm" style="background:#15803d" id="wh-yes" onclick="whAnswer(true)">✅</button><button class="btn sec sm" onclick="whAnswer(false)">לא · No</button></div>
+  </div>
 
   <div class="card" id="who-card">
     <label>Who is driving? <span class="es">מי נוהג?</span></label>
@@ -248,6 +254,9 @@ var LABEL = { off: "Off duty", sb: "Sleeper berth", d: "Driving", on: "On duty (
 var LABEL_HE = { off: "לא בתפקיד", sb: "שינה בתא", d: "נוהג", on: "בתפקיד (לא נוהג)" };
 var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
 function ls(k, v){ try{ if (v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
+// 20.10.2026 — the crew hub (/work/) hands the name over as ?name=…; it is saved under EVERY page's key
+// (hos_driver · pickup_driver · wh_worker) so the three sheets agree on who he is (Lauren: "סינכרון בין כולם").
+function sharedName(){ try{ var q = new URLSearchParams(location.search).get("name"); if (q){ q = q.trim(); ["hos_driver","pickup_driver","wh_worker","crew_name"].forEach(function(k){ ls(k, q); }); return q; } }catch(e){} return ls("crew_name") || ""; }
 function hm(min){ min = Math.max(0, Math.round(min)); return Math.floor(min/60) + "h " + String(min%60).padStart(2,"0") + "m"; }
 function hmsSince(iso){ var s = Math.max(0, Math.floor((Date.now() - Date.parse(iso))/1000)); return Math.floor(s/3600) + ":" + String(Math.floor(s%3600/60)).padStart(2,"0"); }
 function fmtTime(iso){ try{ return new Date(iso).toLocaleTimeString("en-US",{timeZone:(S&&S.settings&&S.settings.home_terminal_tz)||"America/Los_Angeles",hour:"numeric",minute:"2-digit"}); }catch(e){ return iso; } }
@@ -267,7 +276,7 @@ async function loadRoster(){
     if (!S){ S = j; renderDests(); renderChips(); }
     if (j.settings) ls("hos_settings_cache", JSON.stringify(j.settings));
   }catch(e){ try{ names = JSON.parse(ls("hos_roster") || "[]"); }catch(x){ names = []; } }
-  var cur = ls("hos_driver") || "";
+  var cur = sharedName() || ls("hos_driver") || "";
   sel.innerHTML = '<option value="">בחר שם · pick your name</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
   if (!names.length) banner("⚠️ The driver list could not be loaded and this phone has none saved — call Eli.", "warn");
 }
@@ -515,6 +524,31 @@ async function startTrip(){
   } finally { btn.disabled = false; }
   document.getElementById("head-details").open = false;
   renderTripOk();
+  whAsk("in", to);
+}
+// ── the warehouse hours sheet: ask, never assume (Lauren 20.10) ─────────────
+var WH_PENDING = null;
+function whAsk(kind, to){
+  if (!driverName()) return;
+  WH_PENDING = kind;
+  document.getElementById("wh-ask-text").innerHTML = kind === "in"
+    ? "🏭 <b>יצאת לנסיעה" + (to ? " ל-" + esc(to) : "") + " — לרשום גם בלוג שעות העבודה (LONG DISTANCE)?</b><span class=\"es\" style=\"direction:ltr;text-align:left\">Trip started — also clock in on the work-hours sheet as LONG DISTANCE?</span>"
+    : "🏁 <b>סיימת את יום העבודה? לרשום \"יצאתי\" בלוג שעות העבודה?</b><span class=\"es\" style=\"direction:ltr;text-align:left\">Done for today — clock out on the work-hours sheet?</span>";
+  document.getElementById("wh-yes").textContent = kind === "in" ? "כן, רשום הגעתי · Yes" : "כן, רשום יצאתי · Yes";
+  document.getElementById("wh-ask").style.display = "block";
+  try{ if (navigator.vibrate) navigator.vibrate([200,100,200]); }catch(e){}
+}
+function whAnswer(yes){
+  document.getElementById("wh-ask").style.display = "none";
+  var kind = WH_PENDING; WH_PENDING = null;
+  if (!yes || !kind) return;
+  var body = { kind:"wh_event", worker: driverName(), tap: kind, at: new Date().toISOString(), note: kind === "in" ? "מיומן הנהג (Start trip)" : "מיומן הנהג (חתימה על היום)",
+               lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null };
+  if (kind === "in"){ body.task = "long_distance"; body.switch = true; }
+  fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body) })
+    .then(function(r){ return r.json().then(function(j){ return { ok: r.ok && j.ok, j: j }; }); })
+    .then(function(x){ banner(x.ok ? (kind === "in" ? "🏭 נרשם \"הגעתי\" (LONG DISTANCE) בשעות העבודה" : "🏁 נרשם \"יצאתי\" בשעות העבודה") : "⚠️ לא נרשם בשעות העבודה: " + (x.j && x.j.error || "") + " — תגיד ללורן", x.ok ? "info" : "warn"); })
+    .catch(function(){ banner("⚠️ לא נרשם בשעות העבודה (אין קליטה) — רשום בדף שעות העבודה כשיש אות", "warn"); });
 }
 async function arriveTrip(){
   var to = tv("to");
@@ -663,6 +697,7 @@ async function certify(){
     var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
     document.getElementById("cert-line").textContent = "✅ Certified " + fmtTime(new Date().toISOString()) + ". Eli got the day's totals.";
     clearPad(); load().catch(function(){});
+    whAsk("out");
   }catch(e){ document.getElementById("cert-line").textContent = "❌ Not certified: " + (e.message||e); }
   finally{ btn.disabled = false; }
 }

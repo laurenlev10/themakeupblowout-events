@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="עבודה">
+<title>Makeup Blowout — העבודה שלי · My work</title>
+<!--
+  events.themakeupblowout.com/work/ — the crew member's home screen (20.10.2026).
+  Lauren: "אני רוצה שליונתן יהיה דף… כפתורים בתפריט הראשי: LONG DISTANCE · MYSTERY BOX · PICKUP DAY — וכל
+  אחד מהכפתורים מוביל אותו לדף הנכון, כדי שהוא ישמור בדף הבית שלו… ושיהיה סינכרון בין כולם".
+  One page to save to the phone's home screen. He picks his name ONCE here; every button hands it
+  to the right sheet as ?name=… (and the job as ?task=…), and each sheet saves it under its own key,
+  so the three records (driver log · pickup day · warehouse hours) agree on who he is. The status
+  card is what the danielle Worker answers (kind get_warehouse_hours) — nothing is computed here.
+  No credential lives here (IRON RULE #32).
+-->
+<style>
+  :root{ --ink:#1f2937; --muted:#6b7280; --bg:#f3f5f9; --line:#e5e7eb; --in:#0f766e; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,"Heebo",Arial,sans-serif;-webkit-text-size-adjust:100%}
+  .hdr{background:#111827;color:#fff;padding:16px;text-align:center}
+  .hdr h1{margin:0;font-size:20px;font-weight:900}
+  .hdr p{margin:4px 0 0;font-size:12.5px;opacity:.85}
+  .wrap{max-width:520px;margin:0 auto;padding:14px 12px 40px}
+  .card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:12px}
+  label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin:0 0 4px}
+  select{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:18px;font-weight:800;font-family:inherit;background:#fafafa}
+  .menu{display:grid;gap:12px;margin-top:4px}
+  .go{display:flex;align-items:center;gap:14px;border:0;border-radius:18px;padding:18px 16px;min-height:88px;color:#fff;text-decoration:none;font-family:inherit;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  .go .ic{font-size:34px;line-height:1}
+  .go .t{font-size:20px;font-weight:900}
+  .go .s{font-size:13px;opacity:.9;margin-top:2px}
+  .go.ld{background:linear-gradient(135deg,#1e3a8a,#1d4ed8)}
+  .go.mb{background:linear-gradient(135deg,#9d174d,#ec4899)}
+  .go.pk{background:linear-gradient(135deg,#5b21b6,#7c3aed)}
+  .go.wh{background:linear-gradient(135deg,#134e4a,#0f766e);min-height:64px}
+  .go.wh .t{font-size:17px}
+  .go[aria-disabled="true"]{opacity:.45;pointer-events:none}
+  .now{border-radius:14px;padding:12px 14px;color:#fff;background:#64748b;font-weight:800;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .now.in{background:var(--in)}
+  .now small{font-weight:600;opacity:.9;display:block;font-size:12px}
+  .note{font-size:12.5px;color:var(--muted);line-height:1.45}
+  .en{display:block;font-size:11.5px;opacity:.8;direction:ltr;text-align:left}
+</style>
+</head>
+<body>
+<div class="hdr"><h1>👷 העבודה שלי</h1><p id="hdr-sub">The Makeup Blowout Sale · My work</p></div>
+<div class="wrap">
+  <div class="card">
+    <label>מי אתה? <span class="en">Who are you?</span></label>
+    <select id="who" onchange="whoChanged()"><option value="">בחר שם · pick your name</option></select>
+    <div id="now" class="now" style="margin-top:10px;display:none"></div>
+  </div>
+
+  <div class="menu" id="menu">
+    <a class="go ld" id="go-ld" href="../driver-log/"><span class="ic">🚛</span><span><div class="t">LONG DISTANCE</div><div class="s">נסיעה ארוכה · יומן הנהג (DOT) — נוהג / בתפקיד / לא בתפקיד</div></span></a>
+    <a class="go mb" id="go-mb" href="../warehouse-hours/?task=mystery_box"><span class="ic">🎁</span><span><div class="t">MYSTERY BOX</div><div class="s">הגעתי / יצאתי — השעות נרשמות על Mystery Box</div></span></a>
+    <a class="go pk" id="go-pk" href="../pickup/"><span class="ic">🚚</span><span><div class="t">PICKUP DAY</div><div class="s">יום איסוף — העצירות, הניווט, והשעות נרשמות מזה</div></span></a>
+    <a class="go wh" id="go-wh" href="../warehouse-hours/?task=warehouse"><span class="ic">🏭</span><span><div class="t">עבודה במחסן · שעות</div><div class="s">כל שאר העבודה — הגעתי / יצאתי</div></span></a>
+  </div>
+
+  <div class="card">
+    <div class="note">💡 שמור את הדף הזה למסך הבית: שיתוף → "הוסף למסך הבית". בוחרים שם פעם אחת — כל הדפים מכירים אותך.<span class="en">Save this page to your home screen: Share → "Add to Home Screen". Pick your name once — every page knows you.</span></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+var WORKER = "https://danielle.laurenlev10.workers.dev/";
+var NAME = "", S = null;
+var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+function ls(k, v){ try{ if (v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
+function hm(min){ min = Math.max(0, Math.round(min)); return Math.floor(min/60) + ":" + String(min%60).padStart(2,"0"); }
+function fmtTime(iso){ try{ return new Date(iso).toLocaleTimeString("he-IL",{timeZone:(S&&S.settings&&S.settings.tz)||"America/Los_Angeles",hour:"2-digit",minute:"2-digit"}); }catch(e){ return iso; } }
+// the one name: ?name= in the URL, else what any of the sheets saved last
+function initialName(){
+  try{ var q = new URLSearchParams(location.search).get("name"); if (q) return q.trim(); }catch(e){}
+  return ls("crew_name") || ls("wh_worker") || ls("hos_driver") || ls("pickup_driver") || "";
+}
+function setName(n){
+  NAME = n; ["crew_name","hos_driver","pickup_driver","wh_worker"].forEach(function(k){ ls(k, n); });
+  var q = n ? "name=" + encodeURIComponent(n) : "";
+  document.getElementById("go-ld").href = "../driver-log/" + (q ? "?" + q : "");
+  document.getElementById("go-pk").href = "../pickup/" + (q ? "?" + q : "");
+  document.getElementById("go-mb").href = "../warehouse-hours/?task=mystery_box" + (q ? "&" + q : "");
+  document.getElementById("go-wh").href = "../warehouse-hours/?task=warehouse" + (q ? "&" + q : "");
+  document.querySelectorAll(".go").forEach(function(a){ a.setAttribute("aria-disabled", n ? "false" : "true"); });
+}
+function whoChanged(){ setName(document.getElementById("who").value.trim()); loadStatus(); }
+// the names: the driver list (DOT log) ∪ the warehouse workers — both from the Worker, nothing typed
+async function loadNames(){
+  var names = [];
+  try{
+    var rs = await Promise.all([
+      fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_warehouse_hours" }) }).then(function(r){ return r.json(); }),
+      fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_pickup_plan", driver:true }) }).then(function(r){ return r.json(); }) ]);
+    if (rs[0] && rs[0].ok){ S = rs[0]; names = names.concat((rs[0].settings && rs[0].settings.workers) || []); }
+    if (rs[1] && rs[1].ok && rs[1].drivers) names = names.concat(rs[1].drivers);
+    names = names.filter(function(n, i, a){ return n && n !== "DEMO" && a.indexOf(n) === i; });
+    if (names.length) ls("crew_names", JSON.stringify(names));
+  }catch(e){}
+  if (!names.length){ try{ names = JSON.parse(ls("crew_names") || "[]"); }catch(e){ names = []; } }
+  var cur = initialName();
+  document.getElementById("who").innerHTML = '<option value="">בחר שם · pick your name</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
+  setName(names.indexOf(cur) >= 0 ? cur : "");
+  if (!names.length) document.getElementById("hdr-sub").textContent = "⚠️ רשימת השמות לא נטענה — תתקשר ללורן";
+}
+async function loadStatus(){
+  var el = document.getElementById("now");
+  if (!NAME){ el.style.display = "none"; return; }
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_warehouse_hours", worker:NAME, days:1 }) });
+    var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+    S = j; var sm = j.summary, task = ((j.settings && j.settings.tasks) || []).filter(function(t){ return t.id === sm.open_task; })[0];
+    el.className = "now " + sm.status; el.style.display = "flex";
+    el.innerHTML = sm.status === "in"
+      ? '<span>🟢 בעבודה — ' + esc(task ? task.label : sm.open_task) + '<small>מאז ' + esc(fmtTime(sm.since)) + ' · ' + hm(sm.open_minutes) + '</small></span><span>היום ' + hm(sm.today.minutes) + '</span>'
+      : '<span>⚪ לא בעבודה<small>' + (sm.since ? 'יצאת ב-' + esc(fmtTime(sm.since)) : 'עוד לא לחצת היום') + '</small></span><span>היום ' + hm(sm.today.minutes) + '</span>';
+  }catch(e){ el.className = "now"; el.style.display = "flex"; el.innerHTML = '<span>⚠️ לא הצלחתי לקרוא את המצב<small>' + esc(e.message||e) + '</small></span>'; }
+}
+loadNames().then(loadStatus);
+setInterval(function(){ if (document.visibilityState === "visible") loadStatus(); }, 60000);
+document.addEventListener("visibilitychange", function(){ if (document.visibilityState === "visible") loadStatus(); });
+</script>
+</body>
+</html>

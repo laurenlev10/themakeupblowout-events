@@ -125,6 +125,9 @@ var AUTO_ARRIVE_SENT = {};           // vendor_id → true once the geofence fir
 var RADIUS = { house: 150, street: 600, none: 0 };
 var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
 function ls(k, v){ try{ if (v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
+// 20.10.2026 — the crew hub (/work/) hands the name over as ?name=…; it is saved under EVERY page's key
+// (hos_driver · pickup_driver · wh_worker) so the three sheets agree on who he is (Lauren: "סינכרון בין כולם").
+function sharedName(){ try{ var q = new URLSearchParams(location.search).get("name"); if (q){ q = q.trim(); ["hos_driver","pickup_driver","wh_worker","crew_name"].forEach(function(k){ ls(k, q); }); return q; } }catch(e){} return ls("crew_name") || ""; }
 function fmtTime(iso){ try{ return new Date(iso).toLocaleTimeString("en-US",{timeZone:"America/Los_Angeles",hour:"numeric",minute:"2-digit"}); }catch(e){ return iso; } }
 function meters(a,b){ var R=6371000,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180,x=Math.sin(dLat/2),y=Math.sin(dLng/2); var h=x*x+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*y*y; return 2*R*Math.asin(Math.sqrt(h)); }
 function wazeUrl(v){ return (v.lat!=null && v.geo_precision==="house") ? "https://waze.com/ul?ll=" + v.lat + "," + v.lng + "&navigate=yes" : "https://waze.com/ul?q=" + encodeURIComponent(v.address||v.name) + "&navigate=yes"; }
@@ -203,7 +206,7 @@ function render(){
 // ── reporting (the Worker logs + texts; a failed POST waits in localStorage) ──
 function driverValue(){ var sel = document.getElementById("driver"), free = document.getElementById("driver-free"); return (sel.style.display !== "none" ? sel.value : free.value).trim(); }
 function fillDrivers(names){
-  var sel = document.getElementById("driver"), free = document.getElementById("driver-free"), cur = ls("pickup_driver") || "";
+  var sel = document.getElementById("driver"), free = document.getElementById("driver-free"), cur = sharedName() || ls("pickup_driver") || "";
   if (!names || !names.length){ sel.style.display = "none"; free.style.display = ""; free.value = cur; return; }
   sel.innerHTML = '<option value="">pick your name · elige tu nombre</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
   sel.style.display = ""; free.style.display = "none";

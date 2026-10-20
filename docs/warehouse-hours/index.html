@@ -138,9 +138,12 @@
 <script>
 "use strict";
 var WORKER = "https://danielle.laurenlev10.workers.dev/";
-var S = null, SUM = null, NAME = "", POS = null, QUEUE = [], OFFLINE = false, TASK = "", TASKS = [];
+var S = null, SUM = null, NAME = "", POS = null, QUEUE = [], OFFLINE = false, TASK = "", TASKS = [], URL_TASK_USED = false;
 var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
 function ls(k, v){ try{ if (v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
+// 20.10.2026 — the crew hub (/work/) hands the name over as ?name=…; it is saved under EVERY page's key
+// (hos_driver · pickup_driver · wh_worker) so the three sheets agree on who he is (Lauren: "סינכרון בין כולם").
+function sharedName(){ try{ var q = new URLSearchParams(location.search).get("name"); if (q){ q = q.trim(); ["hos_driver","pickup_driver","wh_worker","crew_name"].forEach(function(k){ ls(k, q); }); return q; } }catch(e){} return ls("crew_name") || ""; }
 function hm(min){ min = Math.max(0, Math.round(min)); return Math.floor(min/60) + ":" + String(min%60).padStart(2,"0"); }
 function hmsSince(iso){ var s = Math.max(0, Math.floor((Date.now() - Date.parse(iso))/1000)); return Math.floor(s/3600) + ":" + String(Math.floor(s%3600/60)).padStart(2,"0"); }
 function tz(){ return (S && S.settings && S.settings.tz) || "America/Los_Angeles"; }
@@ -163,13 +166,15 @@ async function loadRoster(){
     ls("wh_roster", JSON.stringify({ names:names, tasks:TASKS }));
     if (!S) S = j;
   }catch(e){ try{ var c = JSON.parse(ls("wh_roster") || "{}"); names = c.names || []; TASKS = c.tasks || []; }catch(x){ names = []; } }
-  var cur = ls("wh_worker") || "";
+  var cur = sharedName() || ls("wh_worker") || "";
   sel.innerHTML = '<option value="">בחר שם · pick your name</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
   if (!names.length) banner("⚠️ רשימת העובדים לא נטענה ואין עותק בטלפון — תתקשר ללורן.\nThe worker list could not be loaded — call Lauren.", "warn");
   renderTasks();
 }
 function renderTasks(){
   if (!TASKS.length) TASKS = [{ id:"warehouse", label:"עבודה במחסן", en:"Warehouse work" }];
+  // ?task=mystery_box from the crew hub (/work/) preselects the job — until he picks another one here
+  try{ var qt = new URLSearchParams(location.search).get("task"); if (qt && !URL_TASK_USED && TASKS.some(function(t){ return t.id === qt; })){ TASK = qt; ls("wh_task", qt); URL_TASK_USED = true; } }catch(e){}
   if (!TASK || !TASKS.some(function(t){ return t.id === TASK; })) TASK = ls("wh_task") && TASKS.some(function(t){ return t.id === ls("wh_task"); }) ? ls("wh_task") : TASKS[0].id;
   document.getElementById("tasks").innerHTML = TASKS.map(function(t){ return '<button class="task' + (t.id===TASK?" sel":"") + '" type="button" onclick="pickTask(' + JSON.stringify(t.id).replace(/"/g,"&quot;") + ')">' + esc(t.label) + '<span class="en">' + esc(t.en||"") + '</span></button>'; }).join("");
 }
