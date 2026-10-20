@@ -670,8 +670,9 @@ async function certify(){
 // the inspector's first question is "which ELD is this?", and the answer is this page, not the grid.
 // openInspect('exempt') shows the statement alone.
 function openInspect(what){
-  if (!S){ alert("Not loaded yet."); return; }
-  if (!S.exemption){ alert("The exemption page is not available right now (server did not return it). Show the forms and call Eli."); return; }
+  if (!driverName()){ alert("Pick your name at the top first — the statement is yours (your log days).\nקודם בחר את השם שלך למעלה — הדף הוא שלך (ימי היומן שלך)."); document.getElementById("driver").focus(); return; }
+  if (!S || S.driver !== DRIVER){ alert("Still loading your log — try again in a moment.\nהיומן שלך עוד נטען — נסה שוב עוד רגע."); load().catch(function(){}); return; }
+  if (!S.exemption){ alert("The exemption page is not available right now (server did not return it). Show the forms and call Eli.\nדף הפטור לא זמין כרגע — תראה את היומן ותתקשר לאלי."); return; }
   if (what !== "exempt" && !(S.days && S.days.length)){ alert("No log days to show yet."); return; }
   if (!FORM_CSS_DONE){ var st = document.createElement("style"); st.textContent = S.form_css || ""; document.head.appendChild(st); FORM_CSS_DONE = true; }
   document.getElementById("forms").innerHTML = S.exemption + (what === "exempt" ? "" : S.days.map(function(d){ return d.form; }).join(""));
