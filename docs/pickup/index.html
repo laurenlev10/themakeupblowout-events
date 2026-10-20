@@ -89,17 +89,16 @@
     <div style="display:flex;gap:8px;margin-top:8px"><button class="btn ok" style="margin:0;min-height:46px;font-size:15px" id="wh-yes" onclick="whAnswer(true)">✅</button><button class="btn" style="margin:0;min-height:46px;font-size:15px;background:#eef0f4;color:#1f2937" onclick="whAnswer(false)">לא · No</button></div>
   </div>
 
-  <div class="card" id="who-card">
-    <label>Your name / Tu nombre (so Lauren knows who is driving)</label>
-    <!-- 20.10.2026 — a NAME FROM THE LIST (the DOT log's drivers, via the Worker), so the pickup day, the
-         driver log and the warehouse hours sheet can be linked by name. Falls back to a text box when
-         the list could not be loaded — a route with a typed name beats a route with no name. -->
-    <select id="driver" style="display:none"><option value="">pick your name · elige tu nombre</option></select>
-    <input id="driver-free" placeholder="e.g. Daniel" autocomplete="name">
-    <div class="note">Lauren and Eli get a text when you start, when you arrive at each vendor, and when you finish.<br>Lauren y Eli reciben un mensaje cuando empiezas, cuando llegas a cada proveedor y cuando terminas.</div>
-    <button class="btn ok" id="btn-start" onclick="startRoute()">🚚 Start route · Empezar ruta</button>
-    <div id="started-line" class="note" style="display:none"></div>
-    <div class="note" id="live-note">📡 While this page is open, Lauren's dashboard shows where you are on the map. Inside Waze the map pauses — come back to this page at each stop (or just tap the buttons).<br><span class="es">Mientras esta página está abierta, Lauren ve dónde estás en el mapa. Dentro de Waze el mapa se pausa — vuelve a esta página en cada parada.</span></div>
+  <!-- 20.10.2026 — Lauren: "צריכה להיות לחיצה על המיקום הראשון 'התחל נסיעה' ואז אני אקבל את הדיווח, לא
+       צריך גם וגם… היה חסר כפתור אחד מרכזי… כל ההסבר הזה מיותר". No start card, no explanations: the name
+       is one small row, and the ONE big button is "Go" on the next stop — its first tap starts the route
+       (the start text to Lauren, the clock-in question). -->
+  <div id="who-row" style="display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:14px;font-weight:700;color:var(--muted)">
+    <span>👤</span>
+    <!-- a NAME FROM THE LIST (the DOT log's drivers, via the Worker), so the pickup day, the driver log
+         and the warehouse hours sheet are linked by name; a text box when the list could not be loaded -->
+    <select id="driver" style="display:none;flex:1"><option value="">pick your name · elige tu nombre</option></select>
+    <input id="driver-free" placeholder="your name · tu nombre" autocomplete="name" style="flex:1">
   </div>
 
   <div class="card" id="next-card" style="display:none">
@@ -111,7 +110,6 @@
 
   <div class="card" id="finish-card" style="display:none">
     <button class="btn" id="btn-done" onclick="finishRoute()">🏁 Finish route · Terminar ruta</button>
-    <div class="note">Tap when the last pickup is loaded. Lauren gets a summary.</div>
   </div>
   <div class="note" style="text-align:center;margin-top:16px">Problem with the page? Call Lauren: <a href="tel:4243547625">(424) 354-7625</a></div>
 </div>
@@ -169,8 +167,6 @@ function render(){
   document.getElementById("hdr-sub").textContent = (p.title ? p.title + " · " : "") + (d || "no date") + " · " + STOPS.length + " stop" + (STOPS.length===1?"":"s");
   banner((OFFLINE ? "📵 No connection — showing the route as last loaded " + fmtTime(OFFLINE) + ". Taps are saved on this phone and sent when the signal is back.\n" : "") + (p.driver_note ? "📝 " + p.driver_note : ""));
   var started = EVENTS.filter(function(e){ return e.event==="started"; })[0];
-  var sl = document.getElementById("started-line");
-  if (started){ sl.style.display="block"; sl.textContent = "Route started " + fmtTime(started.at) + (started.driver?" by " + started.driver:""); document.getElementById("btn-start").textContent = "🚚 Start again (new driver) · Empezar de nuevo"; }
   if (!STOPS.length){ document.getElementById("stops").innerHTML = '<div class="empty">' + (RELEASED ? 'No pickups planned yet.<br>Lauren has not selected this week\'s vendors.<br><span class="es">Todavía no hay recogidas planeadas.</span>' : '⏳ The route is not released yet — Lauren is still reviewing the list.<br>Check back later or call her.<br><span class="es">La ruta todavía no está lista — Lauren la está revisando.</span>') + '</div>'; document.getElementById("next-card").style.display="none"; document.getElementById("finish-card").style.display="none"; return; }
   var html = "", nextV = null;
   STOPS.forEach(function(v, i){
@@ -196,8 +192,7 @@ function render(){
     document.getElementById("next-title").textContent = "➡️ Next stop · Siguiente: " + nextV.name;
     document.getElementById("next-body").innerHTML = '<div class="meta" style="font-size:14px">📍 ' + esc(nextV.address) + (nextV.contact?' · 👤 ' + esc(nextV.contact):'') + '</div>' +
       '<a class="btn" href="' + wazeUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">🧭 Go now — Waze · Ir ahora</a>' +
-      '<a class="btn sec sm" href="' + gmapsUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">🗺️ Google Maps instead</a>' +
-      '<div class="note">You can start from any vendor — the list below is Lauren\'s suggested order.<br>Puedes empezar por cualquier proveedor; la lista es el orden sugerido por Lauren.</div>';
+      '<div style="text-align:center;margin-top:6px;font-size:13px"><a href="' + gmapsUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">Google Maps</a></div>';
   } else nc.style.display = "none";
   var doneEv = EVENTS.filter(function(e){ return e.event==="done"; }).length;
   document.getElementById("finish-card").style.display = (started && !doneEv) ? "block" : "none";
@@ -220,7 +215,8 @@ function report(ev, vendorId, auto){
   // so nothing was texted. The buttons never block on the name (the record says "Driver"), and
   // the first Navigate / Arrived of the day starts the route by itself.
   if (!DRIVER) DRIVER = "Driver";
-  if (ev !== "started" && ev !== "done" && !EVENTS.some(function(e){ return e.event === "started"; })) report("started", "", true);
+  // 20.10.2026 — and that is now the ONLY start: no start button. The first tap also asks the clock-in.
+  if (ev !== "started" && ev !== "done" && !EVENTS.some(function(e){ return e.event === "started"; })) { report("started", "", true); whAsk("in"); }
   var body = { kind:"pickup_event", event:ev, vendor_id:vendorId||"", driver:DRIVER, auto:!!auto,
                lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, _at: new Date().toISOString() };
   // optimistic: the list updates now; the Worker's answer (or the retry) is the record
@@ -247,7 +243,6 @@ async function flush(){
   }catch(e){ document.getElementById("sync-line").innerHTML = '<b>⏳ ' + QUEUE.length + ' not sent</b> — ' + esc(e.message||e); }
   finally{ FLUSHING = false; }
 }
-function startRoute(){ report("started", ""); whAsk("in"); }
 // ── the warehouse hours sheet: ask, never assume ───────────────────────────────
 var WH_PENDING = null, WH_ASKED = { in:false, out:false, home:false };
 async function whAsk(kind){
