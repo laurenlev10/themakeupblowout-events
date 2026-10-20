@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="שעות עבודה">
+<title>Makeup Blowout — שעות עבודה · Work hours</title>
+<!--
+  events.themakeupblowout.com/warehouse-hours/ — the warehouse worker's time clock (20.10.2026).
+  Lauren: "אני צריכה לעקוב על השעות שהוא בא לעבוד במחסן" (Yonatan Ben Simon). Public on purpose:
+  no login, the worker opens it from the link Lauren sends, picks his name from the list
+  (never typed — one spelling per person), picks WHAT the shift is for (warehouse · pickup ·
+  mystery box · long-distance trip; Lauren 20.10: not Pro Task) and taps "הגעתי"; at the end
+  "יצאתי". Each tap goes to the danielle Worker (kind wh_event) with the phone's position; the
+  Worker is the ONLY writer of the record, and everything this page shows about hours — today,
+  this week, the pay — is COMPUTED BY THE WORKER (docs/_assets/wh.js, the one engine) and only
+  rendered here. No credential of any kind lives here (IRON RULE #32). A tap that cannot reach
+  the Worker waits in localStorage WITH ITS OWN TIME and is retried every 20 s — no signal does
+  not move the moment he arrived. Hebrew first (the worker reads Hebrew), English under it.
+-->
+<style>
+  :root{ --teal:#0f766e; --ink:#1f2937; --muted:#6b7280; --bg:#f3f5f9; --ok:#16a34a; --warn:#b45309; --bad:#b91c1c; --line:#e5e7eb; --in:#0f766e; --out:#64748b; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,"Heebo",Arial,sans-serif;-webkit-text-size-adjust:100%}
+  .hdr{background:linear-gradient(135deg,#134e4a 0%,#0f766e 100%);color:#fff;padding:14px 16px 12px;text-align:center}
+  .hdr h1{margin:0;font-size:19px;font-weight:900}
+  .hdr p{margin:4px 0 0;font-size:12.5px;opacity:.93}
+  .wrap{max-width:560px;margin:0 auto;padding:12px 12px 90px}
+  .card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:12px}
+  .card h2{margin:0 0 8px;font-size:15px}
+  label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin:8px 0 4px}
+  input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px;font-family:inherit;background:#fafafa}
+  select#worker{font-size:18px;font-weight:800;padding:12px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:13px;padding:14px;min-height:52px;font-size:17px;font-weight:900;cursor:pointer;background:var(--teal);color:#fff;text-decoration:none;margin-top:8px;font-family:inherit}
+  .btn.sec{background:#eef0f4;color:var(--ink)}
+  .btn.sm{padding:10px 8px;min-height:46px;font-size:15px;border-radius:10px}
+  .btn:disabled{opacity:.5}
+  .note{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+  .en{display:block;font-size:12px;font-weight:600;opacity:.8;direction:ltr;unicode-bidi:isolate;text-align:left}
+  .btn .en,.task .en{display:inline;margin-right:4px;text-align:inherit}
+  .banner{border-radius:12px;padding:10px 12px;font-size:14px;font-weight:800;margin-bottom:12px;white-space:pre-wrap}
+  .banner.warn{background:#fef3c7;border:1px solid #f59e0b;color:#92400e}
+  .banner.bad{background:#fee2e2;border:1px solid #dc2626;color:#991b1b;font-size:16px}
+  .banner.info{background:#ccfbf1;border:1px solid #5eead4;color:#134e4a;font-weight:700}
+  /* the status card */
+  .now{border-radius:16px;padding:16px;color:#fff;text-align:center;margin-bottom:12px}
+  .now .st{font-size:22px;font-weight:900}
+  .now .since{font-size:40px;font-weight:900;letter-spacing:1px;margin:4px 0;font-variant-numeric:tabular-nums;direction:ltr}
+  .now .sub{font-size:13px;opacity:.92}
+  .now.in{background:var(--in)} .now.out{background:var(--out)}
+  .now-pending{display:none;margin-top:10px;border-radius:12px;padding:10px 12px;font-weight:900;font-size:15px;line-height:1.35}
+  .now-pending.wait{display:block;background:#fef3c7;color:#92400e;border:2px solid #f59e0b;animation:pendpulse 1.4s ease-in-out infinite}
+  .now-pending.ok{display:block;background:#dcfce7;color:#166534}
+  @keyframes pendpulse{50%{opacity:.6}}
+  /* task choice */
+  .tasks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .task{border:2px solid var(--line);border-radius:14px;padding:12px 8px;font-weight:900;font-size:15px;background:#fff;cursor:pointer;min-height:60px;font-family:inherit;color:var(--ink);text-align:center}
+  .task.sel{border-color:var(--teal);background:#ccfbf1}
+  .task .en{font-size:11px;display:block}
+  .big{font-size:20px;min-height:64px}
+  .big.in{background:var(--in)} .big.out{background:#b45309}
+  /* totals */
+  .tot{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+  .tot div{background:#f6f7fb;border-radius:10px;padding:8px 10px}
+  .tot .l{font-size:12px;color:var(--muted);font-weight:800}
+  .tot .v{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums;direction:ltr;text-align:right}
+  .day{border-top:1px solid var(--line);padding:8px 0;font-size:14px}
+  .day b{font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800;background:#eef0f4;color:var(--ink);margin-inline-start:4px}
+  .pill.bad{background:#fee2e2;color:#991b1b} .pill.gps{background:#dcfce7;color:#166534} .pill.nogps{background:#fee2e2;color:#991b1b}
+  .empty{color:var(--muted);font-size:14px;text-align:center;padding:10px}
+  .foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 14px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+  details summary{cursor:pointer;font-weight:800;font-size:14px}
+  .two{display:flex;gap:8px}.two .btn{flex:1}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>🏭 שעות עבודה</h1>
+  <p id="hdr-sub">The Makeup Blowout Sale · טוען…</p>
+</div>
+<div class="wrap">
+  <div id="banner" class="banner info" style="display:none"></div>
+
+  <div class="card" id="who-card">
+    <label>מי עובד? <span class="en">Who is working?</span></label>
+    <select id="worker" onchange="workerChanged()"><option value="">בחר שם · pick your name</option></select>
+    <div class="note">השעות נרשמות על השם שלך. לורן מקבלת הודעה כשאתה מתחיל וכשאתה מסיים.<span class="en">The hours are kept under your name. Lauren gets a text when you start and when you finish.</span></div>
+  </div>
+
+  <div id="now" class="now out"><div class="st">לא בעבודה</div><div class="since">0:00</div><div class="sub">בחר מה אתה עושה ולחץ "הגעתי"</div>
+      <div id="now-pending" class="now-pending"></div></div>
+
+  <div class="card" id="in-card">
+    <h2>מה אתה עושה היום? <span class="en">What is this shift for?</span></h2>
+    <div class="tasks" id="tasks"></div>
+    <button class="btn big in" id="btn-in" onclick="tap('in')">🏭 הגעתי · Clock in</button>
+    <div class="note">קודם בוחרים מה העבודה, ואז לוחצים "הגעתי". המיקום של הטלפון נשמר עם הלחיצה.<span class="en">Pick the task first, then tap "Clock in". The phone's position is saved with the tap.</span></div>
+  </div>
+
+  <div class="card" id="out-card">
+    <button class="btn big out" id="btn-out" onclick="tap('out')">🏁 יצאתי · Clock out</button>
+    <details id="late-box" style="margin-top:10px"><summary>⏱ שכחת ללחוץ? זה קרה קודם… <span class="en">Forgot to tap? It happened earlier…</span></summary>
+      <div class="two" style="margin-top:8px"><button class="btn sec sm" onclick="setLate(15)">לפני 15 דק׳</button><button class="btn sec sm" onclick="setLate(30)">לפני 30 דק׳</button><button class="btn sec sm" onclick="setLate(60)">לפני שעה</button></div>
+      <label>או השעה המדויקת <span class="en">or the exact time</span></label>
+      <input type="time" id="late-time" onchange="lateFromTime()">
+      <div class="note" id="late-line"></div>
+      <div class="note">הלחיצה הבאה (הגעתי / יצאתי) תירשם בזמן הזה, ולורן תראה שהוזן באיחור.<span class="en">The next tap is recorded at that time, marked as a late entry.</span></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>השעות שלי <span class="en">My hours</span></h2>
+    <div class="tot" id="totals"><div class="empty" style="grid-column:1/3">👆 בחר את השם שלך למעלה</div></div>
+    <div id="days" style="margin-top:10px"></div>
+    <div class="note">כל החישוב נעשה במשרד; הדף רק מציג. טעות? תגיד ללורן — היא מתקנת מהדשבורד.<span class="en">Everything is computed by the office; this page only shows it. A mistake? Tell Lauren — she corrects it from her dashboard.</span></div>
+  </div>
+</div>
+<div class="foot"><span id="gps-line">📡 GPS: off</span><span id="sync-line"></span></div>
+
+<script>
+"use strict";
+var WORKER = "https://danielle.laurenlev10.workers.dev/";
+var S = null, SUM = null, NAME = "", POS = null, QUEUE = [], OFFLINE = false, TASK = "", TASKS = [];
+var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+function ls(k, v){ try{ if (v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
+function hm(min){ min = Math.max(0, Math.round(min)); return Math.floor(min/60) + ":" + String(min%60).padStart(2,"0"); }
+function hmsSince(iso){ var s = Math.max(0, Math.floor((Date.now() - Date.parse(iso))/1000)); return Math.floor(s/3600) + ":" + String(Math.floor(s%3600/60)).padStart(2,"0"); }
+function tz(){ return (S && S.settings && S.settings.tz) || "America/Los_Angeles"; }
+function fmtTime(iso){ try{ return new Date(iso).toLocaleTimeString("he-IL",{timeZone:tz(),hour:"2-digit",minute:"2-digit"}); }catch(e){ return iso; } }
+function fmtDay(d){ try{ return new Date(d + "T12:00:00").toLocaleDateString("he-IL",{weekday:"short",day:"numeric",month:"numeric"}); }catch(e){ return d; } }
+function money(n){ return "$" + Math.round(Number(n)||0).toLocaleString("en-US"); }
+function banner(msg, cls){ var b=document.getElementById("banner"); if(!msg){ b.style.display="none"; return; } b.textContent=msg; b.className="banner " + (cls||"info"); b.style.display="block"; }
+function workerName(){ NAME = document.getElementById("worker").value.trim(); ls("wh_worker", NAME); return NAME; }
+function workerChanged(){ workerName(); load().catch(function(){}); }
+function taskLabel(id){ var t = TASKS.filter(function(x){ return x.id === id; })[0]; return t ? t.label : id; }
+
+// ── the roster and the task list come from the settings (via the Worker), nothing typed ──
+async function loadRoster(){
+  var sel = document.getElementById("worker"), names = [];
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_warehouse_hours" }) });
+    var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+    names = (j.settings && j.settings.workers) || [];
+    TASKS = (j.settings && j.settings.tasks) || [];
+    ls("wh_roster", JSON.stringify({ names:names, tasks:TASKS }));
+    if (!S) S = j;
+  }catch(e){ try{ var c = JSON.parse(ls("wh_roster") || "{}"); names = c.names || []; TASKS = c.tasks || []; }catch(x){ names = []; } }
+  var cur = ls("wh_worker") || "";
+  sel.innerHTML = '<option value="">בחר שם · pick your name</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
+  if (!names.length) banner("⚠️ רשימת העובדים לא נטענה ואין עותק בטלפון — תתקשר ללורן.\nThe worker list could not be loaded — call Lauren.", "warn");
+  renderTasks();
+}
+function renderTasks(){
+  if (!TASKS.length) TASKS = [{ id:"warehouse", label:"עבודה במחסן", en:"Warehouse work" }];
+  if (!TASK || !TASKS.some(function(t){ return t.id === TASK; })) TASK = ls("wh_task") && TASKS.some(function(t){ return t.id === ls("wh_task"); }) ? ls("wh_task") : TASKS[0].id;
+  document.getElementById("tasks").innerHTML = TASKS.map(function(t){ return '<button class="task' + (t.id===TASK?" sel":"") + '" type="button" onclick="pickTask(' + JSON.stringify(t.id).replace(/"/g,"&quot;") + ')">' + esc(t.label) + '<span class="en">' + esc(t.en||"") + '</span></button>'; }).join("");
+}
+function pickTask(id){ TASK = id; ls("wh_task", id); renderTasks(); }
+
+// ── load: everything about hours comes from the Worker (wh.js runs there) ──
+async function load(){
+  var d = workerName();
+  if (!d){ document.getElementById("hdr-sub").textContent = "The Makeup Blowout Sale · בחר את השם שלך"; return; }
+  var j;
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_warehouse_hours", worker:d, days:14 }) });
+    j = await r.json();
+    if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+    ls("wh_cache_" + d, JSON.stringify({ j:j, at:new Date().toISOString() }));
+    OFFLINE = false;
+  }catch(e){
+    var c = null; try{ c = JSON.parse(ls("wh_cache_" + d)||"null"); }catch(x){}
+    if (!c) throw e;
+    j = c.j; OFFLINE = c.at;
+  }
+  S = j; SUM = j.summary;
+  if (j.settings && j.settings.tasks) { TASKS = j.settings.tasks; renderTasks(); }
+  render();
+}
+function render(){
+  if (!S) return;
+  document.getElementById("hdr-sub").textContent = "The Makeup Blowout Sale · " + S.today + " · " + ((S.settings && S.settings.warehouse && S.settings.warehouse.label) || "המחסן");
+  banner(OFFLINE ? "📵 אין קליטה — מוצג מה שנטען לאחרונה " + fmtTime(OFFLINE) + ". הלחיצות נשמרות בטלפון עם הזמן שלהן ונשלחות כשחוזרת הקליטה." : "", "warn");
+  renderNow();
+  if (!SUM) return;
+  var rate = SUM.rate;
+  document.getElementById("totals").innerHTML =
+    '<div><div class="l">היום · today</div><div class="v">' + hm(SUM.today.minutes) + (rate != null ? ' · ' + money(SUM.today.pay) : '') + '</div></div>' +
+    '<div><div class="l">השבוע · this week</div><div class="v">' + hm(SUM.week.minutes) + (rate != null ? ' · ' + money(SUM.week.pay) : '') + '</div></div>' +
+    '<div><div class="l">שבוע שעבר · last week</div><div class="v">' + hm(SUM.prev_week.minutes) + (rate != null ? ' · ' + money(SUM.prev_week.pay) : '') + '</div></div>' +
+    '<div><div class="l">החודש · this month</div><div class="v">' + hm(SUM.month.minutes) + (rate != null ? ' · ' + money(SUM.month.pay) : '') + '</div></div>';
+  var days = S.days || [];
+  document.getElementById("days").innerHTML = days.length ? days.map(function(d){
+    return '<div class="day"><b>' + esc(fmtDay(d.date)) + '</b> — <b>' + hm(d.minutes) + '</b>' + d.shifts.map(function(s){
+      return '<div class="note">' + esc(taskLabel(s.task)) + ': ' + esc(s.in_hhmm || "?") + ' → ' + (s.open ? '<span class="pill">עדיין בעבודה</span>' : esc(s.out_hhmm || "?")) +
+        (s.flags.indexOf("no_out") >= 0 ? ' <span class="pill bad">בלי יציאה — לא נספר</span>' : '') + (s.flags.indexOf("no_in") >= 0 ? ' <span class="pill bad">יציאה בלי כניסה</span>' : '') + (s.flags.indexOf("too_long") >= 0 ? ' <span class="pill bad">יותר מ-' + ((S.settings && S.settings.max_shift_h) || 12) + ' שעות?</span>' : '') + '</div>';
+    }).join("") + '</div>';
+  }).join("") : '<div class="empty">עדיין אין שעות רשומות.</div>';
+}
+function renderNow(){
+  var n = document.getElementById("now");
+  var st = SUM ? SUM.status : "out";
+  n.className = "now " + st;
+  n.querySelector(".st").innerHTML = st === "in" ? 'בעבודה — ' + esc(taskLabel(SUM.open_task)) + ' <span class="en">Clocked in</span>' : 'לא בעבודה <span class="en">Clocked out</span>';
+  n.querySelector(".since").textContent = (SUM && SUM.since) ? hmsSince(SUM.since) : "0:00";
+  n.querySelector(".sub").textContent = (SUM && SUM.since) ? (st === "in" ? "מאז " + fmtTime(SUM.since) : "יצאת ב-" + fmtTime(SUM.since)) : 'בחר מה אתה עושה ולחץ "הגעתי"';
+  document.getElementById("in-card").style.display = st === "in" ? "none" : "block";
+  document.getElementById("out-card").style.display = st === "in" ? "block" : "none";
+  // whether the office has the tap — a tap waiting on the phone is impossible to miss
+  var pend = document.getElementById("now-pending");
+  var mine = QUEUE.filter(function(b){ return b.kind === "wh_event" && b.worker === NAME; });
+  if (mine.length){ pend.className = "now-pending wait"; pend.innerHTML = "⏳ עוד לא נשלח למשרד — אל תסגור את הדף עד שיופיע ✓ התקבל<span class='en'>NOT SENT YET — keep the page open until it says received</span>"; }
+  else if (LAST_ACK && Date.now() - LAST_ACK.t < 10 * 60000){ pend.className = "now-pending ok"; pend.innerHTML = "✓ התקבל במשרד · " + esc(LAST_ACK.label) + " " + fmtTime(LAST_ACK.at) + "<span class='en'>Received by the office</span>"; }
+  else { pend.className = "now-pending"; pend.innerHTML = ""; }
+}
+
+// ── a tap ─────────────────────────────────────────────────────────────────
+async function tap(k){
+  var d = workerName();
+  if (!d){ alert("קודם בחר את השם שלך.\nPick your name first."); document.getElementById("worker").focus(); return; }
+  if (SUM && SUM.status === (k === "in" ? "in" : "out") && !LATE_AT){ return; }
+  var at = LATE_AT ? new Date(LATE_AT).toISOString() : new Date().toISOString();
+  var late = !!LATE_AT; clearLate();
+  var body = { kind:"wh_event", worker:d, tap:k, at:at, late:late, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null };
+  if (k === "in") body.task = TASK;
+  // optimistic: the card changes now; the Worker's answer is the record
+  SUM = Object.assign({}, SUM || { today:{minutes:0}, week:{minutes:0}, prev_week:{minutes:0}, month:{minutes:0} }, { status: k, since: at, open_task: k === "in" ? TASK : null });
+  renderNow();
+  QUEUE.push(body); saveQueue();
+  flush();
+}
+// a late entry: the worker picks when it really happened; the next tap carries that time
+var LATE_AT = null;
+function setLate(min){
+  if (!min){ clearLate(); return; }
+  LATE_AT = Date.now() - min * 60000;
+  document.getElementById("late-line").textContent = "⏱ הלחיצה הבאה תירשם בשעה " + fmtTime(new Date(LATE_AT).toISOString());
+  document.getElementById("in-card").style.display = "block"; document.getElementById("out-card").style.display = "block";
+}
+function lateFromTime(){
+  var v = document.getElementById("late-time").value; if (!v) return;
+  var now = new Date(), t = new Date(now); t.setHours(Number(v.slice(0,2)), Number(v.slice(3,5)), 0, 0);
+  if (t > now) t.setDate(t.getDate() - 1);          // "23:40" entered at 00:10 means last night
+  setLate(Math.max(1, Math.round((now - t) / 60000)));
+}
+function clearLate(){ LATE_AT = null; document.getElementById("late-line").textContent = ""; document.getElementById("late-time").value = ""; document.getElementById("late-box").open = false; }
+function loadQueue(){ try{ QUEUE = JSON.parse(ls("wh_queue")||"[]"); }catch(e){ QUEUE=[]; } }
+function saveQueue(){ ls("wh_queue", JSON.stringify(QUEUE)); syncLine(); renderNow(); }   // the "not sent yet" card changes the moment the queue does
+function syncLine(){ document.getElementById("sync-line").innerHTML = QUEUE.length ? '<b>⏳ ' + QUEUE.length + ' לא נשלח</b> — מנסה שוב' : '✓ מסונכרן'; }
+var FLUSHING = false, LAST_ACK = null;
+async function flush(){
+  if (FLUSHING || !QUEUE.length) return; FLUSHING = true;
+  var touched = false;
+  try{
+    while (QUEUE.length){
+      var b = QUEUE[0];
+      var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(b) });
+      var j = null; try{ j = await r.json(); }catch(e){}
+      if (r.status===400 || r.status===404){
+        QUEUE.shift(); saveQueue();
+        if (j && j.error) alert("לא נרשם: " + j.error + "\nNot recorded.");
+        load().catch(function(){}); continue;   // refused for good; the page re-reads the truth
+      }
+      if (!r.ok || !j || !j.ok) throw new Error((j&&j.error)||("server " + r.status));
+      if (j.summary) SUM = j.summary;
+      QUEUE.shift(); saveQueue(); touched = true;
+      LAST_ACK = { t: Date.now(), at: b.at, label: b.tap === "in" ? "הגעתי" : "יצאתי" };
+      if (j.far) banner("⚠️ הלחיצה נרשמה, אבל הטלפון מראה שאתה " + (Math.round(j.dist_m/100)/10) + ' ק"מ מהמחסן. אם זה בסדר (נסיעה / איסוף) — הכל טוב; לורן רואה את זה.', "warn");
+      renderNow();
+    }
+    syncLine();
+  }catch(e){ document.getElementById("sync-line").innerHTML = '<b>⏳ ' + QUEUE.length + ' לא נשלח</b> — ' + esc(e.message||e); }
+  finally{ FLUSHING = false; }
+  if (touched) load().catch(function(){});
+}
+// ── GPS: a position for each tap, nothing more ─────────────────────────────
+function startGps(){
+  if (!navigator.geolocation){ document.getElementById("gps-line").textContent = "📡 GPS: לא זמין"; return; }
+  navigator.geolocation.watchPosition(function(p){
+    POS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:Math.round(p.coords.accuracy||0) };
+    document.getElementById("gps-line").innerHTML = '<span class="pill gps">📡 GPS on</span> ±' + POS.acc + ' m';
+  }, function(err){
+    document.getElementById("gps-line").innerHTML = '<span class="pill nogps">📡 GPS off</span> ' + (err.code===1 ? "אשר מיקום כדי שכל לחיצה תישמר עם המקום" : "אין אות");
+  }, { enableHighAccuracy:true, maximumAge:30000, timeout:20000 });
+}
+loadQueue(); syncLine();
+loadRoster().then(function(){ return load(); }).then(function(){ flush(); }).catch(function(e){ document.getElementById("totals").innerHTML = '<div class="empty" style="grid-column:1/3">❌ לא הצלחתי לטעון: ' + esc(e.message||e) + '<br>תתקשר ללורן.</div>'; });
+startGps();
+setInterval(function(){ flush(); }, 20000);
+setInterval(function(){ renderNow(); }, 1000);
+setInterval(function(){ if (document.visibilityState==="visible" && !QUEUE.length) load().catch(function(){}); }, 60000);
+document.addEventListener("visibilitychange", function(){ if (document.visibilityState==="visible"){ flush(); load().catch(function(){}); } else beaconQueue(); });
+window.addEventListener("pagehide", beaconQueue);
+// a fetch started just before the worker switches apps is often killed with the page; sendBeacon is
+// finished after it is gone. The taps STAY queued; when the page opens again they are sent normally
+// and the Worker drops the copy (same worker, same tap, same time = a duplicate, the 2-minute rule).
+function beaconQueue(){
+  try{
+    if (!QUEUE.length || !navigator.sendBeacon) return;
+    QUEUE.slice(0, 5).forEach(function(b){ navigator.sendBeacon(WORKER, new Blob([JSON.stringify(b)], { type:"text/plain" })); });
+  }catch(e){}
+}
+</script>
+</body>
+</html>
