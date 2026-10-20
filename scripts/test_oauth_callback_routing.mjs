@@ -56,6 +56,10 @@ check("and it stops routing her through a chat",
       !ads.next.includes("לצ'אט"));
 check("the code is still there to copy", ads.fields.includes("ABC123"));
 
+const manage = shown("?auth_code=MNG456&state=ads_manage_2026");
+check("the manage-token state routes to the same run and says to pick target=manage",
+      manage.next.includes("tiktok-ads-read-auth.yml") && manage.next.includes("manage"));
+
 const other = shown("?auth_code=XYZ789&state=comments_2026");
 check("an unknown state keeps the old instructions rather than a wrong link",
       other.next.includes("לצ'אט") && !other.next.includes("tiktok-ads-read-auth.yml"));

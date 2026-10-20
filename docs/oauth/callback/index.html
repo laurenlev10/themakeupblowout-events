@@ -153,6 +153,13 @@
       'ads_read_2026': {
         url: 'https://github.com/laurenlev10/lauren-agent-hub-data/actions/workflows/tiktok-ads-read-auth.yml',
         what: 'קריאת תקציבים אמיתיים מטיקטוק'
+      },
+      // 20.10.2026 — the management token for the creative rotation. Same run,
+      // target=manage, its own secret (TIKTOK_ADS_MANAGE_TOKEN).
+      'ads_manage_2026': {
+        url: 'https://github.com/laurenlev10/lauren-agent-hub-data/actions/workflows/tiktok-ads-read-auth.yml',
+        what: 'רוטציית סרטונים בטיקטוק — הדלקה/השהיה של סטים',
+        target: 'manage'
       }
     };
     var job = JOBS[state];
@@ -162,7 +169,8 @@
       nextEl.innerHTML = '<div class="next-steps"><strong>צעד אחרון:</strong><ol>' +
         '<li>לחצי <strong>Copy</strong> ליד <code class="inline">auth_code</code></li>' +
         '<li>לחצי על הכפתור למטה → <strong>Run workflow</strong></li>' +
-        '<li>הדביקי את הקוד בשדה, ולחצי <strong>Run workflow</strong> הירוק</li>' +
+        '<li>הדביקי את הקוד בשדה' + (job.target ? ', בחרי <strong>target = ' + job.target + '</strong>' : '') +
+        ', ולחצי <strong>Run workflow</strong> הירוק</li>' +
         '<li>תקבלי טקסט עם התוצאה. אם הקוד פג — פשוט תאשרי שוב מאותו לינק</li>' +
         '</ol><p style="margin-top:14px"><a class="copy-btn" style="display:inline-block;text-decoration:none" ' +
         'href="' + job.url + '" target="_blank" rel="noopener">פתחי את הריצה ←</a></p></div>';
