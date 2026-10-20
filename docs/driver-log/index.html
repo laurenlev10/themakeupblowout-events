@@ -597,6 +597,7 @@ async function flush(){
         QUEUE.shift(); saveQueue();
         if (TRIP && TRIP.body === b){ TRIP.refused = (j && j.error) || "refused"; renderTripOk(); }
         if (j && j.earliest) alert("That time is before your last entry (" + fmtTime(j.earliest) + "). Pick a later time.\nהזמן הזה לפני הרישום האחרון שלך (" + fmtTime(j.earliest) + "). בחר זמן מאוחר יותר.");
+        else if (j && j.english_only) alert("Not recorded — English only on the log, the officer reads it (" + j.english_only + ").\nלא נרשם — ביומן כותבים רק באנגלית, הפקח קורא אותו (" + j.english_only + ").");
         else if (j && j.error) alert("Not recorded: " + j.error);
         load().catch(function(){}); continue;   // refused for good; the page re-reads the truth
       }
@@ -633,6 +634,7 @@ async function saveHeader(quiet, dateOverride){
     if (!quiet) out.textContent = "✓ Saved " + fmtTime(new Date().toISOString());
     return true;
   }catch(e){
+    if (/English only/.test(e.message||"")){ out.textContent = "✗ English only on the log — the officer reads it. · ביומן כותבים רק באנגלית."; return false; }
     // 20.10 — no signal: the details wait in the same queue as the taps (the newest copy for that day
     // replaces an older one) and go out with them, instead of being lost when the driver drives off
     QUEUE = QUEUE.filter(function(q){ return !(q.kind === "hos_day" && !q.certify && q.driver === body.driver && q.date === body.date); });
