@@ -370,7 +370,7 @@ function renderLimits(){
   // the ELD line: more than 8 log days in any 30 → an ELD is required (the Worker counts)
   if (S.log_days){ var ld = S.log_days, lcls = ld.over ? "bad" : ld.near ? "warn" : "";
     html += '<div class="lim ' + lcls + '"><div class="l"><span>Log days in the last 30 (max 8 without an ELD)</span><span class="v">' + ld.count + ' / 8</span></div><div class="bar"><i style="width:' + Math.min(100, 100*ld.count/8).toFixed(0) + '%"></i></div>' + (ld.over ? '<div class="note" style="color:var(--bad)">Over 8 — an ELD is required. Tell Eli.<span class="es">מעל 8 — נדרש מכשיר ELD. תגיד לאלי.</span></div>' : '') +
-      (S.rental && S.rental.over ? '<div class="note" style="color:var(--bad)">The rental on file is longer than 8 days — the rental exemption does not cover it. Tell Eli.<span class="es">השכירות הרשומה ארוכה מ-8 ימים — פטור השכירות לא מכסה. תגיד לאלי.</span></div>' : '') + '</div>'; }
+'</div>'; }
   document.getElementById("limits").innerHTML = html;
   document.getElementById("alerts").innerHTML = alerts;
 }
