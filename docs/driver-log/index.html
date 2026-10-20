@@ -100,6 +100,19 @@
   .chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;color:var(--ink)}
   .chip.sel{border-color:var(--ok);background:#dcfce7}
   .chip small{font-weight:600;opacity:.75}
+  /* start / arrive (Eli 20.10: "אין כפתור שאומר התחל נסיעה") */
+  #btn-trip{min-height:62px;font-size:19px;margin-top:12px}
+  #btn-trip.arrive{background:var(--ok)}
+  .now-trip{display:none;margin-top:8px;background:rgba(255,255,255,.18);border-radius:10px;padding:8px 10px;font-size:15px;font-weight:900}
+  .tripok{position:fixed;inset:0;z-index:70;background:rgba(17,24,39,.55);display:none;align-items:center;justify-content:center;padding:16px}
+  .tripok .box{background:#fff;border-radius:18px;max-width:420px;width:100%;padding:20px 16px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+  .tripok .big{font-size:40px;line-height:1}
+  .tripok .t{font-size:22px;font-weight:900;margin-top:6px}
+  .tripok .route{font-size:17px;font-weight:800;margin-top:8px}
+  .tripok .state{margin-top:12px;border-radius:12px;padding:10px;font-weight:900;font-size:15px}
+  .tripok .state.wait{background:#fef3c7;color:#92400e;animation:pendpulse 1.4s ease-in-out infinite}
+  .tripok .state.ok{background:#dcfce7;color:#166534}
+  .tripok .state.bad{background:#fee2e2;color:#991b1b}
   /* inspection view */
   #inspect{display:none}
   body.inspect .wrap, body.inspect .hdr, body.inspect .foot{display:none}
@@ -124,6 +137,7 @@
   </div>
 
   <div id="now" class="now off"><div class="st">Off duty</div><div class="since">0:00</div><div class="sub">tap the status you are in</div>
+      <div id="now-trip" class="now-trip"></div>
       <div id="now-pending" class="now-pending"></div></div>
 
   <div class="card">
@@ -185,9 +199,11 @@
       <label>From — where did you start? · מאיפה יצאת?</label><div class="chips" id="from-chips"></div><input id="h-from" placeholder="or type: city, state · או תקליד" oninput="tripChanged()">
       <label>Load / shipping document</label><input id="h-shipping" readonly tabindex="-1" style="opacity:.8" title="fixed by the carrier">
       <label>Co-driver (if any)</label><input id="h-co_driver" placeholder="—">
-      <button class="btn sec sm" onclick="saveHeader(false)">💾 Save trip details · שמור</button>
+      <button class="btn sec sm" onclick="saveHeader(false)">💾 Save details only · שמור בלי להתחיל</button>
       <div id="head-saved" class="note"></div>
     </details>
+    <!-- outside the folded card: visible whether it is open or closed (while Driving it is "Arrived") -->
+    <button class="btn" id="btn-trip" onclick="tripAction()">🚛 Start trip · התחל נסיעה</button>
   </div>
 
   <div class="card" id="today-card">
@@ -209,6 +225,7 @@
   <div class="note" style="text-align:center;margin-top:16px">Problem with the page? Call Lauren: <a href="tel:4243547625">(424) 354-7625</a></div>
 </div>
 <div id="nudge" class="nudge" style="display:none"></div>
+<div id="tripok" class="tripok"></div>
 <div id="inspect"><div class="tools"><button class="btn sec sm" onclick="closeInspect()">← Back</button><button class="btn sm" onclick="window.print()">🖨 Print / Save as PDF</button></div><div id="forms"></div></div>
 <div class="foot"><span id="gps-line">📡 GPS: off</span><span id="sync-line"></span></div>
 
@@ -324,6 +341,7 @@ function renderNow(){
     pend.innerHTML = "✓ Received by the office · " + esc(LAST_ACK.label) + " " + fmtTime(LAST_ACK.at) + '<span class="es">התקבל במשרד</span>';
   } else { pend.className = "now-pending"; pend.innerHTML = ""; }
   document.querySelectorAll(".stbtn").forEach(function(b){ b.classList.toggle("cur", b.classList.contains(CLOCK.status)); });
+  renderTripLine(); renderTripOk();
 }
 // countdown between refreshes: the Worker gave absolute moments (due.*) and minutes (left.*)
 function renderLimits(){
@@ -431,7 +449,7 @@ function copyText(t){
   else prompt("Copy · העתק:", t);
 }
 // ── a duty-status tap ─────────────────────────────────────────────────────
-async function setStatus(st, presetNote){
+async function setStatus(st, presetNote, extra){
   var d = driverName();
   if (presetNote) document.getElementById("note").value = presetNote;
   if (!d){ alert("Please type your name first.\nקודם תכתוב את השם שלך."); document.getElementById("driver").focus(); return; }
@@ -439,7 +457,7 @@ async function setStatus(st, presetNote){
   var at = LATE_AT ? new Date(LATE_AT).toISOString() : new Date().toISOString();
   var late = !!LATE_AT; clearLate();
   var note = document.getElementById("note").value.trim(); document.getElementById("note").value = "";
-  var body = { kind:"hos_event", driver:d, status:st, at:at, late:late, note:note, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, place:"" };
+  var body = Object.assign({ kind:"hos_event", driver:d, status:st, at:at, late:late, note:note, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, place:"" }, extra || {});
   // optimistic: the status card changes now; the Worker's answer is the record
   CLOCK = Object.assign({}, CLOCK || {}, { status: st, since: at, resting: false, note: note });
   NUDGED = { stopped:false, moving:false }; hideNudge();
@@ -448,6 +466,82 @@ async function setStatus(st, presetNote){
   QUEUE.push(body); saveQueue();
   body.place = await placeName(POS);   // best effort, a few seconds at most; the tap is already queued with its time
   flush();
+  return body;
+}
+// ── start / arrive (Eli 20.10.2026) ──────────────────────────────────────
+// Eli ran the DEMO: tapped On duty, Driving, then opened the trip card and filled truck, odometer
+// and "To". The card ended in a grey "Save" — nothing said "you are on the road now". A trip has a
+// start: one button saves the trip details AND taps Driving (with the start odometer and a
+// "Trip start: From → To" note that lands in the Remarks and in the office's text), then a
+// full-screen confirmation that stays until the office really has the tap. While Driving the same
+// button is "Arrived" (On duty, "Arrived: <to>"). The status itself still comes only from a tap.
+var TRIP = null;
+function tv(k){ return (document.getElementById("h-" + k).value || "").trim(); }
+function tripAction(){ return (CLOCK && CLOCK.status === "d") ? arriveTrip() : startTrip(); }
+async function startTrip(){
+  var d = driverName();
+  if (!d){ alert("Pick your name first.\nקודם תבחר את השם שלך."); document.getElementById("driver").focus(); return; }
+  if (!tv("to")){ document.getElementById("head-details").open = true; alert("Where are you driving? Pick or type the destination first.\nלאן נוסעים? בחר או תקליד יעד."); document.getElementById("h-to").focus(); return; }
+  var miss = [];
+  if (!tv("truck")) miss.push("truck no. · מספר משאית");
+  if (!tv("odo_start")) miss.push("odometer at start · אודומטר בהתחלה");
+  if (miss.length && !confirm("Missing: " + miss.join(", ") + "\nStart the trip anyway?\nלהתחיל את הנסיעה בכל זאת?")) return;
+  // an older day still waiting for its signature owns the card (workDay, 19.10); a NEW trip is today's
+  var date = WD_DATE;
+  if (S && WD_DATE && WD_DATE !== S.today){
+    if (!confirm(dayName(WD_DATE) + " is not signed yet. Start today's trip anyway? (sign that day later, below)\nהיום של " + WD_DATE + " עוד לא חתום. להתחיל את הנסיעה של היום? (את היום ההוא תחתום אחר כך)")) return;
+    date = S.today;
+  }
+  var btn = document.getElementById("btn-trip"); btn.disabled = true;
+  var from = tv("from"), to = tv("to"), odo = Number(tv("odo_start").replace(/[^\d.]/g, ""));
+  TRIP = { body: null, from: from, to: to, odo: odo || null, saved: null, refused: null, open: true };
+  renderTripOk();
+  try{
+    TRIP.saved = await saveHeader(true, date);       // no signal → the tap still goes (it queues); the box says the details did not
+    var extra = isFinite(odo) && odo > 0 ? { odometer: Math.round(odo) } : {};
+    TRIP.body = await setStatus("d", "Trip start: " + (from || "?") + " → " + to, extra);
+  } finally { btn.disabled = false; }
+  document.getElementById("head-details").open = false;
+  renderTripOk();
+}
+async function arriveTrip(){
+  var to = tv("to");
+  await setStatus("on", "Arrived" + (to ? ": " + to : ""));
+  banner("🏁 Arrived — you are On duty now. When you are done for today: odometer at end, Off duty, then sign below.\nהגעת — אתה עכשיו בתפקיד. כשתסיים להיום: אודומטר בסוף, \"לא בתפקיד\", וחתימה למטה.", "info");
+  document.getElementById("head-details").open = true;
+  document.getElementById("h-odo_end").focus();
+}
+// the trip the truck is on: this tap's, else the newest day header that names a destination
+function currentTrip(){
+  if (TRIP && TRIP.to) return { from: TRIP.from, to: TRIP.to };
+  var ds = (S && S.days) || [];
+  for (var i = 0; i < ds.length; i++){ var h = ds[i].header; if (h && h.to) return { from: h.from || "", to: h.to }; }
+  return null;
+}
+function renderTripLine(){
+  var el = document.getElementById("now-trip"), b = document.getElementById("btn-trip");
+  var driving = !!(CLOCK && CLOCK.status === "d"), t = driving ? currentTrip() : null;
+  el.style.display = t ? "block" : "none";
+  if (t) el.innerHTML = "🛣️ On a trip · בנסיעה: " + esc(t.from || "?") + " → " + esc(t.to);
+  if (b){ b.className = "btn" + (driving ? " arrive" : ""); b.innerHTML = driving ? "🏁 Arrived · הגעתי" : "🚛 Start trip · התחל נסיעה"; }
+}
+// the confirmation stays on screen until the office has the tap (or refused it) and the driver closes it
+function renderTripOk(){
+  var o = document.getElementById("tripok");
+  if (!TRIP || !TRIP.open){ o.style.display = "none"; o.dataset.h = ""; return; }
+  var b = TRIP.body, state;
+  if (TRIP.refused) state = '<div class="state bad">❌ Not recorded: ' + esc(TRIP.refused) + '<span class="es">לא נרשם — תתקשר לאלי</span></div>';
+  else if (!b || QUEUE.indexOf(b) >= 0) state = '<div class="state wait">⏳ Sending to the office… keep this page open<span class="es">שולח למשרד… אל תסגור את הדף</span></div>';
+  else if (LAST_ACK && LAST_ACK.body === b) state = '<div class="state ok">✓ The office has it · ' + esc(fmtTime(b.at)) + (LAST_ACK.sms ? " · 📱 text sent" : "") + '<span class="es">התקבל במשרד' + (LAST_ACK.sms ? " · נשלחה הודעה" : "") + '</span></div>';
+  else state = '<div class="state ok">✓ Sent · ' + esc(fmtTime(b.at)) + '<span class="es">נשלח</span></div>';
+  var html = '<div class="box"><div class="big">🚛</div><div class="t">You are on the road<span class="es" style="font-size:18px">אתה בנסיעה</span></div>' +
+    '<div class="route">' + esc(TRIP.from || "?") + " → " + esc(TRIP.to) + '</div>' +
+    '<div class="note">Driving since ' + esc(b ? fmtTime(b.at) : "now") + (TRIP.odo ? " · odometer " + esc(TRIP.odo) : "") + '</div>' + state +
+    (TRIP.saved === false && QUEUE.some(function(q){ return q.kind === "hos_day" && !q.certify; }) ? '<div class="state wait" style="font-size:13px">⏳ No signal — the trip details wait on this phone and are sent with the tap.<span class="es">אין קליטה — פרטי הנסיעה ממתינים בטלפון ויישלחו יחד עם הלחיצה.</span></div>' : '') +
+    '<div class="note">Drive safe. When you get there, tap 🏁 Arrived.<span class="es">סע בזהירות. כשתגיע, לחץ 🏁 הגעתי.</span></div>' +
+    '<button class="btn" onclick="TRIP.open=false;renderTripOk()">OK · הבנתי</button></div>';
+  if (o.dataset.h !== html){ o.innerHTML = html; o.dataset.h = html; }   // renderNow runs every second — rebuild only on a change, or the OK button is replaced under the finger
+  o.style.display = "flex";
 }
 // a late entry: the driver picks when it really happened; the next status tap carries that time
 var LATE_AT = null;
@@ -489,6 +583,7 @@ async function flush(){
       var j = null; try{ j = await r.json(); }catch(e){}
       if (r.status===400){
         QUEUE.shift(); saveQueue();
+        if (TRIP && TRIP.body === b){ TRIP.refused = (j && j.error) || "refused"; renderTripOk(); }
         if (j && j.earliest) alert("That time is before your last entry (" + fmtTime(j.earliest) + "). Pick a later time.\nהזמן הזה לפני הרישום האחרון שלך (" + fmtTime(j.earliest) + "). בחר זמן מאוחר יותר.");
         else if (j && j.error) alert("Not recorded: " + j.error);
         load().catch(function(){}); continue;   // refused for good; the page re-reads the truth
@@ -496,7 +591,7 @@ async function flush(){
       if (!r.ok || !j || !j.ok) throw new Error((j&&j.error)||("server " + r.status));
       if (j.clock){ CLOCK = j.clock; if (S) S.now = new Date().toISOString(); }
       QUEUE.shift(); saveQueue(); touched = true;
-      if (b.kind === "hos_event") LAST_ACK = { t: Date.now(), at: b.at, label: LABEL[b.status] || b.status };
+      if (b.kind === "hos_event") LAST_ACK = { t: Date.now(), at: b.at, label: LABEL[b.status] || b.status, body: b, sms: (j && j.sms) || 0 };
       renderNow(); renderLimits();
     }
     syncLine();
@@ -513,9 +608,10 @@ function fillHeader(h){
   if (!document.getElementById("h-truck").value && ls("hos_truck")) document.getElementById("h-truck").value = ls("hos_truck");
   tripChanged();
 }
-async function saveHeader(quiet){
+async function saveHeader(quiet, dateOverride){
   var d = driverName(); if (!d){ alert("Please type your name first."); return; }
   var body = { kind:"hos_day", driver:d, date: WD_DATE || undefined };
+  if (dateOverride) body.date = dateOverride;
   HFIELDS.forEach(function(k){ body[k] = document.getElementById("h-" + k).value.trim(); });
   ls("hos_truck", body.truck);
   var out = document.getElementById("head-saved");
@@ -524,7 +620,14 @@ async function saveHeader(quiet){
     var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
     if (!quiet) out.textContent = "✓ Saved " + fmtTime(new Date().toISOString());
     return true;
-  }catch(e){ out.textContent = "❌ Not saved: " + (e.message||e) + " — try again when you have signal."; return false; }
+  }catch(e){
+    // 20.10 — no signal: the details wait in the same queue as the taps (the newest copy for that day
+    // replaces an older one) and go out with them, instead of being lost when the driver drives off
+    QUEUE = QUEUE.filter(function(q){ return !(q.kind === "hos_day" && !q.certify && q.driver === body.driver && q.date === body.date); });
+    QUEUE.push(body); saveQueue();
+    out.textContent = "⏳ No signal — saved on this phone, sent automatically when the signal is back · נשמר בטלפון, יישלח כשתחזור קליטה";
+    return false;
+  }
 }
 // signature pad
 var PAD = document.getElementById("pad"), PCTX = PAD.getContext("2d"), STROKES = [], CUR = null;
