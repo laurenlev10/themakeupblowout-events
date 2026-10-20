@@ -11,7 +11,7 @@
 <title>Makeup Blowout — העבודה שלי · My work</title>
 <!--
   events.themakeupblowout.com/work/ — the crew member's home screen (20.10.2026).
-  Lauren: "אני רוצה שליונתן יהיה דף… כפתורים בתפריט הראשי: LONG DISTANCE · MYSTERY BOX · PICKUP DAY — וכל
+  Lauren: "אני רוצה שליונתן יהיה דף… כפתורים בתפריט הראשי: LONG DISTANCE · MYSTERY BOX · PICKUP DAY (09:38: Mystery Box IS warehouse work — one WAREHOUSE button) — וכל
   אחד מהכפתורים מוביל אותו לדף הנכון, כדי שהוא ישמור בדף הבית שלו… ושיהיה סינכרון בין כולם".
   One page to save to the phone's home screen. He picks his name ONCE here; every button hands it
   to the right sheet as ?name=… (and the job as ?task=…), and each sheet saves it under its own key,
@@ -59,9 +59,9 @@
 
   <div class="menu" id="menu">
     <a class="go ld" id="go-ld" href="../driver-log/"><span class="ic">🚛</span><span><div class="t">LONG DISTANCE</div><div class="s">נסיעה ארוכה · יומן הנהג (DOT) — נוהג / בתפקיד / לא בתפקיד</div></span></a>
-    <a class="go mb" id="go-mb" href="../warehouse-hours/?task=mystery_box"><span class="ic">🎁</span><span><div class="t">MYSTERY BOX</div><div class="s">הגעתי / יצאתי — השעות נרשמות על Mystery Box</div></span></a>
+    <!-- 20.10 09:38 — Lauren: "העבודה במחסן והמיסטרי בוקס זה בעצם אותו הדבר, תמחק את המיסטרי בוקס" — one warehouse button -->
+    <a class="go mb" id="go-wh" href="../warehouse-hours/?task=warehouse"><span class="ic">🏭</span><span><div class="t">WAREHOUSE · מחסן</div><div class="s">עבודה במחסן, Mystery Box, הכול — הגעתי / יצאתי</div></span></a>
     <a class="go pk" id="go-pk" href="../pickup/"><span class="ic">🚚</span><span><div class="t">PICKUP DAY</div><div class="s" id="pk-sub">יום איסוף — העצירות, הניווט, והשעות נרשמות מזה</div></span></a>
-    <a class="go wh" id="go-wh" href="../warehouse-hours/?task=warehouse"><span class="ic">🏭</span><span><div class="t">עבודה במחסן · שעות</div><div class="s">כל שאר העבודה — הגעתי / יצאתי</div></span></a>
   </div>
 
   <div class="card">
@@ -87,7 +87,6 @@ function setName(n){
   var q = n ? "name=" + encodeURIComponent(n) : "";
   document.getElementById("go-ld").href = "../driver-log/" + (q ? "?" + q : "");
   document.getElementById("go-pk").href = "../pickup/" + (q ? "?" + q : "");
-  document.getElementById("go-mb").href = "../warehouse-hours/?task=mystery_box" + (q ? "&" + q : "");
   document.getElementById("go-wh").href = "../warehouse-hours/?task=warehouse" + (q ? "&" + q : "");
   document.querySelectorAll(".go").forEach(function(a){ a.setAttribute("aria-disabled", n ? "false" : "true"); });
 }
