@@ -129,7 +129,7 @@ var WORKER = "https://danielle.laurenlev10.workers.dev/";
 var PLAN = null, EVENTS = [], STOPS = [], DRIVER = "", POS = null, WATCH = null, QUEUE = [], OFFLINE = false, RELEASED = true;
 var NEXT_ID = null;                  // the one stop to go to now (first not picked / skipped)
 var AUTO_ARRIVE_SENT = {};           // vendor_id → true once the geofence fired this session
-var RADIUS = { house: 150, street: 600, none: 0 };
+var RADIUS = {};                     // auto-arrival radius by geocode precision — served by the Worker (get_pickup_plan.radius), the one definition
 var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
 function ls(k, v){ try{ if (v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
 // 20.10.2026 — the crew hub (/work/) hands the name over as ?name=…; it is saved under EVERY page's key
@@ -152,14 +152,15 @@ async function load(){
     RELEASED = j.released !== false;
     if (j.drivers && j.drivers.length){ ls("pickup_drivers", JSON.stringify(j.drivers)); fillDrivers(j.drivers); }
     if (j.plan) j.plan.warehouse = j.warehouse || null;
-    ls("pickup_plan_cache", JSON.stringify({ plan:j.plan, events:j.events||[], released:RELEASED, at:new Date().toISOString() }));
+    if (j.radius) RADIUS = j.radius;
+    ls("pickup_plan_cache", JSON.stringify({ plan:j.plan, events:j.events||[], released:RELEASED, radius:j.radius||null, at:new Date().toISOString() }));
     OFFLINE = false;
   }catch(e){
     // No signal in the field: the last route this phone saw is better than a blank page —
     // and it is labelled as such, never passed off as live.
     var c = null; try{ c = JSON.parse(ls("pickup_plan_cache")||"null"); }catch(x){}
     if (!c) throw e;
-    j = c; OFFLINE = c.at; RELEASED = c.released !== false;
+    j = c; OFFLINE = c.at; RELEASED = c.released !== false; if (c.radius) RADIUS = c.radius;
     try{ fillDrivers(JSON.parse(ls("pickup_drivers") || "null")); }catch(x){}
   }
   PLAN = j.plan; EVENTS = j.events || [];
