@@ -41,6 +41,7 @@
   select#driver{font-size:18px;font-weight:800;padding:12px}
   .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:13px;padding:14px;min-height:52px;font-size:17px;font-weight:900;cursor:pointer;background:var(--blue);color:#fff;text-decoration:none;margin-top:8px}
   .btn.sec{background:#eef0f4;color:var(--ink)}
+  .card.insp{border:2px solid #1d4ed8}.card.insp h2{margin:0 0 8px;font-size:17px}.card.insp .steps{margin:0 0 10px;padding-left:20px}.card.insp .steps li{margin:6px 0;font-size:14px;line-height:1.4}.card.insp .steps .es{display:block;color:#475569;font-size:13px}
   .btn.sm{padding:10px 8px;min-height:46px;font-size:15px;border-radius:10px}
   .btn:disabled{opacity:.5}
   .two{display:flex;gap:8px}.two .btn{flex:1}
@@ -221,8 +222,17 @@
     <div id="cert-line" class="note"></div>
   </div>
 
-  <button class="btn sec" id="btn-exempt" onclick="openInspect('exempt')">🛡 ELD exemption — the page to show first<span class="es">פטור מ-ELD — הדף שמראים לפקח ראשון: "לא ELD, יש פטור"</span></button>
-  <button class="btn sec" id="btn-inspect" onclick="openInspect()">📋 Inspection — exemption page + last 8 days as the printed form<span class="es">ביקורת — דף הפטור + 8 הימים האחרונים</span></button>
+  <div class="card insp">
+    <h2>🚔 In case of a roadside inspection<span class="es">במקרה של ביקורת בצד הדרך</span></h2>
+    <ol class="steps">
+      <li><b>Pull over, stay calm, hand the officer your license and the truck papers.</b><span class="es">עוצר, רגוע, נותן רישיון ומסמכי המשאית.</span></li>
+      <li><b>If he asks "which ELD is this?" — answer: "No ELD. We are exempt. Here is the statement."</b> Press the first button below and hand him the phone.<span class="es">אם שואלים "איזה ELD?" — התשובה: "אין ELD, יש פטור, הנה הדף". לוחץ על הכפתור הראשון ומראה את הטלפון.</span></li>
+      <li><b>If he asks for the logs — press the second button: the statement + today and the last 7 days.</b> He can read it on the screen or you can print / send a PDF.<span class="es">אם מבקשים את היומן — הכפתור השני: דף הפטור + היום ו-7 הימים הקודמים. על המסך, או מדפיסים / שולחים PDF.</span></li>
+    </ol>
+    <button class="btn" id="btn-exempt" onclick="openInspect('exempt')">🛡 1 · ELD exemption statement<span class="es">דף הפטור — להראות ראשון</span></button>
+    <button class="btn sec" id="btn-inspect" onclick="openInspect()">📋 2 · Logs — statement + last 8 days<span class="es">היומן — דף הפטור + 8 הימים האחרונים</span></button>
+    <div class="note">The laminated card in the cab says the same thing in short — use it if the phone is dead.<span class="es">הכרטיס המלמנץ בתא אומר את אותו דבר בקצרה — אם הטלפון מת.</span></div>
+  </div>
   <div class="note" style="text-align:center;margin-top:16px">Problem with the page? Call Lauren: <a href="tel:4243547625">(424) 354-7625</a></div>
 </div>
 <div id="nudge" class="nudge" style="display:none"></div>
