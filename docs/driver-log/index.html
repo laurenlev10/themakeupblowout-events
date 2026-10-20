@@ -179,6 +179,9 @@
 
   <div class="card" id="track-card">
     <div id="track-line" style="font-weight:800;font-size:15px">📡 Background GPS… <span class="es">מעקב ברקע…</span></div>
+    <!-- 20.10.2026 — Lauren: the drivers must not feel watched in their private life. The Worker keeps a
+         position ONLY while the driver is On duty / Driving by his own tap; this says so, plainly. -->
+    <div class="note" style="margin-top:6px">🔒 Your location is saved <b>only while you are On duty or Driving</b> in this log. When you tap <b>Off duty</b>, nothing is saved — even if the app stays on.<span class="es">המיקום נשמר רק כשאתה במצב "בעבודה" או "נוהג" ביומן. כשאתה לוחץ "לא בעבודה" — שום מיקום לא נשמר, גם אם האפליקציה דולקת.</span></div>
     <details id="track-setup" style="margin-top:6px"><summary style="font-size:14px">How to set it up (one time) · איך מחברים (פעם אחת)</summary>
       <!-- 20.10.2026 — Lauren: "משהו בהוראות לא נכון, הלינק לא עובד". The steps said "App Store / Google
            Play" with no link, and "Frequency 60 seconds, high accuracy" — the app (v10) has no such
@@ -198,7 +201,7 @@
           <span class="es">למחוק את הכתובת שיש שם ולהדביק את הכתובת הזו (כפתור Copy). לא לפתוח אותה בדפדפן — היא לאפליקציה בלבד.</span></li>
         <li><b>Location accuracy</b>: <b>Highest</b> · <b>Interval (seconds)</b>: <b>60</b> · <b>Distance (meters)</b>: <b>0</b>.<span class="es">דיוק Highest, מרווח 60 שניות, מרחק 0.</span></li>
         <li>Back on the main screen turn <b>Continuous tracking</b> ON. When the phone asks for location, choose <b>Always</b> (iPhone: <i>Allow While Using</i>, then Settings → Traccar Client → Location → <i>Always</i>; Android: <i>Allow all the time</i>).<span class="es">במסך הראשי להדליק Continuous tracking. הרשאת מיקום: תמיד (Always).</span></li>
-        <li>Check: after a minute or two refresh this page — the line at the top of this card must say <b>✅ Background GPS is ON</b>. If it does not, the name or the address is wrong — call Eli.<span class="es">בדיקה: אחרי דקה-שתיים לרענן את הדף — השורה למעלה צריכה להגיד ✅ Background GPS is ON. אם לא — השם או הכתובת לא נכונים; להתקשר לאלי.</span></li>
+        <li>Check: after a minute or two refresh this page — the line at the top of this card must start with <b>✅ Background GPS is</b> (connected / ON). If it does not, the name or the address is wrong — call Eli.<span class="es">בדיקה: אחרי דקה-שתיים לרענן את הדף — השורה למעלה צריכה להתחיל ב-✅ (connected או ON). אם לא — השם או הכתובת לא נכונים; להתקשר לאלי.</span></li>
       </ol>
       <div class="note">GPS only shows where the truck is. Your hours still come from the buttons on this page — tap them as before.<span class="es">המיקום רק מראה איפה המשאית. השעות עדיין נרשמות מהכפתורים בדף הזה.</span></div>
     </details>
@@ -461,6 +464,10 @@ function renderTrack(){
   document.getElementById("track-name").textContent = S.driver || driverName() || "your name";
   var L = S.live, last = L && L.last;
   if (L && L.error){ el.innerHTML = '⚠️ Background GPS: could not be checked right now.<span class="es">לא ניתן לבדוק את המעקב כרגע.</span>'; return; }
+  var conn = L && L.connected_at, cm = conn ? Math.round((Date.now() - Date.parse(conn)) / 60000) : null;
+  var lm = last ? Math.round((Date.now() - Date.parse(last.at)) / 60000) : null;
+  // the phone reports but he is off duty → connected, and nothing about where he is
+  if (cm !== null && cm <= 15 && (lm === null || lm > 10)){ el.innerHTML = '✅ Background GPS is connected — off duty, no location saved.<span class="es">האפליקציה מחוברת — לא בעבודה, שום מיקום לא נשמר.</span>'; return; }
   if (!last){ el.innerHTML = '⚠️ Background GPS is OFF — set it up below so Eli sees the truck live.<span class="es">המעקב ברקע כבוי — חבר אותו למטה כדי שאלי יראה את המשאית בזמן אמת.</span>'; document.getElementById("track-setup").open = true; return; }
   var m = Math.round((Date.now() - Date.parse(last.at)) / 60000);
   el.innerHTML = m <= 10 ? '✅ Background GPS is ON — last position ' + (m < 1 ? "just now" : m + " min ago") + '.<span class="es">המעקב ברקע פועל.</span>'
