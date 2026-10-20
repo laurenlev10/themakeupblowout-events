@@ -84,7 +84,11 @@
 
   <div class="card" id="who-card">
     <label>Your name / Tu nombre (so Lauren knows who is driving)</label>
-    <input id="driver" placeholder="e.g. Daniel" autocomplete="name">
+    <!-- 20.10.2026 — a NAME FROM THE LIST (the DOT log's drivers, via the Worker), so the pickup day, the
+         driver log and the warehouse hours sheet can be linked by name. Falls back to a text box when
+         the list could not be loaded — a route with a typed name beats a route with no name. -->
+    <select id="driver" style="display:none"><option value="">pick your name · elige tu nombre</option></select>
+    <input id="driver-free" placeholder="e.g. Daniel" autocomplete="name">
     <div class="note">Lauren and Eli get a text when you start, when you arrive at each vendor, and when you finish.<br>Lauren y Eli reciben un mensaje cuando empiezas, cuando llegas a cada proveedor y cuando terminas.</div>
     <button class="btn ok" id="btn-start" onclick="startRoute()">🚚 Start route · Empezar ruta</button>
     <div id="started-line" class="note" style="display:none"></div>
@@ -129,6 +133,7 @@ async function load(){
     j = await r.json();
     if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
     RELEASED = j.released !== false;
+    if (j.drivers && j.drivers.length){ ls("pickup_drivers", JSON.stringify(j.drivers)); fillDrivers(j.drivers); }
     ls("pickup_plan_cache", JSON.stringify({ plan:j.plan, events:j.events||[], released:RELEASED, at:new Date().toISOString() }));
     OFFLINE = false;
   }catch(e){
@@ -137,6 +142,7 @@ async function load(){
     var c = null; try{ c = JSON.parse(ls("pickup_plan_cache")||"null"); }catch(x){}
     if (!c) throw e;
     j = c; OFFLINE = c.at; RELEASED = c.released !== false;
+    try{ fillDrivers(JSON.parse(ls("pickup_drivers") || "null")); }catch(x){}
   }
   PLAN = j.plan; EVENTS = j.events || [];
   STOPS = (PLAN.plan.stops||[]).map(function(id){ return (PLAN.vendors||[]).find(function(v){ return v.id===id; }); }).filter(Boolean);
@@ -187,11 +193,18 @@ function render(){
 }
 
 // ── reporting (the Worker logs + texts; a failed POST waits in localStorage) ──
+function driverValue(){ var sel = document.getElementById("driver"), free = document.getElementById("driver-free"); return (sel.style.display !== "none" ? sel.value : free.value).trim(); }
+function fillDrivers(names){
+  var sel = document.getElementById("driver"), free = document.getElementById("driver-free"), cur = ls("pickup_driver") || "";
+  if (!names || !names.length){ sel.style.display = "none"; free.style.display = ""; free.value = cur; return; }
+  sel.innerHTML = '<option value="">pick your name · elige tu nombre</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
+  sel.style.display = ""; free.style.display = "none";
+}
 function loadQueue(){ try{ QUEUE = JSON.parse(ls("pickup_queue")||"[]"); }catch(e){ QUEUE=[]; } }
 function saveQueue(){ ls("pickup_queue", JSON.stringify(QUEUE)); syncLine(); }
 function syncLine(){ document.getElementById("sync-line").innerHTML = QUEUE.length ? '<b>⏳ ' + QUEUE.length + ' not sent yet</b> — retrying' : '✓ synced'; }
 function report(ev, vendorId, auto){
-  DRIVER = document.getElementById("driver").value.trim(); ls("pickup_driver", DRIVER);
+  DRIVER = driverValue(); ls("pickup_driver", DRIVER);
   // 14.10.2026, first real run: Eli tapped Waze without typing a name or pressing "Start route",
   // so nothing was texted. The buttons never block on the name (the record says "Driver"), and
   // the first Navigate / Arrived of the day starts the route by itself.
@@ -238,7 +251,7 @@ function ping(force){
   if (!force && (now - LAST_PING.at < 30000 || !moved)) return;
   if (document.visibilityState !== "visible" && !force) return;
   LAST_PING = { at: now, lat: POS.lat, lng: POS.lng };
-  var body = { kind:"pickup_ping", driver: document.getElementById("driver").value.trim(), lat: POS.lat, lng: POS.lng, acc: POS.acc, plan_date: PLAN.plan.date || "" };
+  var body = { kind:"pickup_ping", driver: driverValue(), lat: POS.lat, lng: POS.lng, acc: POS.acc, plan_date: PLAN.plan.date || "" };
   var data = JSON.stringify(body);
   // sendBeacon survives the hand-off to Waze; fetch is the fallback. text/plain keeps the
   // beacon a simple request (no preflight) — the Worker parses the body as JSON either way.
@@ -265,7 +278,7 @@ function startGps(){
 }
 
 // ── boot ─────────────────────────────────────────────────────────────────────
-document.getElementById("driver").value = ls("pickup_driver") || "";
+fillDrivers(null);   // the text box until the list arrives with the plan
 loadQueue(); syncLine();
 load().then(function(){ startGps(); flush(); })
   .catch(function(e){ document.getElementById("stops").innerHTML = '<div class="empty">❌ Could not load the route: ' + esc(e.message||e) + '<br>Please call Lauren.</div>'; });
