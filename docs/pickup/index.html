@@ -70,8 +70,6 @@
   .foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 12px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
   .foot b{color:var(--ink)}
   .empty{color:var(--muted);font-size:14px;padding:12px;text-align:center}
-  .es{display:block;font-size:11.5px;font-weight:600;opacity:.8}
-  .btn .es{display:inline;margin-left:4px}
 </style>
 </head>
 <body>
@@ -97,8 +95,8 @@
     <span>👤</span>
     <!-- a NAME FROM THE LIST (the DOT log's drivers, via the Worker), so the pickup day, the driver log
          and the warehouse hours sheet are linked by name; a text box when the list could not be loaded -->
-    <select id="driver" style="display:none;flex:1"><option value="">pick your name · elige tu nombre</option></select>
-    <input id="driver-free" placeholder="your name · tu nombre" autocomplete="name" style="flex:1">
+    <select id="driver" style="display:none;flex:1"><option value="">pick your name</option></select>
+    <input id="driver-free" placeholder="your name" autocomplete="name" style="flex:1">
   </div>
 
   <div class="card" id="next-card" style="display:none">
@@ -109,7 +107,7 @@
   <div id="stops"></div>
 
   <div class="card" id="finish-card" style="display:none">
-    <button class="btn" id="btn-done" onclick="finishRoute()">🏁 Finish route · Terminar ruta</button>
+    <button class="btn" id="btn-done" onclick="finishRoute()">🏁 Finish route</button>
   </div>
   <div class="note" style="text-align:center;margin-top:16px">Problem with the page? Call Lauren: <a href="tel:4243547625">(424) 354-7625</a></div>
 </div>
@@ -167,7 +165,7 @@ function render(){
   document.getElementById("hdr-sub").textContent = (p.title ? p.title + " · " : "") + (d || "no date") + " · " + STOPS.length + " stop" + (STOPS.length===1?"":"s");
   banner((OFFLINE ? "📵 No connection — showing the route as last loaded " + fmtTime(OFFLINE) + ". Taps are saved on this phone and sent when the signal is back.\n" : "") + (p.driver_note ? "📝 " + p.driver_note : ""));
   var started = EVENTS.filter(function(e){ return e.event==="started"; })[0];
-  if (!STOPS.length){ document.getElementById("stops").innerHTML = '<div class="empty">' + (RELEASED ? 'No pickups planned yet.<br>Lauren has not selected this week\'s vendors.<br><span class="es">Todavía no hay recogidas planeadas.</span>' : '⏳ The route is not released yet — Lauren is still reviewing the list.<br>Check back later or call her.<br><span class="es">La ruta todavía no está lista — Lauren la está revisando.</span>') + '</div>'; document.getElementById("next-card").style.display="none"; document.getElementById("finish-card").style.display="none"; return; }
+  if (!STOPS.length){ document.getElementById("stops").innerHTML = '<div class="empty">' + (RELEASED ? 'No pickups planned yet.<br>Lauren has not selected this week\'s vendors.' : '⏳ The route is not released yet — Lauren is still reviewing the list.<br>Check back later or call her.') + '</div>'; document.getElementById("next-card").style.display="none"; document.getElementById("finish-card").style.display="none"; return; }
   var html = "", nextV = null;
   STOPS.forEach(function(v, i){
     var st = status(v.id), cls = st.picked?"done":st.skipped?"done skip":st.arrived?"cur":"";
@@ -180,8 +178,8 @@ function render(){
       '<div class="acts">' +
         '<div class="two"><a class="btn sm" href="' + wazeUrl(v) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(v.id) + '\')">🧭 Waze</a><a class="btn sm" href="' + gmapsUrl(v) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(v.id) + '\')">🗺️ Google Maps</a></div>' +
         (st.picked ? '' :
-          '<div class="two">' + (st.arrived ? '' : '<button class="btn sm warn" onclick="report(\'arrived\',\'' + esc(v.id) + '\')">📍 Arrived<span class="es">Llegué</span></button>') +
-          '<button class="btn sm ok" onclick="report(\'picked\',\'' + esc(v.id) + '\')">✅ Picked up<span class="es">Recogido</span></button>' +
+          '<div class="two">' + (st.arrived ? '' : '<button class="btn sm warn" onclick="report(\'arrived\',\'' + esc(v.id) + '\')">📍 Arrived</button>') +
+          '<button class="btn sm ok" onclick="report(\'picked\',\'' + esc(v.id) + '\')">✅ Picked up</button>' +
           (st.skipped ? '' : '<button class="btn sm bad" onclick="if(confirm(\'Skip ' + esc(v.name).replace(/'/g,"") + '?\')) report(\'skipped\',\'' + esc(v.id) + '\')">⏭ Skip</button>') + '</div>') +
       '</div></div>';
   });
@@ -189,9 +187,9 @@ function render(){
   var nc = document.getElementById("next-card");
   if (nextV){
     nc.style.display = "block";
-    document.getElementById("next-title").textContent = "➡️ Next stop · Siguiente: " + nextV.name;
+    document.getElementById("next-title").textContent = "➡️ Next stop: " + nextV.name;
     document.getElementById("next-body").innerHTML = '<div class="meta" style="font-size:14px">📍 ' + esc(nextV.address) + (nextV.contact?' · 👤 ' + esc(nextV.contact):'') + '</div>' +
-      '<a class="btn" href="' + wazeUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">🧭 Go now — Waze · Ir ahora</a>' +
+      '<a class="btn" href="' + wazeUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">🧭 Go now — Waze</a>' +
       '<div style="text-align:center;margin-top:6px;font-size:13px"><a href="' + gmapsUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">Google Maps</a></div>';
   } else nc.style.display = "none";
   var doneEv = EVENTS.filter(function(e){ return e.event==="done"; }).length;
@@ -203,7 +201,7 @@ function driverValue(){ var sel = document.getElementById("driver"), free = docu
 function fillDrivers(names){
   var sel = document.getElementById("driver"), free = document.getElementById("driver-free"), cur = sharedName() || ls("pickup_driver") || "";
   if (!names || !names.length){ sel.style.display = "none"; free.style.display = ""; free.value = cur; return; }
-  sel.innerHTML = '<option value="">pick your name · elige tu nombre</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
+  sel.innerHTML = '<option value="">pick your name</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
   sel.style.display = ""; free.style.display = "none";
 }
 function loadQueue(){ try{ QUEUE = JSON.parse(ls("pickup_queue")||"[]"); }catch(e){ QUEUE=[]; } }
@@ -280,7 +278,7 @@ function whBackHome(){
 }
 function confirmCall(a, who, num){
   // a tap next to the address must not dial by itself: the call starts only after a yes
-  return confirm("Call " + who + "?\n" + num + "\n\n¿Llamar a " + who + "?");
+  return confirm("Call " + who + "?\n" + num);
 }
 function finishRoute(){ if (confirm("Finish the route? Lauren gets a summary.")){ report("done", ""); whAsk("out"); } }
 
