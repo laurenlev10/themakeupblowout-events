@@ -123,6 +123,9 @@
 </div>
 <div class="foot"><span id="gps-line">📡 GPS: off</span><span id="sync-line"></span></div>
 
+<!-- 20.10.2026 — THE route logic (next stop, readiness), the same file the dashboard and the Worker use.
+     Public on the dashboard domain; if it does not load, the page says so in red instead of guessing. -->
+<script src="https://dashboard.themakeupblowout.com/_assets/mbs-route.js"></script>
 <script>
 "use strict";
 var WORKER = "https://danielle.laurenlev10.workers.dev/";
@@ -179,14 +182,20 @@ function render(){
   var started = EVENTS.filter(function(e){ return e.event==="started"; })[0];
   if (!STOPS.length){ document.getElementById("stops").innerHTML = '<div class="empty">' + (RELEASED ? 'No pickups planned yet.<br>Lauren has not selected this week\'s vendors.' : '⏳ The route is not released yet — Lauren is still reviewing the list.<br>Check back later or call her.') + '</div>'; document.getElementById("next-card").style.display="none"; document.getElementById("finish-card").style.display="none"; return; }
   var html = "", nextV = null;
-  STOPS.forEach(function(v){ var st = status(v.id); if (!nextV && !st.picked && !st.skipped) nextV = v; });
+  if (!window.MbsRoute){ banner("❌ Part of this page did not load. Close the page and open it again. If it keeps happening, call Lauren: (424) 354-7625"); }
+  // the next stop: first open one that is READY (MbsRoute.nextStop — the one definition, readiness included)
+  var nx = window.MbsRoute ? MbsRoute.nextStop({ vendors: PLAN.vendors, plan: p }, EVENTS) : null;
+  if (nx) nextV = STOPS.find(function(v){ return v.id === nx.id; }) || null;
+  var NEXT_READY = !nx || nx.ready;
   NEXT_ID = nextV ? nextV.id : null;
   STOPS.forEach(function(v, i){
     var st = status(v.id), isNext = nextV && v.id === nextV.id;
-    var cls = st.picked ? "done" : st.skipped ? "done skip" : st.arrived ? "here" : isNext ? "next" : "later";
+    var notReady = !st.picked && !st.skipped && window.MbsRoute && !MbsRoute.isReady(p, v.id);
+    var cls = st.picked ? "done" : st.skipped ? "done skip" : st.arrived ? "here" : (isNext && !notReady) ? "next" : "later";
     var line = st.picked ? '<div class="st picked">✅ Picked up ' + fmtTime(st.picked) + '</div>' : st.skipped ? '<div class="st skipped">⏭ Skipped ' + fmtTime(st.skipped) + '</div>' : st.arrived ? '<div class="arrived-big">✅ You\'ve arrived</div>' : '';
     html += '<div class="stop ' + cls + '" id="stop-' + esc(v.id) + '"><div class="top"><div class="num">' + (i+1) + '</div><div style="flex:1;min-width:0">' +
-      '<div class="name">' + esc(v.name) + (isNext && !st.arrived ? '<span class="next-badge">NEXT</span>' : '') + '</div>' +
+      '<div class="name">' + esc(v.name) + (isNext && !st.arrived && !notReady ? '<span class="next-badge">NEXT</span>' : '') + '</div>' +
+      (notReady ? '<div class="st" style="color:#92400e">⏳ Not ready yet' + (MbsRoute.readyTime(p, v.id) ? ' — ready from ' + esc(MbsRoute.readyTime(p, v.id)) : '') + '</div>' : '') +
       '<div class="meta">' + (v.contact?'👤 ' + esc(v.contact) + '<br>':'') + (v.phone?'<div class="phones">📞 ' + v.phone.split("/").map(function(ph){ ph=ph.trim(); return '<a class="tel" href="tel:' + esc(ph.replace(/[^0-9+]/g,"")) + '" onclick="return confirmCall(this,\'' + esc((v.contact||v.name).replace(/'/g,"")) + '\',\'' + esc(ph) + '\')">' + esc(ph) + '</a>'; }).join(" · ") + '</div>':'') + '📍 ' + esc(v.address) + '</div>' +
       (v.notes?'<div class="vnote">📝 ' + esc(v.notes) + '</div>':'') + line + '</div></div>' +
       '<div class="acts">' +
@@ -209,7 +218,8 @@ function render(){
         '<div style="text-align:center;font-weight:900;font-size:19px">' + esc(nextV.name) + '</div>' +
         '<button class="btn ok" onclick="go(\'picked\',\'' + esc(nextV.id) + '\')">✅ Picked up</button>';
     } else {
-      document.getElementById("next-title").textContent = "➡️ Next stop: " + nextV.name;
+      document.getElementById("next-title").textContent = NEXT_READY ? "➡️ Next stop: " + nextV.name
+        : "⏳ No stop is ready yet. First: " + nextV.name + (MbsRoute.readyTime(p, nextV.id) ? " (ready from " + MbsRoute.readyTime(p, nextV.id) + ")" : "");
       document.getElementById("next-body").innerHTML = '<div class="meta" style="font-size:14px">📍 ' + esc(nextV.address) + (nextV.contact?' · 👤 ' + esc(nextV.contact):'') + '</div>' +
         '<a class="btn" href="' + wazeUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">🧭 Go now — Waze</a>' +
         '<div style="text-align:center;margin-top:6px;font-size:13px"><a href="' + gmapsUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">Google Maps</a></div>';
@@ -304,6 +314,11 @@ function whBackHome(){
 // Waze / Maps link from opening.
 function go(ev, id){
   var st = status(id);
+  if (window.MbsRoute && !st.arrived && !MbsRoute.isReady(PLAN.plan, id)){
+    var nv = STOPS.find(function(v){ return v.id === id; }), rt = MbsRoute.readyTime(PLAN.plan, id);
+    if (!confirm("⏳ " + (nv ? nv.name : id) + " is NOT ready yet" + (rt ? " (ready from " + rt + ")" : "") + ".\n\nGo there anyway?")) return false;
+    report(ev, id); return true;
+  }
   if (NEXT_ID && id !== NEXT_ID && !st.arrived){
     var nx = STOPS.find(function(v){ return v.id === NEXT_ID; }), me = STOPS.find(function(v){ return v.id === id; });
     var verb = ev === "navigate" ? "Drive to" : ev === "arrived" ? "Mark arrived at" : "Mark picked up at";
