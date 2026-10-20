@@ -49,6 +49,16 @@
   .stop{background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:10px;border:2px solid transparent}
   .stop.cur{border-color:var(--purple)}
   .stop.done{opacity:.6}
+  /* 20.10.2026 — Lauren: the driver must SEE it too — the stop he reached turns green with a big
+     "You've arrived", the one stop to tap next is unmistakable, and a tap on another stop asks first. */
+  .stop.here{border:3px solid var(--ok);background:#f0fdf4}
+  .stop.here .num{background:var(--ok)}
+  .stop.next{border:3px solid var(--purple);box-shadow:0 0 0 4px #ede9fe}
+  .stop.later{opacity:.72}
+  .stop.later .acts .btn{background:#eef0f4;color:#6b7280}
+  .arrived-big{font-size:24px;font-weight:900;color:var(--ok);text-align:center;margin:8px 0 2px}
+  .next-badge{display:inline-block;background:var(--purple);color:#fff;font-size:12px;font-weight:900;border-radius:999px;padding:2px 10px;margin-left:6px;vertical-align:middle}
+  #next-card.here{border:3px solid var(--ok);background:#f0fdf4}
   .stop .top{display:flex;gap:10px;align-items:flex-start}
   .stop .num{width:30px;height:30px;border-radius:50%;background:var(--purple);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
   .stop.done .num{background:var(--ok)}
@@ -117,6 +127,7 @@
 "use strict";
 var WORKER = "https://danielle.laurenlev10.workers.dev/";
 var PLAN = null, EVENTS = [], STOPS = [], DRIVER = "", POS = null, WATCH = null, QUEUE = [], OFFLINE = false, RELEASED = true;
+var NEXT_ID = null;                  // the one stop to go to now (first not picked / skipped)
 var AUTO_ARRIVE_SENT = {};           // vendor_id → true once the geofence fired this session
 var RADIUS = { house: 150, street: 600, none: 0 };
 var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
@@ -167,19 +178,21 @@ function render(){
   var started = EVENTS.filter(function(e){ return e.event==="started"; })[0];
   if (!STOPS.length){ document.getElementById("stops").innerHTML = '<div class="empty">' + (RELEASED ? 'No pickups planned yet.<br>Lauren has not selected this week\'s vendors.' : '⏳ The route is not released yet — Lauren is still reviewing the list.<br>Check back later or call her.') + '</div>'; document.getElementById("next-card").style.display="none"; document.getElementById("finish-card").style.display="none"; return; }
   var html = "", nextV = null;
+  STOPS.forEach(function(v){ var st = status(v.id); if (!nextV && !st.picked && !st.skipped) nextV = v; });
+  NEXT_ID = nextV ? nextV.id : null;
   STOPS.forEach(function(v, i){
-    var st = status(v.id), cls = st.picked?"done":st.skipped?"done skip":st.arrived?"cur":"";
-    if (!nextV && !st.picked && !st.skipped) { nextV = v; if (!st.arrived) cls += " cur"; }
-    var line = st.picked ? '<div class="st picked">✅ Picked up ' + fmtTime(st.picked) + '</div>' : st.skipped ? '<div class="st skipped">⏭ Skipped ' + fmtTime(st.skipped) + '</div>' : st.arrived ? '<div class="st arrived">📍 Arrived ' + fmtTime(st.arrived) + '</div>' : '';
+    var st = status(v.id), isNext = nextV && v.id === nextV.id;
+    var cls = st.picked ? "done" : st.skipped ? "done skip" : st.arrived ? "here" : isNext ? "next" : "later";
+    var line = st.picked ? '<div class="st picked">✅ Picked up ' + fmtTime(st.picked) + '</div>' : st.skipped ? '<div class="st skipped">⏭ Skipped ' + fmtTime(st.skipped) + '</div>' : st.arrived ? '<div class="arrived-big">✅ You\'ve arrived</div>' : '';
     html += '<div class="stop ' + cls + '" id="stop-' + esc(v.id) + '"><div class="top"><div class="num">' + (i+1) + '</div><div style="flex:1;min-width:0">' +
-      '<div class="name">' + esc(v.name) + '</div>' +
+      '<div class="name">' + esc(v.name) + (isNext && !st.arrived ? '<span class="next-badge">NEXT</span>' : '') + '</div>' +
       '<div class="meta">' + (v.contact?'👤 ' + esc(v.contact) + '<br>':'') + (v.phone?'<div class="phones">📞 ' + v.phone.split("/").map(function(ph){ ph=ph.trim(); return '<a class="tel" href="tel:' + esc(ph.replace(/[^0-9+]/g,"")) + '" onclick="return confirmCall(this,\'' + esc((v.contact||v.name).replace(/'/g,"")) + '\',\'' + esc(ph) + '\')">' + esc(ph) + '</a>'; }).join(" · ") + '</div>':'') + '📍 ' + esc(v.address) + '</div>' +
       (v.notes?'<div class="vnote">📝 ' + esc(v.notes) + '</div>':'') + line + '</div></div>' +
       '<div class="acts">' +
-        '<div class="two"><a class="btn sm" href="' + wazeUrl(v) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(v.id) + '\')">🧭 Waze</a><a class="btn sm" href="' + gmapsUrl(v) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(v.id) + '\')">🗺️ Google Maps</a></div>' +
+        '<div class="two"><a class="btn sm" href="' + wazeUrl(v) + '" target="_blank" rel="noopener" onclick="return go(\'navigate\',\'' + esc(v.id) + '\')">🧭 Waze</a><a class="btn sm" href="' + gmapsUrl(v) + '" target="_blank" rel="noopener" onclick="return go(\'navigate\',\'' + esc(v.id) + '\')">🗺️ Google Maps</a></div>' +
         (st.picked ? '' :
-          '<div class="two">' + (st.arrived ? '' : '<button class="btn sm warn" onclick="report(\'arrived\',\'' + esc(v.id) + '\')">📍 Arrived</button>') +
-          '<button class="btn sm ok" onclick="report(\'picked\',\'' + esc(v.id) + '\')">✅ Picked up</button>' +
+          '<div class="two">' + (st.arrived ? '' : '<button class="btn sm warn" onclick="go(\'arrived\',\'' + esc(v.id) + '\')">📍 Arrived</button>') +
+          '<button class="btn sm ok" onclick="go(\'picked\',\'' + esc(v.id) + '\')">✅ Picked up</button>' +
           (st.skipped ? '' : '<button class="btn sm bad" onclick="if(confirm(\'Skip ' + esc(v.name).replace(/'/g,"") + '?\')) report(\'skipped\',\'' + esc(v.id) + '\')">⏭ Skip</button>') + '</div>') +
       '</div></div>';
   });
@@ -187,10 +200,19 @@ function render(){
   var nc = document.getElementById("next-card");
   if (nextV){
     nc.style.display = "block";
-    document.getElementById("next-title").textContent = "➡️ Next stop: " + nextV.name;
-    document.getElementById("next-body").innerHTML = '<div class="meta" style="font-size:14px">📍 ' + esc(nextV.address) + (nextV.contact?' · 👤 ' + esc(nextV.contact):'') + '</div>' +
-      '<a class="btn" href="' + wazeUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">🧭 Go now — Waze</a>' +
-      '<div style="text-align:center;margin-top:6px;font-size:13px"><a href="' + gmapsUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">Google Maps</a></div>';
+    var here = !!status(nextV.id).arrived;
+    nc.className = "card" + (here ? " here" : "");
+    if (here){
+      document.getElementById("next-title").textContent = "";
+      document.getElementById("next-body").innerHTML = '<div class="arrived-big" style="font-size:28px">✅ You\'ve arrived</div>' +
+        '<div style="text-align:center;font-weight:900;font-size:19px">' + esc(nextV.name) + '</div>' +
+        '<button class="btn ok" onclick="go(\'picked\',\'' + esc(nextV.id) + '\')">✅ Picked up</button>';
+    } else {
+      document.getElementById("next-title").textContent = "➡️ Next stop: " + nextV.name;
+      document.getElementById("next-body").innerHTML = '<div class="meta" style="font-size:14px">📍 ' + esc(nextV.address) + (nextV.contact?' · 👤 ' + esc(nextV.contact):'') + '</div>' +
+        '<a class="btn" href="' + wazeUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">🧭 Go now — Waze</a>' +
+        '<div style="text-align:center;margin-top:6px;font-size:13px"><a href="' + gmapsUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">Google Maps</a></div>';
+    }
   } else nc.style.display = "none";
   var doneEv = EVENTS.filter(function(e){ return e.event==="done"; }).length;
   document.getElementById("finish-card").style.display = (started && !doneEv) ? "block" : "none";
@@ -276,6 +298,20 @@ function whBackHome(){
   if (!picked || meters(POS, PLAN.warehouse) > (PLAN.warehouse.radius_m || 300)) return;
   WH_ASKED.home = true; whAsk("out");
 }
+// a tap on a stop that is not the next one asks first (Lauren 20.10: "אם הוא לוחץ בטעות על מיקום לא נכון
+// ברשימה אז אני רוצה תקפוץ לו הערה"). A stop he already reached is never "wrong". Returning false keeps a
+// Waze / Maps link from opening.
+function go(ev, id){
+  var st = status(id);
+  if (NEXT_ID && id !== NEXT_ID && !st.arrived){
+    var nx = STOPS.find(function(v){ return v.id === NEXT_ID; }), me = STOPS.find(function(v){ return v.id === id; });
+    var verb = ev === "navigate" ? "Drive to" : ev === "arrived" ? "Mark arrived at" : "Mark picked up at";
+    if (!confirm("⚠️ This is NOT your next stop.\n\nYour next stop: " + (nx ? nx.name : "") + "\nYou tapped: " + (me ? me.name : id) + "\n\n" + verb + " " + (me ? me.name : id) + " anyway?")) return false;
+  }
+  report(ev, id);
+  return true;
+}
+function lastTarget(){ var t = null; EVENTS.forEach(function(e){ if (e.event === "navigate") t = e.vendor_id; }); return t; }
 function confirmCall(a, who, num){
   // a tap next to the address must not dial by itself: the call starts only after a yes
   return confirm("Call " + who + "?\n" + num);
@@ -310,6 +346,8 @@ function startGps(){
     STOPS.forEach(function(v){
       var rad = RADIUS[v.geo_precision||"none"] || 0; if (!rad || v.lat==null) return;
       var st = status(v.id); if (st.arrived || st.picked || st.skipped || AUTO_ARRIVE_SENT[v.id]) return;
+      // passing by a LATER vendor on the way must not mark it: only the next stop, or the one he chose to drive to
+      if (v.id !== NEXT_ID && v.id !== lastTarget()) return;
       if (meters(POS, v) <= rad){ AUTO_ARRIVE_SENT[v.id] = true; report("arrived", v.id, true); }
     });
   }, function(err){
