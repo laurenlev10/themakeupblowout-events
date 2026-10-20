@@ -241,7 +241,7 @@ async function flush(){
       if (r.status===400){ QUEUE.shift(); saveQueue(); if (b.kind === "wh_event") alert("לא נרשם בשעות העבודה: " + ((j&&j.error)||"") + "\nתגיד ללורן.\nNot recorded on the work-hours sheet."); continue; }   // the server refused it for good; retrying forever helps nobody
       if (!r.ok || !j || !j.ok) throw new Error((j&&j.error)||("server " + r.status));
       QUEUE.shift(); saveQueue();
-      if (b.kind === "wh_event") banner((b.tap === "in" ? "🏭 נרשם \"הגעתי\" (איסוף) בשעות העבודה" : "🏁 נרשם \"יצאתי\" בשעות העבודה") + (j.summary ? " · היום " + Math.floor(j.summary.today.minutes/60) + ":" + String(j.summary.today.minutes%60).padStart(2,"0") : ""));
+      if (b.kind === "wh_event") banner((b.tap === "in" ? "🏭 נרשם \"הגעתי\" בשעות העבודה" : "🏁 נרשם \"יצאתי\" בשעות העבודה") + (j.summary ? " · היום " + Math.floor(j.summary.today.minutes/60) + ":" + String(j.summary.today.minutes%60).padStart(2,"0") : ""));
     }
     syncLine();
   }catch(e){ document.getElementById("sync-line").innerHTML = '<b>⏳ ' + QUEUE.length + ' not sent</b> — ' + esc(e.message||e); }
@@ -250,12 +250,17 @@ async function flush(){
 function startRoute(){ report("started", ""); whAsk("in"); }
 // ── the warehouse hours sheet: ask, never assume ───────────────────────────────
 var WH_PENDING = null, WH_ASKED = { in:false, out:false, home:false };
-function whAsk(kind){
+async function whAsk(kind){
   if (!driverValue()) return;   // no name, nothing to clock
+  // already clocked in / already out → nothing to ask (the sheet, via the Worker, says which)
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_warehouse_hours", worker: driverValue(), days:1 }) });
+    var j = await r.json(); if (r.ok && j.ok && j.summary && j.summary.status === kind) return;
+  }catch(e){}
   WH_PENDING = kind; WH_ASKED[kind] = true;
   var t = document.getElementById("wh-ask-text");
   t.innerHTML = kind === "in"
-    ? "🏭 <b>התחלת יום איסוף — לרשום גם בלוג שעות העבודה?</b> (משמרת מחסן פתוחה תיסגר עכשיו, והאיסוף יתחיל)<br><span style=\"font-weight:600;font-size:13px\">You started a pickup day — also clock in on the work-hours sheet?</span>"
+    ? "🏭 <b>התחלת יום איסוף — לרשום \"הגעתי\" בלוג שעות העבודה?</b><br><span style=\"font-weight:600;font-size:13px\">You started a pickup day — also clock in on the work-hours sheet?</span>"
     : "🏁 <b>סיימת את יום העבודה? לרשום \"יצאתי\" בלוג שעות העבודה?</b><br><span style=\"font-weight:600;font-size:13px\">Finished your work day — clock out on the work-hours sheet?</span>";
   document.getElementById("wh-yes").textContent = kind === "in" ? "כן, רשום הגעתי · Yes, clock in" : "כן, רשום יצאתי · Yes, clock out";
   document.getElementById("wh-ask").style.display = "block";
@@ -267,7 +272,7 @@ function whAnswer(yes){
   if (!yes || !kind) return;
   var body = { kind:"wh_event", worker: driverValue(), tap: kind, at: new Date().toISOString(), note: kind === "in" ? "מדף האיסוף" : "מדף האיסוף — סוף יום האיסוף",
                lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null };
-  if (kind === "in"){ body.task = "pickup"; body.switch = true; }
+  // 20.10 09:42 — one kind of shift, no task: a plain clock-in (the Worker ignores a second one within 2 min)
   QUEUE.push(body); saveQueue(); flush();
 }
 // back at the warehouse with the route still open → "finished your day?" (once; foreground only, like auto-arrive)

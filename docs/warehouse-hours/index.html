@@ -92,14 +92,14 @@
     <div class="note">השעות נרשמות על השם שלך. לורן מקבלת הודעה כשאתה מתחיל וכשאתה מסיים.<span class="en">The hours are kept under your name. Lauren gets a text when you start and when you finish.</span></div>
   </div>
 
-  <div id="now" class="now out"><div class="st">לא בעבודה</div><div class="since">0:00</div><div class="sub">בחר מה אתה עושה ולחץ "הגעתי"</div>
+  <div id="now" class="now out"><div class="st">לא בעבודה</div><div class="since">0:00</div><div class="sub">לחץ "הגעתי" כשאתה מתחיל</div>
       <div id="now-pending" class="now-pending"></div></div>
 
   <div class="card" id="in-card">
-    <h2>מה אתה עושה היום? <span class="en">What is this shift for?</span></h2>
-    <div class="tasks" id="tasks"></div>
+    <div id="tasks-wrap"><h2>מה אתה עושה היום? <span class="en">What is this shift for?</span></h2>
+    <div class="tasks" id="tasks"></div></div>
     <button class="btn big in" id="btn-in" onclick="tap('in')">🏭 הגעתי · Clock in</button>
-    <div class="note">קודם בוחרים מה העבודה, ואז לוחצים "הגעתי". המיקום של הטלפון נשמר עם הלחיצה.<span class="en">Pick the task first, then tap "Clock in". The phone's position is saved with the tap.</span></div>
+    <div class="note">לוחצים "הגעתי" כשמתחילים ו"יצאתי" כשמסיימים — לא משנה מה העבודה. המיקום של הטלפון נשמר עם הלחיצה.<span class="en">Tap "Clock in" when you start and "Clock out" when you finish — whatever the work. The phone's position is saved with the tap.</span></div>
   </div>
 
   <div class="card" id="note-card">
@@ -172,7 +172,9 @@ async function loadRoster(){
   renderTasks();
 }
 function renderTasks(){
-  if (!TASKS.length) TASKS = [{ id:"warehouse", label:"עבודה במחסן", en:"Warehouse work" }];
+  if (!TASKS.length) TASKS = [{ id:"warehouse", label:"עבודה", en:"Work" }];
+  // 20.10 09:42 — Lauren: "כניסה למשמרת ויציאה בלי קשר על מה הוא עובד": one task in the settings = no choice shown
+  document.getElementById("tasks-wrap").style.display = TASKS.length > 1 ? "block" : "none";
   // ?task=mystery_box from the crew hub (/work/) preselects the job — until he picks another one here
   try{ var qt = new URLSearchParams(location.search).get("task"); if (qt && !URL_TASK_USED && TASKS.some(function(t){ return t.id === qt; })){ TASK = qt; ls("wh_task", qt); URL_TASK_USED = true; } }catch(e){}
   if (!TASK || !TASKS.some(function(t){ return t.id === TASK; })) TASK = ls("wh_task") && TASKS.some(function(t){ return t.id === ls("wh_task"); }) ? ls("wh_task") : TASKS[0].id;
@@ -216,7 +218,7 @@ function render(){
   document.getElementById("days").innerHTML = days.length ? days.map(function(d){
     return '<div class="day"><b>' + esc(fmtDay(d.date)) + '</b> — <b>' + hm(d.minutes) + '</b>' + d.shifts.map(function(s){
       var notes = [s.in && s.in.note, s.out && s.out.note].filter(Boolean).map(esc).join(" · ");
-      return '<div class="note">' + esc(taskLabel(s.task)) + ': ' + esc(s.in_hhmm || "?") + ' → ' + (s.open ? '<span class="pill">עדיין בעבודה</span>' : esc(s.out_hhmm || "?")) + (notes ? ' 💬 ' + notes : '') + (s.open ? '' : (s.paid ? ' <span class="pill" style="background:#dcfce7;color:#166534">שולם</span>' : '')) +
+      return '<div class="note">' + (TASKS.length > 1 ? esc(taskLabel(s.task)) + ': ' : '') + esc(s.in_hhmm || "?") + ' → ' + (s.open ? '<span class="pill">עדיין בעבודה</span>' : esc(s.out_hhmm || "?")) + (notes ? ' 💬 ' + notes : '') + (s.open ? '' : (s.paid ? ' <span class="pill" style="background:#dcfce7;color:#166534">שולם</span>' : '')) +
         (s.flags.indexOf("no_out") >= 0 ? ' <span class="pill bad">בלי יציאה — לא נספר</span>' : '') + (s.flags.indexOf("no_in") >= 0 ? ' <span class="pill bad">יציאה בלי כניסה</span>' : '') + (s.flags.indexOf("too_long") >= 0 ? ' <span class="pill bad">יותר מ-' + ((S.settings && S.settings.max_shift_h) || 12) + ' שעות?</span>' : '') + '</div>';
     }).join("") + '</div>';
   }).join("") : '<div class="empty">עדיין אין שעות רשומות.</div>';
@@ -225,9 +227,9 @@ function renderNow(){
   var n = document.getElementById("now");
   var st = SUM ? SUM.status : "out";
   n.className = "now " + st;
-  n.querySelector(".st").innerHTML = st === "in" ? 'בעבודה — ' + esc(taskLabel(SUM.open_task)) + ' <span class="en">Clocked in</span>' : 'לא בעבודה <span class="en">Clocked out</span>';
+  n.querySelector(".st").innerHTML = st === "in" ? 'בעבודה' + (TASKS.length > 1 ? ' — ' + esc(taskLabel(SUM.open_task)) : '') + ' <span class="en">Clocked in</span>' : 'לא בעבודה <span class="en">Clocked out</span>';
   n.querySelector(".since").textContent = (SUM && SUM.since) ? hmsSince(SUM.since) : "0:00";
-  n.querySelector(".sub").textContent = (SUM && SUM.since) ? (st === "in" ? "מאז " + fmtTime(SUM.since) : "יצאת ב-" + fmtTime(SUM.since)) : 'בחר מה אתה עושה ולחץ "הגעתי"';
+  n.querySelector(".sub").textContent = (SUM && SUM.since) ? (st === "in" ? "מאז " + fmtTime(SUM.since) : "יצאת ב-" + fmtTime(SUM.since)) : 'לחץ "הגעתי" כשאתה מתחיל';
   document.getElementById("in-card").style.display = st === "in" ? "none" : "block";
   document.getElementById("out-card").style.display = st === "in" ? "block" : "none";
   // whether the office has the tap — a tap waiting on the phone is impossible to miss

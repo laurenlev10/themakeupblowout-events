@@ -528,11 +528,15 @@ async function startTrip(){
 }
 // ── the warehouse hours sheet: ask, never assume (Lauren 20.10) ─────────────
 var WH_PENDING = null;
-function whAsk(kind, to){
+async function whAsk(kind, to){
   if (!driverName()) return;
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_warehouse_hours", worker: driverName(), days:1 }) });
+    var j = await r.json(); if (r.ok && j.ok && j.summary && j.summary.status === kind) return;   // already in / already out
+  }catch(e){}
   WH_PENDING = kind;
   document.getElementById("wh-ask-text").innerHTML = kind === "in"
-    ? "🏭 <b>יצאת לנסיעה" + (to ? " ל-" + esc(to) : "") + " — לרשום גם בלוג שעות העבודה (LONG DISTANCE)?</b><span class=\"es\" style=\"direction:ltr;text-align:left\">Trip started — also clock in on the work-hours sheet as LONG DISTANCE?</span>"
+    ? "🏭 <b>יצאת לנסיעה" + (to ? " ל-" + esc(to) : "") + " — לרשום \"הגעתי\" בלוג שעות העבודה?</b><span class=\"es\" style=\"direction:ltr;text-align:left\">Trip started — also clock in on the work-hours sheet?</span>"
     : "🏁 <b>סיימת את יום העבודה? לרשום \"יצאתי\" בלוג שעות העבודה?</b><span class=\"es\" style=\"direction:ltr;text-align:left\">Done for today — clock out on the work-hours sheet?</span>";
   document.getElementById("wh-yes").textContent = kind === "in" ? "כן, רשום הגעתי · Yes" : "כן, רשום יצאתי · Yes";
   document.getElementById("wh-ask").style.display = "block";
@@ -544,10 +548,10 @@ function whAnswer(yes){
   if (!yes || !kind) return;
   var body = { kind:"wh_event", worker: driverName(), tap: kind, at: new Date().toISOString(), note: kind === "in" ? "מיומן הנהג (Start trip)" : "מיומן הנהג (חתימה על היום)",
                lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null };
-  if (kind === "in"){ body.task = "long_distance"; body.switch = true; }
+  // 20.10 09:42 — one kind of shift, no task: a plain clock-in
   fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body) })
     .then(function(r){ return r.json().then(function(j){ return { ok: r.ok && j.ok, j: j }; }); })
-    .then(function(x){ banner(x.ok ? (kind === "in" ? "🏭 נרשם \"הגעתי\" (LONG DISTANCE) בשעות העבודה" : "🏁 נרשם \"יצאתי\" בשעות העבודה") : "⚠️ לא נרשם בשעות העבודה: " + (x.j && x.j.error || "") + " — תגיד ללורן", x.ok ? "info" : "warn"); })
+    .then(function(x){ banner(x.ok ? (kind === "in" ? "🏭 נרשם \"הגעתי\" בשעות העבודה" : "🏁 נרשם \"יצאתי\" בשעות העבודה") : "⚠️ לא נרשם בשעות העבודה: " + (x.j && x.j.error || "") + " — תגיד ללורן", x.ok ? "info" : "warn"); })
     .catch(function(){ banner("⚠️ לא נרשם בשעות העבודה (אין קליטה) — רשום בדף שעות העבודה כשיש אות", "warn"); });
 }
 async function arriveTrip(){

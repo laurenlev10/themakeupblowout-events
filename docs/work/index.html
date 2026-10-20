@@ -60,7 +60,7 @@
   <div class="menu" id="menu">
     <a class="go ld" id="go-ld" href="../driver-log/"><span class="ic">🚛</span><span><div class="t">LONG DISTANCE</div><div class="s">נסיעה ארוכה · יומן הנהג (DOT) — נוהג / בתפקיד / לא בתפקיד</div></span></a>
     <!-- 20.10 09:38 — Lauren: "העבודה במחסן והמיסטרי בוקס זה בעצם אותו הדבר, תמחק את המיסטרי בוקס" — one warehouse button -->
-    <a class="go mb" id="go-wh" href="../warehouse-hours/?task=warehouse"><span class="ic">🏭</span><span><div class="t">WAREHOUSE · מחסן</div><div class="s">עבודה במחסן, Mystery Box, הכול — הגעתי / יצאתי</div></span></a>
+    <a class="go mb" id="go-wh" href="../warehouse-hours/"><span class="ic">🏭</span><span><div class="t">הגעתי / יצאתי</div><div class="s">כניסה ויציאה מהמשמרת — לא משנה מה העבודה · Clock in / out</div></span></a>
     <a class="go pk" id="go-pk" href="../pickup/"><span class="ic">🚚</span><span><div class="t">PICKUP DAY</div><div class="s" id="pk-sub">יום איסוף — העצירות, הניווט, והשעות נרשמות מזה</div></span></a>
   </div>
 
@@ -87,7 +87,7 @@ function setName(n){
   var q = n ? "name=" + encodeURIComponent(n) : "";
   document.getElementById("go-ld").href = "../driver-log/" + (q ? "?" + q : "");
   document.getElementById("go-pk").href = "../pickup/" + (q ? "?" + q : "");
-  document.getElementById("go-wh").href = "../warehouse-hours/?task=warehouse" + (q ? "&" + q : "");
+  document.getElementById("go-wh").href = "../warehouse-hours/" + (q ? "?" + q : "");
   document.querySelectorAll(".go").forEach(function(a){ a.setAttribute("aria-disabled", n ? "false" : "true"); });
 }
 function whoChanged(){ setName(document.getElementById("who").value.trim()); loadStatus(); }
@@ -130,7 +130,7 @@ async function loadStatus(){
     S = j; var sm = j.summary, task = ((j.settings && j.settings.tasks) || []).filter(function(t){ return t.id === sm.open_task; })[0];
     el.className = "now " + sm.status; el.style.display = "flex";
     el.innerHTML = sm.status === "in"
-      ? '<span>🟢 בעבודה — ' + esc(task ? task.label : sm.open_task) + '<small>מאז ' + esc(fmtTime(sm.since)) + ' · ' + hm(sm.open_minutes) + '</small></span><span>היום ' + hm(sm.today.minutes) + '</span>'
+      ? '<span>🟢 בעבודה' + (((j.settings && j.settings.tasks) || []).length > 1 ? ' — ' + esc(task ? task.label : sm.open_task) : '') + '<small>מאז ' + esc(fmtTime(sm.since)) + ' · ' + hm(sm.open_minutes) + '</small></span><span>היום ' + hm(sm.today.minutes) + '</span>'
       : '<span>⚪ לא בעבודה<small>' + (sm.since ? 'יצאת ב-' + esc(fmtTime(sm.since)) : 'עוד לא לחצת היום') + '</small></span><span>היום ' + hm(sm.today.minutes) + '</span>';
   }catch(e){ el.className = "now"; el.style.display = "flex"; el.innerHTML = '<span>⚠️ לא הצלחתי לקרוא את המצב<small>' + esc(e.message||e) + '</small></span>'; }
 }
