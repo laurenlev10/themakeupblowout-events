@@ -60,7 +60,7 @@
   <div class="menu" id="menu">
     <a class="go ld" id="go-ld" href="../driver-log/"><span class="ic">🚛</span><span><div class="t">LONG DISTANCE</div><div class="s">נסיעה ארוכה · יומן הנהג (DOT) — נוהג / בתפקיד / לא בתפקיד</div></span></a>
     <a class="go mb" id="go-mb" href="../warehouse-hours/?task=mystery_box"><span class="ic">🎁</span><span><div class="t">MYSTERY BOX</div><div class="s">הגעתי / יצאתי — השעות נרשמות על Mystery Box</div></span></a>
-    <a class="go pk" id="go-pk" href="../pickup/"><span class="ic">🚚</span><span><div class="t">PICKUP DAY</div><div class="s">יום איסוף — העצירות, הניווט, והשעות נרשמות מזה</div></span></a>
+    <a class="go pk" id="go-pk" href="../pickup/"><span class="ic">🚚</span><span><div class="t">PICKUP DAY</div><div class="s" id="pk-sub">יום איסוף — העצירות, הניווט, והשעות נרשמות מזה</div></span></a>
     <a class="go wh" id="go-wh" href="../warehouse-hours/?task=warehouse"><span class="ic">🏭</span><span><div class="t">עבודה במחסן · שעות</div><div class="s">כל שאר העבודה — הגעתי / יצאתי</div></span></a>
   </div>
 
@@ -101,6 +101,7 @@ async function loadNames(){
       fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"get_pickup_plan", driver:true }) }).then(function(r){ return r.json(); }) ]);
     if (rs[0] && rs[0].ok){ S = rs[0]; names = names.concat((rs[0].settings && rs[0].settings.workers) || []); }
     if (rs[1] && rs[1].ok && rs[1].drivers) names = names.concat(rs[1].drivers);
+    if (rs[1] && rs[1].ok) renderPickup(rs[1]);
     names = names.filter(function(n, i, a){ return n && n !== "DEMO" && a.indexOf(n) === i; });
     if (names.length) ls("crew_names", JSON.stringify(names));
   }catch(e){}
@@ -109,6 +110,17 @@ async function loadNames(){
   document.getElementById("who").innerHTML = '<option value="">בחר שם · pick your name</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
   setName(names.indexOf(cur) >= 0 ? cur : "");
   if (!names.length) document.getElementById("hdr-sub").textContent = "⚠️ רשימת השמות לא נטענה — תתקשר ללורן";
+}
+// 20.10 — Lauren: "תוסיף פה גם את הלינק ליום האיסוף החדש שאני מייצרת לו כל פעם". The pickup page's
+// address never changes; what changes is the DAY Lauren built and released on it. The button says
+// which day is waiting (date, title, stops) — or that nothing is released yet — from the same answer
+// the driver page reads (get_pickup_plan, driver:true: stops only once Lauren pressed "אשר ושלח לנהג").
+function renderPickup(j){
+  var el = document.getElementById("pk-sub"), p = (j.plan && j.plan.plan) || {}, stops = (p.stops || []).length;
+  var when = p.date ? new Date(p.date + "T12:00:00").toLocaleDateString("he-IL", { weekday:"long", day:"numeric", month:"numeric" }) : "";
+  if (j.released === false) el.innerHTML = "⏳ יום האיסוף הבא עוד לא שוחרר — לורן עוד בודקת את הרשימה" + (when ? " (" + esc(when) + ")" : "");
+  else if (stops) el.innerHTML = "📅 <b>" + esc(when) + "</b>" + (p.title ? " · " + esc(p.title) : "") + " · " + stops + " עצירות — פתוח ומוכן";
+  else el.innerHTML = "אין יום איסוף מתוכנן כרגע";
 }
 async function loadStatus(){
   var el = document.getElementById("now");
