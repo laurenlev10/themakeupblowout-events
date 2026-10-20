@@ -180,12 +180,25 @@
   <div class="card" id="track-card">
     <div id="track-line" style="font-weight:800;font-size:15px">📡 Background GPS… <span class="es">מעקב ברקע…</span></div>
     <details id="track-setup" style="margin-top:6px"><summary style="font-size:14px">How to set it up (one time) · איך מחברים (פעם אחת)</summary>
-      <ol style="font-size:14px;line-height:1.7;padding-inline-start:20px;margin:6px 0">
-        <li>Install <b>Traccar Client</b> (free — App Store / Google Play).<span class="es">להתקין Traccar Client (חינם).</span></li>
-        <li><b>Device identifier</b>: your name exactly as in the list above — <b id="track-name">your name</b>.<span class="es">Device identifier: השם שלך בדיוק כמו ברשימה.</span></li>
-        <li><b>Server URL</b>: <span style="user-select:all;direction:ltr;background:#eef0f4;border-radius:6px;padding:2px 6px">https://danielle.laurenlev10.workers.dev/traccar</span> <button class="btn sm" type="button" onclick="copyText('https://danielle.laurenlev10.workers.dev/traccar')">📋</button></li>
-        <li>Frequency 60 seconds, high accuracy. Location permission: <b>Always</b>.<span class="es">תדירות 60 שניות, דיוק גבוה, הרשאת מיקום "תמיד".</span></li>
-        <li>Turn the service <b>ON</b>. Leave it on during trips — it works with the page closed and your driving app open.<span class="es">להדליק את השירות ולהשאיר אותו דולק בנסיעות — עובד גם כשהדף סגור והניווט פתוח.</span></li>
+      <!-- 20.10.2026 — Lauren: "משהו בהוראות לא נכון, הלינק לא עובד". The steps said "App Store / Google
+           Play" with no link, and "Frequency 60 seconds, high accuracy" — the app (v10) has no such
+           fields: it is "Location accuracy: Highest" + "Interval (seconds)", and the app's interval only
+           holds at Highest. Labels below are the app's own (traccar-client lib/l10n/app_en.arb). This is
+           the ONE copy of the steps — the dashboard links here instead of keeping its own. -->
+      <ol id="track-steps" style="font-size:14px;line-height:1.75;padding-inline-start:20px;margin:6px 0">
+        <li>Install <b>Traccar Client</b> (free):
+          <a href="https://apps.apple.com/app/traccar-client/id843156974" target="_blank" rel="noopener"><b>iPhone</b></a> ·
+          <a href="https://play.google.com/store/apps/details?id=org.traccar.client" target="_blank" rel="noopener"><b>Android</b></a>
+          <span class="es">להתקין Traccar Client (חינם) מהלינק המתאים לטלפון.</span></li>
+        <li>Open it → <b>Change settings</b>.<span class="es">לפתוח את האפליקציה ← Change settings.</span></li>
+        <li><b>Device identifier</b>: delete the number that is there and type your name exactly as in the list above — <b id="track-name">your name</b>.<span class="es">למחוק את המספר ולכתוב את השם שלך בדיוק כמו ברשימה.</span></li>
+        <li><b>Server URL</b>: delete <span dir="ltr">http://demo.traccar.org:5055</span> and paste:<br>
+          <span dir="ltr" style="user-select:all;background:#eef0f4;border-radius:6px;padding:2px 6px;display:inline-block;max-width:100%;word-break:break-all">https://danielle.laurenlev10.workers.dev/traccar</span>
+          <button class="btn sm" type="button" onclick="copyText('https://danielle.laurenlev10.workers.dev/traccar')">📋 Copy</button>
+          <span class="es">למחוק את הכתובת שיש שם ולהדביק את הכתובת הזו (כפתור Copy). לא לפתוח אותה בדפדפן — היא לאפליקציה בלבד.</span></li>
+        <li><b>Location accuracy</b>: <b>Highest</b> · <b>Interval (seconds)</b>: <b>60</b> · <b>Distance (meters)</b>: <b>0</b>.<span class="es">דיוק Highest, מרווח 60 שניות, מרחק 0.</span></li>
+        <li>Back on the main screen turn <b>Continuous tracking</b> ON. When the phone asks for location, choose <b>Always</b> (iPhone: <i>Allow While Using</i>, then Settings → Traccar Client → Location → <i>Always</i>; Android: <i>Allow all the time</i>).<span class="es">במסך הראשי להדליק Continuous tracking. הרשאת מיקום: תמיד (Always).</span></li>
+        <li>Check: after a minute or two refresh this page — the line at the top of this card must say <b>✅ Background GPS is ON</b>. If it does not, the name or the address is wrong — call Eli.<span class="es">בדיקה: אחרי דקה-שתיים לרענן את הדף — השורה למעלה צריכה להגיד ✅ Background GPS is ON. אם לא — השם או הכתובת לא נכונים; להתקשר לאלי.</span></li>
       </ol>
       <div class="note">GPS only shows where the truck is. Your hours still come from the buttons on this page — tap them as before.<span class="es">המיקום רק מראה איפה המשאית. השעות עדיין נרשמות מהכפתורים בדף הזה.</span></div>
     </details>
@@ -441,6 +454,8 @@ function headSummary(){
   el.textContent = parts.length ? parts.join(" · ") + (done ? "" : "  — missing details, tap · חסרים פרטים") : "Not filled yet — tap to fill · עוד לא מולא — לחץ למילוי";
 }
 // the background tracker (Traccar Client app → the Worker), as the Worker last saw it
+// the dashboard links straight to the setup steps: /driver-log/#track-setup opens them
+try{ if (location.hash === "#track-setup") document.addEventListener("DOMContentLoaded", function(){ var d = document.getElementById("track-setup"); if (d){ d.open = true; d.scrollIntoView(); } }); }catch(e){}
 function renderTrack(){
   var el = document.getElementById("track-line"); if (!el || !S) return;
   document.getElementById("track-name").textContent = S.driver || driverName() || "your name";
