@@ -81,6 +81,13 @@
 </div>
 <div class="wrap">
   <div id="banner" class="banner" style="display:none"></div>
+  <!-- 20.10.2026 — Lauren: "אם הוא יוצא ליום איסוף ולוחץ על המיקום הראשוני, האם זה יכול גם לדווח למשמרת
+       השעות שלו?… וכשהוא מגיע חזרה הביתה, שהוא ישאל אם הוא סיים את יום העבודה שלו". The pickup day asks;
+       the warehouse hours sheet (kind wh_event, same Worker) gets the answer. Never without a yes. -->
+  <div id="wh-ask" class="banner" style="display:none;background:#ccfbf1;border-color:#5eead4;color:#134e4a">
+    <div id="wh-ask-text" style="font-size:15px"></div>
+    <div style="display:flex;gap:8px;margin-top:8px"><button class="btn ok" style="margin:0;min-height:46px;font-size:15px" id="wh-yes" onclick="whAnswer(true)">✅</button><button class="btn" style="margin:0;min-height:46px;font-size:15px;background:#eef0f4;color:#1f2937" onclick="whAnswer(false)">לא · No</button></div>
+  </div>
 
   <div class="card" id="who-card">
     <label>Your name / Tu nombre (so Lauren knows who is driving)</label>
@@ -134,6 +141,7 @@ async function load(){
     if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
     RELEASED = j.released !== false;
     if (j.drivers && j.drivers.length){ ls("pickup_drivers", JSON.stringify(j.drivers)); fillDrivers(j.drivers); }
+    if (j.plan) j.plan.warehouse = j.warehouse || null;
     ls("pickup_plan_cache", JSON.stringify({ plan:j.plan, events:j.events||[], released:RELEASED, at:new Date().toISOString() }));
     OFFLINE = false;
   }catch(e){
@@ -227,20 +235,51 @@ async function flush(){
       var b = QUEUE[0];
       var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(b) });
       var j = null; try{ j = await r.json(); }catch(e){}
-      if (r.status===400){ QUEUE.shift(); saveQueue(); continue; }   // the server refused it for good; retrying forever helps nobody
+      if (r.status===400){ QUEUE.shift(); saveQueue(); if (b.kind === "wh_event") alert("לא נרשם בשעות העבודה: " + ((j&&j.error)||"") + "\nתגיד ללורן.\nNot recorded on the work-hours sheet."); continue; }   // the server refused it for good; retrying forever helps nobody
       if (!r.ok || !j || !j.ok) throw new Error((j&&j.error)||("server " + r.status));
       QUEUE.shift(); saveQueue();
+      if (b.kind === "wh_event") banner((b.tap === "in" ? "🏭 נרשם \"הגעתי\" (איסוף) בשעות העבודה" : "🏁 נרשם \"יצאתי\" בשעות העבודה") + (j.summary ? " · היום " + Math.floor(j.summary.today.minutes/60) + ":" + String(j.summary.today.minutes%60).padStart(2,"0") : ""));
     }
     syncLine();
   }catch(e){ document.getElementById("sync-line").innerHTML = '<b>⏳ ' + QUEUE.length + ' not sent</b> — ' + esc(e.message||e); }
   finally{ FLUSHING = false; }
 }
-function startRoute(){ report("started", ""); }
+function startRoute(){ report("started", ""); whAsk("in"); }
+// ── the warehouse hours sheet: ask, never assume ───────────────────────────────
+var WH_PENDING = null, WH_ASKED = { in:false, out:false, home:false };
+function whAsk(kind){
+  if (!driverValue()) return;   // no name, nothing to clock
+  WH_PENDING = kind; WH_ASKED[kind] = true;
+  var t = document.getElementById("wh-ask-text");
+  t.innerHTML = kind === "in"
+    ? "🏭 <b>התחלת יום איסוף — לרשום גם בלוג שעות העבודה?</b> (משמרת מחסן פתוחה תיסגר עכשיו, והאיסוף יתחיל)<br><span style=\"font-weight:600;font-size:13px\">You started a pickup day — also clock in on the work-hours sheet?</span>"
+    : "🏁 <b>סיימת את יום העבודה? לרשום \"יצאתי\" בלוג שעות העבודה?</b><br><span style=\"font-weight:600;font-size:13px\">Finished your work day — clock out on the work-hours sheet?</span>";
+  document.getElementById("wh-yes").textContent = kind === "in" ? "כן, רשום הגעתי · Yes, clock in" : "כן, רשום יצאתי · Yes, clock out";
+  document.getElementById("wh-ask").style.display = "block";
+  try{ if (navigator.vibrate) navigator.vibrate([200,100,200]); }catch(e){}
+}
+function whAnswer(yes){
+  document.getElementById("wh-ask").style.display = "none";
+  var kind = WH_PENDING; WH_PENDING = null;
+  if (!yes || !kind) return;
+  var body = { kind:"wh_event", worker: driverValue(), tap: kind, at: new Date().toISOString(), note: kind === "in" ? "מדף האיסוף" : "מדף האיסוף — סוף יום האיסוף",
+               lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null };
+  if (kind === "in"){ body.task = "pickup"; body.switch = true; }
+  QUEUE.push(body); saveQueue(); flush();
+}
+// back at the warehouse with the route still open → "finished your day?" (once; foreground only, like auto-arrive)
+function whBackHome(){
+  if (WH_ASKED.home || WH_PENDING || !PLAN || !PLAN.warehouse || !POS || POS.acc > 300) return;
+  if (!EVENTS.some(function(e){ return e.event === "started"; })) return;
+  var picked = EVENTS.filter(function(e){ return e.event === "picked"; }).length;
+  if (!picked || meters(POS, PLAN.warehouse) > (PLAN.warehouse.radius_m || 300)) return;
+  WH_ASKED.home = true; whAsk("out");
+}
 function confirmCall(a, who, num){
   // a tap next to the address must not dial by itself: the call starts only after a yes
   return confirm("Call " + who + "?\n" + num + "\n\n¿Llamar a " + who + "?");
 }
-function finishRoute(){ if (confirm("Finish the route? Lauren gets a summary.")) report("done", ""); }
+function finishRoute(){ if (confirm("Finish the route? Lauren gets a summary.")){ report("done", ""); whAsk("out"); } }
 
 // ── live position → Lauren's map (D1 on the Worker; no SMS, no log) ──────────
 var LAST_PING = { at: 0, lat: null, lng: null };
@@ -266,7 +305,7 @@ function startGps(){
     POS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:Math.round(p.coords.accuracy||0) };
     document.getElementById("gps-line").innerHTML = '<span class="pill gps">📡 GPS on</span> ±' + POS.acc + ' m';
     if (!PLAN || POS.acc > 300) return;
-    ping(false);
+    ping(false); whBackHome();
     STOPS.forEach(function(v){
       var rad = RADIUS[v.geo_precision||"none"] || 0; if (!rad || v.lat==null) return;
       var st = status(v.id); if (st.arrived || st.picked || st.skipped || AUTO_ARRIVE_SENT[v.id]) return;

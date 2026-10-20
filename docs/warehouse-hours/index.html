@@ -110,12 +110,19 @@
 
   <div class="card" id="out-card">
     <button class="btn big out" id="btn-out" onclick="tap('out')">🏁 יצאתי · Clock out</button>
-    <details id="late-box" style="margin-top:10px"><summary>⏱ שכחת ללחוץ? זה קרה קודם… <span class="en">Forgot to tap? It happened earlier…</span></summary>
+  </div>
+
+  <!-- 20.10.2026 — Yonatan's first real tap: he tapped "הגעתי" at 16:08, then found this box (it sat inside
+       the clock-out card, hidden until the first tap) and chose "an hour ago" — nothing happened. Now it is
+       its own card, visible in both states, and a late time chosen AFTER the tap corrects that tap. -->
+  <div class="card" id="late-card">
+    <details id="late-box"><summary>⏱ שכחת ללחוץ? זה קרה קודם… <span class="en">Forgot to tap? It happened earlier…</span></summary>
       <div class="two" style="margin-top:8px"><button class="btn sec sm" onclick="setLate(15)">לפני 15 דק׳</button><button class="btn sec sm" onclick="setLate(30)">לפני 30 דק׳</button><button class="btn sec sm" onclick="setLate(60)">לפני שעה</button></div>
       <label>או השעה המדויקת <span class="en">or the exact time</span></label>
       <input type="time" id="late-time" onchange="lateFromTime()">
       <div class="note" id="late-line"></div>
-      <div class="note">הלחיצה הבאה (הגעתי / יצאתי) תירשם בזמן הזה, ולורן תראה שהוזן באיחור.<span class="en">The next tap is recorded at that time, marked as a late entry.</span></div>
+      <button class="btn sm" id="btn-fix" style="display:none" onclick="fixLast()"></button>
+      <div class="note" id="late-help">לפני הלחיצה: הלחיצה הבאה (הגעתי / יצאתי) תירשם בזמן הזה. אחרי שכבר לחצת: תוכל לתקן את הלחיצה האחרונה לזמן הזה. לורן רואה שהוזן באיחור.<span class="en">Before tapping: the next tap is recorded at that time. After you tapped: you can move your last tap to that time. Lauren sees it was entered late.</span></div>
     </details>
   </div>
 
@@ -247,8 +254,41 @@ var LATE_AT = null;
 function setLate(min){
   if (!min){ clearLate(); return; }
   LATE_AT = Date.now() - min * 60000;
-  document.getElementById("late-line").textContent = "⏱ הלחיצה הבאה תירשם בשעה " + fmtTime(new Date(LATE_AT).toISOString());
+  var when = fmtTime(new Date(LATE_AT).toISOString());
+  var last = lastTap();
+  var fix = document.getElementById("btn-fix");
+  if (last && Date.now() - Date.parse(last.at) < 12 * 3600000){
+    // he already tapped (just now, or earlier today): the honest reading is "move that tap"
+    document.getElementById("late-line").textContent = "⏱ הלחיצה האחרונה שלך (" + (last.kind === "in" ? "הגעתי" : "יצאתי") + " " + fmtTime(last.at) + ") — להזיז אותה ל-" + when + "?";
+    fix.style.display = "flex"; fix.textContent = "🕒 כן, " + (last.kind === "in" ? "הגעתי" : "יצאתי") + " בעצם ב-" + when + " · Yes, move my last tap";
+  } else {
+    document.getElementById("late-line").textContent = "⏱ הלחיצה הבאה תירשם בשעה " + when;
+    fix.style.display = "none";
+  }
   document.getElementById("in-card").style.display = "block"; document.getElementById("out-card").style.display = "block";
+}
+// the newest tap of this worker the Worker knows about (from the days it returned), or one waiting in the queue
+function lastTap(){
+  var q = QUEUE.filter(function(b){ return b.kind === "wh_event" && b.worker === NAME; });
+  if (q.length) return { at: q[q.length-1].at, kind: q[q.length-1].tap, queued: true };
+  var days = (S && S.days) || [], best = null;
+  days.forEach(function(d){ d.shifts.forEach(function(sh){ [sh.in, sh.out].forEach(function(e){ if (e && e.id && (!best || e.at > best.at)) best = { at: e.at, kind: e.kind, id: e.id }; }); }); });
+  return best;
+}
+async function fixLast(){
+  var last = lastTap(); if (!last || !LATE_AT) return;
+  var at = new Date(LATE_AT).toISOString(); var btn = document.getElementById("btn-fix"); btn.disabled = true;
+  try{
+    if (last.queued){ QUEUE.forEach(function(b){ if (b.kind === "wh_event" && b.worker === NAME && b.at === last.at){ b.at = at; b.late = true; } }); saveQueue(); }
+    else {
+      var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"wh_edit", op:"update", id:last.id, worker:NAME, tap:last.kind, task: SUM && SUM.open_task || TASK, at:at, note:"תוקן מהטלפון (שכחתי ללחוץ)" }) });
+      var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+      if (j.summary) SUM = j.summary;
+    }
+    banner("✓ הלחיצה הוזזה ל-" + fmtTime(at) + " · Moved to " + fmtTime(at), "info");
+    clearLate(); renderNow(); load().catch(function(){});
+  }catch(e){ alert("לא הצלחתי לתקן: " + (e.message||e) + "\nתגיד ללורן."); }
+  finally{ btn.disabled = false; }
 }
 function lateFromTime(){
   var v = document.getElementById("late-time").value; if (!v) return;
@@ -256,7 +296,7 @@ function lateFromTime(){
   if (t > now) t.setDate(t.getDate() - 1);          // "23:40" entered at 00:10 means last night
   setLate(Math.max(1, Math.round((now - t) / 60000)));
 }
-function clearLate(){ LATE_AT = null; document.getElementById("late-line").textContent = ""; document.getElementById("late-time").value = ""; document.getElementById("late-box").open = false; }
+function clearLate(){ LATE_AT = null; document.getElementById("late-line").textContent = ""; document.getElementById("late-time").value = ""; document.getElementById("late-box").open = false; document.getElementById("btn-fix").style.display = "none"; }
 function loadQueue(){ try{ QUEUE = JSON.parse(ls("wh_queue")||"[]"); }catch(e){ QUEUE=[]; } }
 function saveQueue(){ ls("wh_queue", JSON.stringify(QUEUE)); syncLine(); renderNow(); }   // the "not sent yet" card changes the moment the queue does
 function syncLine(){ document.getElementById("sync-line").innerHTML = QUEUE.length ? '<b>⏳ ' + QUEUE.length + ' לא נשלח</b> — מנסה שוב' : '✓ מסונכרן'; }
