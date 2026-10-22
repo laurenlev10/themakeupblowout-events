@@ -41,12 +41,16 @@ function shown(search) {
   });
   const d = dom.window.document;
   const grab = (id) => (d.getElementById(id) || {}).innerHTML || "";
-  return {
+  const ar = d.getElementById("auto-run");
+  const out = {
+    autoRun: ar ? ar.getAttribute("href") : null,
     next: grab("next-steps-block"),
     lead: (d.getElementById("lead") || {}).textContent || "",
     fields: grab("fields"),
     status: (d.getElementById("status-pill") || {}).textContent || "",
   };
+  dom.window.close();                       // before the forward timer fires — we read where it WOULD go
+  return out;
 }
 
 const ads = shown("?auth_code=ABC123&state=ads_read_2026");
@@ -60,14 +64,34 @@ const manage = shown("?auth_code=MNG456&state=ads_manage_2026");
 check("the manage-token state routes to the same run and says to pick target=manage",
       manage.next.includes("tiktok-ads-read-auth.yml") && manage.next.includes("manage"));
 
+// 🛑 22.10.2026 — approved on 20.10, nothing ran: the page only linked to the Actions page. A known
+// job now FORWARDS to the Worker that dispatches the run server-side (behind Access, GH_PAT there).
+const AUTO = "https://dashboard.themakeupblowout.com/api/octopos/tiktok/callback?";
+check("a known job forwards to the Worker that starts the run, carrying the code and the state",
+      manage.autoRun === AUTO + "auth_code=MNG456&state=ads_manage_2026", String(manage.autoRun));
+check("the read job forwards too", ads.autoRun === AUTO + "auth_code=ABC123&state=ads_read_2026", String(ads.autoRun));
+check("the manual fallback stays on the page while it forwards (IRON RULE #47)",
+      manage.fields.includes("MNG456") && manage.next.includes("tiktok-ads-read-auth.yml"));
+
+// The page holds NO copy of the state map (22.10.2026: three copies existed). Every code is forwarded;
+// the Worker reads scripts/_shared/tiktok_auth_targets.json and answers a state it has no run for with
+// the code and the chat instruction.
 const other = shown("?auth_code=XYZ789&state=comments_2026");
-check("an unknown state keeps the old instructions rather than a wrong link",
-      other.next.includes("לצ'אט") && !other.next.includes("tiktok-ads-read-auth.yml"));
+check("any other state is forwarded too — the Worker decides, the page holds no map",
+      other.autoRun === AUTO + "auth_code=XYZ789&state=comments_2026", String(other.autoRun));
+check("…and the fallback on the page still says what to do for an approval that is not a run",
+      other.next.includes("בצ'אט של Claude"));
+check("the page carries no state map of its own", !/ads_manage_2026'\s*:|JOBS\s*=/.test(html));
+const nostate = shown("?auth_code=XYZ789");
+check("a code without a state is not forwarded; the chat steps stay", nostate.autoRun === null && nostate.next.includes("לצ'אט"));
+const junk = shown("?auth_code=%3Cscript%3E&state=ads_manage_2026");
+check("a code that is not a code is not forwarded", junk.autoRun === null, String(junk.autoRun));
 
 const err = shown("?error=access_denied&state=ads_read_2026");
 check("a denied authorization is an error, never a link that implies success",
       err.status.includes("failed") && !err.next.includes("tiktok-ads-read-auth.yml"));
 check("the denial itself is shown", err.fields.includes("access_denied"));
+check("a denial is not forwarded", err.autoRun === null);
 
 console.log(fails ? `\n✗ ${fails} failure(s)` : "\n✓ all cases pass");
 process.exit(fails ? 1 : 0);

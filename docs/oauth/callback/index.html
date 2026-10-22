@@ -145,35 +145,35 @@
     fieldsEl.appendChild(makeField('auth_code', authCode, true));
     if (state) fieldsEl.appendChild(makeField('state (verification)', state, false));
 
-    // 🛑 14.09.2026 — עד היום הדף הזה אמר "תשלחי ל-Claude בצ'אט". זה ממסר שעובר
-    // דרך בן אדם וצ'אט פתוח, על קוד שחי 10 דקות: אם לורן מאשרת ברגע שהיא לא ליד
-    // המחשב, הקוד מת והיא לא חוזרת לזה. כשה-state יודע לאיזו משימה הקוד שייך,
-    // הדף שולח אותה ישר לריצה שיודעת לסיים — בלי צ'אט ובלי סוכן באמצע.
-    var JOBS = {
-      'ads_read_2026': {
-        url: 'https://github.com/laurenlev10/lauren-agent-hub-data/actions/workflows/tiktok-ads-read-auth.yml',
-        what: 'קריאת תקציבים אמיתיים מטיקטוק'
-      },
-      // 20.10.2026 — the management token for the creative rotation. Same run,
-      // target=manage, its own secret (TIKTOK_ADS_MANAGE_TOKEN).
-      'ads_manage_2026': {
-        url: 'https://github.com/laurenlev10/lauren-agent-hub-data/actions/workflows/tiktok-ads-read-auth.yml',
-        what: 'רוטציית סרטונים בטיקטוק — הדלקה/השהיה של סטים',
-        target: 'manage'
-      }
-    };
-    var job = JOBS[state];
-    if (job) {
-      leadEl.textContent = 'הקוד למטה תקף ל-10 דקות. לחצי Copy, ואז על הכפתור — ' +
-        'זה פותח את הריצה שמסיימת את העבודה (' + job.what + ').';
-      nextEl.innerHTML = '<div class="next-steps"><strong>צעד אחרון:</strong><ol>' +
+    // 🛑 14.09.2026 — עד היום הדף הזה אמר "תשלחי ל-Claude בצ'אט": ממסר דרך בן אדם על קוד שחי
+    // 10 דקות. אז הדף קישר לדף ה-Actions, וגם שם הקוד הודבק ביד.
+    // 🛑 22.10.2026 — לורן אישרה את סקופ הניהול ב-20.10 ושום דבר לא רץ: הריצה עברה רק כי סוכן
+    // הפעיל אותה ידנית. הדף הזה ציבורי (ה-redirect URI הרשום בטיקטוק) ואין בו אף קרדנציאל (חוק #32),
+    // ולכן הוא מעביר כל קוד ל-Worker שמאחורי Cloudflare Access — שם GH_PAT, ושם מפת ה-state
+    // (scripts/_shared/tiktok_auth_targets.json, אותה מפה שהסקריפט בפייתון קורא). ה-Worker מפעיל את
+    // הריצה בעצמו, לפני שהתשובה שלו מצוירת — סגירת הטאב לא מפסידה כלום; state שאין לו ריצה מקבל שם
+    // את הקוד עם הוראה לצ'אט; ו-dispatch שגיטהאב דחה נשלח ללורן כ-SMS (sms/outbox), לא נבלע.
+    // הדף לא מחזיק עותק של המפה. הצעדים הידניים נשארים על המסך למקרה שהמעבר עצמו לא קרה (חוק #47).
+    var AUTO_RUN = 'https://dashboard.themakeupblowout.com/api/octopos/tiktok/callback';
+    var RUNS = 'https://github.com/laurenlev10/lauren-agent-hub-data/actions/workflows/tiktok-ads-read-auth.yml';
+    if (state && /^[A-Za-z0-9._~-]{6,512}$/.test(authCode)) {
+      var fwd = AUTO_RUN + '?' + new URLSearchParams({ auth_code: authCode, state: state }).toString();
+      var go = document.createElement('p');
+      go.style.cssText = 'margin:0 0 18px;font-size:14px';
+      go.innerHTML = '⏳ מעבירה לריצה… אם זה לא קורה: <a id="auto-run" class="copy-btn" style="text-decoration:none" href="#">להפעיל את הריצה ←</a>';
+      go.querySelector('#auto-run').href = fwd;
+      fieldsEl.parentNode.insertBefore(go, fieldsEl);
+      setTimeout(function () { window.location.replace(fwd); }, 0);
+      leadEl.textContent = 'מעבירה אותך לריצה שמסיימת את העבודה — היא נורית לבד. ' +
+        'אם הדף לא עובר תוך כמה שניות: הקוד למטה תקף ל-10 דקות, והצעדים הידניים כאן.';
+      nextEl.innerHTML = '<div class="next-steps"><strong>אם המעבר לא קרה — ידני:</strong><ol>' +
         '<li>לחצי <strong>Copy</strong> ליד <code class="inline">auth_code</code></li>' +
-        '<li>לחצי על הכפתור למטה → <strong>Run workflow</strong></li>' +
-        '<li>הדביקי את הקוד בשדה' + (job.target ? ', בחרי <strong>target = ' + job.target + '</strong>' : '') +
-        ', ולחצי <strong>Run workflow</strong> הירוק</li>' +
-        '<li>תקבלי טקסט עם התוצאה. אם הקוד פג — פשוט תאשרי שוב מאותו לינק</li>' +
+        '<li>אישור של תקציבים/סטים בטיקטוק: הכפתור למטה → <strong>Run workflow</strong>, הדביקי את הקוד, ' +
+        'בחרי <strong>target</strong> (ads_read_2026 = read · ads_manage_2026 = manage) ולחצי <strong>Run workflow</strong></li>' +
+        '<li>אישור אחר: הדביקי את הקוד בצ\'אט של Claude</li>' +
+        '<li>אם הקוד פג — פשוט תאשרי שוב מאותו לינק</li>' +
         '</ol><p style="margin-top:14px"><a class="copy-btn" style="display:inline-block;text-decoration:none" ' +
-        'href="' + job.url + '" target="_blank" rel="noopener">פתחי את הריצה ←</a></p></div>';
+        'href="' + RUNS + '" target="_blank" rel="noopener">פתחי את הריצה ←</a></p></div>';
     } else {
       nextEl.innerHTML = '<div class="next-steps"><strong>צעדים הבאים:</strong><ol>' +
         '<li>לחצי Copy ליד <code class="inline">auth_code</code></li>' +
