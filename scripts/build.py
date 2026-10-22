@@ -118,6 +118,10 @@ def _dates_words(sd, ed):
     return f"{MONTH_NAMES[sd.month-1]} {sd.day} – {MONTH_NAMES[ed.month-1]} {ed.day}, {ed.year}"
 
 
+class UnverifiedZone(RuntimeError):
+    """A split-timezone state and no verified tz on the row."""
+
+
 def event_facts(ev):
     """Everything the machines are told about one event, computed ONCE from the
     row in upcoming-events.json. Landing pages, the events index, the sitemap and
@@ -127,9 +131,13 @@ def event_facts(ev):
     slug = ev.get("slug") or make_slug(ev["city"], ev["state"], ed.year)
     tz, tz_src, warn = resolve_tz(state=ev["state"], tz=ev.get("tz"))
     if warn:
-        # A split-timezone state: the table's majority zone is used, and the
-        # warning is printed on every build so it is never a silent guess.
-        print(f"    ⚠ {slug}: {warn}")
+        # 🛑 22.10.2026 — a split-zone state with no verified zone is REFUSED, not
+        # guessed. Until today this printed a warning and published the majority zone:
+        # El Paso 2027 (Mountain) came out at Central, an hour off, in the page and in
+        # the JSON-LD every search engine reads (IRON RULE #23). The verified zone comes
+        # from the hub (events_index.json ← the Eventbrite setup's geocoded venue) via
+        # sync_event_data.py into the row's "tz".
+        raise UnverifiedZone(f"{slug}: {warn}")
     city_state = f"{ev['city']}, {ev['state']}"
     venue = ev.get("venue_name") or ""
     street = ev.get("venue_address") or ""
@@ -439,6 +447,7 @@ def fill(template, vars):
 def main():
     events = DATA.get("events", [])
     written = []
+    refused = []
     facts_all = []
     today = datetime.date.today()
     for ev in sorted(events, key=lambda e: e["start_date"]):
@@ -446,7 +455,12 @@ def main():
         ed = datetime.date.fromisoformat(ev["end_date"])
         if ed < today:
             continue
-        vars, slug, f = render_event(ev)
+        try:
+            vars, slug, f = render_event(ev)
+        except UnverifiedZone as e:
+            refused.append(str(e))
+            print(f"  🛑 refused {e}")
+            continue
         facts_all.append(f)
         target_dir = DOCS / "events" / slug
         target_dir.mkdir(parents=True, exist_ok=True)
@@ -491,6 +505,10 @@ def main():
             raise RuntimeError(f"sitemap.xml does not list {f['url']}")
     print(f"  wrote docs/events/index.html ({len(facts_all)} upcoming), docs/sitemap.xml, docs/robots.txt")
     print(f"\n✓ generated {len(written)} landing pages")
+    if refused:
+        # The other pages are already written; this makes the run red (the hub's
+        # unwatched-repo guardrail texts Lauren) instead of a page with the wrong hours.
+        raise SystemExit("🛑 page(s) refused — time zone not verified: " + " · ".join(refused))
     return written
 
 if __name__ == "__main__":

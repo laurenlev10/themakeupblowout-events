@@ -238,6 +238,94 @@ def match_venue(event, venues):
     return None
 
 
+# ---------------------------------------------------------------------------
+# 🛑 22.10.2026 — WHICH events get a page comes from the hub, not from a hand list.
+#
+# Until today this script only REFRESHED rows that someone had already typed into
+# upcoming-events.json. The list itself was hand-made: all 2026 cities were pasted in
+# one commit on 31.05.2026 and nothing ever added another. On 21.10 a run asked for a
+# TikTok lead form per 2027 event and found 19 signed events, 16 SimpleTexting forms
+# ready — and zero landing pages, because no 2027 row existed here. The template
+# builder (build.py) was always one generator; the event list beside it was the copy
+# that rotted (IRON RULE #27).
+#
+# Now: every SIGNED (status "confirmed") future event in the hub's events_index.json —
+# built from the launch SCHEDULE, read through the Worker like the other two required
+# sources — gets a row, as soon as it has everything a public page must not guess:
+#   venue name · street address WITH a 5-digit ZIP · its SimpleTexting form id.
+# An event missing one of those is printed with the reason, never guessed (a page with
+# a wrong address or a dead sign-up form is worse than no page). One that is close
+# (≤ MISSING_PAGE_ALARM_DAYS) fails the run, and the hub's unwatched-repo guardrail
+# turns a red run here into a text (IRON RULE #3/#35).
+# ---------------------------------------------------------------------------
+MISSING_PAGE_ALARM_DAYS = 45
+_ZIP_RE = re.compile(r"\b\d{5}(?:-\d{4})?\s*$")
+
+
+def _display_city(city):
+    """'Oxnard/ Ventura' → 'Oxnard / Ventura' — the same form the SimpleTexting list
+    and the Eventbrite listing carry (eventbrite_setup.display_city in the hub)."""
+    return " / ".join(p.strip() for p in (city or "").split("/"))
+
+
+def _site_slug(city, state, year):
+    """Same rule as build.make_slug and the hub's event_site_slug."""
+    return re.sub(r"[^a-z0-9-]+", "-", f"{city.lower()}-{state.lower()}-{year}").strip("-")
+
+
+def missing_fields(ev, form_ids):
+    """What a signed event still lacks before it may be published. [] = ready."""
+    out = []
+    if not (ev.get("venue") or "").strip():
+        out.append("venue")
+    addr = (ev.get("address") or "").strip()
+    if not addr:
+        out.append("address")
+    elif not _ZIP_RE.search(addr):
+        out.append("ZIP in the address")
+    slug = _site_slug(_display_city(ev["city"]), ev["state"], ev["start_date"][:4])
+    if not (form_ids.get(f"{slug}-{ev['start_date']}") or {}).get("form_id"):
+        out.append("SimpleTexting form id")
+    return out
+
+
+def add_signed_events(events, index_events, form_ids, today):
+    """Append a row for every signed future event that has none yet.
+    Returns (added_slugs, skipped[(slug, start_date, [missing])])."""
+    have = {e.get("slug") for e in events if e.get("slug")}
+    have |= {(_slugify(e.get("city")), (e.get("start_date") or "")[:10]) for e in events}
+    added, skipped = [], []
+    for ix in sorted(index_events, key=lambda e: e.get("start_date") or ""):
+        if (ix.get("status") or "") != "confirmed":
+            continue
+        if not ix.get("start_date") or not ix.get("end_date"):
+            continue
+        if datetime.date.fromisoformat(ix["end_date"]) < today:
+            continue
+        city = _display_city(ix["city"])
+        slug = _site_slug(city, ix["state"], ix["start_date"][:4])
+        if slug in have or (_slugify(ix["city"]), ix["start_date"]) in have:
+            continue
+        miss = missing_fields(ix, form_ids)
+        if miss:
+            skipped.append((slug, ix["start_date"], miss))
+            continue
+        events.append({
+            "city": city, "state": ix["state"],
+            "start_date": ix["start_date"], "end_date": ix["end_date"],
+            "slug": slug,
+            "venue_name": ix["venue"].strip(), "venue_address": ix["address"].strip(),
+            "form_id": form_ids[f"{slug}-{ix['start_date']}"]["form_id"],
+            "subscribe_url": f"/events/{slug}/",
+            "_added_by": "sync_event_data.add_signed_events",
+        })
+        if ix.get("tz"):
+            events[-1]["tz"] = ix["tz"]
+        have.add(slug)
+        added.append(slug)
+    return added, skipped
+
+
 def main():
     print("Fetching upstream data sources...")
     # required=True: an unreadable source fails the run instead of syncing nothing.
@@ -255,9 +343,35 @@ def main():
             "buttons on their previous value."
         )
 
+    index = worker_read("get_events_index", "events_index")
+    print(f"  events_index: {len(index.get('events', []))} events")
+
     data = json.loads(EVENTS_JSON.read_text(encoding="utf-8"))
     events = data.get("events", [])
     n_form = n_venue = n_reel = 0
+
+    today = datetime.date.today()
+    added, skipped = add_signed_events(events, index.get("events", []),
+                                       form_ids.get("events", {}), today)
+    for slug in added:
+        print(f"  ✓ new page:  {slug}")
+    # The venue's verified time zone (resolved once, from the geocoded address, when the
+    # Eventbrite listing was created) — build.py refuses a split-zone state without it.
+    n_tz = 0
+    tz_of = {(_slugify(ix.get("city")), ix.get("start_date")): ix.get("tz")
+             for ix in index.get("events", []) if ix.get("tz")}
+    for ev in events:
+        tz = tz_of.get((_slugify(ev.get("city")), (ev.get("start_date") or "")[:10]))
+        if tz and ev.get("tz") != tz:
+            ev["tz"] = tz
+            n_tz += 1
+            print(f"  ✓ tz:        {ev.get('slug')} → {tz}")
+    urgent = []
+    for slug, sd, miss in skipped:
+        days = (datetime.date.fromisoformat(sd) - today).days
+        print(f"  ⏸ no page yet: {slug} ({sd}, in {days}d) — missing {', '.join(miss)}")
+        if days <= MISSING_PAGE_ALARM_DAYS:
+            urgent.append(f"{slug} in {days}d: {', '.join(miss)}")
 
     for ev in events:
         slug = ev.get("slug") or ""
@@ -306,14 +420,17 @@ def main():
         # notes.json is the only source for these buttons (IRON RULE #5); an event
         # with no reel pasted yet correctly keeps the generic brand link.
 
-    if n_form + n_venue + n_reel > 0:
+    if n_form + n_venue + n_reel + len(added) + n_tz > 0:
         data["_updated_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         EVENTS_JSON.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-        print(f"\n✓ Updated {n_form} form_ids, {n_venue} venues, {n_reel} reel-links")
+        print(f"\n✓ Updated {n_form} form_ids, {n_venue} venues, {n_reel} reel-links, {len(added)} new events")
     else:
         print("\n  no changes needed")
 
-    # Exit code 0 either way; the workflow's git diff check decides whether to commit
+    # The write above happens first, so the events that ARE ready still get their pages.
+    if urgent:
+        raise SystemExit("🛑 signed event(s) close to their date with no landing page — "
+                         + " · ".join(urgent))
 
 
 if __name__ == "__main__":
