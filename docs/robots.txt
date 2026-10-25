@@ -9,6 +9,5 @@ Disallow: /collab/
 Disallow: /scout-plan/
 Disallow: /influencer-brief/
 Disallow: /preview/
-Disallow: /dj/
 
 Sitemap: https://events.themakeupblowout.com/sitemap.xml
