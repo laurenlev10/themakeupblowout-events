@@ -126,6 +126,12 @@
    "rotation": "manual",
    "en": "Attention shoppers, we close in thirty minutes. Please bring your final picks to the register. Thank you for shopping with us!",
    "es": "Atención, cerramos en treinta minutos. Por favor lleven sus últimas compras a la caja. ¡Gracias por comprar con nosotros!"
+  },
+  {
+   "id": "closing_now",
+   "rotation": "manual",
+   "en": "Attention shoppers, our event is coming to an end. Please bring your final picks to the register and complete your purchase. Thank you so much for shopping with The Makeup Blowout Sale!",
+   "es": "Atención, nuestro evento está por terminar. Por favor lleven sus últimas compras a la caja y completen su compra. ¡Muchas gracias por comprar en The Makeup Blowout Sale!"
   }
  ]
 }

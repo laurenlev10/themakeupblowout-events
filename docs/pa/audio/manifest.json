@@ -1,5 +1,5 @@
 {
- "source_sha256": "a502e45f49b29afe5d792443aed9a63a43693c89a603f71ac522cbecdbd19506",
+ "source_sha256": "3146c56d865bf1a353b696196c8a273cbee44591462dc80ab4c55fa6f0b2faa2",
  "verified_min_match": 0.8,
  "order": [
   "en",
@@ -89,7 +89,7 @@
      "start": 1.83,
      "end": 10.53,
      "text": "Want a free lipgloss? Find our post on Instagram at The Makeup Blowout Sale, share it with your friends or on your story, and show it to our cashier. Your free lipgloss is waiting!",
-     "heard": "Want a free lip gloss? Find our post on Instagram at the makeup blowout sale,  share it with your friends or on your story, and show it to our cashier. Your free lip gloss is waiting.",
+     "heard": "Want a free lip gloss? Find our post on Instagram at the makeup blowout sale,  share it with your friends, or on your story, and show it to our cashier.  Your free lip gloss is waiting.",
      "match": 1.0
     },
     {
@@ -145,8 +145,8 @@
      "start": 13.37,
      "end": 25.55,
      "text": "¿Ya viste nuestra famosa Mystery Box? Trae hasta quince sorpresas de belleza, con un valor de más de ciento veinte dólares, ¡por solo cuarenta y cinco dólares! Es aún más barata que en línea. ¡Llévate la tuya antes de que se acaben!",
-     "heard": "Ya viste nuestra famosa Mystery Box?  Trae hasta 15 sorpresas de belleza con un valor de más de 120 dólares por solo 45 dólares.  Es aún más barata que en línea.  Llévate la tuya antes de que se acabe.",
-     "match": 0.97
+     "heard": "Ya viste nuestra famosa Mystery Box?  Trae hasta 15 sorpresas de belleza con un valor de más de 120 dólares por solo 45 dólares.  Es aún más barata que en línea.  Llévate la tuya antes de que se acaben.",
+     "match": 1.0
     }
    ]
   },
@@ -169,7 +169,7 @@
      "start": 10.4,
      "end": 20.73,
      "text": "¿Buscas las mejores ofertas? Busca nuestro código de Best Sellers y escanéalo con la cámara de tu teléfono. ¡Verás al instante las mejores ofertas de hoy! ¡Escanea, compra y disfruta!",
-     "heard": "Buscas las mejores ofertas, busca nuestro código de bestsellers y escanealo con la  cámara de tu teléfono. Verás al instante las mejores ofertas de hoy, escanea, compra  y disfruta.",
+     "heard": "Buscas las mejores ofertas? Busca nuestro código de bestsellers y escanealo con la  cámara de tu teléfono. Verás al instante las mejores ofertas de hoy, escanea, compra y disfruta.",
      "match": 0.92
     }
    ]
@@ -217,7 +217,7 @@
      "start": 8.16,
      "end": 14.18,
      "text": "¡Muéstranos tus compras! Etiquétanos en Instagram, The Makeup Blowout Sale, con el hashtag Makeup Blowout Sale.",
-     "heard": "Muéstranos tus compras. Etiquétanos en Instagram  de Makeup Blowout Sale con el hashtag Makeup Blowout Sale.",
+     "heard": "Muéstranos tus compras, etiquétanos en Instagram da Makeup Blowout Sale con el hashtag Makeup Blowout Sale.",
      "match": 0.94
     }
    ]
@@ -241,7 +241,7 @@
      "start": 8.23,
      "end": 15.35,
      "text": "¡Hoy es nuestro último día en la ciudad! Es tu última oportunidad de llevarte todo con hasta setenta y cinco por ciento de descuento.",
-     "heard": "Hoy es nuestro último día en la ciudad, es tu última oportunidad de llevarte todo con  hasta 75% de descuento.",
+     "heard": "Hoy es nuestro último día en la ciudad, es tu última oportunidad de llevarte todo  con hasta 75% de descuento.",
      "match": 1.0
     }
    ]
@@ -265,7 +265,31 @@
      "start": 8.59,
      "end": 15.42,
      "text": "Atención, cerramos en treinta minutos. Por favor lleven sus últimas compras a la caja. ¡Gracias por comprar con nosotros!",
-     "heard": "Atención cerramos en 30 minutos. Por favor lleven sus últimas compras a la caja. Gracias por comprar con nosotros.",
+     "heard": "Atención, cerramos en 30 minutos. Por favor, lleven sus últimas compras a la caja. Gracias por comprar con nosotros.",
+     "match": 1.0
+    }
+   ]
+  },
+  {
+   "id": "closing_now",
+   "rotation": "manual",
+   "file": "closing_now.mp3",
+   "seconds": 22.6,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 10.92,
+     "text": "Attention shoppers, our event is coming to an end. Please bring your final picks to the register and complete your purchase. Thank you so much for shopping with The Makeup Blowout Sale!",
+     "heard": "Attention shoppers, our event is coming to an end.  Please bring your final picks to the register and complete your purchase.  Thank you so much for shopping with the Makeup Blowout sale.",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 11.62,
+     "end": 21.07,
+     "text": "Atención, nuestro evento está por terminar. Por favor lleven sus últimas compras a la caja y completen su compra. ¡Muchas gracias por comprar en The Makeup Blowout Sale!",
+     "heard": "Atención, nuestro evento está por terminar.  Por favor, lleven sus últimas compras a la caja y completen su compra.  Muchas gracias por comprar en the Makeup Blowout Sale.",
      "match": 1.0
     }
    ]
