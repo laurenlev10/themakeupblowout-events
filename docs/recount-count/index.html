@@ -908,9 +908,23 @@
       document.head.appendChild(sc);
     });
   }
+  // Product barcodes only — one list for both decoders (native names; ZXing = uppercase).
+  // Lauren 2026-10-25: an iPhone scan of a RUDE box read the QR code on it and searched
+  // OCTOPOS for "https://rudecosmetics.com/products/splash-liner". The product was there
+  // under 810079380657; the camera had simply read the wrong code.
+  var SCAN_FORMATS = ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","itf","codabar"];
+  // Second line of defence, whatever the decoder: a link or free text is never a barcode.
+  // Ignore it and KEEP scanning — closing the camera on it is what produced the dead end.
+  function looksLikeBarcode(code){
+    return /^[0-9A-Za-z\-\.\/\+\$%]{4,48}$/.test(code) && !/:\/\//.test(code) && !/^www\./i.test(code);
+  }
   function onScanned(code){
     code = String(code || "").trim();
     if (!code) return;
+    if (!looksLikeBarcode(code)){
+      $("camHint").textContent = "That's a QR code / link — aim at the striped barcode instead";
+      return;
+    }
     $("camHint").textContent = "✓ " + code;
     if (navigator.vibrate) try { navigator.vibrate(60); } catch(e){}
     var handler = CAM.onResult;
@@ -940,7 +954,7 @@
     if (typeof window.BarcodeDetector === "function"){
       try {
         if (!CAM.det){
-          var fmts = ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","itf","codabar"];
+          var fmts = SCAN_FORMATS.slice();
           try {
             var avail = await window.BarcodeDetector.getSupportedFormats();
             fmts = fmts.filter(function(f){ return avail.indexOf(f) >= 0; });
@@ -963,7 +977,15 @@
       $("camHint").textContent = "Loading the scanner…";
       var Z = await loadZxing();
       if (!CAM.stream) return;                       // crew closed it while downloading
-      CAM.zx = new Z.BrowserMultiFormatReader();
+      // Same 1-D list as the native decoder. Without hints ZXing reads QR codes too —
+      // and a QR on the box is a link, not a product (RUDE Splash Liner, 2026-10-25).
+      var zxHints = new Map();
+      try {
+        zxHints.set(Z.DecodeHintType.POSSIBLE_FORMATS,
+          SCAN_FORMATS.map(function(f){ return Z.BarcodeFormat[f.toUpperCase()]; })
+                      .filter(function(f){ return f !== undefined; }));
+      } catch(e){}
+      CAM.zx = new Z.BrowserMultiFormatReader(zxHints);
       CAM.mode = "zxing";
       $("camHint").textContent = "Point the camera at the barcode…";
       var cb = function(result){ if (result) onScanned(result.getText ? result.getText() : result.text); };
