@@ -1,0 +1,33 @@
+name: Test the event music remote
+
+# docs/dj/ — the event manager's music remote (25.10.2026). Public, no key: every tap goes to the
+# danielle Worker (kind dj_*), whose own proof is lauren-agent-hub-data/scripts/test_dj_worker.mjs.
+# This runs the real page in headless Chromium against an in-memory speaker: now playing,
+# play/pause/skip, volume, the two-tap source switch, the offline / Opening / error banners, phone
+# and tablet widths. No cron: nothing here changes on a clock (IRON RULE #40).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/dj/**'
+      - 'scripts/test_dj_remote_page.py'
+      - '.github/workflows/test-dj-remote.yml'
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Playwright + Chromium
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install playwright
+          python3 -m playwright install --with-deps chromium
+      - name: Headless proof of the page
+        run: python3 scripts/test_dj_remote_page.py
