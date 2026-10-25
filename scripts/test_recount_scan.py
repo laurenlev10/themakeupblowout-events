@@ -363,6 +363,21 @@ def main():
         check("14c. the count screen shows the photo by name and by barcode", sc == [gimg(NAME), gimg(BC)], sc)
         pg.click("#scBack"); pg.wait_for_timeout(200)
 
+        # 15 — 25.10.2026 (Albuquerque): an iPhone read the QR code on a RUDE box and searched
+        # OCTOPOS for "https://rudecosmetics.com/products/splash-liner". A link is not a barcode:
+        # the camera ignores it and keeps scanning.
+        pg.click("#soldOutAdd"); pg.wait_for_timeout(500)
+        pg.fill("#soSearch", ""); pg.wait_for_timeout(200)
+        pg.click("#btnSoScan"); pg.wait_for_timeout(300)
+        pg.evaluate("c => window.__scan = c", "https://rudecosmetics.com/products/splash-liner")
+        pg.wait_for_timeout(900)
+        check("15. a QR link is ignored — camera stays open, nothing searched",
+              pg.is_visible("#camWrap") and pg.input_value("#soSearch") == "" and "QR" in pg.inner_text("#camHint"),
+              [pg.is_visible("#camWrap"), pg.input_value("#soSearch"), pg.inner_text("#camHint")])
+        pg.evaluate("c => window.__scan = c", "1234567890123"); pg.wait_for_timeout(900)
+        check("15b. the real barcode right after still finds the product",
+              pg.eval_on_selector_all(".sorow .name", "els => els.map(e => e.textContent)") == ["Zoe Lip Gloss Set"])
+
         check("8. no page errors", not errs, errs)
         br.close()
 
