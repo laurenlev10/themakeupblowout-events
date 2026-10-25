@@ -1,5 +1,5 @@
 {
- "source_sha256": "3146c56d865bf1a353b696196c8a273cbee44591462dc80ab4c55fa6f0b2faa2",
+ "source_sha256": "72663950a55350b3fa7142c6dff1edd044c89c0ae2a637f84e8e2564f37a8083",
  "verified_min_match": 0.8,
  "order": [
   "en",
@@ -266,6 +266,30 @@
      "end": 15.42,
      "text": "Atención, cerramos en treinta minutos. Por favor lleven sus últimas compras a la caja. ¡Gracias por comprar con nosotros!",
      "heard": "Atención, cerramos en 30 minutos. Por favor, lleven sus últimas compras a la caja. Gracias por comprar con nosotros.",
+     "match": 1.0
+    }
+   ]
+  },
+  {
+   "id": "closing_15",
+   "rotation": "manual",
+   "file": "closing_15.mp3",
+   "seconds": 15.9,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 8.04,
+     "text": "Attention shoppers, we close in fifteen minutes. Please start finishing your shopping and head over to the register. Thank you!",
+     "heard": "Attention shoppers! We close in 15 minutes. Please start finishing your shopping and head  over to the register. Thank you!",
+     "match": 1.0
+    },
+    {
+     "lang": "es",
+     "start": 8.74,
+     "end": 14.35,
+     "text": "Atención, cerramos en quince minutos. Por favor terminen sus compras y pasen a la caja. ¡Gracias!",
+     "heard": "Atención cerramos en 15 minutos, por favor terminen sus compras y pasen a la caja, gracias.",
      "match": 1.0
     }
    ]
