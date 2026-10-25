@@ -104,7 +104,13 @@ with sync_playwright() as pw:
     def tap(sel):
         pg.click(sel); pg.wait_for_timeout(250)
 
-    reset(); open_page()
+    reset()
+    pg.route(WORKER + "**", lambda r: None)          # the Worker never answers: what can she tap meanwhile?
+    pg.goto(HOST + "/dj/"); pg.wait_for_timeout(400)
+    t("before the first answer every control is disabled",
+      all(pg.is_disabled(s) for s in ("#btnPlay", "#btnSkip", "#volUp", "#volDown")))
+    pg.unroute(WORKER + "**")
+    open_page()
     t("now playing: title and artist are the Worker's", txt("#title") == "Walking on Sunshine" and txt("#artist") == "Katrina and the Waves", txt("#title"))
     t("the city is in the header", "Albuquerque, NM" in txt("#where"))
     t("chips: online · playing · Event schedule", all(x in txt("#chips") for x in ("Speaker online", "Playing", "Event schedule")), txt("#chips"))

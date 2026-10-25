@@ -86,17 +86,17 @@
         <div class="artist" id="artist">&nbsp;</div>
         <div class="chips" id="chips"></div>
         <div class="ctrl">
-          <button type="button" class="big" id="btnPlay">⏯ Pause</button>
-          <button type="button" class="big sec" id="btnSkip">⏭ Next song</button>
+          <button type="button" class="big" id="btnPlay" disabled>⏯ Play</button>
+          <button type="button" class="big sec" id="btnSkip" disabled>⏭ Next song</button>
         </div>
       </div>
 
       <div class="card" style="margin-top:14px">
         <h2>Volume</h2>
         <div class="vol">
-          <button type="button" id="volDown" aria-label="Volume down">−</button>
+          <button type="button" id="volDown" aria-label="Volume down" disabled>−</button>
           <div><div class="bar"><i id="volBar"></i></div><div class="vnum" id="volNum">—</div></div>
-          <button type="button" id="volUp" aria-label="Volume up">+</button>
+          <button type="button" id="volUp" aria-label="Volume up" disabled>+</button>
         </div>
       </div>
     </div>
@@ -157,7 +157,7 @@
     $("artist").textContent = s.track ? (s.track.artists || "") : (s.online ? "Tap Play to start the music" : "Open Soundtrack on the speaker tablet");
     var src = s.source || {}, chips = [];
     chips.push(s.online ? '<span class="chip ok">● Speaker online</span>' : '<span class="chip bad">● Speaker offline</span>');
-    chips.push(playing ? '<span class="chip ok">▶ Playing</span>' : '<span class="chip warn">⏸ ' + esc(s.state || "stopped") + '</span>');
+    if (s.online) chips.push(playing ? '<span class="chip ok">▶ Playing</span>' : '<span class="chip warn">⏸ ' + esc(s.state || "stopped") + '</span>');
     if (src.key === "schedule") chips.push('<span class="chip ok">Event schedule</span>');
     else if (src.key === "main") chips.push('<span class="chip">Main playlist</span>');
     else if (src.name) chips.push('<span class="chip warn">⚠ ' + esc(src.name) + '</span>');
