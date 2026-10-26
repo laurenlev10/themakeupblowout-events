@@ -26,6 +26,8 @@
   .btn{width:100%;border:0;border-radius:13px;padding:14px;font-size:17px;font-weight:900;cursor:pointer;background:var(--purple);color:#fff;margin-top:6px}
   .btn:disabled{opacity:.6}
   .note{font-size:12px;color:#9ca3af;margin-top:8px;text-align:center}
+  .ev .yr{color:var(--muted);font-weight:700;font-size:11px}
+  .ev .tent{font-size:11px;font-weight:700;color:#92400e;background:#fef3c7;border-radius:999px;padding:1px 7px;margin-left:4px}
   .okbox{display:none;background:#dcfce7;border:1.5px solid #16a34a;color:#166534;border-radius:14px;padding:16px;text-align:center;font-weight:800;margin-bottom:14px}
 </style>
 </head>
@@ -58,7 +60,7 @@
 
 <script>
 "use strict";
-var ROSTER=null, ANSWERS={}, ENDPOINT="https://danielle.laurenlev10.workers.dev/";
+var ROSTER=null, EVENTS={}, ANSWERS={}, ENDPOINT="https://danielle.laurenlev10.workers.dev/";
 var RAW="https://dashboard.themakeupblowout.com/";  // legacy base, repointed off raw.githubusercontent (private-safe); live fetches below already use the dashboard domain
 var LAUREN_WA="14243547625";
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -86,20 +88,44 @@ async function init(){
     }catch(e2){ document.getElementById("ev-list").textContent="⚠️ Could not load events — please try again later."; return; }
   }
   if(!ROSTER||!ROSTER.members){ document.getElementById("ev-list").textContent="⚠️ Could not load events — please try again later."; return; }
+  var today=new Date().toISOString().slice(0,10);
   var sel=document.getElementById("f-who");
-  Object.keys(ROSTER.members).filter(function(s){return ROSTER.members[s].active!==false;})
+  // 26.10.2026 — the same test /team/ uses (offStaff): a worker retired with ⏸ on /team/
+  // carries inactive_from, and from that date they are not offered here either.
+  Object.keys(ROSTER.members).filter(function(s){ var m=ROSTER.members[s];
+      return m.active!==false && !(m.inactive_from && m.inactive_from<=today); })
     .sort(function(a,b){ return (ROSTER.members[a].name||"").localeCompare(ROSTER.members[b].name||""); })
     .forEach(function(s){
       var o=document.createElement("option"); o.value=s; o.textContent=ROSTER.members[s].full_name||ROSTER.members[s].name; sel.appendChild(o);
     });
   var other=document.createElement("option"); other.value="__other__"; other.textContent="Someone else (type name in notes)"; sel.appendChild(other);
-  var today=new Date().toISOString().slice(0,10);
-  var evs=Object.keys(ROSTER.assignments).filter(function(ev){ return ROSTER.assignments[ev].end_date>=today; });
-  evs.sort(function(a,b){ return ROSTER.assignments[a].start_date<ROSTER.assignments[b].start_date?-1:1; });
-  document.getElementById("ev-list").innerHTML = evs.map(function(ev){
-    var a=ROSTER.assignments[ev];
-    return '<div class="ev"><span class="when">'+fmtDate(a.start_date)+'–'+fmtDate(a.end_date)+'</span>'+
-      '<span class="city">'+esc(a.city)+', '+esc(a.state||"")+'</span>'+
+  // 26.10.2026 — Lauren: the form asks about the events AFTER Tucson (not including it)
+  // through the end of 2027. The window is data (team_roster.json → availability_window, published
+  // in the projection); the events are the ONE event list, events_index.json, read through the
+  // Worker. It used to list roster.assignments — which only holds events someone already staffed,
+  // so a weekend nobody had staffed yet could never be asked about.
+  // A failed read shows a failure — never an empty or a guessed list (IRON RULE #18).
+  var box=document.getElementById("ev-list"), win=ROSTER.availability_window;
+  if(!win||!win.after_evkey||!win.through){ box.textContent="⚠️ The event list is not set up — please tell Lauren."; return; }
+  var idx=null;
+  try{
+    var ri=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({kind:"get_events_index"})});
+    if(!ri.ok) throw new Error("worker "+ri.status);
+    var di=await ri.json();
+    if(!di||di.ok!==true||!di.events_index||!(di.events_index.events||[]).length) throw new Error("worker refused");
+    idx=di.events_index.events;
+  }catch(e){ box.textContent="⚠️ Could not load events — please try again later."; return; }
+  var after=idx.filter(function(e){ return e.evkey===win.after_evkey; })[0];
+  if(!after){ box.textContent="⚠️ The event list is not set up — please tell Lauren."; return; }
+  var from=after.end_date||after.start_date;
+  var evs=idx.filter(function(e){ return e.start_date>from && e.start_date<=win.through && e.end_date>=today; });
+  evs.sort(function(a,b){ return a.start_date<b.start_date?-1:1; });
+  evs.forEach(function(e){ EVENTS[e.evkey]=e; });
+  box.innerHTML = evs.map(function(a){
+    var ev=a.evkey, tent=(a.status!=="confirmed");
+    return '<div class="ev"><span class="when">'+fmtDate(a.start_date)+'–'+fmtDate(a.end_date)+(a.start_date.slice(0,4)!==today.slice(0,4)?' <span class="yr">'+a.start_date.slice(0,4)+'</span>':'')+'</span>'+
+      '<span class="city">'+esc(a.city)+', '+esc(a.state||"")+(tent?' <span class="tent" title="Dates not final yet">tentative</span>':'')+'</span>'+
       '<span class="opts">'+
       '<span class="opt yes" id="y-'+ev+'" onclick="pick(\''+ev+'\',\'yes\')">✅ Available</span>'+
       '<span class="opt no" id="n-'+ev+'" onclick="pick(\''+ev+'\',\'no\')">❌ No</span>'+
@@ -115,7 +141,7 @@ function pick(ev, ans){
 function buildText(p){
   var lines=["Availability form — "+p.name, ""];
   Object.keys(p.events).forEach(function(ev){
-    var a=ROSTER.assignments[ev]||{};
+    var a=EVENTS[ev]||{};
     lines.push((p.events[ev]==="yes"?"✅":"❌")+" "+(a.city||ev)+", "+(a.state||"")+" ("+fmtDate(a.start_date)+")");
   });
   if(p.phone) lines.push("", "Phone: "+p.phone);
