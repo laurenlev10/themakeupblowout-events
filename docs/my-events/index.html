@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Makeup Blowout — My Events</title>
+<style>
+  :root{ --pink:#ec4899; --purple:#7c3aed; --ink:#1f2937; --muted:#6b7280; --bg:#f6f7fb; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,sans-serif}
+  .hdr{background:linear-gradient(135deg,#ec4899 0%,#7c3aed 100%);color:#fff;padding:20px 18px;text-align:center}
+  .hdr h1{margin:0;font-size:21px;font-weight:900}
+  .hdr p{margin:6px 0 0;font-size:14px;opacity:.95}
+  .wrap{max-width:520px;margin:0 auto;padding:16px}
+  .card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:14px}
+  .ev{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f3f4f6}
+  .ev:last-child{border-bottom:0}
+  .ev .when{font-weight:900;font-size:13.5px;color:var(--purple);min-width:104px}
+  .ev .city{font-weight:800;font-size:15.5px;flex:1}
+  .sb{font-size:11.5px;font-weight:800;color:#92400e;background:#fef3c7;border-radius:999px;padding:2px 8px;margin-left:6px;white-space:nowrap}
+  .ok{font-size:12px;font-weight:800;color:#166534;white-space:nowrap}
+  .btn{width:100%;border:0;border-radius:13px;padding:15px;font-size:17px;font-weight:900;cursor:pointer;background:var(--purple);color:#fff}
+  .btn:disabled{opacity:.6}
+  .done{background:#dcfce7;border:1.5px solid #16a34a;color:#166534;border-radius:14px;padding:16px;text-align:center;font-weight:800}
+  .err{background:#fee2e2;border:1.5px solid #dc2626;color:#991b1b;border-radius:14px;padding:14px;text-align:center;font-weight:800}
+  .note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>💄 The Makeup Blowout Sale</h1>
+  <p id="hello">Your schedule</p>
+</div>
+<div class="wrap">
+  <div id="box" class="card">Loading your events…</div>
+  <div id="act"></div>
+  <div class="note">This page is personal — it shows only your own events.<br>Questions? Message Lauren on WhatsApp.</div>
+</div>
+<script>
+"use strict";
+/* /my-events/ — one worker's OWN schedule (26.10.2026).
+   Lauren & Eli: every worker is told their own events, privately; nobody sees who works where.
+   The key after # comes from the personal WhatsApp message sent from dashboard /team/
+   (docs/_assets/crew-notify.js in the hub). The Worker (kind get_my_events) resolves it against the
+   PRIVATE roster and answers only this worker's events. The key stays after # so it is never sent
+   to a server in a URL, and no-referrer keeps it out of any link this page opens.
+   A failed read shows a failure — never an empty schedule (IRON RULE #18). */
+var ENDPOINT = "https://danielle.laurenlev10.workers.dev/";
+var K = (location.hash || "").replace(/^#/, "").trim().toLowerCase();
+var DATA = null;
+var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function range(s, e){
+  if(!s) return ""; var a=s.split("-"), b=(e||s).split("-");
+  if(s===(e||s)) return MON[+a[1]-1]+" "+(+a[2]);
+  return a[1]===b[1] ? MON[+a[1]-1]+" "+(+a[2])+"–"+(+b[2]) : MON[+a[1]-1]+" "+(+a[2])+" – "+MON[+b[1]-1]+" "+(+b[2]);
+}
+function fail(msg){ document.getElementById("box").innerHTML='<div class="err">⚠️ '+esc(msg)+'</div>'; document.getElementById("act").innerHTML=""; }
+async function call(body){
+  var r=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  var j=null; try{ j=await r.json(); }catch(e){}
+  return {status:r.status, j:j||{}};
+}
+async function load(){
+  if(!/^[0-9a-f]{32}$/.test(K)){ fail("This link is not complete. Please open the link from Lauren's message again."); return; }
+  try{ var rc=await fetch("https://dashboard.themakeupblowout.com/manager-report/config.json?_="+Date.now(),{cache:"no-store"}); if(rc.ok){ var ep=((await rc.json()).save_endpoint||"").trim(); if(ep) ENDPOINT=ep; } }catch(e){}
+  var r;
+  try{ r=await call({kind:"get_my_events", k:K}); }catch(e){ fail("Could not load your schedule — check your connection and try again."); return; }
+  if(r.status!==200 || r.j.ok!==true){ fail(r.j.error || ("Could not load your schedule (error "+r.status+")")); return; }
+  DATA=r.j; render();
+}
+function render(){
+  var d=DATA, conf=d.confirmed||{};
+  document.getElementById("hello").textContent="Hi "+d.name+"! Here are your events 💕";
+  if(!d.events.length){ document.getElementById("box").innerHTML="You have no upcoming events right now."; document.getElementById("act").innerHTML=""; return; }
+  var all=true;
+  document.getElementById("box").innerHTML=d.events.map(function(e){
+    var ok=conf[e.evkey]===e.status; if(!ok) all=false;
+    return '<div class="ev"><span class="when">'+esc(range(e.start_date,e.end_date))+'</span>'+
+      '<span class="city">'+esc(e.city)+(e.state?', '+esc(e.state):'')+(e.status==="standby"?'<span class="sb">standby</span>':'')+'</span>'+
+      (ok?'<span class="ok">✔ confirmed</span>':'')+'</div>';
+  }).join("");
+  document.getElementById("act").innerHTML = all
+    ? '<div class="done">✅ Thank you! You confirmed your schedule.</div>'
+    : '<button class="btn" id="go" onclick="confirmAll()">✅ I confirm my events</button>';
+}
+async function confirmAll(){
+  var b=document.getElementById("go"); b.disabled=true; b.textContent="⏳ Sending…";
+  var r;
+  try{ r=await call({kind:"confirm_my_events", k:K, sig:DATA.sig}); }
+  catch(e){ b.disabled=false; b.textContent="✅ I confirm my events"; alert("Could not send — check your connection and tap again."); return; }
+  if(r.status===409 && r.j.changed){ alert("Your schedule was just updated — please check it again."); load(); return; }
+  if(r.status!==200 || r.j.ok!==true){ b.disabled=false; b.textContent="✅ I confirm my events"; alert(r.j.error || ("Could not send (error "+r.status+") — please tap again.")); return; }
+  var c={}; DATA.events.forEach(function(e){ c[e.evkey]=e.status; }); DATA.confirmed=c; render();
+}
+window.addEventListener("hashchange", function(){ K=(location.hash||"").replace(/^#/,"").trim().toLowerCase(); load(); });
+load();
+</script>
+</body>
+</html>
