@@ -4,7 +4,6 @@ Disallow: /_template/
 Disallow: /oauth/
 Disallow: /recount-count/
 Disallow: /team-availability/
-Disallow: /my-events/
 Disallow: /manager-report/
 Disallow: /collab/
 Disallow: /scout-plan/
