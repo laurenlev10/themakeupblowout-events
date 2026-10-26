@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-10-22T22:31:19Z",
+  "_updated_at": "2026-10-26T15:28:14Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -671,6 +671,18 @@
       "subscribe_url": "/events/oklahoma-city-ok-2027/",
       "_added_by": "sync_event_data.add_signed_events",
       "tz": "America/Chicago"
+    },
+    {
+      "city": "Palm Desert",
+      "state": "CA",
+      "start_date": "2026-12-11",
+      "end_date": "2026-12-13",
+      "slug": "palm-desert-ca-2026",
+      "venue_name": "Residence Inn Palm Desert",
+      "venue_address": "38305 Cook St, Palm Desert, CA 92211",
+      "form_id": "6adf713e00c349367f872db2",
+      "subscribe_url": "/events/palm-desert-ca-2026/",
+      "_added_by": "sync_event_data.add_signed_events"
     }
   ],
   "_field_doc": {
