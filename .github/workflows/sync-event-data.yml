@@ -5,9 +5,13 @@ name: Sync event data from lauren-agent-hub-data
 #   - venue_details.md      (per-event venue + address)
 #   - recent_meta_posts.json (recent IG reels, for ig_url city-match)
 #
-# Updates docs/upcoming-events.json with whatever is more current upstream.
-# The downstream build-landing-pages.yml workflow then auto-rebuilds
-# the affected docs/events/<slug>/index.html files.
+# Updates docs/upcoming-events.json with whatever is more current upstream, then
+# STARTS build-landing-pages.yml itself (workflow_dispatch) when it pushed a change.
+# 🛑 26.10.2026 — this header used to say the build "then auto-rebuilds" on the push.
+# It never did: a push made with GITHUB_TOKEN does not trigger other workflows, so a
+# new event's data (Ogden, Stockton, Pasco, Santa Rosa 2027 — forms recorded, synced
+# 21:21 UTC) sat with no landing page until the 03:15 cron. The opening chain
+# (hub event_opening.py, step 'landing') counts on the build following the sync.
 #
 # Result: when @campaigns or @setup or canva-reel pushes new data into
 # lauren-agent-hub-data, this workflow picks it up within ~hours and
@@ -31,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write      # to start build-landing-pages.yml (workflow_dispatch works with GITHUB_TOKEN; a push does not)
     steps:
       - uses: actions/checkout@v4
 
@@ -46,9 +51,23 @@ jobs:
           git add docs/upcoming-events.json
           if ! git diff --cached --quiet; then
             git commit -m "sync: update event data from lauren-agent-hub-data sources"
-            git pull --rebase origin main || true
-            git push origin main
+            ok=""
+            for i in 1 2 3 4 5; do
+              if git pull --rebase origin main && git push origin main; then ok=1; break; fi
+              echo "push attempt $i failed, retrying in 5s..."; sleep 5
+            done
+            # a push that did not land fails the job (IRON RULE #38) — never `|| true`
+            [ -n "$ok" ] || { echo "::error::push never landed"; exit 1; }
             echo "✓ pushed updates"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "no changes"
           fi
+        id: commit
+
+      # The push above cannot trigger build-landing-pages.yml (GITHUB_TOKEN), so start it here.
+      - name: Rebuild the landing pages
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run build-landing-pages.yml --ref main -R "$GITHUB_REPOSITORY"
