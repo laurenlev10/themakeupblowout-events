@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-10-26T18:52:15Z",
+  "_updated_at": "2026-10-26T21:21:14Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -682,6 +682,55 @@
       "venue_address": "38305 Cook St, Palm Desert, CA 92211",
       "form_id": "6adf713e00c349367f872db2",
       "subscribe_url": "/events/palm-desert-ca-2026/",
+      "_added_by": "sync_event_data.add_signed_events",
+      "tz": "America/Los_Angeles"
+    },
+    {
+      "city": "Ogden",
+      "state": "UT",
+      "start_date": "2027-07-23",
+      "end_date": "2027-07-25",
+      "slug": "ogden-ut-2027",
+      "venue_name": "Courtyard by Marriott Ogden",
+      "venue_address": "247 24th Street, Ogden, UT 84401",
+      "form_id": "6adfc31000c349367fc268f2",
+      "subscribe_url": "/events/ogden-ut-2027/",
+      "_added_by": "sync_event_data.add_signed_events"
+    },
+    {
+      "city": "Stockton",
+      "state": "CA",
+      "start_date": "2027-08-20",
+      "end_date": "2027-08-22",
+      "slug": "stockton-ca-2027",
+      "venue_name": "University Plaza Waterfront Hotel",
+      "venue_address": "110 W Fremont St, Stockton, CA 95202",
+      "form_id": "6adfc33f00c349367fc28689",
+      "subscribe_url": "/events/stockton-ca-2027/",
+      "_added_by": "sync_event_data.add_signed_events"
+    },
+    {
+      "city": "Pasco",
+      "state": "WA",
+      "start_date": "2027-10-15",
+      "end_date": "2027-10-17",
+      "slug": "pasco-wa-2027",
+      "venue_name": "Holiday Inn Express & Suites Pasco-TriCities",
+      "venue_address": "4525 Convention Pl, Pasco, WA 99301",
+      "form_id": "6adfc36500c349367fc29d88",
+      "subscribe_url": "/events/pasco-wa-2027/",
+      "_added_by": "sync_event_data.add_signed_events"
+    },
+    {
+      "city": "Santa Rosa",
+      "state": "CA",
+      "start_date": "2027-11-05",
+      "end_date": "2027-11-07",
+      "slug": "santa-rosa-ca-2027",
+      "venue_name": "Oxford Suites Sonoma County - Rohnert Park",
+      "venue_address": "67 Golf Course Dr W, Rohnert Park, CA 94928",
+      "form_id": "6adfc38daea4e7cef02750c2",
+      "subscribe_url": "/events/santa-rosa-ca-2027/",
       "_added_by": "sync_event_data.add_signed_events"
     }
   ],
