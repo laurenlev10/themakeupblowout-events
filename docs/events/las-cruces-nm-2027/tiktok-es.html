@@ -63,11 +63,12 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('a[href*="tiktok.com"]').forEach(function(a){a.addEventListener('click',function(){trackEvent('share_click',{platform:'tiktok'});});});
   if (window.location.pathname.indexOf('tiktok') !== -1) { trackEvent('tiktok_arrival', {}); }
   /* Landing funnel (27.10.2026, Lauren: "לנסות כל מה שאפשר"): where women stop between arriving and
-     submitting. form_view = the sign-up form came into view; form_start = first tap into it. Read daily
+     submitting. signup_form_seen = the sign-up form came into view; signup_form_tap = first tap into it
+     (not form_start — GA4 enhanced measurement already sends that name on its own). Read daily
      from GA4 by lauren-agent-hub-data scripts/landing_funnel.py → /experiments/. */
   (function(){var f=document.querySelector('form.st-signupform');if(!f)return;var v=0,s=0;
-    try{if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting&&!v){v=1;trackEvent('form_view',{});io.disconnect();}});},{threshold:0.4});io.observe(f);}}catch(e){}
-    f.addEventListener('focusin',function(){if(!s){s=1;trackEvent('form_start',{});}});})();
+    try{if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting&&!v){v=1;trackEvent('signup_form_seen',{});io.disconnect();}});},{threshold:0.4});io.observe(f);}}catch(e){}
+    f.addEventListener('focusin',function(){if(!s){s=1;trackEvent('signup_form_tap',{});}});})();
 });
 </script>
 <style>
