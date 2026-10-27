@@ -46,7 +46,8 @@
   h2{font-size:30px}
   .lead{font-size:16px;margin:4px 0 0}
   .hide{display:none!important}
-  .names{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:14px}
+  .who-in{width:100%;margin-top:14px;border:4px solid var(--ink);border-radius:14px;padding:14px;font:600 20px "Fredoka",sans-serif;box-shadow:4px 4px 0 var(--ink);background:#fff;color:var(--ink)}
+  .who-in:focus{outline:none;background:#FFF6FB}
   .nm{font-family:"Bangers",Impact,sans-serif;font-size:24px;letter-spacing:1px;border:4px solid var(--ink);border-radius:14px;padding:12px 8px;cursor:pointer;background:var(--cyan);box-shadow:4px 4px 0 var(--ink);transition:transform .08s}
   .nm:nth-child(4n+2){background:var(--pink);color:#fff}.nm:nth-child(4n+3){background:var(--yellow)}.nm:nth-child(4n+4){background:var(--purple);color:#fff}
   .nm:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
@@ -128,10 +129,6 @@
     .tiles{grid-template-columns:1fr}
   }
 </style>
-<!-- MBS-PHONE-LAYER (scripts/ensure_phone_layout.py) — do not edit by hand -->
-<link rel="stylesheet" href="../../../hub/docs/_assets/mbs-phone.css?v=d35c6c594a">
-<script defer src="../../../hub/docs/_assets/mbs-phone.js?v=594207b7ef"></script>
-<!-- /MBS-PHONE-LAYER -->
 </head>
 <body>
 <header>
@@ -147,8 +144,12 @@
   <section id="s-who" class="hide">
     <div class="panel">
       <h1>WHO ARE YOU?</h1>
-      <p class="lead">Tap your name to start your training videos.</p>
-      <div class="names" id="names"></div>
+      <p class="lead">Type your <b>first and last name</b>, then press START.</p>
+      <form id="who-form" onsubmit="startWithName();return false;" autocomplete="on">
+        <input id="who-name" class="who-in" type="text" name="name" autocomplete="name" maxlength="60" placeholder="e.g. Maria Lopez" required>
+        <div id="who-err" class="err hide" style="margin:10px 0 0"></div>
+        <button class="gobtn" id="who-go" type="submit">START ▶</button>
+      </form>
     </div>
   </section>
 
@@ -203,14 +204,14 @@ async function api(body){
 function store(k, v){ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); }catch(e){ return null; } }
 
 /* ═══════════ state ═══════════ */
-var COURSE = null, MEMBERS = [], ME = null, DONE = {}, TRACKS_DONE = {};
+var COURSE = null, ME = null, DONE = {}, TRACKS_DONE = {};   // ME = {typed, key, name, manager, kind} — who the Worker says the typed name is
 var QS = new URLSearchParams(location.search);
 // tests (and only tests: navigator.webdriver) may run the clock faster
 var SPEED = (navigator.webdriver && +QS.get("speed")) || 1;
 
 function queue(){ return store("tr_queue") || []; }
 function lessonTrack(id){ var o=null; (COURSE.tracks||[]).forEach(function(t){ t.lessons.forEach(function(l,i){ if(l.id===id) o={track:t,lesson:l,i:i}; }); }); return o; }
-function isDone(id){ return !!DONE[id] || queue().some(function(q){ return q.member===ME.slug && q.lesson===id; }); }
+function isDone(id){ return !!DONE[id] || queue().some(function(q){ return q.key===ME.key && q.lesson===id; }); }
 function trackComplete(t){ return t.lessons.every(function(l){ return isDone(l.id); }); }
 function trackOpen(t){
   if(t.for==="manager" && !ME.manager) return false;
@@ -221,16 +222,17 @@ function lessonOpen(t, i){ if(!trackOpen(t)) return false; for(var k=0;k<i;k++) 
 function myTracks(){ return COURSE.tracks.filter(function(t){ return t.for!=="manager" || ME.manager; }); }
 
 /* ═══════════ boot ═══════════ */
+// 27.10.2026 13:16 — Lauren: no list of names to tap ("אחד ילחץ בטעות על העובד השני"): each person
+// types their own name. The Worker decides who that is (crew member · owner · not on the roster).
 async function boot(){
   await endpoint();
-  var want = (QS.get("name")||QS.get("member")||"").trim().toLowerCase() || (store("tr_member")||"");
   var r;
   try{ r = await api({kind:"get_training"}); }catch(e){ return bootErr("No connection — check your internet and reload the page."); }
   if(r.status!==200 || !r.json.ok || !r.json.course) return bootErr((r.json && r.json.error) || "The course could not load. Try again in a minute.");
-  COURSE = r.json.course; MEMBERS = r.json.members||[];
+  COURSE = r.json.course;
   hide("boot");
-  var m = MEMBERS.filter(function(x){ return x.slug===want || x.name.toLowerCase()===want; })[0];
-  if(m) return pick(m.slug); else showWho();
+  var want = (QS.get("name")||"").trim() || (store("tr_name")||"");
+  if(want) return begin(want); else showWho();
 }
 function bootErr(t){ hide("boot"); var e=document.getElementById("boot-err"); e.textContent="⚠️ "+t; show("boot-err"); }
 function show(id){ document.getElementById(id).classList.remove("hide"); }
@@ -239,21 +241,28 @@ function screen(id){ ["s-who","s-map","s-player"].forEach(function(s){ (s===id?s
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
 
 function showWho(){
-  hide("me-btn");
-  document.getElementById("names").innerHTML = MEMBERS.map(function(m){ return '<button class="nm" onclick="pick(\''+m.slug+'\')">'+esc(m.name)+'</button>'; }).join("");
+  hide("me-btn"); hide("who-err");
+  document.getElementById("who-name").value = "";
   screen("s-who");
+  setTimeout(function(){ try{ document.getElementById("who-name").focus(); }catch(e){} }, 50);
 }
-function switchUser(){ store("tr_member", null); ME=null; showWho(); }
-async function pick(slug){
-  ME = MEMBERS.filter(function(m){ return m.slug===slug; })[0];
-  if(!ME) return showWho();
-  store("tr_member", slug);
-  var b = document.getElementById("me-btn"); b.textContent = "👤 "+ME.name+" · switch"; show("me-btn");
+function switchUser(){ store("tr_name", null); ME=null; DONE={}; TRACKS_DONE={}; showWho(); }
+function startWithName(){
+  var v = document.getElementById("who-name").value.replace(/\s+/g," ").trim();
+  var e = document.getElementById("who-err");
+  if(v.length < 2 || !/[A-Za-z\u0590-\u05FF]{2}/.test(v)){ e.textContent = "Please type your name."; show("who-err"); return; }
+  hide("who-err");
+  begin(v);
+}
+async function begin(typed){
   document.getElementById("tracks").innerHTML = '<div class="panel"><h2>Loading your videos…</h2></div>';
+  document.getElementById("certs").innerHTML = ""; hide("qpill");
+  document.getElementById("hi").textContent = "HI!";
   screen("s-map");
   try{
-    var r = await api({kind:"get_training", member:slug});
-    if(r.status!==200 || !r.json.ok) throw new Error((r.json && r.json.error) || ("error "+r.status));
+    var r = await api({kind:"get_training", name:typed});
+    if(r.status!==200 || !r.json.ok || !r.json.me) throw new Error((r.json && r.json.error) || ("error "+r.status));
+    ME = r.json.me; ME.typed = typed;
     DONE = (r.json.progress && r.json.progress.lessons) || {}; TRACKS_DONE = (r.json.progress && r.json.progress.tracks_done) || {};
     if(r.json.course) COURSE = r.json.course;
   }catch(e){
@@ -261,6 +270,10 @@ async function pick(slug){
     document.getElementById("tracks").innerHTML = '<div class="err">⚠️ Your progress could not load ('+esc(e.message)+'). Check your connection and reload.</div>';
     return;
   }
+  store("tr_name", typed);
+  var b = document.getElementById("me-btn"); b.textContent = "👤 "+typed+" · not you?"; show("me-btn");
+  // so /team/ sees who STARTED, not only who finished — once per name, a retry if it did not land
+  api({kind:"training_hello", name:typed}).catch(function(){});
   flushQueue().then(renderMap);
   renderMap();
 }
@@ -268,12 +281,12 @@ async function pick(slug){
 /* ═══════════ my videos ═══════════ */
 function renderMap(){
   if(!ME || !COURSE) return;
-  document.getElementById("hi").textContent = "HI "+ME.name.toUpperCase()+"! 👋";
-  var q = queue().filter(function(x){ return x.member===ME.slug; });
+  document.getElementById("hi").textContent = "HI "+String(ME.typed||ME.name).split(" ")[0].toUpperCase()+"! 👋";
+  var q = queue().filter(function(x){ return x.key===ME.key; });
   var qp = document.getElementById("qpill");
   if(q.length){ qp.textContent = "⏳ "+q.length+" finished video"+(q.length>1?"s":"")+" not saved yet — keep this page open with internet"; show("qpill"); } else hide("qpill");
   var certs = "";
-  myTracks().forEach(function(t){ if(trackComplete(t)) certs += '<div class="cert"><div class="big">YOU DID IT!</div><div style="font-weight:700;font-size:18px;margin-top:8px">'+esc(ME.name)+' finished the '+esc(t.title)+' 🎉</div></div>'; });
+  myTracks().forEach(function(t){ if(trackComplete(t)) certs += '<div class="cert"><div class="big">YOU DID IT!</div><div style="font-weight:700;font-size:18px;margin-top:8px">'+esc(ME.typed||ME.name)+' finished the '+esc(t.title)+' 🎉</div></div>'; });
   document.getElementById("certs").innerHTML = certs;
   var nextFound = false;
   document.getElementById("tracks").innerHTML = myTracks().map(function(t){
@@ -301,8 +314,8 @@ async function flushQueue(){
     var q = queue(), keep = [];
     for(var i=0;i<q.length;i++){
       var it = q[i], r = null;
-      try{ r = await api({kind:"training_done", member:it.member, lesson:it.lesson, answer:it.answer}); }catch(e){ r = null; }
-      if(r && r.status===200 && r.json.ok){ if(ME && it.member===ME.slug){ DONE[it.lesson] = r.json.at || new Date().toISOString(); if(r.json.track_done) TRACKS_DONE[r.json.track_done] = true; } }
+      try{ r = await api({kind:"training_done", name:it.name, lesson:it.lesson, answer:it.answer}); }catch(e){ r = null; }
+      if(r && r.status===200 && r.json.ok){ if(ME && it.key===ME.key){ DONE[it.lesson] = r.json.at || new Date().toISOString(); if(r.json.track_done) TRACKS_DONE[r.json.track_done] = true; } }
       else if(r && r.status>=400 && r.status<500){ it.refused = (r.json && r.json.error) || ("refused "+r.status); if(!it.told){ it.told=true; alert("This video was not saved: "+it.refused); } }   // a 4xx will not succeed later; said, then dropped
       else keep.push(it);   // offline / 5xx / saved-but-text-pending → try again
     }
@@ -660,12 +673,12 @@ async function answer(i, el){
 async function saveLesson(id, ans){
   if(DONE[id]) return true;
   var r = null;
-  try{ r = await api({kind:"training_done", member:ME.slug, lesson:id, answer:ans}); }catch(e){ r = null; }
+  try{ r = await api({kind:"training_done", name:ME.typed, lesson:id, answer:ans}); }catch(e){ r = null; }
   if(r && r.status===200 && r.json.ok){ DONE[id] = r.json.at || new Date().toISOString(); if(r.json.track_done) TRACKS_DONE[r.json.track_done] = true; return true; }
   if(r && r.status>=400 && r.status<500) return (r.json && r.json.error) || ("not saved ("+r.status+")");
   // offline, or saved-but-Lauren-not-told-yet (502 saved:true): keep it and send again
-  var q = queue().filter(function(x){ return !(x.member===ME.slug && x.lesson===id); });
-  q.push({member:ME.slug, lesson:id, answer:ans, at:new Date().toISOString()});
+  var q = queue().filter(function(x){ return !(x.key===ME.key && x.lesson===id); });
+  q.push({name:ME.typed, key:ME.key, lesson:id, answer:ans, at:new Date().toISOString()});
   store("tr_queue", q);
   return (r && r.json && r.json.saved) ? true : "queued";
 }
@@ -683,74 +696,6 @@ function toggleMusic(){ MUSIC_ON = !MUSIC_ON; store("tr_music", MUSIC_ON); syncT
 
 window.__TR = { get P(){ return P; }, PROPS: PROPS, jump: function(k){ if(navigator.webdriver && P){ enter(k); } }, get COURSE(){ return COURSE; }, get DONE(){ return DONE; }, queue: queue };
 boot();
-</script>
-<div id="access-badge" style="position:fixed;top:8px;right:8px;z-index:2147483000;font-family:Arial,'Segoe UI',sans-serif;font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;box-shadow:0 1px 4px rgba(0,0,0,.25);background:#1f2937;color:#fff;opacity:.9;transition:opacity .15s;cursor:default" title="הדף הזה מאחורי סיסמה — רק את רואה אותו">🔒 פרטי</div>
-<script>(function(){try{
-  var PUBLIC_PATHS=[];
-  var pth=location.pathname.replace(/index\.html$/,'');
-  var pub=PUBLIC_PATHS.some(function(x){return pth.indexOf(x)!==-1;});
-  var b=document.getElementById('access-badge'); if(!b) return;
-  // 2026-08-16 — pages under /en/ exist because someone outside the business reads
-  // them (Meta App Review reviews /meta/inbox-api-preview/en/). A Hebrew chip in the
-  // corner of an otherwise English page is exactly the confusion that page was built
-  // to avoid, so the badge follows the page's language.
-  var EN = /\/en\//.test(location.pathname);
-  if(!pub && EN){ b.textContent='🔒 Private'; b.title='This page is behind a password'; }
-  if(pub){ b.textContent = EN ? '🌐 Public' : '🌐 ציבורי'; b.style.background='#0a7d2c';
-           b.title = EN ? 'Anyone with the link can open this page'
-                        : 'הדף הזה פתוח לכל מי שיש לו קישור'; }
-  function findSync(){
-    var els=document.querySelectorAll('button,span,a,div'), best=null, ba=1e15;
-    for(var i=0;i<els.length;i++){var el=els[i]; if(el===b) continue;
-      var t=(el.textContent||'').trim(); if(t.length>40 || !/סנכרון|Synced/.test(t)) continue;
-      var rr=el.getBoundingClientRect(); if(rr.width<=0||rr.height<=0||rr.width>280) continue;
-      var a=rr.width*rr.height; if(a<ba){ba=a; best=el;}
-    }
-    return best;
-  }
-  function findTitle(){
-    var sel=['h1','h2'];
-    for(var s=0;s<sel.length;s++){ var hs=document.querySelectorAll(sel[s]);
-      for(var i=0;i<hs.length;i++){var el=hs[i]; var r=el.getBoundingClientRect();
-        if(r.width>0&&r.height>0&&r.top>=0&&r.top<200 && (el.textContent||'').trim().length>1) return el; } }
-    return null;
-  }
-  // 🛑 2026-08-18 — MEASURE THE TEXT, NOT THE BLOCK, AND NEVER LEAVE THE SCREEN.
-  // The badge parks just outside the page title. It used the title element's own
-  // rect — but an <h1> is a BLOCK: on a right-aligned RTL heading its `left` is the
-  // left edge of the whole column, not of the words. So `right = innerWidth - left`
-  // pushed the chip to the far side of the page and half off the screen, on every
-  // dashboard with a full-width heading. A Range over the element's contents gives
-  // the inline text box instead, and the clamp below means that even if some future
-  // layout fools the measurement, the badge is still readable rather than gone.
-  function textRect(el){
-    try{ var rg=document.createRange(); rg.selectNodeContents(el);
-         var r=rg.getBoundingClientRect();
-         if(r && r.width>1 && r.height>1) return r; }catch(e){}
-    return el.getBoundingClientRect();
-  }
-  var sync=null, title=null;
-  function reposition(){
-    var a = sync || title;
-    b.style.position='fixed';
-    if(a){ var r = (a===title) ? textRect(a) : a.getBoundingClientRect();
-      var want = Math.round(window.innerWidth - r.left + 8);
-      var maxRight = Math.max(6, window.innerWidth - Math.ceil(b.offsetWidth) - 6);
-      if(want <= maxRight){
-        b.style.left='auto'; b.style.bottom='auto';
-        b.style.top=Math.min(Math.max(6,Math.round(r.top)), window.innerHeight-30)+'px';
-        b.style.right=want+'px';
-        return;
-      }
-    }
-    b.style.top='8px'; b.style.right='8px'; b.style.bottom='auto'; b.style.left='auto';
-  }
-  var tries=0;
-  (function locate(){ tries++; sync=findSync(); title=findTitle(); reposition(); if(tries<16) setTimeout(locate, tries<8?350:800); })();
-  window.addEventListener('resize',reposition,{passive:true});
-  window.addEventListener('scroll',reposition,{passive:true});
-  b.onmouseover=function(){b.style.opacity='1';}; b.onmouseout=function(){b.style.opacity='.9';};
-}catch(e){}})();
 </script>
 </body>
 </html>
