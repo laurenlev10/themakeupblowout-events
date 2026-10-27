@@ -1,0 +1,40 @@
+{
+  "_about": "THE definition of the Event Manager Report form. One file, read by every surface: the public form (events.themakeupblowout.com/manager-report/), Lauren's copy behind Access (dashboard.themakeupblowout.com/manager-report/ fetches this URL), and — through the `form` snapshot each submitted report carries — manager_report_sync.py in lauren-agent-hub-data, which turns answers into next-event ordering notes. Before 27.10.2026 the field list lived in three places (two pages + FIELD_DEFS in the sync) and had drifted: the sync still mapped two Xime palettes the form had dropped, so Xime Pixie Glow / Euphoria Glitz counts never reached the ordering notes. Guardrail `the-manager-form-is-defined-once`. Keep `key` stable — history and the sync map by key. `short` is the name on the ordering notes; `supplier` is the /inventory/ supplier card whose 'צריך להזמין' list the answer lands on.",
+  "lists": {
+    "BOX": ["No More", "Less than 1/2 box", "1/2 box", "1 full box", "1.5 box", "2 boxes"],
+    "BOX_ONHAND": ["No More", "Less than 1/2 box", "1/2 box", "1 full box", "1.5 box", "2 boxes", "3 boxes", "4 boxes", "5 boxes", "6 boxes", "7 boxes", "8 boxes", "9 boxes", "10 boxes", "More than 10 boxes"]
+  },
+  "low_levels": ["No More", "Less than 1/2 box", "1/2 box"],
+  "sections": [
+    {
+      "title": "🧰 Check if needed — Low Stock",
+      "fields": [
+        {"key": "plastic_bags", "label": "500 Plastic Bags", "short": "500 Plastic bags", "type": "select", "options": "BOX", "supplier": "mystery-box"},
+        {"key": "trash_bags", "label": "1 box Trash bags", "short": "Trash bags", "type": "yesno", "hint": "Need more?", "supplier": "mystery-box"},
+        {"key": "tester_stickers", "label": "1 pack Testers Stickers", "short": "Testers stickers", "type": "yesno", "hint": "Need more?", "supplier": "mystery-box"},
+        {"key": "neon_stars", "label": "1 pack Neon stars for signs", "short": "Neon stars for signs", "type": "yesno", "hint": "Need more?", "supplier": "mystery-box"},
+        {"key": "shrink_roll", "label": "1 Roll Shrink", "short": "Roll Shrink", "type": "yesno", "hint": "Need more?", "supplier": "mystery-box"},
+        {"key": "table_covers", "label": "How many clean table covers for next event?", "short": "Clean table covers", "type": "number", "hint": "Enter a number", "supplier": "mystery-box"},
+        {"key": "scotch_tape", "label": "Scotch tape", "short": "Scotch tape", "type": "yesno", "hint": "Need more?", "supplier": "mystery-box"},
+        {"key": "price_numbers", "label": "Price numbers? (Which numbers?)", "short": "Price numbers", "type": "text", "hint": "Type which price numbers are needed", "supplier": "mystery-box"}
+      ]
+    },
+    {
+      "title": "📦 On hand — count / level",
+      "fields": [
+        {"key": "glitters", "label": "Lipgloss on hand", "short": "Lipgloss", "type": "select", "options": "BOX_ONHAND", "supplier": "mystery-box"},
+        {"key": "eyeshadow_gifts", "label": "Eyeshadows gifts on hand", "short": "Eyeshadow gifts", "type": "select", "options": "BOX_ONHAND", "supplier": "mystery-box"},
+        {"key": "brush_set_gifts", "label": "$12 Brush Set left on hand", "short": "$12 Brush Set gifts", "type": "number", "hint": "How many? (enter any number)", "supplier": "mystery-box"},
+        {"key": "xime_pixie_glow", "label": "Xime Pixie Glow Body Spray", "short": "Xime Pixie Glow Body Spray", "type": "number", "hint": "How many?", "supplier": "xime-beauty"},
+        {"key": "xime_euphoria_glitz", "label": "Xime Euphoria Glitz Body Shimmer", "short": "Xime Euphoria Glitz Body Shimmer", "type": "number", "hint": "How many?", "supplier": "xime-beauty"}
+      ]
+    },
+    {
+      "title": "🎨 Simply Bella — missing shades (to order for the next event)",
+      "fields": [
+        {"key": "sb_matte_powder_missing", "label": "Simply Bella Beyond Perfection Matte Powder", "short": "Simply Bella Beyond Perfection Matte Powder — missing shades", "type": "multicheck", "options": ["310", "311", "312", "313", "314", "315", "316", "317", "318", "319"], "hint": "Tick every shade that is MISSING at this event", "supplier": "simply-bella"},
+        {"key": "sb_matte_lipgloss_missing", "label": "Simply Bella Matte Longlasting Lipgloss", "short": "Simply Bella Matte Longlasting Lipgloss — missing numbers", "type": "text", "hint": "Type the shade numbers that are MISSING (e.g. 03, 07, 12)", "supplier": "simply-bella"}
+      ]
+    }
+  ]
+}

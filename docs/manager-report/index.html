@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="robots" content="noindex">
 <title>Event Manager Report — The Makeup Blowout</title>
+<script src="./form.js?v=d0f90394d9"></script>
 <style>
   :root{
     --pink:#ec4899; --pink-d:#be185d; --ink:#1f2937; --muted:#6b7280;
@@ -133,32 +134,17 @@ var CONFIG = {};                                 // loaded from ./config.json (s
 async function loadConfig(){ try{ var r=await fetch("./config.json?_="+Date.now(),{cache:"no-store"}); if(r.ok) CONFIG=await r.json(); }catch(e){} }
 function saveEndpoint(){ return ((localStorage.getItem(ENDPOINT_KEY)||"").trim()) || ((CONFIG && CONFIG.save_endpoint || "").trim()); }
 
-var BOX = ["No More","Less than 1/2 box","1/2 box","1 full box","1.5 box","2 boxes"];
-
-/* The form definition — easy to edit later. type: select|yesno|number|text */
-var SECTIONS = [
-  { title: "🧰 Check if needed — Low Stock", icon:"",
-    fields: [
-      { key:"plastic_bags",  label:"500 Plastic Bags",                     type:"select", options:BOX },
-      { key:"trash_bags",    label:"1 box Trash bags",                     type:"yesno", hint:"Need more?" },
-      { key:"tester_stickers",label:"1 pack Testers Stickers",             type:"yesno", hint:"Need more?" },
-      { key:"neon_stars",    label:"1 pack Neon stars for signs",          type:"yesno", hint:"Need more?" },
-      { key:"shrink_roll",   label:"1 Roll Shrink",                        type:"yesno", hint:"Need more?" },
-      { key:"table_covers",  label:"How many clean table covers for next event?", type:"number", hint:"Enter a number" },
-      { key:"scotch_tape",   label:"Scotch tape",                          type:"yesno", hint:"Need more?" },
-      { key:"price_numbers", label:"Price numbers? (Which numbers?)",      type:"text", hint:"Type which price numbers are needed" }
-    ]
-  },
-  { title: "📦 On hand — count / level", icon:"",
-    fields: [
-      { key:"glitters",         label:"Lipgloss on hand",                  type:"select", options:BOX },
-      { key:"eyeshadow_gifts",  label:"Eyeshadows gifts on hand",          type:"select", options:BOX },
-      { key:"brush_set_gifts",  label:"$5 Brush Set gifts on hand",        type:"select", options:BOX },
-      { key:"xime_pixie_glow", label:"Xime Pixie Glow Body Spray", type:"number", hint:"How many?" },
-      { key:"xime_euphoria_glitz", label:"Xime Euphoria Glitz Body Shimmer", type:"number", hint:"How many?" }
-    ]
-  }
-];
+/* The fields are NOT defined here. They live in manager-report/form.json — one file read by
+   both copies of this page, and carried inside every submitted report as `form`, which is
+   what manager_report_sync.py reads (guardrail `the-manager-form-is-defined-once`).
+   form.js is the only code that knows how a field type renders, reads back and prints. */
+var FORM_URL = "./form.json";
+var SECTIONS = [];        // filled by loadForm() from form.json
+var FORM_ERROR = "";
+async function loadForm(){
+  try{ await MbsReportForm.load(FORM_URL); SECTIONS = MbsReportForm.sections(); MbsReportForm.injectCss(); }
+  catch(e){ FORM_ERROR = String(e && e.message || e); }
+}
 
 /* ---------- small helpers ---------- */
 function qp(name){ return new URLSearchParams(location.search).get(name) || ""; }
@@ -166,7 +152,7 @@ function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){ ret
 function b64enc(obj){ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
 function b64dec(s){ s=String(s).replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="="; return JSON.parse(decodeURIComponent(escape(atob(s)))); }
 function toast(msg){ var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){ t.classList.remove("show"); }, 2200); }
-function fieldByKey(k){ for(var i=0;i<SECTIONS.length;i++){ for(var j=0;j<SECTIONS[i].fields.length;j++){ if(SECTIONS[i].fields[j].key===k) return SECTIONS[i].fields[j]; } } return null; }
+function fieldByKey(k){ return MbsReportForm.fieldByKey(k); }
 async function copyText(text){
   try{ await navigator.clipboard.writeText(text); return true; }
   catch(e){
@@ -287,6 +273,10 @@ function renderForm(){
   document.getElementById("h-ev").textContent = eventTitle(ev);
   document.getElementById("h-meta").textContent = [dateRange(ev), ev.venue, ev.address].filter(Boolean).join(" · ");
 
+  if(FORM_ERROR){
+    document.getElementById("app").innerHTML = '<div class="card" style="border-color:#fca5a5;background:#fef2f2"><b>⚠️ The form could not load.</b><div style="font-size:13px;margin:6px 0 10px">Check your signal and tap Reload. Nothing you typed before is lost — drafts stay on this phone.</div><div class="hint">'+esc(FORM_ERROR)+'</div><button type="button" class="add-row" onclick="location.reload()">↻ Reload</button></div>';
+    return;
+  }
   var html = "";
   html += '<div class="hello no-print">📝 Please fill this in during / at the end of the event, then tap <b>Submit</b> to send it to the team.</div>';
 
@@ -299,25 +289,7 @@ function renderForm(){
   for(var s=0;s<SECTIONS.length;s++){
     var sec = SECTIONS[s];
     html += '<div class="card"><div class="sec-title">' + esc(sec.title) + '</div>';
-    for(var i=0;i<sec.fields.length;i++){
-      var f = sec.fields[i];
-      html += '<div class="field"><label class="lab" for="f-'+f.key+'">' + esc(f.label) +
-              (f.hint? ' <span class="hint">'+esc(f.hint)+'</span>':'') + '</label>';
-      if(f.type==="select"){
-        html += '<select id="f-'+f.key+'"><option value="">— Choose —</option>';
-        for(var o=0;o<f.options.length;o++){ html += '<option value="'+esc(f.options[o])+'">'+esc(f.options[o])+'</option>'; }
-        html += '</select>';
-      } else if(f.type==="yesno"){
-        html += '<div class="yn" id="f-'+f.key+'" data-val="">' +
-                '<button type="button" data-yn="yes">✅ Yes — need it</button>' +
-                '<button type="button" data-yn="no">— No</button></div>';
-      } else if(f.type==="number"){
-        html += '<input type="number" inputmode="numeric" id="f-'+f.key+'" placeholder="0">';
-      } else {
-        html += '<input type="text" id="f-'+f.key+'" placeholder="">';
-      }
-      html += '</div>';
-    }
+    for(var i=0;i<sec.fields.length;i++){ html += MbsReportForm.fieldHtml(sec.fields[i]); }
     html += '</div>';
   }
 
@@ -402,15 +374,7 @@ function renderForm(){
   document.body.appendChild(bar);
 
   // yes/no toggles
-  Array.prototype.forEach.call(document.querySelectorAll(".yn"), function(yn){
-    yn.addEventListener("click", function(e){
-      var b = e.target.closest("button[data-yn]"); if(!b) return;
-      var v = b.getAttribute("data-yn");
-      yn.setAttribute("data-val", v);
-      Array.prototype.forEach.call(yn.querySelectorAll("button"), function(x){ x.classList.remove("on-yes","on-no"); });
-      b.classList.add(v==="yes"?"on-yes":"on-no");
-    });
-  });
+  MbsReportForm.wire(document.getElementById("app"));
 
   document.getElementById("btn-submit").addEventListener("click", onSubmit);
   document.getElementById("btn-textcopy").addEventListener("click", async function(){ var p=collect(); if(!p) return; var ok=await copyText(reportText(p)); flash(this, ok?"✓ Copied":"Copy failed"); });
@@ -508,10 +472,8 @@ function collect(allowEmptyName){
   for(var s=0;s<SECTIONS.length;s++){
     for(var i=0;i<SECTIONS[s].fields.length;i++){
       var f = SECTIONS[s].fields[i];
-      var el = document.getElementById("f-"+f.key);
-      if(!el) continue;
-      if(f.type==="yesno") answers[f.key] = el.getAttribute("data-val") || "";
-      else answers[f.key] = (el.value || "").trim();
+      var v = MbsReportForm.read(f);
+      if(v !== undefined) answers[f.key] = v;
     }
   }
   var team = TEAM.map(function(t){ return { name:(t.name||"").trim(), base:num(t.base), bonus:num(t.bonus), extra:num(t.extra), total:teamTotal(t) }; })
@@ -523,7 +485,7 @@ function collect(allowEmptyName){
   return {
     v:1, evkey:ev.evkey, event:ev, manager_name:name,
     team:team, expenses:expenses, cash:cash,
-    answers:answers, notes:(document.getElementById("f-notes").value||"").trim(),
+    answers:answers, form:MbsReportForm.snapshot(), notes:(document.getElementById("f-notes").value||"").trim(),
     photo_count:PHOTOS.length,
     submitted_at:new Date().toISOString(), source:"form"
   };
@@ -564,12 +526,13 @@ function reportText(p){
   }
   if(p.photo_count) lines.push("📷 " + p.photo_count + " photo(s) attached");
   if(p.photo_count) lines.push("");
-  for(var s=0;s<SECTIONS.length;s++){
-    lines.push("— " + SECTIONS[s].title.replace(/^[^A-Za-z0-9]+/,"").trim() + " —");
-    for(var i=0;i<SECTIONS[s].fields.length;i++){
-      var f = SECTIONS[s].fields[i]; var val = p.answers[f.key];
-      if(f.type==="yesno") val = val==="yes" ? "YES — need it" : (val==="no" ? "no" : "—");
-      if(val===""||val==null) val = "—";
+  var secs = (p.form && p.form.sections) || SECTIONS;
+  for(var s=0;s<secs.length;s++){
+    lines.push("— " + secs[s].title.replace(/^[^A-Za-z0-9]+/,"").trim() + " —");
+    for(var i=0;i<secs[s].fields.length;i++){
+      var f = secs[s].fields[i]; var raw = (p.answers||{})[f.key];
+      var val = (raw===undefined) ? "" : MbsReportForm.display(f, raw);
+      if(val==="") val = "—";
       lines.push("• " + f.label + ": " + val);
     }
     lines.push("");
@@ -704,9 +667,7 @@ function _setVal(id,v){ var el=document.getElementById(id); if(el && v!==undefin
 function applyDraft(p){
   if(!p) return;
   _setVal("f-manager_name", p.manager_name);
-  if(p.answers){ for(var k in p.answers){ var f=fieldByKey(k); var el=document.getElementById("f-"+k); if(!el) continue;
-    if(f && f.type==="yesno"){ var v=p.answers[k]; if(v){ el.setAttribute("data-val",v); Array.prototype.forEach.call(el.querySelectorAll("button"),function(x){x.classList.remove("on-yes","on-no");}); var b=el.querySelector('button[data-yn="'+v+'"]'); if(b) b.classList.add(v==="yes"?"on-yes":"on-no"); } }
-    else { el.value = p.answers[k]; } } }
+  if(p.answers){ for(var k in p.answers){ var f=fieldByKey(k); if(f) MbsReportForm.apply(f, p.answers[k]); } }
   var rt = (p._raw && p._raw.team) ? p._raw.team : p.team;
   if(Array.isArray(rt) && rt.length){ TEAM = rt.map(function(t){ return { name:(t.name||""), base:(t.base===0?"":(t.base||"")), bonus:(t.bonus===0?"0":(t.bonus===""||t.bonus==null?"":t.bonus)), extra:(t.extra===0?"":(t.extra||"")) }; }); renderTeamGrid(); }
   var rx = (p._raw && p._raw.expenses) ? p._raw.expenses : p.expenses;
@@ -768,13 +729,14 @@ function renderReadonly(payload){
   } else if(p.photo_count){
     html += '<div class="card"><div class="sec-title">📷 Photos</div><div class="hint">'+p.photo_count+' photo(s) were attached and sent via WhatsApp.</div></div>';
   }
-  for(var s=0;s<SECTIONS.length;s++){
-    html += '<div class="card"><div class="sec-title">'+esc(SECTIONS[s].title)+'</div>';
-    for(var i=0;i<SECTIONS[s].fields.length;i++){
-      var f = SECTIONS[s].fields[i]; var raw = p.answers ? p.answers[f.key] : "";
-      var cls = "", disp = raw;
-      if(f.type==="yesno"){ if(raw==="yes"){cls="yes";disp="✅ Yes — need it";} else if(raw==="no"){cls="no";disp="No";} else disp="—"; }
-      if(disp===""||disp==null) disp="—";
+  var rsecs = (p.form && p.form.sections) || SECTIONS;
+  for(var s=0;s<rsecs.length;s++){
+    html += '<div class="card"><div class="sec-title">'+esc(rsecs[s].title)+'</div>';
+    for(var i=0;i<rsecs[s].fields.length;i++){
+      var f = rsecs[s].fields[i]; var raw = p.answers ? p.answers[f.key] : undefined;
+      var cls = f.type==="yesno" ? (raw==="yes"?"yes":(raw==="no"?"no":"")) : "";
+      var disp = (raw===undefined) ? "" : MbsReportForm.display(f, raw);
+      if(disp==="") disp="—";
       html += '<div class="ro-line"><span class="k">'+esc(f.label)+'</span><span class="v '+cls+'">'+esc(disp)+'</span></div>';
     }
     html += '</div>';
@@ -900,7 +862,7 @@ function route(){
   renderForm();
 }
 window.addEventListener("hashchange", route);
-loadConfig().then(route);
+Promise.all([loadConfig(), loadForm()]).then(route);
 </script>
 </body>
 </html>
