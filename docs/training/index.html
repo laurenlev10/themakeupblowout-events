@@ -226,8 +226,9 @@ function myTracks(){ return COURSE.tracks.filter(function(t){ return t.for!=="ma
 // types their own name. The Worker decides who that is (crew member · owner · not on the roster).
 async function boot(){
   await endpoint();
+  var aud = loadAudio();
   var r;
-  try{ r = await api({kind:"get_training"}); }catch(e){ return bootErr("No connection — check your internet and reload the page."); }
+  try{ r = await api({kind:"get_training"}); await aud; }catch(e){ return bootErr("No connection — check your internet and reload the page."); }
   if(r.status!==200 || !r.json.ok || !r.json.course) return bootErr((r.json && r.json.error) || "The course could not load. Try again in a minute.");
   COURSE = r.json.course;
   hide("boot");
@@ -429,7 +430,30 @@ function stageBase(color, manager){
 }
 
 /* ═══════════ voice + music ═══════════ */
+// 27.10.2026 13:30 — Lauren: "אני לא שומעת סאונד בכלל כשאני לוחצת PLAY". The page used to speak with
+// the device's speech engine and play music through Web Audio — in Chromium both ran (context
+// "running", 24 oscillators, speak() called), on her phone nothing: Web Audio is muted by the iPhone
+// silent switch and device voices are whatever the phone happens to have. Now every line is a real
+// recording (audio/manifest.json + audio/*.mp3, built by lauren-agent-hub-data/
+// scripts/build_training_audio.py from training.json, one voice for everyone) and the music is one
+// file mixed down under the voice, both played with <audio> like any video. The device voice is only
+// the fallback for a line that has no file yet — and the guardrail goes red on that.
 var VOICE_ON = store("tr_voice") !== false, MUSIC_ON = store("tr_music") !== false;
+var BASE = location.pathname.replace(/[^/]*$/, "");
+var AUDIO = null;   // the manifest
+var VO = new Audio(), BGM = new Audio();
+VO.preload = "auto"; BGM.preload = "auto"; BGM.loop = true;
+try{ if(navigator.audioSession) navigator.audioSession.type = "playback"; }catch(e){}   // iOS 17+: never the "ambient" (silent-switch) category
+async function loadAudio(){
+  try{ var r = await fetch(BASE+"audio/manifest.json?_="+Date.now(), {cache:"no-store"});
+       if(r.ok){ AUDIO = await r.json(); if(AUDIO.music && AUDIO.music.file) BGM.src = BASE+"audio/"+AUDIO.music.file; } }
+  catch(e){ AUDIO = null; }
+}
+function lineOf(text){ return (AUDIO && AUDIO.lines && AUDIO.lines[text]) || null; }
+VO.addEventListener("playing", function(){ if(P && P.sayText===VO._text){ P.speaking = true; } });
+VO.addEventListener("pause", function(){ if(P) P.speaking = false; });
+VO.addEventListener("ended", function(){ if(P && P.sayText===VO._text){ P.speaking = false; P.spoken = true; setMouth(false); } });
+VO.addEventListener("error", function(){ if(P && P.sayText===VO._text){ P.speaking = false; P.spoken = true; } });
 var VOICE = null;
 function pickVoice(){
   if(!("speechSynthesis" in window)) return null;
@@ -439,35 +463,8 @@ function pickVoice(){
   return vs[0] || null;
 }
 if("speechSynthesis" in window){ VOICE = pickVoice(); speechSynthesis.onvoiceschanged = function(){ VOICE = pickVoice(); }; }
-var AC = null, MUS = null;
-function musicStart(){
-  if(!MUSIC_ON || SPEED>1) return;
-  try{
-    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
-    if(AC.state==="suspended") AC.resume();
-    if(MUS) return;
-    var master = AC.createGain(); master.gain.value = 0.07; master.connect(AC.destination);
-    var bpm = 116, step = 60/bpm/2, t0 = AC.currentTime + .05, n = 0;
-    var bass = [48,48,55,55,45,45,52,52,41,41,48,48,43,43,50,50];      // C · Am · F · G, bouncy eighths
-    var chords = [[60,64,67],[57,60,64],[53,57,60],[55,59,62]];
-    var f = function(m){ return 440*Math.pow(2,(m-69)/12); };
-    var note = function(type, freq, t, dur, vol){ var o=AC.createOscillator(), g=AC.createGain(); o.type=type; o.frequency.value=freq; g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g); g.connect(master); o.start(t); o.stop(t+dur+.02); };
-    var hat = function(t){ var b=AC.createBuffer(1,2205,44100), d=b.getChannelData(0); for(var i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length); var s=AC.createBufferSource(), g=AC.createGain(), hp=AC.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=6000; g.gain.value=.25; s.buffer=b; s.connect(hp); hp.connect(g); g.connect(master); s.start(t); };
-    MUS = setInterval(function(){
-      while(t0 < AC.currentTime + .4){
-        var bar = Math.floor(n/8)%4, i = n%16;
-        note("triangle", f(bass[i]), t0, step*.9, .9);
-        if(n%4===2) chords[bar].forEach(function(m){ note("square", f(m+12), t0, step*.7, .07); });
-        if(n%2===1) hat(t0);
-        if(n%8===0){ var o=AC.createOscillator(), g=AC.createGain(); o.frequency.setValueAtTime(150,t0); o.frequency.exponentialRampToValueAtTime(40,t0+.18); g.gain.setValueAtTime(.9,t0); g.gain.exponentialRampToValueAtTime(.001,t0+.2); o.connect(g); g.connect(master); o.start(t0); o.stop(t0+.22); }
-        t0 += step; n++;
-      }
-    }, 100);
-    MUS.master = master;
-  }catch(e){ MUS = null; }
-}
-function musicStop(){ if(MUS){ clearInterval(MUS); try{ MUS.master.disconnect(); }catch(e){} MUS = null; } }
-function duck(on){ if(MUS && MUS.master && AC) MUS.master.gain.setTargetAtTime(on?0.035:0.07, AC.currentTime, .2); }
+function musicStart(){ if(!MUSIC_ON || SPEED>1 || !BGM.src) return; try{ var pr = BGM.play(); if(pr && pr.catch) pr.catch(function(){}); }catch(e){} }
+function musicStop(){ try{ BGM.pause(); }catch(e){} }
 
 /* ═══════════ the player ═══════════ */
 var P = null;   // {track, lesson, i, seq, k, clock, playing, spoken, speaking, finished}
@@ -493,8 +490,8 @@ function openLesson(id){
 }
 function userPlay(){
   hide("startover");
-  // iOS needs the first utterance and the AudioContext inside the tap
-  if(VOICE_ON && "speechSynthesis" in window){ try{ var u = new SpeechSynthesisUtterance(""); speechSynthesis.speak(u); }catch(e){} }
+  // iOS starts media only inside the tap: the music and the first line (play → enter → say → VO.play) both start here
+  if(!AUDIO && VOICE_ON && "speechSynthesis" in window){ try{ var u = new SpeechSynthesisUtterance(""); speechSynthesis.speak(u); }catch(e){} }
   musicStart();
   play();
 }
@@ -503,7 +500,7 @@ function play(){
   P.playing = true; P.last = performance.now();
   document.getElementById("stage-wrap").classList.remove("paused");
   document.getElementById("btn-pp").textContent = "❚❚";
-  if(P.k < 0) enter(0); else restartBeatSpeech();
+  if(P.k < 0) enter(0); else { restartBeatSpeech(); musicStart(); }
   if(!P.raf) P.raf = requestAnimationFrame(tick);
 }
 function pause(){
@@ -512,15 +509,19 @@ function pause(){
   document.getElementById("stage-wrap").classList.add("paused");
   document.getElementById("btn-pp").textContent = "▶";
   if("speechSynthesis" in window) speechSynthesis.cancel();
+  try{ VO.pause(); }catch(e){}
+  musicStop();
   setMouth(false);
 }
 function togglePause(){ if(!P || P.finished) return; if(!document.getElementById("startover").classList.contains("hide")) return userPlay(); P.playing ? pause() : play(); }
 document.addEventListener("visibilitychange", function(){ if(document.hidden) pause(); });   // a video in a background tab is not being watched
-function stopAll(){ if(P){ P.playing=false; if(P.raf) cancelAnimationFrame(P.raf); P.raf=null; } if("speechSynthesis" in window) speechSynthesis.cancel(); }
+function stopAll(){ if(P){ P.playing=false; if(P.raf) cancelAnimationFrame(P.raf); P.raf=null; } if("speechSynthesis" in window) speechSynthesis.cancel(); try{ VO.pause(); }catch(e){} }
 function exitPlayer(){ stopAll(); musicStop(); P = null; renderMap(); screen("s-map"); }
 
 function words(s){ return String(s||"").split(/\s+/).filter(Boolean).length; }
-function beatDur(it){ if(it.dur) return {min:it.dur, est:it.dur, max:it.dur}; var w = words(it.b.say); var est = w*0.42 + 1.4; return {min:Math.max(3.2, w*0.3), est:est, max:est*1.9 + 2}; }
+function beatDur(it){ if(it.dur) return {min:it.dur, est:it.dur, max:it.dur};
+  var ln = lineOf(it.b.say); if(ln && VOICE_ON){ var sec = ln.ms/1000; return {min:Math.max(2.6, sec), est:sec + 0.5, max:sec + 4}; }
+  var w = words(it.b.say); var est = w*0.42 + 1.4; return {min:Math.max(3.2, w*0.3), est:est, max:est*1.9 + 2}; }
 
 function enter(k){
   P.k = k; P.clock = 0; P.spoken = false; P.speaking = false;
@@ -546,7 +547,7 @@ function enter(k){
       '<text x="500" y="455" text-anchor="middle" font-family="Bangers" font-size="120" fill="#FF1F8F" stroke="#111" stroke-width="5">THE END!</text>'+
       '<text x="500" y="545" text-anchor="middle" font-family="Bangers" font-size="54" fill="#111">NOW, ONE QUICK QUESTION…</text></g>';
     subtitle("<b>Great job!</b> Now answer one quick question to unlock the next video.");
-    say("Great job! Now, one quick question.");
+    if(COURSE.end_line) say(COURSE.end_line); else P.spoken = true;
   } else {
     var b = it.b, fill = BURST_FILL[P.lesson.color] || "#FFE600";
     burst.innerHTML = '<g transform="translate(700,170)"><g class="burst"><g class="wobble"><path d="'+burstPath(13,250,175)+'" fill="'+fill+'" stroke="#111" stroke-width="10"/>'+
@@ -580,19 +581,31 @@ function fitWord(w, fill){
 }
 function subtitle(h){ document.getElementById("subtitle").innerHTML = h; }
 function say(text){
-  P.sayText = text;
-  if(!VOICE_ON || !("speechSynthesis" in window) || SPEED>1){ P.spoken = true; return; }
-  try{
+  P.sayText = text; P.spoken = false; P.speaking = false; P.voFile = false;
+  if(!VOICE_ON || SPEED>1){ P.spoken = true; return; }
+  var ln = lineOf(text);
+  if(ln){   // the recording
+    P.voFile = true;
+    try{ if("speechSynthesis" in window) speechSynthesis.cancel(); }catch(e){}
+    VO._text = text; VO.src = BASE+"audio/"+ln.file;
+    try{ var pr = VO.play(); if(pr && pr.catch) pr.catch(function(){ if(P && P.sayText===text) P.spoken = true; }); }catch(e){ P.spoken = true; }
+    return;
+  }
+  if(!("speechSynthesis" in window)){ P.spoken = true; return; }
+  try{   // fallback: a line with no recording yet
     speechSynthesis.cancel();
-    var u = new SpeechSynthesisUtterance(text);
+    var u = new SpeechSynthesisUtterance(text); P.utt = u;
     if(VOICE) u.voice = VOICE; u.lang = (VOICE && VOICE.lang) || "en-US"; u.rate = 1.02; u.pitch = 1.12;
-    u.onstart = function(){ if(P && P.sayText===text){ P.speaking = true; duck(true); } };
-    u.onend = u.onerror = function(){ if(P && P.sayText===text){ P.speaking = false; P.spoken = true; setMouth(false); duck(false); } };
-    P.spoken = false;
+    u.onstart = function(){ if(P && P.sayText===text){ P.speaking = true; } };
+    u.onend = u.onerror = function(){ if(P && P.sayText===text){ P.speaking = false; P.spoken = true; setMouth(false); } };
     speechSynthesis.speak(u);
   }catch(e){ P.spoken = true; }
 }
-function restartBeatSpeech(){ if(P && P.k>=0 && !P.spoken && P.sayText){ P.clock = Math.min(P.clock, 0.5); say(P.sayText); } }
+function restartBeatSpeech(){
+  if(!P || P.k<0 || P.spoken || !P.sayText) return;
+  if(P.voFile){ try{ var pr = VO.play(); if(pr && pr.catch) pr.catch(function(){ P.spoken = true; }); }catch(e){ P.spoken = true; } return; }   // a recording continues where it stopped
+  P.clock = Math.min(P.clock, 0.5); say(P.sayText);
+}
 var mouthT = 0;
 function setMouth(open){ var c = document.getElementById("mouthC"), o = document.getElementById("mouthO"); if(!c||!o) return; c.style.display = open?"none":""; o.style.display = open?"":"none"; }
 function tick(now){
@@ -610,7 +623,7 @@ function tick(now){
   if(eyes){ var ph = (now/1000) % 3.6; eyes.setAttribute("transform", ph < 0.12 ? "translate(0,-518) scale(1,0.1) translate(0,518)" : ""); }
   // the voice leads when it speaks (a voice that never ends does not hold the video: d.max);
   // without a voice, the subtitle gets its reading time (d.est)
-  var voiced = VOICE_ON && SPEED===1 && ("speechSynthesis" in window);
+  var voiced = VOICE_ON && SPEED===1 && (P.voFile || ("speechSynthesis" in window));
   var ready = it.dur ? P.clock >= it.dur
             : voiced ? (P.clock >= d.min && (P.spoken || P.clock >= d.max))
             : P.clock >= d.est;
@@ -691,7 +704,7 @@ function confetti(){
 
 /* ═══════════ toggles ═══════════ */
 function syncToggles(){ document.getElementById("btn-voice").classList.toggle("off", !VOICE_ON); document.getElementById("btn-music").classList.toggle("off", !MUSIC_ON); }
-function toggleVoice(){ VOICE_ON = !VOICE_ON; store("tr_voice", VOICE_ON); syncToggles(); if(!VOICE_ON){ if("speechSynthesis" in window) speechSynthesis.cancel(); if(P){ P.spoken = true; P.speaking = false; } } }
+function toggleVoice(){ VOICE_ON = !VOICE_ON; store("tr_voice", VOICE_ON); syncToggles(); if(!VOICE_ON){ if("speechSynthesis" in window) speechSynthesis.cancel(); try{ VO.pause(); }catch(e){} if(P){ P.spoken = true; P.speaking = false; } } }
 function toggleMusic(){ MUSIC_ON = !MUSIC_ON; store("tr_music", MUSIC_ON); syncToggles(); if(MUSIC_ON && P && P.playing) musicStart(); else musicStop(); }
 
 window.__TR = { get P(){ return P; }, PROPS: PROPS, jump: function(k){ if(navigator.webdriver && P){ enter(k); } }, get COURSE(){ return COURSE; }, get DONE(){ return DONE; }, queue: queue };

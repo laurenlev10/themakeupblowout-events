@@ -1,0 +1,382 @@
+{
+ "_note": "BUILT by lauren-agent-hub-data/scripts/build_training_audio.py from docs/team/training.json — do not edit. lines: exact spoken text → file (+ length). The page plays these with <audio>; a line missing here falls back to the device voice and the guardrail goes red.",
+ "voice": "af_heart",
+ "speed": 1.0,
+ "music": {
+  "file": "music-bed-v1.mp3"
+ },
+ "lines": {
+  "Welcome to the Team!": {
+   "file": "75aeacab31319b23.mp3",
+   "ms": 1512
+  },
+  "Hey you! Welcome to The Makeup Blowout Sale.": {
+   "file": "e7308e7c9e06f9f7.mp3",
+   "ms": 2808
+  },
+  "We run giant beauty sales all over the United States. Makeup, hair, skin care, perfume, all at crazy prices.": {
+   "file": "1756158d9bf22067.mp3",
+   "ms": 7680
+  },
+  "Every weekend thousands of women walk into our room, and every one of them should feel welcome.": {
+   "file": "fad0e1353779146a.mp3",
+   "ms": 5400
+  },
+  "The little things make a great event: clean tables, full displays, clear signs, a big smile.": {
+   "file": "c8a26c9841bc48ce.mp3",
+   "ms": 5928
+  },
+  "These short videos are the rules of our team. Watch each one to the end and answer one quick question to unlock the next.": {
+   "file": "761e669551e70fd1.mp3",
+   "ms": 7488
+  },
+  "Be On Time": {
+   "file": "188e037eebe31098.mp3",
+   "ms": 1320
+  },
+  "Rule number one: be on time. Being on time is the definition of integrity.": {
+   "file": "5bf847bab4fccac0.mp3",
+   "ms": 5088
+  },
+  "When you show up when you said you would, people can trust you.": {
+   "file": "d700b6f08ecdb127.mp3",
+   "ms": 3264
+  },
+  "Get a good night's sleep and come ready, so we open the event with no pressure and good vibes.": {
+   "file": "982076661a6fde02.mp3",
+   "ms": 5448
+  },
+  "Flights: check that your name and details are spelled correctly on every week you are booked.": {
+   "file": "aa1d9cbbc5b6ec04.mp3",
+   "ms": 5184
+  },
+  "Plan your ride and be at the airport at least one hour before departure.": {
+   "file": "13174d73ce3ff20c.mp3",
+   "ms": 4224
+  },
+  "If you miss a flight, the cost of a new flight, or an Uber to another airport, comes out of your bonus. So please, don't be late!": {
+   "file": "1f8253bdc737071e.mp3",
+   "ms": 7776
+  },
+  "Look the Part": {
+   "file": "3f111869195464c4.mp3",
+   "ms": 1320
+  },
+  "Always wear the company uniform: the T-shirt or hoodie, or a black shirt.": {
+   "file": "931a364994c3bec2.mp3",
+   "ms": 4752
+  },
+  "That way every guest knows you work here and can ask you for help.": {
+   "file": "4e9ed9e10afe74cc.mp3",
+   "ms": 3768
+  },
+  "Wear your pouch, and keep four things in it all day long:": {
+   "file": "46e3b25687df703a.mp3",
+   "ms": 3096
+  },
+  "A knife, tape, tester stickers, and a sharpie.": {
+   "file": "0ffab60cf5c45a37.mp3",
+   "ms": 2952
+  },
+  "Take care of your personal hygiene, and if anything from your uniform is missing, tell your manager.": {
+   "file": "cf063ab2e03cfb5d.mp3",
+   "ms": 5952
+  },
+  "Guests Come First": {
+   "file": "726867efa0f68ede.mp3",
+   "ms": 1512
+  },
+  "Greet every guest with a big Welcome! and offer her a bag.": {
+   "file": "e929655577739754.mp3",
+   "ms": 3672
+  },
+  "Be helpful with questions and requests. Great customer service is what we are known for.": {
+   "file": "42ce2d9a78cd122d.mp3",
+   "ms": 5616
+  },
+  "But when the room is packed, keep conversations short. There is a lot to do on the floor.": {
+   "file": "fc32a37176d46016.mp3",
+   "ms": 5016
+  },
+  "Be respectful to every guest, and just as respectful to your teammates.": {
+   "file": "5904463ffc78c5e0.mp3",
+   "ms": 4248
+  },
+  "Your Tables": {
+   "file": "2a7e5ea5cdfea154.mp3",
+   "ms": 1296
+  },
+  "Your manager gives each of us our own tables. They get your full attention.": {
+   "file": "929b6c7dda54f038.mp3",
+   "ms": 4416
+  },
+  "Keep them clean and refilled. Refills are how we maximize sales, so never let a color or item go missing.": {
+   "file": "c1c50cdcb614eb48.mp3",
+   "ms": 7080
+  },
+  "Something sold out? Put something else in its place, and check the back of the room and the truck for more.": {
+   "file": "98ae86b38a9baf46.mp3",
+   "ms": 5664
+  },
+  "Go-backs only when the room is not busy, and the floor manager announces it.": {
+   "file": "44fc68d2b619a753.mp3",
+   "ms": 4584
+  },
+  "Testers, labels, prices and stickers always up to date.": {
+   "file": "72c6bf85c5a55117.mp3",
+   "ms": 3936
+  },
+  "And signs! Bright neon with clear black sharpie. The clearer the sign, the better the sales!": {
+   "file": "b92eab191e27d3a5.mp3",
+   "ms": 5592
+  },
+  "Low Stock Alert": {
+   "file": "8391ef7eaa920ea2.mp3",
+   "ms": 1440
+  },
+  "Low stock means less than one display, or less than six pieces.": {
+   "file": "b697b30596c7781d.mp3",
+   "ms": 4104
+  },
+  "First make sure there is no more in the truck or in the extra inventory in the room.": {
+   "file": "683fba9c61ce8afa.mp3",
+   "ms": 4800
+  },
+  "Once you are 100 percent sure, take a picture and send it in the team group chat.": {
+   "file": "bc38afa1d824b1f5.mp3",
+   "ms": 5208
+  },
+  "Then make sure it is updated in the system. If the room is crazy, send the picture now and update when it calms down.": {
+   "file": "e88d1fc8f7336a23.mp3",
+   "ms": 7200
+  },
+  "Scanning a new product? Search for it in the system first. It is usually already there. Never create a new item before you search.": {
+   "file": "2481a48c84ec77d1.mp3",
+   "ms": 8088
+  },
+  "A color that just doesn't sell? Bring it to your manager, it goes back for the Mystery Box.": {
+   "file": "9023a738edc718eb.mp3",
+   "ms": 5376
+  },
+  "Breaks & Phones": {
+   "file": "e545d13db4770c17.mp3",
+   "ms": 1488
+  },
+  "Lunch breaks: about twenty minutes, and no more than two workers at a time.": {
+   "file": "d9325aef4fefbaa4.mp3",
+   "ms": 4344
+  },
+  "If the room is very busy, only one at a time. Your manager will tell you.": {
+   "file": "3dd2f955011cd1bc.mp3",
+   "ms": 4800
+  },
+  "Need another short break? Tell your manager before you leave the room. No more than two extra breaks a day.": {
+   "file": "c3e4b2abdebc6945.mp3",
+   "ms": 6264
+  },
+  "Phones: only for emergencies or important notes in the WhatsApp group.": {
+   "file": "944c9e7fe2234e1f.mp3",
+   "ms": 4776
+  },
+  "No TikToks, no Reels, during the event. Respect the time, our customers, and your teammates.": {
+   "file": "a8a81f0dfe6aade0.mp3",
+   "ms": 6096
+  },
+  "Company Rides & Meals": {
+   "file": "7d57fe285c94e823.mp3",
+   "ms": 1752
+  },
+  "Every ride that belongs to the company, to and from the airport or any authorized ride, goes on the company Uber account.": {
+   "file": "ed3df12eb96e2d27.mp3",
+   "ms": 7776
+  },
+  "Never use the company account for a personal ride, even during the event weekend.": {
+   "file": "ce10f46b2cd0bd65.mp3",
+   "ms": 5160
+  },
+  "Lunch is on the company. That's it.": {
+   "file": "ad6cc4e9218244f4.mp3",
+   "ms": 2496
+  },
+  "A bonus dinner or anything else will be announced in the group. And no Starbucks unless Eli or Lauren approve it.": {
+   "file": "30b40cca1c8bc9c2.mp3",
+   "ms": 7128
+  },
+  "Sunday, Respect & Zero Tolerance": {
+   "file": "180764890afa9179.mp3",
+   "ms": 2640
+  },
+  "Sunday breakdown: pack every product correctly. A messy pack means a hard setup at the next event.": {
+   "file": "5171b85e29412fe8.mp3",
+   "ms": 6384
+  },
+  "After the event, respect your coworkers' rooms and personal space. No boundaries crossed.": {
+   "file": "52695fc12a47a598.mp3",
+   "ms": 5640
+  },
+  "Zero tolerance: no alcohol and no drugs during work time. Ever.": {
+   "file": "c76853b7c9354610.mp3",
+   "ms": 4872
+  },
+  "Breaking this rule means immediate termination.": {
+   "file": "7a9ffd63395ff3a0.mp3",
+   "ms": 2976
+  },
+  "That's the crew course! Thank you for being part of our team. The better we work together, the better our events are.": {
+   "file": "82d6952bc2c5e39a.mp3",
+   "ms": 6480
+  },
+  "Lead by Example": {
+   "file": "e8b07621473ba6e5.mp3",
+   "ms": 1512
+  },
+  "As a manager, the most important thing is to be a leader and set an example.": {
+   "file": "75512fea2122216a.mp3",
+   "ms": 4704
+  },
+  "Always in uniform, always on time. The team should admire and respect you.": {
+   "file": "068a8a9fbbe2df4d.mp3",
+   "ms": 4872
+  },
+  "Say the right things, the things that are in the best interest of the company.": {
+   "file": "760286d968284268.mp3",
+   "ms": 4248
+  },
+  "When the owners arrive, be respectful, and help with any extra requests they have.": {
+   "file": "6227b4712c0db74e.mp3",
+   "ms": 5088
+  },
+  "If Eli or Lauren are at the setup, check with them before you announce to the team that the day is done.": {
+   "file": "39fd1d497596425d.mp3",
+   "ms": 5928
+  },
+  "Train the New Ones": {
+   "file": "3e50a705ed781f9a.mp3",
+   "ms": 1392
+  },
+  "New employees learn during setup and through their first events, and that's on you.": {
+   "file": "ec86097d4acc81a7.mp3",
+   "ms": 4608
+  },
+  "They learn every brand and every corner of the room: Market, She, Amuse, Beauty Creation, hair, skin care.": {
+   "file": "2006cbe03364200c.mp3",
+   "ms": 6960
+  },
+  "Refills, go-backs, counts, and organizing the back stock under the tables, where it is supposed to be.": {
+   "file": "88075110c163da79.mp3",
+   "ms": 6528
+  },
+  "And when the time is right, the cash register.": {
+   "file": "b350205980585313.mp3",
+   "ms": 2736
+  },
+  "Our goal: everyone knows how to do everything.": {
+   "file": "de5e4807dec43142.mp3",
+   "ms": 2808
+  },
+  "Run the Floor": {
+   "file": "769caf5ed63e5363.mp3",
+   "ms": 1296
+  },
+  "Open every event with the rules talk, so everyone is on the same page.": {
+   "file": "b269c1ebc89f53d0.mp3",
+   "ms": 4584
+  },
+  "Say the leave time from the hotel, introduce new employees, plan the register rotation, and give each worker their tables.": {
+   "file": "45822965a4625210.mp3",
+   "ms": 7824
+  },
+  "Your place is on the floor, about eighty percent of the time. Not at the register.": {
+   "file": "d44f134a5c497b8d.mp3",
+   "ms": 5040
+  },
+  "Know where everything is happening, and keep everyone as busy as possible.": {
+   "file": "d9d165021d9a5260.mp3",
+   "ms": 4488
+  },
+  "Know the register app better than anyone: creating new items, scanning barcodes, all of it.": {
+   "file": "d3c14fdda29bfdbb.mp3",
+   "ms": 5568
+  },
+  "Inventory Control": {
+   "file": "156ee1a5fbaa7937.mp3",
+   "ms": 1656
+  },
+  "Inventory control is one of the most important parts of your job.": {
+   "file": "059e6657e299173a.mp3",
+   "ms": 4176
+  },
+  "Do random checkups on anything that looks weird, like a minus in the system while the product is on the table.": {
+   "file": "8f078e4c1177e2fd.mp3",
+   "ms": 6696
+  },
+  "Recount, and update the system.": {
+   "file": "7a96864c29b78284.mp3",
+   "ms": 2160
+  },
+  "At the end of each day, go over every picture sent in the group and make sure it was updated.": {
+   "file": "f323d7bf03bd119f.mp3",
+   "ms": 5448
+  },
+  "Then send one message to the group: all inventory is updated for today.": {
+   "file": "6fa070a8610357fc.mp3",
+   "ms": 4776
+  },
+  "On Sunday, count every item that is under one display and update it with no delays, so nothing is forgotten.": {
+   "file": "e20a4e66d818b71c.mp3",
+   "ms": 6960
+  },
+  "Supplies, Signs & Cameras": {
+   "file": "7cd7e5a28f4c9a72.mp3",
+   "ms": 2184
+  },
+  "The team never runs out: tape, sharpies, knives, the round neon tester stickers, neon signs, change, pens and price labels.": {
+   "file": "ef88d75bdc539989.mp3",
+   "ms": 8448
+  },
+  "Running low? Refill it with the company card. No delays for the next event!": {
+   "file": "45069c1ccd59571c.mp3",
+   "ms": 4728
+  },
+  "Every deal gets a bright neon sign with clear black sharpie: palettes, hair tools, skin care, clearance, buy two get one, perfumes.": {
+   "file": "6ce6ce72043784d0.mp3",
+   "ms": 8736
+  },
+  "Cameras: two, on opposite sides of the room, visible for the whole event.": {
+   "file": "c6aa46125a937eda.mp3",
+   "ms": 4608
+  },
+  "Installed on Thursday at setup, and connected until Sunday at five P M.": {
+   "file": "73c88459c08d92c3.mp3",
+   "ms": 4824
+  },
+  "Communication & Morale": {
+   "file": "63d607da1d626c1d.mp3",
+   "ms": 1824
+  },
+  "You are the link between the team and the owners, on anything that has to do with the business.": {
+   "file": "2d482a0ad46b1a9b.mp3",
+   "ms": 5184
+  },
+  "And when something bothers people with each other, you are the one who handles it.": {
+   "file": "3f08d3cb8f924f96.mp3",
+   "ms": 4248
+  },
+  "Keep the morale high, and support the owners in front of the team.": {
+   "file": "862fa95a93e18584.mp3",
+   "ms": 3768
+  },
+  "Even when a mistake was made, criticism is professional, and private when needed.": {
+   "file": "3c721a44d0604e48.mp3",
+   "ms": 5040
+  },
+  "The team should always feel that we are all on the same team. You did it, manager!": {
+   "file": "75e075f80091a1b4.mp3",
+   "ms": 4728
+  },
+  "Great job! Now, one quick question.": {
+   "file": "ea5424df48233a83.mp3",
+   "ms": 2520
+  }
+ }
+}
