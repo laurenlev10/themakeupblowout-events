@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-10-27T14:58:04Z",
+  "_updated_at": "2026-10-27T15:50:57Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -739,6 +739,19 @@
       "subscribe_url": "/events/santa-rosa-ca-2027/",
       "_added_by": "sync_event_data.add_signed_events",
       "tz": "America/Los_Angeles"
+    },
+    {
+      "city": "Kissimmee",
+      "state": "FL",
+      "start_date": "2027-04-23",
+      "end_date": "2027-04-25",
+      "slug": "kissimmee-fl-2027",
+      "venue_name": "Holiday Inn Resort Kissimmee by the Parks",
+      "venue_address": "3011 Maingate Lane, Kissimmee, FL 34747",
+      "form_id": "6ae0c815360de8e048c83a06",
+      "subscribe_url": "/events/kissimmee-fl-2027/",
+      "_added_by": "sync_event_data.add_signed_events",
+      "tz": "America/New_York"
     }
   ],
   "_field_doc": {
