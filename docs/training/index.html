@@ -264,6 +264,7 @@ async function begin(typed){
     var r = await api({kind:"get_training", name:typed});
     if(r.status!==200 || !r.json.ok || !r.json.me) throw new Error((r.json && r.json.error) || ("error "+r.status));
     ME = r.json.me; ME.typed = typed;
+    loadAudio();   // the course may be newer than the manifest this page booted with
     DONE = (r.json.progress && r.json.progress.lessons) || {}; TRACKS_DONE = (r.json.progress && r.json.progress.tracks_done) || {};
     if(r.json.course) COURSE = r.json.course;
   }catch(e){
@@ -446,10 +447,19 @@ VO.preload = "auto"; BGM.preload = "auto"; BGM.loop = true;
 try{ if(navigator.audioSession) navigator.audioSession.type = "playback"; }catch(e){}   // iOS 17+: never the "ambient" (silent-switch) category
 async function loadAudio(){
   try{ var r = await fetch(BASE+"audio/manifest.json?_="+Date.now(), {cache:"no-store"});
-       if(r.ok){ AUDIO = await r.json(); if(AUDIO.music && AUDIO.music.file) BGM.src = BASE+"audio/"+AUDIO.music.file; } }
+       if(r.ok){ var j = await r.json(); if(j && j.lines){ AUDIO = j;
+         var m = AUDIO.music && AUDIO.music.file ? BASE+"audio/"+AUDIO.music.file : "";
+         if(m && BGM.src.indexOf(AUDIO.music.file) < 0) BGM.src = m; } } }   // re-reading must not restart music already playing
   catch(e){ AUDIO = null; }
 }
 function lineOf(text){ return (AUDIO && AUDIO.lines && AUDIO.lines[text]) || null; }
+// 27.10.2026 14:35 — Lauren: manager videos 3 and 4 played music with gaps in the voice. Her page had
+// been open since before those lines were re-recorded: the course (from the Worker) was new, the
+// manifest (read once at boot) was old, so every new line fell to the device voice — silent on her
+// phone. The manifest is now re-read whenever the course is (begin) and whenever a video about to be
+// played has a line the manifest does not know (openLesson — before PLAY is tapped, so iOS still
+// starts the sound inside that tap).
+function missingLines(L){ return [L.title].concat(L.beats.map(function(b){ return b.say; })).concat(COURSE.end_line ? [COURSE.end_line] : []).filter(function(t){ return !lineOf(t); }); }
 VO.addEventListener("playing", function(){ if(P && P.sayText===VO._text){ P.speaking = true; } });
 VO.addEventListener("pause", function(){ if(P) P.speaking = false; });
 VO.addEventListener("ended", function(){ if(P && P.sayText===VO._text){ P.speaking = false; P.spoken = true; setMouth(false); } });
@@ -473,6 +483,7 @@ function openLesson(id){
   if(!isDone(id) && !lessonOpen(o.track, o.i)) return;
   stopAll();
   var L = o.lesson;
+  if(missingLines(L).length) loadAudio();   // a line re-recorded since this page loaded
   // the sequence: title card, the beats, the end card
   var seq = [{type:"title", dur:3.2}].concat(L.beats.map(function(b){ return {type:"beat", b:b}; })).concat([{type:"end", dur:2.6}]);
   P = {track:o.track, lesson:L, i:o.i, seq:seq, k:-1, clock:0, playing:false, finished:false, last:0};
