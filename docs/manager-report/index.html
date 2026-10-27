@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="robots" content="noindex">
 <title>Event Manager Report — The Makeup Blowout</title>
-<script src="./form.js?v=d0f90394d9"></script>
+<script src="./form.js?v=2810c64c54"></script>
 <style>
   :root{
     --pink:#ec4899; --pink-d:#be185d; --ink:#1f2937; --muted:#6b7280;
@@ -69,6 +69,9 @@
   .inbox-item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:#fff}
   .inbox-item h3{margin:0 0 2px;font-size:15px}
   .inbox-item .sub{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .ro-status{font-size:12.5px;font-weight:700;text-align:center;padding:7px 10px;border-radius:9px;background:#f3f4f6;color:#374151}
+  .ro-status.ok{background:#dcfce7;color:#14532d}
+  .ro-status.warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
   .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#111827;color:#fff;
        font-size:13px;font-weight:700;padding:10px 16px;border-radius:999px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none}
   .toast.show{opacity:1}
@@ -125,10 +128,12 @@
    ========================================================================== */
 
 var LAUREN_WA = "14243547625";                 // wa.me number (Zelle/phone)
-var REPO = "laurenlev10/lauren-agent-hub-data";
-var STATE_FILE = "docs/state/manager_reports.json";
-var STATE_URL  = "../state/manager_reports.json";
-var GH_TOKEN_KEY = "lauren_gh_token_v1";       // per IRON RULE #7 — secrets only in localStorage
+/* 27.10.2026 — this is THE manager-report page. dashboard.themakeupblowout.com/manager-report/
+   redirects here (query + #r= kept). The dashboard copy's GitHub-token "Save to my dashboard"
+   and its ?mode=inbox list are gone: a public page holds no credential (IRON RULE #32), the
+   Worker already files every report, and the list of reports lives on /launch/. A report that
+   only ever travelled by WhatsApp (the Worker was unreachable) is filed from its link by the
+   "Save this report to the system" button in the read-only view. */
 var ENDPOINT_KEY = "mbs_report_save_endpoint";  // optional Cloudflare Worker URL (per-device override)
 var CONFIG = {};                                 // loaded from ./config.json (shared across all devices)
 async function loadConfig(){ try{ var r=await fetch("./config.json?_="+Date.now(),{cache:"no-store"}); if(r.ok) CONFIG=await r.json(); }catch(e){} }
@@ -531,7 +536,7 @@ function reportText(p){
     lines.push("— " + secs[s].title.replace(/^[^A-Za-z0-9]+/,"").trim() + " —");
     for(var i=0;i<secs[s].fields.length;i++){
       var f = secs[s].fields[i]; var raw = (p.answers||{})[f.key];
-      var val = (raw===undefined) ? "" : MbsReportForm.display(f, raw);
+      var val = (raw===undefined) ? "" : MbsReportForm.display(f, raw, p.form && p.form.none_value);
       if(val==="") val = "—";
       lines.push("• " + f.label + ": " + val);
     }
@@ -602,6 +607,12 @@ function showReceived(btn, whenIso){
   setDraftStatus("Report received " + new Date(whenIso).toLocaleString() + " ✓ Nothing else to do. Change something only if needed, then Submit again.");
 }
 async function onSubmit(){
+  var miss = MbsReportForm.unanswered();
+  if(miss.length){
+    toast("Answer " + miss.length + " required question" + (miss.length>1?"s":"") + " first");
+    var w = document.getElementById("w-" + miss[0].key); if(w && w.scrollIntoView) w.scrollIntoView({ behavior:"smooth", block:"center" });
+    return;
+  }
   var p = collect(); if(!p) return;
   p.mode = "final";
   var btn = document.getElementById("btn-submit");
@@ -735,7 +746,7 @@ function renderReadonly(payload){
     for(var i=0;i<rsecs[s].fields.length;i++){
       var f = rsecs[s].fields[i]; var raw = p.answers ? p.answers[f.key] : undefined;
       var cls = f.type==="yesno" ? (raw==="yes"?"yes":(raw==="no"?"no":"")) : "";
-      var disp = (raw===undefined) ? "" : MbsReportForm.display(f, raw);
+      var disp = (raw===undefined) ? "" : MbsReportForm.display(f, raw, p.form && p.form.none_value);
       if(disp==="") disp="—";
       html += '<div class="ro-line"><span class="k">'+esc(f.label)+'</span><span class="v '+cls+'">'+esc(disp)+'</span></div>';
     }
@@ -745,18 +756,17 @@ function renderReadonly(payload){
 
   document.getElementById("app").innerHTML = html;
 
-  // action bar — copy/print + (Lauren) save to dashboard
-  var hasToken = !!(localStorage.getItem(GH_TOKEN_KEY) || "").trim();
+  // action bar — on-file status, copy/print
   var bar = document.createElement("div");
   bar.className = "bar no-print";
   bar.innerHTML = '<div class="bar-inner">' +
+      '<div id="ro-status" class="ro-status">Checking whether this report is on file…</div>' +
+      '<button class="btn draft" id="btn-file-report" style="display:none">💾 Save this report to the system</button>' +
       '<button class="btn primary" id="btn-edit-report">✏️ Edit / add more</button>' +
-      (hasToken ? '<button class="btn draft" id="btn-save-gh">💾 Save to my dashboard</button>' : '') +
       '<div class="row-btns">' +
         '<button class="btn ghost sm" id="btn-textcopy">📋 Copy as text</button>' +
         '<button class="btn ghost sm" id="btn-print">🖨️ Print / PDF</button>' +
       '</div>' +
-      (hasToken ? '<div class="row-btns"><a class="btn ghost sm" href="?mode=inbox">📥 All reports</a></div>' : '') +
     '</div>';
   document.body.appendChild(bar);
   document.getElementById("btn-edit-report").addEventListener("click", function(){
@@ -767,73 +777,39 @@ function renderReadonly(payload){
   });
   document.getElementById("btn-textcopy").addEventListener("click", async function(){ var ok=await copyText(reportText(p)); flash(this, ok?"✓ Copied":"Copy failed"); });
   document.getElementById("btn-print").addEventListener("click", function(){ window.print(); });
-  if(hasToken){
-    document.getElementById("btn-save-gh").addEventListener("click", function(){ saveToGitHub(p, this); });
-    // auto-persist silently for Lauren
-    saveToGitHub(p, null);
-  }
+  document.getElementById("btn-file-report").addEventListener("click", function(){ fileReportFromLink(p, this); });
+  readonlyFileStatus(p);
 }
 
-/* ---------- GitHub persistence (IRON RULE #7 — Lauren only, token in localStorage) ---------- */
-async function ghGet(token, path){
-  var url = "https://api.github.com/repos/"+REPO+"/contents/"+path+"?ref=main";
-  var r = await fetch(url, { headers:{ "Authorization":"token "+token, "Accept":"application/vnd.github+json" }});
-  if(r.status===404) return { sha:null, json:{ _updated_at:null, reports:{} } };
-  if(!r.ok) throw new Error("GET "+r.status);
-  var j = await r.json();
-  var content = JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,"")))));
-  return { sha:j.sha, json:content };
-}
-async function ghPut(token, path, obj, sha, msg){
-  var url = "https://api.github.com/repos/"+REPO+"/contents/"+path;
-  var body = { message:msg, content:btoa(unescape(encodeURIComponent(JSON.stringify(obj,null,2)))), branch:"main" };
-  if(sha) body.sha = sha;
-  var r = await fetch(url, { method:"PUT", headers:{ "Authorization":"token "+token, "Accept":"application/vnd.github+json", "Content-Type":"application/json" }, body:JSON.stringify(body) });
-  if(!r.ok) throw new Error("PUT "+r.status);
-  return true;
-}
-async function saveToGitHub(p, btn){
-  var token = (localStorage.getItem(GH_TOKEN_KEY) || "").trim();
-  if(!token){ if(btn) toast("No GitHub token on this device"); return; }
-  if(btn){ setBusy(btn, "⏳ Saving..."); }
+/* Read-only view: is this exact report on file? manager_report_status answers from main ⊕
+   the Worker's queue. Not on file → one button files it (the same POST a Submit makes). */
+async function readonlyFileStatus(p){
+  var el = document.getElementById("ro-status"), btn = document.getElementById("btn-file-report");
+  if(!el) return;
+  var endpoint = saveEndpoint();
+  if(!endpoint || !p.evkey || !p.submitted_at || p.source==="demo"){ el.style.display="none"; return; }
   try{
-    var cur = await ghGet(token, STATE_FILE);
-    var data = cur.json; if(!data.reports) data.reports = {};
-    var key = p.evkey || "unknown";
-    var arr = data.reports[key] || [];
-    // de-dupe by submitted_at + manager_name
-    var dup = arr.some(function(x){ return x.submitted_at===p.submitted_at && x.manager_name===p.manager_name; });
-    if(!dup){ arr.push(p); data.reports[key] = arr; data._updated_at = new Date().toISOString();
-      await ghPut(token, STATE_FILE, data, cur.sha, "manager-report: "+key+" — "+p.manager_name);
-    }
-    if(btn){ flash(btn, "✓ Saved to dashboard"); }
+    var r = await postJson(endpoint, { kind:"manager_report_status", evkey:p.evkey, submitted_at:p.submitted_at }, 15000);
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    var j = await r.json();
+    if(j && j.received){ el.textContent = "✓ This report is on file"; el.className = "ro-status ok"; return; }
+    el.textContent = "⚠️ This report is NOT on file yet — it only travelled as this link.";
+    el.className = "ro-status warn"; if(btn) btn.style.display = "";
   }catch(e){
-    if(btn){ btn.innerHTML="💾 Save to my dashboard"; toast("Save failed: "+e.message); }
+    el.textContent = "Could not check whether this report is on file (" + (e.message||e) + ").";
+    el.className = "ro-status warn";
   }
 }
-
-/* ============================ MODE: INBOX (?mode=inbox) ============================ */
-async function renderInbox(){
-  document.getElementById("h-title").textContent = "📥 Manager Reports";
-  document.getElementById("h-ev").textContent = "All submitted event reports";
-  document.getElementById("h-meta").textContent = "";
-  var app = document.getElementById("app");
-  app.innerHTML = '<div class="card">Loading…</div>';
-  var data = { reports:{} };
-  try{ var r = await fetch(STATE_URL + "?_=" + Date.now(), { cache:"no-store" }); if(r.ok) data = await r.json(); }
-  catch(e){}
-  var items = [];
-  Object.keys(data.reports||{}).forEach(function(k){ (data.reports[k]||[]).forEach(function(p){ items.push(p); }); });
-  items.sort(function(a,b){ return (b.submitted_at||"").localeCompare(a.submitted_at||""); });
-  if(!items.length){ app.innerHTML = '<div class="card">No reports yet. When a manager submits a report it appears here.<br><span class="footnote">(Cloud auto-save must be enabled, or open a report link Lauren received.)</span></div>'; return; }
-  var html = "";
-  for(var i=0;i<items.length;i++){
-    var p = items[i];
-    html += '<div class="inbox-item"><h3>'+esc(eventTitle(p.event))+'</h3>' +
-            '<div class="sub">'+esc(p.manager_name)+' · '+esc(new Date(p.submitted_at).toLocaleString())+' · <span class="pill">'+esc(p.evkey||"")+'</span></div>' +
-            '<a class="inline" href="#r='+b64enc(p)+'">Open full report →</a></div>';
-  }
-  app.innerHTML = html;
+async function fileReportFromLink(p, btn){
+  if(btn.disabled) return;
+  setBusy(btn, "⏳ Saving...");
+  try{
+    var body = Object.assign({}, p); delete body.photos; body.mode = "final";
+    var r = await postJson(saveEndpoint(), body, SUBMIT_TIMEOUT_MS);
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    btn.dataset.idle = "✓ Filed"; setIdle(btn); btn.disabled = true;
+    var el = document.getElementById("ro-status"); if(el){ el.textContent = "✓ This report is on file"; el.className = "ro-status ok"; }
+  }catch(e){ setIdle(btn); toast("Not saved: " + (e.message||e)); }
 }
 
 /* ============================ ROUTER ============================ */
@@ -858,7 +834,10 @@ function route(){
       submitted_at:new Date().toISOString(), source:"demo" });
     return;
   }
-  if(qp("mode")==="inbox"){ renderInbox(); return; }
+  if(qp("mode")==="inbox"){   // the old dashboard list — reports are listed on /launch/ now
+    document.getElementById("app").innerHTML = '<div class="card">The list of submitted reports is on the dashboard: <a class="inline" href="https://dashboard.themakeupblowout.com/launch/">/launch/</a> → each event\'s 📋 Manager Report.</div>';
+    return;
+  }
   renderForm();
 }
 window.addEventListener("hashchange", route);

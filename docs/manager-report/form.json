@@ -5,6 +5,8 @@
     "BOX_ONHAND": ["No More", "Less than 1/2 box", "1/2 box", "1 full box", "1.5 box", "2 boxes", "3 boxes", "4 boxes", "5 boxes", "6 boxes", "7 boxes", "8 boxes", "9 boxes", "10 boxes", "More than 10 boxes"]
   },
   "low_levels": ["No More", "Less than 1/2 box", "1/2 box"],
+  "none_value": "nothing-missing",
+  "_none_value": "The answer a `required` multicheck/text field holds when the manager tapped '✓ Checked — nothing missing'. An EMPTY answer means she did not check — the page will not submit a final report with one. Snapshotted into every report, so the sync reads this value from the report, not from a copy of its own.",
   "sections": [
     {
       "title": "🧰 Check if needed — Low Stock",
@@ -32,8 +34,8 @@
     {
       "title": "🎨 Simply Bella — missing shades (to order for the next event)",
       "fields": [
-        {"key": "sb_matte_powder_missing", "label": "Simply Bella Beyond Perfection Matte Powder", "short": "Simply Bella Beyond Perfection Matte Powder — missing shades", "type": "multicheck", "options": ["310", "311", "312", "313", "314", "315", "316", "317", "318", "319"], "hint": "Tick every shade that is MISSING at this event", "supplier": "simply-bella"},
-        {"key": "sb_matte_lipgloss_missing", "label": "Simply Bella Matte Longlasting Lipgloss", "short": "Simply Bella Matte Longlasting Lipgloss — missing numbers", "type": "text", "hint": "Type the shade numbers that are MISSING (e.g. 03, 07, 12)", "supplier": "simply-bella"}
+        {"key": "sb_matte_powder_missing", "required": true, "label": "Simply Bella Beyond Perfection Matte Powder", "short": "Simply Bella Beyond Perfection Matte Powder — missing shades", "type": "multicheck", "options": ["310", "311", "312", "313", "314", "315", "316", "317", "318", "319"], "hint": "Tick every shade that is MISSING at this event", "supplier": "simply-bella"},
+        {"key": "sb_matte_lipgloss_missing", "required": true, "label": "Simply Bella Matte Longlasting Lipgloss", "short": "Simply Bella Matte Longlasting Lipgloss — missing numbers", "type": "text", "hint": "Type the shade numbers that are MISSING (e.g. 03, 07, 12)", "supplier": "simply-bella"}
       ]
     }
   ]
