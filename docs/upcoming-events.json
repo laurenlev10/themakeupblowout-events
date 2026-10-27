@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-10-26T21:21:14Z",
+  "_updated_at": "2026-10-27T14:51:49Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -683,7 +683,8 @@
       "form_id": "6adf713e00c349367f872db2",
       "subscribe_url": "/events/palm-desert-ca-2026/",
       "_added_by": "sync_event_data.add_signed_events",
-      "tz": "America/Los_Angeles"
+      "tz": "America/Los_Angeles",
+      "ig_url": "https://www.instagram.com/reel/DfAG3IGx6FS/?utm_source=ig_web_copy_link&mdxt=MWQ1ZGUxMzBkMA==&srtk=MWQ1ZGUxMzBkMA=="
     },
     {
       "city": "Ogden",
@@ -695,7 +696,8 @@
       "venue_address": "247 24th Street, Ogden, UT 84401",
       "form_id": "6adfc31000c349367fc268f2",
       "subscribe_url": "/events/ogden-ut-2027/",
-      "_added_by": "sync_event_data.add_signed_events"
+      "_added_by": "sync_event_data.add_signed_events",
+      "tz": "America/Denver"
     },
     {
       "city": "Stockton",
@@ -707,7 +709,8 @@
       "venue_address": "110 W Fremont St, Stockton, CA 95202",
       "form_id": "6adfc33f00c349367fc28689",
       "subscribe_url": "/events/stockton-ca-2027/",
-      "_added_by": "sync_event_data.add_signed_events"
+      "_added_by": "sync_event_data.add_signed_events",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Pasco",
@@ -719,7 +722,8 @@
       "venue_address": "4525 Convention Pl, Pasco, WA 99301",
       "form_id": "6adfc36500c349367fc29d88",
       "subscribe_url": "/events/pasco-wa-2027/",
-      "_added_by": "sync_event_data.add_signed_events"
+      "_added_by": "sync_event_data.add_signed_events",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Santa Rosa",
@@ -731,7 +735,8 @@
       "venue_address": "67 Golf Course Dr W, Rohnert Park, CA 94928",
       "form_id": "6adfc38daea4e7cef02750c2",
       "subscribe_url": "/events/santa-rosa-ca-2027/",
-      "_added_by": "sync_event_data.add_signed_events"
+      "_added_by": "sync_event_data.add_signed_events",
+      "tz": "America/Los_Angeles"
     }
   ],
   "_field_doc": {
