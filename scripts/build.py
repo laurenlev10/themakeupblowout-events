@@ -250,6 +250,79 @@ def page_title(f, lang="en"):
     return f"Makeup Blowout Sale {f['city_state']} — {f['dates_words']} · Up to 75% Off · Free Entry"
 
 
+# ---------------------------------------------------------------------------
+# The tour list — every stop, built from upcoming-events.json, with THIS page's
+# row marked here at build time. Until 27.10.2026 the list was a hand-typed copy
+# inside six templates, frozen at the 2026-05 schedule, and the browser matched
+# the page's city against it by name. Pueblo, South Denver, Palm Desert and the
+# whole 2027 schedule were never typed in, so their pages showed a tour with no
+# yellow row and no "you're here" — silently (Lauren caught it on Palm Desert).
+# One schedule, read here; the self-check below refuses a page that does not
+# carry every stop and exactly one marked row, its own.
+# ---------------------------------------------------------------------------
+_MON3 = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"]
+TOUR_BADGE = {"en": "YOU'RE HERE", "es": "AQUÍ"}
+
+
+def _tour_dates(sd, ed):
+    if sd.month == ed.month:
+        return f"{_MON3[sd.month-1]} {sd.day}–{ed.day}"
+    return f"{_MON3[sd.month-1]} {sd.day}–{_MON3[ed.month-1]} {ed.day}"
+
+
+def tour_stops():
+    """Every scheduled stop, in date order — the whole tour, past and future."""
+    out = []
+    for ev in sorted(DATA.get("events", []), key=lambda e: e["start_date"]):
+        sd = datetime.date.fromisoformat(ev["start_date"])
+        ed = datetime.date.fromisoformat(ev["end_date"])
+        out.append({"slug": ev.get("slug") or make_slug(ev["city"], ev["state"], ed.year),
+                    "city_state": f"{ev['city']}, {ev['state']}", "state": ev["state"],
+                    "sd": sd, "ed": ed})
+    return out
+
+
+def tour_years():
+    ys = sorted({s["sd"].year for s in tour_stops()})
+    return str(ys[0]) if len(ys) == 1 else f"{ys[0]}–{ys[-1]}"
+
+
+def tour_rows(current_slug, lang):
+    esc = _html.escape
+    rows, year = [], None
+    stops = tour_stops()
+    multi_year = len({s["sd"].year for s in stops}) > 1
+    for s in stops:
+        if multi_year and s["sd"].year != year:
+            year = s["sd"].year
+            rows.append(f'<div class="tyear">{year}</div>')
+        here = s["slug"] == current_slug
+        badge = f'<span class="badge">{esc(TOUR_BADGE[lang])}</span>' if here else ""
+        rows.append(
+            f'<div class="trow{" here" if here else ""}" data-slug="{esc(s["slug"])}">'
+            f'<div class="stt">{esc(s["state"])}</div>'
+            f'<div class="ci">{esc(s["city_state"])}{badge}</div>'
+            f'<div class="dt">{_tour_dates(s["sd"], s["ed"])}</div></div>')
+    return "".join(rows)
+
+
+_TROW_RE = re.compile(r'<div class="trow( here)?" data-slug="([^"]+)">')
+
+
+def verify_tour(path, slug):
+    """Read the tour back out of the written page: every stop, one marked row, ours."""
+    src = path.read_text(encoding="utf-8")
+    rows = _TROW_RE.findall(src)
+    want = [s["slug"] for s in tour_stops()]
+    got = [r[1] for r in rows]
+    if got != want:
+        missing = sorted(set(want) - set(got))
+        raise RuntimeError(f"{path}: tour list ≠ schedule ({len(got)} rows vs {len(want)} stops; missing {missing[:5]})")
+    marked = [r[1] for r in rows if r[0]]
+    if marked != [slug]:
+        raise RuntimeError(f"{path}: tour highlights {marked}, not exactly [{slug}]")
+
+
 def render_event(ev):
     """Return dict of variables for this event."""
     f = event_facts(ev)
@@ -272,6 +345,9 @@ def render_event(ev):
         "HERO_IMAGE": f"/_assets/events/{slug}/hero.png",
         "HOURS_LABEL": HOURS_LABEL,
         "HOURS_SHORT": HOURS_SHORT,
+        "TOUR_YEARS": tour_years(),
+        "TOUR_ROWS":  tour_rows(slug, "en"),
+        "_TOUR_ROWS_ES": tour_rows(slug, "es"),
         # Language-specific head — filled per template in main(), see fill_lang()
         "PAGE_TITLE": page_title(f, "en"),
         "HEAD_SEO":   head_seo(f, "en"),
@@ -283,7 +359,8 @@ def render_event(ev):
 def fill_lang(template, vars, lang):
     """Same variables, but the Spanish template gets the Spanish head."""
     if lang == "es":
-        vars = {**vars, "PAGE_TITLE": vars["_PAGE_TITLE_ES"], "HEAD_SEO": vars["_HEAD_SEO_ES"]}
+        vars = {**vars, "PAGE_TITLE": vars["_PAGE_TITLE_ES"], "HEAD_SEO": vars["_HEAD_SEO_ES"],
+                "TOUR_ROWS": vars["_TOUR_ROWS_ES"]}
     return fill(template, vars)
 
 
@@ -465,23 +542,24 @@ def main():
         target_dir = DOCS / "events" / slug
         target_dir.mkdir(parents=True, exist_ok=True)
         (target_dir / "index.html").write_text(fill_lang(TPL_LANDING, vars, "en"), encoding="utf-8")
-        (target_dir / "share.html").write_text(fill(TPL_SHARE,   vars), encoding="utf-8")
+        (target_dir / "share.html").write_text(fill_lang(TPL_SHARE, vars, "en"), encoding="utf-8")
         if TPL_LANDING_ES:
             (target_dir / "index-es.html").write_text(fill_lang(TPL_LANDING_ES, vars, "es"), encoding="utf-8")
         if TPL_SHARE_ES:
-            (target_dir / "share-es.html").write_text(fill(TPL_SHARE_ES, vars), encoding="utf-8")
+            (target_dir / "share-es.html").write_text(fill_lang(TPL_SHARE_ES, vars, "es"), encoding="utf-8")
         # TikTok variants — same look as landing, but sign-up form replaced with thank-you/share.
         # Lead is captured upstream via TikTok's lead form + Zapier; this page's job is to
         # convert the new SMS subscriber into a social share.
         if TPL_TIKTOK:
-            (target_dir / "tiktok.html").write_text(fill(TPL_TIKTOK, vars), encoding="utf-8")
+            (target_dir / "tiktok.html").write_text(fill_lang(TPL_TIKTOK, vars, "en"), encoding="utf-8")
         if TPL_TIKTOK_ES:
-            (target_dir / "tiktok-es.html").write_text(fill(TPL_TIKTOK_ES, vars), encoding="utf-8")
+            (target_dir / "tiktok-es.html").write_text(fill_lang(TPL_TIKTOK_ES, vars, "es"), encoding="utf-8")
         if TPL_STATS:
             (target_dir / "stats.html").write_text(fill(TPL_STATS, vars), encoding="utf-8")
         # Also store metadata next to the page for the agent to inspect (the head
         # blocks are page content, not metadata — keep _meta.json readable).
-        meta = {k: v for k, v in vars.items() if k not in ("HEAD_SEO", "_HEAD_SEO_ES")}
+        meta = {k: v for k, v in vars.items()
+                if k not in ("HEAD_SEO", "_HEAD_SEO_ES", "TOUR_ROWS", "_TOUR_ROWS_ES")}
         meta.update({"start_iso": f["start_iso"], "end_iso": f["end_iso"], "tz": str(f["tz"]),
                      "canonical": f["url"], "jsonld_image": f["image"]})
         (target_dir / "_meta.json").write_text(json.dumps({"slug": slug, **meta}, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -489,6 +567,10 @@ def main():
         verify_written_page(target_dir / "index.html", f, "en")
         if TPL_LANDING_ES:
             verify_written_page(target_dir / "index-es.html", f, "es")
+        for page in ("index.html", "index-es.html", "share.html", "share-es.html",
+                     "tiktok.html", "tiktok-es.html"):
+            if (target_dir / page).exists():
+                verify_tour(target_dir / page, slug)
         written.append((slug, vars["CITY"]))
         print(f"  wrote {target_dir.relative_to(REPO)}/  ({vars['CITY']})  {f['start_iso']} → {f['end_iso']}")
 
