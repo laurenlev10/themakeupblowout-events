@@ -23,6 +23,9 @@
   .opt{border:1.5px solid #e5e7eb;background:#fafafa;border-radius:999px;padding:6px 13px;font-size:13px;font-weight:800;cursor:pointer;user-select:none}
   .opt.yes.on{background:#dcfce7;border-color:#16a34a;color:#166534}
   .opt.no.on{background:#fee2e2;border-color:#dc2626;color:#991b1b}
+  /* 27.10.2026 — an event left without ✅/❌ when Send is pressed */
+  .ev.missing{background:#fef2f2;border-radius:10px;box-shadow:inset 3px 0 0 #dc2626;padding-left:8px}
+  .ev.missing .city::after{content:" — please choose ✅ or ❌";color:#dc2626;font-size:12px;font-weight:800}
   .btn{width:100%;border:0;border-radius:13px;padding:14px;font-size:17px;font-weight:900;cursor:pointer;background:var(--purple);color:#fff;margin-top:6px}
   .btn:disabled{opacity:.6}
   .note{font-size:12px;color:#9ca3af;margin-top:8px;text-align:center}
@@ -46,7 +49,7 @@
     <input id="f-phone" type="tel" placeholder="+1 ...">
   </div>
   <div class="card">
-    <label style="font-size:14.5px;color:#1f2937">📅 Upcoming events — tap ✅ if you're available &amp; interested, ❌ if not:</label>
+    <label style="font-size:14.5px;color:#1f2937">📅 Upcoming events — tap ✅ if you're available &amp; interested, ❌ if not. <b style="color:#dc2626">Every event needs an answer.</b></label>
     <div id="ev-list">Loading events…</div>
   </div>
   <div class="card">
@@ -124,7 +127,7 @@ async function init(){
   evs.forEach(function(e){ EVENTS[e.evkey]=e; });
   box.innerHTML = evs.map(function(a){
     var ev=a.evkey, tent=(a.status!=="confirmed");
-    return '<div class="ev"><span class="when">'+fmtDate(a.start_date)+'–'+fmtDate(a.end_date)+(a.start_date.slice(0,4)!==today.slice(0,4)?' <span class="yr">'+a.start_date.slice(0,4)+'</span>':'')+'</span>'+
+    return '<div class="ev" id="ev-'+ev+'"><span class="when">'+fmtDate(a.start_date)+'–'+fmtDate(a.end_date)+(a.start_date.slice(0,4)!==today.slice(0,4)?' <span class="yr">'+a.start_date.slice(0,4)+'</span>':'')+'</span>'+
       '<span class="city">'+esc(a.city)+', '+esc(a.state||"")+(tent?' <span class="tent" title="Dates not final yet">tentative</span>':'')+'</span>'+
       '<span class="opts">'+
       '<span class="opt yes" id="y-'+ev+'" onclick="pick(\''+ev+'\',\'yes\')">✅ Available</span>'+
@@ -137,6 +140,7 @@ function pick(ev, ans){
   else ANSWERS[ev]=ans;
   document.getElementById("y-"+ev).classList.toggle("on", ANSWERS[ev]==="yes");
   document.getElementById("n-"+ev).classList.toggle("on", ANSWERS[ev]==="no");
+  var row=document.getElementById("ev-"+ev); if(row && ANSWERS[ev]) row.classList.remove("missing");
 }
 function buildText(p){
   var lines=["Availability form — "+p.name, ""];
@@ -151,7 +155,17 @@ function buildText(p){
 function collectP(){
   var who=document.getElementById("f-who").value;
   if(!who){ alert("Please choose your name 🙂"); return null; }
-  if(!Object.keys(ANSWERS).length){ alert("Please mark at least one event ✅ / ❌"); return null; }
+  /* 27.10.2026 — Lauren: a worker MUST answer every event. Roey sent ✅ for two events and
+     skipped Santa Ana; on /team/ that reads "has not answered" and she cannot tell whether he
+     left it open on purpose. Nothing is sent until every listed event has ✅ or ❌. */
+  var missing=Object.keys(EVENTS).filter(function(ev){ return ANSWERS[ev]!=="yes" && ANSWERS[ev]!=="no"; });
+  if(!Object.keys(EVENTS).length){ alert("There are no events to answer right now 🙂"); return null; }
+  if(missing.length){
+    missing.forEach(function(ev){ var row=document.getElementById("ev-"+ev); if(row) row.classList.add("missing"); });
+    var first=document.getElementById("ev-"+missing[0]); if(first && first.scrollIntoView) first.scrollIntoView({behavior:"smooth",block:"center"});
+    alert("Please choose ✅ Available or ❌ No for every event ("+missing.length+" left: "+missing.map(function(ev){ return (EVENTS[ev]||{}).city||ev; }).join(", ")+")");
+    return null;
+  }
   var m=(who!=="__other__" && ROSTER.members[who])||null;
   return {
     kind:"team_availability", evkey:"team-availability", mode:"final",
@@ -160,7 +174,7 @@ function collectP(){
     manager_name:(m?(m.full_name||m.name):"(other)"),
     phone:document.getElementById("f-phone").value.trim(),
     notes:document.getElementById("f-notes").value.trim(),
-    events:ANSWERS,
+    events:Object.assign({}, ANSWERS),
     submitted_at:new Date().toISOString(),
     source:"availability-form-public"
   };
