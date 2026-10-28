@@ -62,9 +62,12 @@ fbq('track', 'PageView');
 window.trackEvent = function(name, params) {
   params = params || {};
   try { if (window.gtag) gtag('event', name, params); } catch(e){}
-  try { if (window.fbq && name === 'form_submit') fbq('track', 'Lead', params); } catch(e){}
+  /* 28.10.2026 (Lauren: "תתקן") — a woman already on the list re-submitting is NOT a sign-up. Meta and TikTok
+     optimise on Lead/SubmitForm (Tucson's Leads campaign learns from it), so she sends a custom event instead.
+     Pueblo 27.10: platforms reported 94 leads, the list grew by 37. GA4 form_submit is unchanged (history). */
+  try { if (window.fbq && name === 'form_submit') { if (params.already_subscribed) fbq('trackCustom', 'AlreadySubscribed', params); else fbq('track', 'Lead', params); } } catch(e){}
   try { if (window.fbq && name === 'share_click') fbq('track', 'ClickButton', params); } catch(e){}
-  try { if (window.ttq && name === 'form_submit') ttq.track('SubmitForm', params); } catch(e){}
+  try { if (window.ttq && name === 'form_submit' && !params.already_subscribed) ttq.track('SubmitForm', params); } catch(e){}
   try { if (window.ttq && name === 'share_click') ttq.track('ClickButton', params); } catch(e){}
   try { if (window.ttq && name === 'tiktok_arrival') ttq.track('CompleteRegistration', params); } catch(e){}
 };
