@@ -130,6 +130,7 @@
 <div class="wrap">
   <div id="alerts"></div>
   <div id="banner" class="banner info" style="display:none"></div>
+  <div id="plan" class="banner info" style="display:none"></div>
   <!-- 20.10.2026 — the hours sheet (/warehouse-hours/) is asked, never assumed: Start trip → "clock in as
        LONG DISTANCE?"; signing the day → "clock out?". Same shape as the pickup page. -->
   <div id="wh-ask" class="banner" style="display:none;background:#ccfbf1;border-color:#5eead4;color:#134e4a">
@@ -174,7 +175,7 @@
   <div class="card" id="dest-card">
     <h2>🧭 Where to? <span class="es">לאן נוסעים?</span></h2>
     <div id="dests"><div class="empty">loading…</div></div>
-    <div class="note">Copy the address into your navigation app.<span class="es">העתק את הכתובת לאפליקציית הניווט שלך.</span></div>
+    <div class="note">Copy the address into your navigation app, or open the route.<span class="es">העתק את הכתובת לאפליקציית הניווט, או פתח את המסלול.</span></div>
   </div>
 
   <div class="card" id="track-card">
@@ -289,7 +290,7 @@ async function loadRoster(){
     names = (j.settings && j.settings.drivers) || [];
     ls("hos_roster", JSON.stringify(names));
     // before a name is picked the page still shows where to go (the overview answer carries it)
-    if (!S){ S = j; renderDests(); renderChips(); }
+    if (!S){ S = j; renderDests(); renderChips(); applyPlan(); }
     if (j.settings) ls("hos_settings_cache", JSON.stringify(j.settings));
   }catch(e){ try{ names = JSON.parse(ls("hos_roster") || "[]"); }catch(x){ names = []; } }
   var cur = sharedName() || ls("hos_driver") || "";
@@ -313,7 +314,7 @@ async function load(){
     j = c.j; OFFLINE = c.at;
   }
   S = j; CLOCK = j.clock;
-  render();
+  render(); applyPlan();
 }
 function render(){
   if (!S) return;
@@ -411,12 +412,45 @@ function renderLimits(){
 }
 
 // ── destinations: the next events' venues + home base (Lauren 16.10) ──────────
-function destRow(label, sub, addr){
-  // the driver navigates in his own app (Lauren 16.10): the address and one Copy button, nothing else
+function destRow(label, sub, addr, nav){
+  // the driver navigates in his own app (Lauren 16.10): the address and a Copy button.
+  // 28.10.2026 — Lauren asked for a link to Yonatan "from the hotel in Albuquerque to Pueblo, with the right
+  // addresses": when the trip's start is a venue too, the row also opens the whole route (origin → venue).
   var a = esc(addr).replace(/'/g, "&#39;");
   return '<div class="stop" style="margin-bottom:8px"><div class="name">' + esc(label) + '</div>' + (sub ? '<div class="meta">' + esc(sub) + '</div>' : '') +
     '<div class="meta" style="font-size:15px;user-select:all">📍 ' + esc(addr) + '</div>' +
-    '<button class="btn sm" style="margin-top:6px" onclick="copyText(\'' + a + '\')">📋 Copy address · העתק כתובת</button></div>';
+    '<button class="btn sm" style="margin-top:6px" onclick="copyText(\'' + a + '\')">📋 Copy address · העתק כתובת</button>' +
+    (nav ? '<a class="btn sm" style="margin-top:6px;display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="' + esc(nav) + '">🗺️ Open the route · פתח מסלול</a>' : '') + '</div>';
+}
+function routeUrl(from, to){ return "https://www.google.com/maps/dir/?api=1&travelmode=driving" + (from ? "&origin=" + encodeURIComponent(from) : "") + "&destination=" + encodeURIComponent(to); }
+// every event the Worker knows (the one just left + the coming ones) — the ONLY source of venue addresses here
+function allEvents(){ return (S && S.prev_event ? [S.prev_event] : []).concat((S && S.next_events) || []); }
+function eventByCity(v){ v = String(v || "").trim().toLowerCase(); return v ? allEvents().filter(function(x){ return cityOf(x).toLowerCase() === v; })[0] : null; }
+// ── a trip sent as a link: ?name=Yonatan&from=<evkey>&to=<evkey> (28.10.2026) ──────────────
+// The link carries event KEYS, never addresses — the addresses come from the Worker, so a venue that
+// changes is changed once. A key the Worker no longer lists is said out loud, never silently dropped.
+var PLAN = (function(){ try{ var q = new URLSearchParams(location.search); var f = (q.get("from") || "").trim(), t = (q.get("to") || "").trim(); return (f || t) ? { from: f, to: t, applied: false } : null; }catch(e){ return null; } })();
+function planEvent(key){ return key ? allEvents().filter(function(x){ return x.evkey === key; })[0] || null : null; }
+function applyPlan(){
+  if (!PLAN || !S || PLAN.applied) return;
+  if (S.next_events === null) return;            // the events list did not load — renderDests already says so
+  PLAN.applied = true;
+  var miss = [];
+  ["from","to"].forEach(function(k){
+    if (!PLAN[k]) return;
+    var e = planEvent(PLAN[k]); if (!e){ miss.push(PLAN[k]); return; }
+    PLAN[k + "Ev"] = e;
+    var el = document.getElementById("h-" + k);
+    if (el && !el.value.trim()) el.value = cityOf(e);   // filled on the screen only; saved when he taps Start trip
+  });
+  var box = document.getElementById("plan");
+  if (miss.length){ box.className = "banner warn"; box.style.display = "block";
+    box.innerHTML = "⚠️ This link points to a trip that is not on the list any more (" + esc(miss.join(", ")) + ") — call Eli before driving.<span class=\"es\">הקישור מצביע על נסיעה שכבר לא ברשימה — תתקשר לאלי לפני שיוצאים.</span>"; }
+  else if (PLAN.toEv){ var fe = PLAN.fromEv, te = PLAN.toEv;
+    box.className = "banner info"; box.style.display = "block";
+    box.innerHTML = "🚚 <b>Your trip · הנסיעה שלך</b><br>" + (fe ? esc(fe.venue) + ", " + esc(fe.city) + " → " : "") + esc(te.venue) + ", " + esc(te.city) +
+      '<span class="es">' + (fe ? "מ-" + esc(fe.venue) + " (" + esc(fe.city) + ") " : "") + "אל " + esc(te.venue) + " (" + esc(te.city) + ") — הכתובות והמסלול למטה ב\"לאן נוסעים\"</span>"; }
+  tripChanged();
 }
 // the "To"/"From" choices: the coming cities from the Worker (Lauren 18.10: "כל הערים הבאות שמגיעים
 // אליהם בקרוב"), the event the truck just left, home, and where the phone is now. A tap fills the field.
@@ -479,11 +513,16 @@ function renderDests(){
   if (S.next_events === null) html += '<div class="banner warn">⚠️ The events list could not be read right now — ask Eli for the venue address.<span class="es">רשימת האירועים לא נקראה — תבקש מאלי את הכתובת.</span></div>';
   // the address shown follows the "To" the driver picked; otherwise the next event
   var toV = ((document.getElementById("h-to") || {}).value || "").trim().toLowerCase();
+  var fromV = ((document.getElementById("h-from") || {}).value || "").trim();
   var e = (S.next_events || []).filter(function(x){ return cityOf(x).toLowerCase() === toV; })[0] || (S.next_events || [])[0];
+  // the start: a venue the truck is leaving (the event just ended), else "here now" / what he typed
+  var fe = eventByCity(fromV); if (fe && e && fe.evkey === e.evkey) fe = null;
+  if (fe) html += destRow("⬅️ Leaving from · יוצאים מ: " + fe.city + ", " + fe.state, fe.venue, fe.address);
   if (e){ var d = e.start_date ? new Date(e.start_date + "T12:00:00").toLocaleDateString("en-US", { month:"short", day:"numeric" }) : "";
-    html += destRow("➡️ " + (cityOf(e).toLowerCase() === toV ? "Driving to · נוסעים אל" : "Next event · האירוע הקרוב") + ": " + e.city + ", " + e.state + (d ? " · " + d : ""), e.venue, e.address); }
+    html += destRow("➡️ " + (cityOf(e).toLowerCase() === toV ? "Driving to · נוסעים אל" : "Next event · האירוע הקרוב") + ": " + e.city + ", " + e.state + (d ? " · " + d : ""), e.venue, e.address,
+      routeUrl(fe ? fe.address : (fromV && fromV !== HERE ? fromV : ""), e.address)); }
   var hb = S.settings && S.settings.home_base;
-  if (hb && hb.address) html += destRow("🏠 " + (hb.label || "Home / base") + " · חזרה הביתה", "", hb.address);
+  if (hb && hb.address) html += destRow("🏠 " + (hb.label || "Home / base") + " · חזרה הביתה", "", hb.address, routeUrl("", hb.address));
   document.getElementById("dests").innerHTML = html || '<div class="empty">No upcoming event with an address.</div>';
 }
 function copyText(t){
