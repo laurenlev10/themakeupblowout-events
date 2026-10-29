@@ -51,6 +51,9 @@ fbq('track', 'PageView');
 window.trackEvent = function(name, params) {
   params = params || {};
   try { if (window.gtag) gtag('event', name, params); } catch(e){}
+  /* 29.10.2026 — GA4 enhanced measurement sends its OWN form_submit on every submit, so form_submit is counted
+     twice (the funnel showed 125% of taps signing up). signup_done = a NEW sign-up, sent only by us. */
+  try { if (window.gtag && name === 'form_submit' && !params.already_subscribed) gtag('event', 'signup_done', {}); } catch(e){}
   /* 28.10.2026 (Lauren: "תתקן") — a woman already on the list re-submitting is NOT a sign-up. Meta and TikTok
      optimise on Lead/SubmitForm (Tucson's Leads campaign learns from it), so she sends a custom event instead.
      Pueblo 27.10: platforms reported 94 leads, the list grew by 37. GA4 form_submit is unchanged (history). */
