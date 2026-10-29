@@ -96,6 +96,14 @@
   #head-details > summary .chev{margin-inline-start:auto;flex:none;font-size:13px;font-weight:900;background:#eef0f4;border-radius:999px;padding:6px 12px;white-space:nowrap}
   #head-details[open] > summary .chev .closed, #head-details:not([open]) > summary .chev .opened{display:none}
   #head-sum{font-size:14px;font-weight:700;margin-top:3px}
+  /* 29.10.2026 — Lauren: "הפרטים האלו צריכים להיות ברורים ולא עם כפתור שניפתח" — the trip fields are open, always */
+  #head-details h2{margin-bottom:4px}
+  .req{color:var(--bad);font-weight:900}
+  .odo-big{font-size:24px !important;font-weight:900;letter-spacing:.5px;padding:12px !important}
+  .odo-hint{font-size:13px;font-weight:700;color:var(--muted);margin-top:4px}
+  #cert-card.closing{outline:3px solid var(--warn);outline-offset:2px}
+  #close-why{display:none;margin:6px 0 8px}
+  #close-why.show{display:block}
   #head-sum.todo{color:var(--warn)} #head-sum.done{color:var(--ok)}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
   .chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;color:var(--ink)}
@@ -156,9 +164,10 @@
       <!-- No sleeper-berth button: the truck has no berth, the crew sleeps in a hotel (Lauren 16.10) —
            hotel nights are Off duty, which is what the 10-hour rest needs. Line 2 of the grid stays empty. -->
       <button class="stbtn on" onclick="setStatus('on','Weigh station')">⚖️ Weigh station<br><span class="es">on duty · Eli gets a text<br>תחנת שקילה — אלי מקבל הודעה</span></button>
-      <button class="stbtn off" onclick="setStatus('off')">☕ Off duty<br><span class="es">break, meal, hotel, done for today<br>לא בתפקיד — הפסקה, ארוחה, מלון, סיימתי להיום</span></button>
+      <button class="stbtn off" onclick="setStatus('off')">☕ Off duty<br><span class="es">after you signed the trip · hotel, done for today<br>לא בתפקיד — רק אחרי חתימה על הנסיעה</span></button>
     </div>
-    <div class="note">🔔 If you stop for 5 minutes while marked Driving, or start moving while not, or finish the day without signing, the phone will buzz and remind you — only while this page is open on screen. Eli gets a text each time.<br><span class="es">אם תעצור 5 דקות כשאתה מסומן "נוהג", או תתחיל לנסוע כשלא, או תסיים יום בלי לחתום — הטלפון ירטוט ויזכיר לך. עובד רק כשהדף פתוח על המסך. אלי מקבל הודעה בכל פעם.</span></div>
+    <div class="note">⛽ Fuel stop, short break, a tap by mistake → <b>On duty (not driving)</b>. It counts as your 30-minute break too.<br><span class="es">תדלוק, הפסקה קצרה, או לחיצה בטעות ← "בתפקיד (לא נוהג)". זה נחשב גם כהפסקת 30 הדקות.</span></div>
+    <div class="note">🔔 If you stop for <b id="stop-min">3</b> minutes while marked Driving, or start moving while not, or finish the day without signing, the phone will buzz and remind you — only while this page is open on screen. Eli gets a text each time.<br><span class="es">אם תעצור <b id="stop-min-he">3</b> דקות כשאתה מסומן "נוהג", או תתחיל לנסוע כשלא, או תסיים יום בלי לחתום — הטלפון ירטוט ויזכיר לך. עובד רק כשהדף פתוח על המסך. אלי מקבל הודעה בכל פעם.</span></div>
     <label>Note for this change (optional) · הערה</label>
     <input id="note" placeholder="e.g. fuel stop, loading at venue" maxlength="160">
     <details id="late-box" style="margin-top:8px"><summary style="font-size:14px;font-weight:800;cursor:pointer">⏱ Forgot to tap? It happened earlier… <span class="es">שכחת ללחוץ? זה קרה קודם…</span></summary>
@@ -216,17 +225,20 @@
 
   <div class="card" id="head-card">
     <div id="wd-banner" class="banner warn" style="display:none;margin:0 0 8px"></div>
-    <details id="head-details"><summary><div>🚚 Trip · <span id="wd-trip">Today</span> <span class="es">פרטי הנסיעה</span><div id="head-sum" class="todo">Not filled yet — tap to fill · עוד לא מולא — לחץ למילוי</div></div><span class="chev"><span class="closed">▼ Open · פתח</span><span class="opened">▲ Close · סגור</span></span></summary>
-      <label>Truck no. / plate</label><input id="h-truck" placeholder="plate or unit no." oninput="tripChanged()">
-      <div class="two"><div style="flex:1"><label>Odometer at start</label><input id="h-odo_start" inputmode="numeric" placeholder="miles"></div><div style="flex:1"><label>Odometer at end</label><input id="h-odo_end" inputmode="numeric" placeholder="miles"></div></div>
+    <div id="head-details">
+      <h2>🚚 Trip · <span id="wd-trip">Today</span> <span class="es">פרטי הנסיעה</span></h2>
+      <div id="head-sum" class="todo">Not filled yet · עוד לא מולא</div>
+      <label>Odometer at start <span class="req">*</span> · אודומטר בהתחלה — read it from the dashboard</label>
+      <input id="h-odo_start" class="odo-big" inputmode="decimal" placeholder="e.g. 119834" oninput="tripChanged()">
+      <div id="odo-start-hint" class="odo-hint"></div>
+      <label>Truck no. / plate <span class="req">*</span></label><input id="h-truck" placeholder="plate or unit no." oninput="tripChanged()">
       <label>To — where are you driving? · לאן נוסעים?</label><div class="chips" id="to-chips"></div><input id="h-to" placeholder="or type: city, state · או תקליד" oninput="tripChanged()">
       <label>From — where did you start? · מאיפה יצאת?</label><div class="chips" id="from-chips"></div><input id="h-from" placeholder="or type: city, state · או תקליד" oninput="tripChanged()">
       <label>Load / shipping document</label><input id="h-shipping" readonly tabindex="-1" style="opacity:.8" title="fixed by the carrier">
       <label>Co-driver (if any)</label><input id="h-co_driver" placeholder="—">
       <button class="btn sec sm" onclick="saveHeader(false)">💾 Save details only · שמור בלי להתחיל</button>
       <div id="head-saved" class="note"></div>
-    </details>
-    <!-- outside the folded card: visible whether it is open or closed (while Driving it is "Arrived") -->
+    </div>
     <button class="btn" id="btn-trip" onclick="tripAction()">🚛 Start trip · התחל נסיעה</button>
   </div>
 
@@ -238,10 +250,14 @@
   </div>
 
   <div class="card" id="cert-card">
-    <h2>✍️ End of day — sign the log <span class="es">סוף היום — חתימה</span></h2>
-    <div class="note">When you are done for today: fill the odometer at end above, tap Off duty, then sign with your finger. This certifies that the entries are true and correct.<br><span class="es">כשסיימת: מלא את האודומטר בסוף למעלה, לחץ "לא בתפקיד", וחתום עם האצבע.</span></div>
+    <h2>✍️ End of trip — odometer + signature <span class="es">סיום נסיעה — אודומטר וחתימה</span></h2>
+    <div id="close-why" class="banner warn"></div>
+    <div class="note">Before Off duty: the odometer at the end and your signature. Off duty opens only after you sign. This certifies that the entries are true and correct.<br><span class="es">לפני "לא בתפקיד": אודומטר בסוף וחתימה. "לא בתפקיד" נפתח רק אחרי החתימה.</span></div>
+    <label>Odometer at end <span class="req">*</span> · אודומטר בסוף</label>
+    <input id="h-odo_end" class="odo-big" inputmode="decimal" placeholder="e.g. 119834">
+    <div id="odo-end-hint" class="odo-hint"></div>
     <canvas id="pad" class="pad" width="400" height="120"></canvas>
-    <div class="two"><button class="btn sec sm" onclick="clearPad()">↺ Clear</button><button class="btn sm" id="btn-cert" onclick="certify()">✍️ Sign &amp; certify today · חתום</button></div>
+    <div class="two"><button class="btn sec sm" onclick="clearPad()">↺ Clear</button><button class="btn sm" id="btn-cert" onclick="certify()">✍️ Sign &amp; finish · חתום וסיים</button></div>
     <div id="cert-line" class="note"></div>
   </div>
 
@@ -273,7 +289,15 @@ var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(
 function ls(k, v){ try{ if (v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
 // 20.10.2026 — the crew hub (/work/) hands the name over as ?name=…; it is saved under EVERY page's key
 // (hos_driver · pickup_driver · wh_worker) so the three sheets agree on who he is (Lauren: "סינכרון בין כולם").
-function sharedName(){ try{ var q = new URLSearchParams(location.search).get("name"); if (q){ q = q.trim(); ["hos_driver","pickup_driver","wh_worker","crew_name"].forEach(function(k){ ls(k, q); }); return q; } }catch(e){} return ls("crew_name") || ""; }
+function sharedName(){ try{ var q = new URLSearchParams(location.search).get("name"); if (q){ q = q.trim();
+  // 29.10.2026 — Eli opened a link made for Yonatan and his phone became "Yonatan": four taps from
+  // Green River, UT landed in Yonatan's log. A link may suggest a name; it never replaces another
+  // name this phone already has without asking.
+  var had = ls("hos_driver") || ls("crew_name") || "";
+  if (had && had.toLowerCase() !== q.toLowerCase() && !confirm("This phone is set to " + had + ". This link is for " + q + ".\nAre you " + q + "?\nהטלפון הזה רשום על " + had + ". הלינק הוא של " + q + ". אתה " + q + "?")) return had;
+  ["hos_driver","pickup_driver","wh_worker","crew_name"].forEach(function(k){ ls(k, q); }); return q; } }catch(e){} return ls("crew_name") || ""; }
+// one id per phone (random, nothing personal): the Worker keeps a shift on the phone that opened it
+var DEVICE = (function(){ var v = ls("hos_device"); if (!v || !/^[A-Za-z0-9-]{8,40}$/.test(v)){ v = "p-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10); ls("hos_device", v); } return v; })();
 function hm(min){ min = Math.max(0, Math.round(min)); return Math.floor(min/60) + "h " + String(min%60).padStart(2,"0") + "m"; }
 function hmsSince(iso){ var s = Math.max(0, Math.floor((Date.now() - Date.parse(iso))/1000)); return Math.floor(s/3600) + ":" + String(Math.floor(s%3600/60)).padStart(2,"0"); }
 function fmtTime(iso){ try{ return new Date(iso).toLocaleTimeString("en-US",{timeZone:(S&&S.settings&&S.settings.home_terminal_tz)||"America/Los_Angeles",hour:"numeric",minute:"2-digit"}); }catch(e){ return iso; } }
@@ -321,14 +345,14 @@ function render(){
   var s = S.settings || {};
   document.getElementById("hdr-sub").textContent = (s.carrier || "The Makeup Blowout Sale") + " · " + S.today + " · " + (s.home_terminal_tz === "America/Los_Angeles" ? "Pacific time" : s.home_terminal_tz);
   banner(OFFLINE ? "📵 No connection — showing the log as last loaded " + fmtTime(OFFLINE) + ". Taps are saved on this phone with their time and sent when the signal is back." : "", "warn");
-  renderNow(); renderLimits(); renderTrack();
+  renderNow(); renderLimits(); renderTrack(); try{ renderOdoHints(); }catch(e){}
   var td = workDay();
   WD_DATE = td ? td.date : S.today;
   var isToday = !td || td.date === S.today;
   var dLabel = isToday ? "Today" : dayName(td.date);
   document.getElementById("wd-trip").textContent = dLabel;
   document.getElementById("wd-grid").textContent = dLabel;
-  document.getElementById("btn-cert").innerHTML = "✍️ Sign &amp; certify " + esc(isToday ? "today" : dayName(td.date)) + " · חתום";
+  document.getElementById("btn-cert").innerHTML = "✍️ Sign &amp; finish " + esc(isToday ? "today" : dayName(td.date)) + " · חתום וסיים";
   var wb = document.getElementById("wd-banner");
   wb.style.display = isToday ? "none" : "block";
   if (!isToday) wb.innerHTML = "📅 " + esc(dayName(td.date)) + " is not signed yet — the trip details and signature below are for that day." + '<span class="es">היום של ' + esc(td.date) + ' עוד לא חתום — פרטי הנסיעה והחתימה למטה שייכים ליום ההוא.</span>';
@@ -479,7 +503,7 @@ var HERE = "", HERE_AT = 0;
 function hereName(){ if (!POS || Date.now() - HERE_AT < 600000) return; HERE_AT = Date.now();
   placeName(POS).then(function(pl){ if (pl && pl !== HERE){ HERE = pl; renderChips(); } }); }
 function pickTrip(field, value){ document.getElementById("h-" + field).value = value; tripChanged(); saveHeader(false); }
-function tripChanged(){ renderChips(); renderDests(); headSummary(); }
+function tripChanged(){ renderChips(); renderDests(); headSummary(); try{ renderOdoHints(); }catch(e){} }
 function headSummary(){
   var g = function(k){ return (document.getElementById("h-" + k).value || "").trim(); };
   var el = document.getElementById("head-sum"), parts = [];
@@ -488,7 +512,7 @@ function headSummary(){
   if (g("odo_start")) parts.push(g("odo_start") + (g("odo_end") ? "–" + g("odo_end") : "") + " mi");
   var done = g("truck") && g("to") && g("odo_start");
   el.className = done ? "done" : "todo";
-  el.textContent = parts.length ? parts.join(" · ") + (done ? "" : "  — missing details, tap · חסרים פרטים") : "Not filled yet — tap to fill · עוד לא מולא — לחץ למילוי";
+  el.textContent = parts.length ? parts.join(" · ") + (done ? "" : "  — missing details · חסרים פרטים") : "Not filled yet · עוד לא מולא";
 }
 // the background tracker (Traccar Client app → the Worker), as the Worker last saw it
 // the dashboard links straight to the setup steps: /driver-log/#track-setup opens them
@@ -536,10 +560,14 @@ async function setStatus(st, presetNote, extra){
   if (presetNote) document.getElementById("note").value = presetNote;
   if (!d){ alert("Please type your name first.\nקודם תכתוב את השם שלך."); document.getElementById("driver").focus(); return; }
   if (CLOCK && CLOCK.status === st && !document.getElementById("note").value.trim()){ return; }   // a weigh-station tap carries a note, so it always goes through
+  // 29.10.2026 — the trip's two doors (the Worker refuses them too): Off/Sleeper only after the
+  // odometer at end + signature; Driving with the trip closed only through Start trip (the odometer)
+  if ((st === "off" || st === "sb") && S && S.trip && S.trip.open){ showClose(); return; }
+  if (st === "d" && S && S.trip && !S.trip.open && !(extra && extra.odometer)){ return startTrip(); }
   var at = LATE_AT ? new Date(LATE_AT).toISOString() : new Date().toISOString();
   var late = !!LATE_AT; clearLate();
   var note = document.getElementById("note").value.trim(); document.getElementById("note").value = "";
-  var body = Object.assign({ kind:"hos_event", driver:d, status:st, at:at, late:late, note:note, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, place:"" }, extra || {});
+  var body = Object.assign({ kind:"hos_event", driver:d, status:st, at:at, late:late, note:note, lat: POS?POS.lat:null, lng: POS?POS.lng:null, acc: POS?POS.acc:null, place:"", device: DEVICE }, extra || {});
   // optimistic: the status card changes now; the Worker's answer is the record
   CLOCK = Object.assign({}, CLOCK || {}, { status: st, since: at, resting: false, note: note });
   NUDGED = { stopped:false, moving:false }; hideNudge();
@@ -559,15 +587,46 @@ async function setStatus(st, presetNote, extra){
 // button is "Arrived" (On duty, "Arrived: <to>"). The status itself still comes only from a tap.
 var TRIP = null;
 function tv(k){ return (document.getElementById("h-" + k).value || "").trim(); }
+// the dashboard shows tenths (119833.8 MI); the log keeps whole miles
+function odoVal(k){ var v = Number(tv(k).replace(/[^\d.]/g, "")); return isFinite(v) && v > 0 ? Math.round(v) : 0; }
+function truckLast(){ var t = S && S.trip; if (!t || t.truck_last_odometer == null) return null;
+  var mine = tv("truck").toLowerCase(); return (!mine || String(t.truck || "").toLowerCase() === mine) ? t.truck_last_odometer : null; }
+function showClose(arrived){
+  var c = document.getElementById("cert-card"), w = document.getElementById("close-why");
+  c.classList.add("closing");
+  w.innerHTML = arrived ? "🏁 Fill the odometer at end and sign — then you can go Off duty.<span class=\"es\">ממלאים אודומטר בסוף וחותמים — ואז אפשר \"לא בתפקיד\".</span>"
+    : "☕ Off duty opens after the odometer at end + your signature.<br>Tapped Off by mistake? Use <b>On duty (not driving)</b> instead." +
+      '<span class="es">"לא בתפקיד" נפתח אחרי אודומטר בסוף וחתימה. לחצת בטעות? לחץ "בתפקיד (לא נוהג)" במקום.</span>' +
+      '<button class="btn sec sm" style="margin-top:8px" onclick="setStatus(\'on\', \'\');document.getElementById(\'close-why\').classList.remove(\'show\')">🔧 On duty (not driving) · בתפקיד, לא נוהג</button>';
+  w.classList.add("show");
+  c.scrollIntoView({ behavior:"smooth", block:"start" });
+  setTimeout(function(){ try{ document.getElementById("h-odo_end").focus(); }catch(e){} }, 400);
+}
+function renderOdoHints(){
+  var t = S && S.trip, a = document.getElementById("odo-start-hint"), b = document.getElementById("odo-end-hint");
+  var last = truckLast();
+  if (a) a.textContent = t && t.open ? "Trip started at " + (t.start_odometer || "?") + " · הנסיעה התחילה ב-" + (t.start_odometer || "?")
+    : last != null ? "This truck's last reading: " + last + " · הקריאה האחרונה של המשאית" : "";
+  if (b) b.textContent = t && t.open && t.start_odometer ? "Trip started at " + t.start_odometer + (odoVal("odo_end") >= t.start_odometer ? " → " + (odoVal("odo_end") - t.start_odometer) + " mi" : "") : "";
+  var sm = (S && S.settings && S.settings.nudge && S.settings.nudge.stop_min) || 3;
+  ["stop-min","stop-min-he"].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = sm; });
+}
 function tripAction(){ return (CLOCK && CLOCK.status === "d") ? arriveTrip() : startTrip(); }
 async function startTrip(){
   var d = driverName();
   if (!d){ alert("Pick your name first.\nקודם תבחר את השם שלך."); document.getElementById("driver").focus(); return; }
-  if (!tv("to")){ document.getElementById("head-details").open = true; alert("Where are you driving? Pick or type the destination first.\nלאן נוסעים? בחר או תקליד יעד."); document.getElementById("h-to").focus(); return; }
-  var miss = [];
-  if (!tv("truck")) miss.push("truck no. · מספר משאית");
-  if (!tv("odo_start")) miss.push("odometer at start · אודומטר בהתחלה");
-  if (miss.length && !confirm("Missing: " + miss.join(", ") + "\nStart the trip anyway?\nלהתחיל את הנסיעה בכל זאת?")) return;
+  if (S && S.trip && S.trip.open){ return setStatus("d", ""); }   // the trip is already open (after a fuel stop): just Driving again
+  var odo = odoVal("odo_start");
+  if (!odo){ document.getElementById("h-odo_start").scrollIntoView({ block:"center" }); document.getElementById("h-odo_start").focus(); alert("Odometer at start first — read it from the dashboard.\nקודם אודומטר בהתחלה — מהשעון במשאית."); return; }
+  if (!tv("truck")){ document.getElementById("h-truck").focus(); alert("Truck no. / plate first.\nקודם מספר משאית."); return; }
+  if (!tv("to")){ alert("Where are you driving? Pick or type the destination first.\nלאן נוסעים? בחר או תקליד יעד."); document.getElementById("h-to").focus(); return; }
+  var lastOdo = truckLast();
+  if (lastOdo != null && odo < lastOdo){ alert("Odometer " + odo + " is LOWER than this truck's last reading " + lastOdo + ". Check the number.\nהאודומטר נמוך מהקריאה האחרונה של המשאית (" + lastOdo + "). תבדוק את המספר."); document.getElementById("h-odo_start").focus(); return; }
+  var confirmed = false;
+  if (lastOdo != null && odo - lastOdo > ((S.trip && S.trip.odo_jump) || 25)){
+    if (!confirm("Odometer " + odo + " is " + (odo - lastOdo) + " mi above this truck's last reading " + lastOdo + ". Is " + odo + " right?\nהאודומטר גבוה ב-" + (odo - lastOdo) + " מייל מהקריאה האחרונה. המספר נכון?")) return;
+    confirmed = true;
+  }
   // an older day still waiting for its signature owns the card (workDay, 19.10); a NEW trip is today's
   var date = WD_DATE;
   if (S && WD_DATE && WD_DATE !== S.today){
@@ -575,15 +634,14 @@ async function startTrip(){
     date = S.today;
   }
   var btn = document.getElementById("btn-trip"); btn.disabled = true;
-  var from = tv("from"), to = tv("to"), odo = Number(tv("odo_start").replace(/[^\d.]/g, ""));
+  var from = tv("from"), to = tv("to");
   TRIP = { body: null, from: from, to: to, odo: odo || null, saved: null, refused: null, open: true };
   renderTripOk();
   try{
     TRIP.saved = await saveHeader(true, date);       // no signal → the tap still goes (it queues); the box says the details did not
-    var extra = isFinite(odo) && odo > 0 ? { odometer: Math.round(odo) } : {};
+    var extra = { odometer: odo, truck: tv("truck") }; if (confirmed) extra.odometer_confirmed = true;
     TRIP.body = await setStatus("d", "Trip start: " + (from || "?") + " → " + to, extra);
   } finally { btn.disabled = false; }
-  document.getElementById("head-details").open = false;
   renderTripOk();
   whAsk("in", to);
 }
@@ -618,9 +676,8 @@ function whAnswer(yes){
 async function arriveTrip(){
   var to = tv("to");
   await setStatus("on", "Arrived" + (to ? ": " + to : ""));
-  banner("🏁 Arrived — you are On duty now. When you are done for today: odometer at end, Off duty, then sign below.\nהגעת — אתה עכשיו בתפקיד. כשתסיים להיום: אודומטר בסוף, \"לא בתפקיד\", וחתימה למטה.", "info");
-  document.getElementById("head-details").open = true;
-  document.getElementById("h-odo_end").focus();
+  banner("🏁 Arrived — you are On duty now. To finish: odometer at end + your signature below, then Off duty.\nהגעת — אתה עכשיו בתפקיד. לסיום: אודומטר בסוף וחתימה למטה, ואז \"לא בתפקיד\".", "info");
+  showClose(true);
 }
 // the trip the truck is on: this tap's, else the newest day header that names a destination
 function currentTrip(){
@@ -634,7 +691,7 @@ function renderTripLine(){
   var driving = !!(CLOCK && CLOCK.status === "d"), t = driving ? currentTrip() : null;
   el.style.display = t ? "block" : "none";
   if (t) el.innerHTML = "🛣️ On a trip · בנסיעה: " + esc(t.from || "?") + " → " + esc(t.to);
-  if (b){ b.className = "btn" + (driving ? " arrive" : ""); b.innerHTML = driving ? "🏁 Arrived · הגעתי" : "🚛 Start trip · התחל נסיעה"; }
+  if (b){ b.className = "btn" + (driving ? " arrive" : ""); b.innerHTML = driving ? "🏁 Arrived · הגעתי" : (S && S.trip && S.trip.open) ? "🚛 Continue driving · ממשיך לנסוע" : "🚛 Start trip · התחל נסיעה"; }
 }
 // the confirmation stays on screen until the office has the tap (or refused it) and the driver closes it
 function renderTripOk(){
@@ -692,6 +749,23 @@ async function flush(){
       var b = QUEUE[0];
       var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(b) });
       var j = null; try{ j = await r.json(); }catch(e){}
+      if (r.status === 409 && j && j.refused){
+        QUEUE.shift(); saveQueue();
+        var again = null, me = b.driver;
+        if (j.code === "close_trip"){ showClose(); }
+        else if (j.code === "other_phone"){
+          if (confirm(me + " is logged on another phone since " + fmtTime(j.last_at) + (j.last_place ? " (" + j.last_place + ")" : "") + ".\nIs THIS your phone now?\n" + me + " מחובר בטלפון אחר. זה הטלפון שלך עכשיו?")) again = { takeover: true };
+          else { alert("Then pick YOUR name at the top.\nאז תבחר את השם שלך למעלה."); document.getElementById("driver").focus(); }
+        } else if (j.code === "too_far"){
+          if (confirm("This tap is " + j.miles + " mi from " + me + "'s last tap " + j.minutes + " min ago" + (j.last_place ? " (" + j.last_place + ")" : "") + ".\nAre you " + me + "?\nהלחיצה הזו רחוקה " + j.miles + " מייל מהלחיצה האחרונה של " + me + ". אתה " + me + "?")) again = { identity_ok: true };
+          else { alert("Then pick YOUR name at the top.\nאז תבחר את השם שלך למעלה."); document.getElementById("driver").focus(); }
+        } else if (j.code === "odometer_jump"){
+          if (confirm(j.error + ".\nIs that the right number?\nהמספר נכון?")) again = { odometer_confirmed: true };
+        } else alert("Not recorded: " + (j.error || j.code) + "\nלא נרשם.");
+        if (again){ QUEUE.unshift(Object.assign({}, b, again)); saveQueue(); continue; }
+        if (TRIP && TRIP.body === b){ TRIP.refused = j.error || j.code; renderTripOk(); }
+        load().catch(function(){}); continue;
+      }
       if (r.status===400){
         QUEUE.shift(); saveQueue();
         if (TRIP && TRIP.body === b){ TRIP.refused = (j && j.error) || "refused"; renderTripOk(); }
@@ -702,6 +776,7 @@ async function flush(){
       }
       if (!r.ok || !j || !j.ok) throw new Error((j&&j.error)||("server " + r.status));
       if (j.clock){ CLOCK = j.clock; if (S) S.now = new Date().toISOString(); }
+      if (j.trip && S){ S.trip = Object.assign({}, S.trip || {}, j.trip); try{ renderOdoHints(); }catch(e){} }
       QUEUE.shift(); saveQueue(); touched = true;
       if (b.kind === "hos_event") LAST_ACK = { t: Date.now(), at: b.at, label: LABEL[b.status] || b.status, body: b, sms: (j && j.sms) || 0 };
       renderNow(); renderLimits();
@@ -754,13 +829,17 @@ function clearPad(){ STROKES = []; drawPad(); }
 async function certify(){
   var d = driverName(); if (!d){ alert("Please type your name first."); return; }
   if (!STROKES.length || STROKES.reduce(function(a,s){ return a + s.length; }, 0) < 6){ alert("Please sign with your finger first.\nקודם תחתום עם האצבע."); return; }
-  if (!document.getElementById("h-odo_end").value.trim() && !confirm("Odometer at end is empty. Certify anyway?\nהאודומטר בסוף ריק. לחתום בכל זאת?")) return;
+  var tr = S && S.trip, end = odoVal("odo_end");
+  if (tr && tr.open && !end){ document.getElementById("h-odo_end").focus(); alert("Odometer at end first — read it from the dashboard.\nקודם אודומטר בסוף — מהשעון במשאית."); return; }
+  if (tr && tr.open && tr.start_odometer && end < tr.start_odometer){ alert("Odometer at end " + end + " is lower than the start " + tr.start_odometer + ". Check the number.\nהאודומטר בסוף נמוך מההתחלה. תבדוק את המספר."); return; }
   if (!(await saveHeader(true))) return;
   var btn = document.getElementById("btn-cert"); btn.disabled = true;
   try{
-    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"hos_day", driver:d, date: WD_DATE || undefined, certify:true, signature:{ w:400, h:120, strokes: STROKES.map(function(s){ return s.filter(function(_,i){ return i % 2 === 0 || i === s.length-1; }); }) } }) });
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"hos_day", driver:d, date: WD_DATE || undefined, certify:true, odo_end: end || undefined, signature:{ w:400, h:120, strokes: STROKES.map(function(s){ return s.filter(function(_,i){ return i % 2 === 0 || i === s.length-1; }); }) } }) });
     var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
-    document.getElementById("cert-line").textContent = "✅ Certified " + fmtTime(new Date().toISOString()) + ". Eli got the day's totals.";
+    document.getElementById("cert-line").textContent = "✅ Signed " + fmtTime(new Date().toISOString()) + (tr && tr.open ? " — the trip is closed, you can tap Off duty now. · הנסיעה נסגרה, אפשר ללחוץ \"לא בתפקיד\"." : ". Eli got the day's totals.");
+    if (S) S.trip = Object.assign({}, S.trip || {}, { open: false });
+    document.getElementById("cert-card").classList.remove("closing"); document.getElementById("close-why").classList.remove("show");
     clearPad(); load().catch(function(){});
     whAsk("out");
   }catch(e){ document.getElementById("cert-line").textContent = "❌ Not certified: " + (e.message||e); }
