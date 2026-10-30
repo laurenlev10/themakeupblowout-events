@@ -1,5 +1,5 @@
 {
- "source_sha256": "72663950a55350b3fa7142c6dff1edd044c89c0ae2a637f84e8e2564f37a8083",
+ "source_sha256": "94bd131899d31c7efaba67929070b781178aeddc1c8ae218951fb995dd7eaaaa",
  "verified_min_match": 0.8,
  "order": [
   "en",
@@ -10,22 +10,22 @@
    "id": "welcome",
    "rotation": "auto",
    "file": "welcome.mp3",
-   "seconds": 21.3,
+   "seconds": 21.7,
    "segments": [
     {
      "lang": "en",
      "start": 1.83,
-     "end": 9.42,
-     "text": "Hey beauties, welcome to The Makeup Blowout Sale! Grab a bag, take your time, and enjoy shopping your favorite brands at up to seventy-five percent off.",
-     "heard": "Hey beauties! Welcome to the Makeup Blowout sale!  Grab a bag, take your time, and enjoy shopping your favorite brands at up to 75% off.",
+     "end": 9.77,
+     "text": "Hello everyone, and welcome to The Makeup Blowout Sale! Grab a bag, take your time, and enjoy shopping your favorite brands at up to seventy-five percent off.",
+     "heard": "Hello everyone and welcome to the Makeup Blowout sale.  Grab a bag, take your time, and enjoy shopping your favorite brands at up to 75% off.",
      "match": 1.0
     },
     {
      "lang": "es",
-     "start": 10.12,
-     "end": 19.79,
+     "start": 10.47,
+     "end": 20.13,
      "text": "¡Hola, bellezas! Bienvenidas a The Makeup Blowout Sale. Tomen una bolsa, tómense su tiempo y disfruten sus marcas favoritas con hasta setenta y cinco por ciento de descuento.",
-     "heard": "¡Hola, bellezas! Bienvenidas a the Makeup Blowout Sale.  Tómen una bolsa, tómense su tiempo y disfruten sus marcas favoritas con hasta 75% de descuento.",
+     "heard": "Hola, bellezas. Bienvenidas a the Makeup Blowout Sale.  Tómen una bolsa, tómense su tiempo y disfruten sus marcas favoritas con hasta 75% de descuento.",
      "match": 0.96
     }
    ]

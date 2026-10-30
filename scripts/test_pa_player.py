@@ -121,7 +121,11 @@ def main():
 
         # tamper: text changed, audio not rebuilt
         src = site / "pa/announcements.json"
-        src.write_text(src.read_text().replace("Hey beauties", "Hi beauties"))
+        # 🛑 30.10.2026 — this replaced the literal "Hey beauties"; when the Welcome wording changed the
+        #    replace found nothing, the "tampered" copy was identical, and the test failed for the wrong
+        #    reason. Tamper the data itself, whatever the words are.
+        _j = json.loads(src.read_text()); _j["clips"][0]["en"] += " (tampered)"
+        src.write_text(json.dumps(_j, ensure_ascii=False, indent=1) + "\n")
         page.goto(base)
         ok(wait(page, "document.getElementById('err').classList.contains('on')", 10)
            and "OUT OF DATE" in page.inner_text("#err"), "changed text without rebuild → red OUT OF DATE bar")
