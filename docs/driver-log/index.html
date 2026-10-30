@@ -834,10 +834,25 @@ async function certify(){
   if (tr && tr.open && tr.start_odometer && end < tr.start_odometer){ alert("Odometer at end " + end + " is lower than the start " + tr.start_odometer + ". Check the number.\nהאודומטר בסוף נמוך מההתחלה. תבדוק את המספר."); return; }
   if (!(await saveHeader(true))) return;
   var btn = document.getElementById("btn-cert"); btn.disabled = true;
+  var SIG = { w:400, h:120, strokes: STROKES.map(function(s){ return s.filter(function(_,i){ return i % 2 === 0 || i === s.length-1; }); }) };
   try{
-    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"hos_day", driver:d, date: WD_DATE || undefined, certify:true, odo_end: end || undefined, signature:{ w:400, h:120, strokes: STROKES.map(function(s){ return s.filter(function(_,i){ return i % 2 === 0 || i === s.length-1; }); }) } }) });
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ kind:"hos_day", driver:d, date: WD_DATE || undefined, certify:true, odo_end: end || undefined, signature: SIG }) });
     var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
-    document.getElementById("cert-line").textContent = "✅ Signed " + fmtTime(new Date().toISOString()) + (tr && tr.open ? " — the trip is closed, you can tap Off duty now. · הנסיעה נסגרה, אפשר ללחוץ \"לא בתפקיד\"." : ". Eli got the day's totals.");
+    // 30.10.2026 — Yonatan signed the 28th; the same drive ran past midnight into the 29th, which stayed
+    // unsigned, and a day later the office got "לא חתם". ONE signature now covers every unsigned day of
+    // the last three that has duty time; a later day gets the closing reading as its odometer (0 mi).
+    var more = ((S && S.days) || []).filter(function(x){ var t = (x.day && x.day.totals) || {};
+      var age = (Date.parse(S.today + "T12:00:00") - Date.parse(x.date + "T12:00:00")) / 86400000;
+      return x.date !== (WD_DATE || S.today) && age <= 2 && ((t.d||0) + (t.on||0)) > 0 && !(x.header && x.header.certified_at); });
+    var signedDays = [WD_DATE || (S && S.today)];
+    for (var mi = 0; mi < more.length; mi++){
+      var x = more[mi], later = x.date > (WD_DATE || "");
+      var odoX = (x.header && x.header.odo_end) || (later ? end || undefined : undefined);
+      var bx = { kind:"hos_day", driver:d, date:x.date, certify:true, odo_end: odoX, signature: SIG };
+      if (later && end && !(x.header && x.header.odo_start)) bx.odo_start = end;
+      try{ var rx = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(bx) }); var jx = await rx.json(); if (rx.ok && jx.ok) signedDays.push(x.date); }catch(e){}
+    }
+    document.getElementById("cert-line").textContent = "✅ Signed " + signedDays.map(dayName).join(" + ") + " · " + fmtTime(new Date().toISOString()) + (tr && tr.open ? " — the trip is closed, you can tap Off duty now. · הנסיעה נסגרה, אפשר ללחוץ \"לא בתפקיד\"." : ". Eli got the day's totals.");
     if (S) S.trip = Object.assign({}, S.trip || {}, { open: false });
     document.getElementById("cert-card").classList.remove("closing"); document.getElementById("close-why").classList.remove("show");
     clearPad(); load().catch(function(){});
