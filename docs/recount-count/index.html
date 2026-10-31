@@ -695,9 +695,6 @@
     bc = String(bc == null ? "" : bc).trim();
     return bc ? (sku || "—") + "  ·  " + bc : (sku || "—");
   }
-  // Returns the OTHER product already holding this code, or null. Uses the catalog the
-  // page already loads; if it isn't loaded yet, fetch it once — a wrong "it's free" here
-  // is a failed save in the crew's hands.
   // Every code a product answers to: its primary barcode plus OCTOPOS
   // additional_barcodes. Single definition — the duplicate check, the search filter
   // and the camera lookup all ask this one function (IRON RULE #27).
@@ -706,31 +703,15 @@
       .map(function(c){ return String(c == null ? "" : c).trim().toLowerCase(); })
       .filter(Boolean);
   }
-  async function barcodeOwner(code){
-    code = String(code || "").trim().toLowerCase();
-    if (!code) return null;
-    if (!CATALOG){
-      try {
-        var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify({ kind:"get_catalog" }) });
-        var j = await r.json().catch(function(){ return {}; });
-        if (j && j.ok && Array.isArray(j.products)) CATALOG = j.products;
-      } catch(e){}
-    }
-    if (!CATALOG) return null;   // couldn't check — let OCTOPOS have the final say
-    for (var i = 0; i < CATALOG.length; i++){
-      var p = CATALOG[i];
-      if (Number(p.id != null ? p.id : p.pid) === Number(CUR && CUR.pid)) continue;
-      if (codesOf(p).indexOf(code) >= 0) return p;
-    }
-    return null;
-  }
-  async function blockedByDuplicate(code){
-    var owner = await barcodeOwner(code);
-    if (!owner) return false;
-    toast("⚠️ " + code + " already belongs to " + (owner.name || ("#" + (owner.id != null ? owner.id : owner.pid))) +
-          " — OCTOPOS won't store the same code twice", true);
-    return true;
+  // 🛑 31.10.2026 — "is this code free?" is answered by the Worker, on every barcode write
+  // (set_barcode · banana_write → barcodeOwner there). This page used to answer it too, from
+  // the catalog it loaded — a copy that went stale the moment anyone saved a barcode after
+  // the snapshot, so it waved 656497195424 through for #1473 while #1474 held it and the
+  // crew got "octopos barcode put 400". One question, one answerer (IRON RULE #27).
+  // The ONE way a failed barcode write is told to the crew — both buttons and ✕ remove.
+  function barcodeFailText(e){
+    var m = String((e && e.message) || e || "");
+    return /already belongs to|OCTOPOS refused barcode/.test(m) ? "⚠️ " + m : "Failed: " + m;
   }
   function openScreen(w){
     if(!EMPLOYEE){ ensureName(); return; }
@@ -786,7 +767,6 @@
     if(!CUR) return;
     var bc = ($("scBarcode").value||"").trim();
     var btn = $("btnBarcode"); btn.disabled = true; btn.textContent = "…";
-    if (await blockedByDuplicate(bc)){ btn.disabled = false; btn.textContent = "💾 Save barcode"; return; }
     try{
       var r = await fetch(ENDPOINT, { method:"POST", headers:{"Content-Type":"application/json"},
         body:JSON.stringify({ kind:"set_barcode", evkey:EVKEY, pid:CUR.pid, barcode:bc, employee:EMPLOYEE }) });
@@ -805,10 +785,7 @@
     }catch(e){
       bcOk("");
       btn.disabled=false; btn.textContent="💾 Save barcode";
-      var m = String(e.message||e);
-      toast(/put 4\d\d|duplicat|exist|taken|unique/i.test(m)
-        ? "⚠️ OCTOPOS refused this barcode — most likely another product already has it"
-        : "Failed: " + m, true);
+      toast(barcodeFailText(e), true);
     }
   };
   // ═══════ Extra barcodes — a product can carry more than one (Lauren 2026-08-14) ═══════
@@ -866,10 +843,9 @@
     var code = ($("scBcNew").value||"").trim();
     if(!code){ toast("Scan or type a barcode first", true); return; }
     var btn = this; btn.disabled = true; btn.textContent = "…";
-    if (await blockedByDuplicate(code)){ btn.disabled = false; btn.textContent = "✓ Add"; return; }
     try { var jb = await bananaWrite({ code: code }); toast(jb.pending ? "⏳ Barcode saved — it will reach OCTOPOS automatically" : "✅ Barcode added"); closeBcNew();
       bcOk(jb.pending ? "✅ Barcode " + code + " saved — it will reach OCTOPOS automatically" : "✅ Barcode " + code + " added successfully"); }
-    catch(e){ bcOk(""); toast("Failed: "+(e.message||e), true); }
+    catch(e){ bcOk(""); toast(barcodeFailText(e), true); }
     btn.disabled = false; btn.textContent = "✓ Add";
   };
   $("scBcNew").addEventListener("keydown", function(e){ if(e.key === "Enter") $("btnBcNewSave").click(); });
@@ -878,7 +854,7 @@
     var keep = ((CUR.barcodes)||[]).filter(function(c){ return c !== code; });
     bcOk("");
     try { var jr = await bananaWrite({ list: keep }); toast(jr.pending ? "⏳ Removal saved — it will reach OCTOPOS automatically" : "✅ Barcode removed"); }
-    catch(e){ toast("Failed: "+(e.message||e), true); }
+    catch(e){ toast(barcodeFailText(e), true); }
   }
 
   // ═══════ 📷 Camera scan (Lauren 2026-08-14) ═══════
