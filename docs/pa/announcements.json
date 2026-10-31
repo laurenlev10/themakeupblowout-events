@@ -116,6 +116,18 @@
    "es": "¡Muéstranos tus compras! Etiquétanos en Instagram, The Makeup Blowout Sale, con el hashtag Makeup Blowout Sale."
   },
   {
+   "id": "on_the_move",
+   "rotation": "auto",
+   "en": "Did you know? We move to a new city every week, with more than one hundred locations across the country. We won't be back here for about two years, so stock up today!",
+   "es": "¿Sabías que nos mudamos a una ciudad nueva cada semana, con más de cien lugares en todo el país? No volveremos aquí en unos dos años, ¡así que aprovecha hoy!"
+  },
+  {
+   "id": "weekend_hours",
+   "rotation": "auto",
+   "en": "Our sales are always Friday, Saturday and Sunday, from ten in the morning to five in the afternoon. Tell your friends!",
+   "es": "Nuestras ventas son siempre viernes, sábado y domingo, de diez de la mañana a cinco de la tarde. ¡Cuéntales a tus amigas!"
+  },
+  {
    "id": "last_day",
    "rotation": "manual",
    "en": "Today is our last day in town! This is your final chance to stock up at up to seventy-five percent off.",

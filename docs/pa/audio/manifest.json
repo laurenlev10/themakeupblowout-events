@@ -1,5 +1,5 @@
 {
- "source_sha256": "94bd131899d31c7efaba67929070b781178aeddc1c8ae218951fb995dd7eaaaa",
+ "source_sha256": "177084689907c898a72ca7bc75b4390e3b2e24bfd5cd96ebe5d8f80d4e3ae3bb",
  "verified_min_match": 0.8,
  "order": [
   "en",
@@ -219,6 +219,54 @@
      "text": "¡Muéstranos tus compras! Etiquétanos en Instagram, The Makeup Blowout Sale, con el hashtag Makeup Blowout Sale.",
      "heard": "Muéstranos tus compras, etiquétanos en Instagram da Makeup Blowout Sale con el hashtag Makeup Blowout Sale.",
      "match": 0.94
+    }
+   ]
+  },
+  {
+   "id": "on_the_move",
+   "rotation": "auto",
+   "file": "on_the_move.mp3",
+   "seconds": 20.7,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 9.85,
+     "text": "Did you know? We move to a new city every week, with more than one hundred locations across the country. We won't be back here for about two years, so stock up today!",
+     "heard": "Did you know? We move to a new city every week with more than 100 locations across the country.  We won't be back here for about two years, so stock up today.",
+     "match": 0.96
+    },
+    {
+     "lang": "es",
+     "start": 10.55,
+     "end": 19.17,
+     "text": "¿Sabías que nos mudamos a una ciudad nueva cada semana, con más de cien lugares en todo el país? No volveremos aquí en unos dos años, ¡así que aprovecha hoy!",
+     "heard": "¿Tabías que nos mudamos a una ciudad nueva cada semana, con más de 100 lugares en todo el país?  No volveremos aquí en unos dos años, así que aprovecha hoy.",
+     "match": 0.93
+    }
+   ]
+  },
+  {
+   "id": "weekend_hours",
+   "rotation": "auto",
+   "file": "weekend_hours.mp3",
+   "seconds": 16.4,
+   "segments": [
+    {
+     "lang": "en",
+     "start": 1.83,
+     "end": 7.57,
+     "text": "Our sales are always Friday, Saturday and Sunday, from ten in the morning to five in the afternoon. Tell your friends!",
+     "heard": "Our sales are always Friday, Saturday, and Sunday from 10 in the morning to 5 in the afternoon.  Tell your friends.",
+     "match": 0.95
+    },
+    {
+     "lang": "es",
+     "start": 8.27,
+     "end": 14.9,
+     "text": "Nuestras ventas son siempre viernes, sábado y domingo, de diez de la mañana a cinco de la tarde. ¡Cuéntales a tus amigas!",
+     "heard": "Nuestras ventas son siempre viernes, sábado y domingo, de 10 de la mañana a 5 de la tarde.  Cuéntales a tus amigas.",
+     "match": 0.95
     }
    ]
   },
