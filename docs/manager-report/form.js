@@ -84,6 +84,7 @@
             var o = { key: f.key, label: f.label, short: f.short || f.label, type: f.type, supplier: f.supplier || "" };
             if (f.type === "multicheck") o.options = f.options.slice();
             if (f.required) o.required = true;
+            if (f.product_id) o.product_id = Number(f.product_id);   // the OCTOPOS product the ask is about (2.11.2026)
             return o;
           })
         };
