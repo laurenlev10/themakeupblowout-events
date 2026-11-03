@@ -57,6 +57,10 @@
   .stop.later{opacity:.72}
   .stop.later .acts .btn{background:#eef0f4;color:#6b7280}
   .arrived-big{font-size:24px;font-weight:900;color:var(--ok);text-align:center;margin:8px 0 2px}
+  /* 3.11.2026 — Lauren: a vendor with a check to hand over gets a notice the driver cannot miss */
+  .check-big{background:#fef3c7;border:3px solid #f59e0b;color:#78350f;border-radius:12px;padding:10px 12px;margin:8px 0;font-weight:900;font-size:19px;text-align:center;line-height:1.35}
+  .check-big small{display:block;font-size:15px;font-weight:800;margin-top:2px}
+  .check-big.given{background:#f0fdf4;border-color:var(--ok);color:#166534;font-size:14px;padding:6px 10px}
   .next-badge{display:inline-block;background:var(--purple);color:#fff;font-size:12px;font-weight:900;border-radius:999px;padding:2px 10px;margin-left:6px;vertical-align:middle}
   #next-card.here{border:3px solid var(--ok);background:#f0fdf4}
   .stop .top{display:flex;gap:10px;align-items:flex-start}
@@ -178,7 +182,8 @@ function status(id){
 function render(){
   var p = PLAN.plan, d = p.date ? new Date(p.date + "T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}) : "";
   document.getElementById("hdr-sub").textContent = (p.title ? p.title + " · " : "") + (d || "no date") + " · " + STOPS.length + " stop" + (STOPS.length===1?"":"s");
-  banner((OFFLINE ? "📵 No connection — showing the route as last loaded " + fmtTime(OFFLINE) + ". Taps are saved on this phone and sent when the signal is back.\n" : "") + (p.driver_note ? "📝 " + p.driver_note : ""));
+  var CHK = STOPS.filter(function(v){ return hasChk(v.id); });
+  banner((CHK.length ? "💵 Checks to give today: " + CHK.map(function(v){ return v.name; }).join(", ") + "\n" : "") + (OFFLINE ? "📵 No connection — showing the route as last loaded " + fmtTime(OFFLINE) + ". Taps are saved on this phone and sent when the signal is back.\n" : "") + (p.driver_note ? "📝 " + p.driver_note : ""));
   var started = EVENTS.filter(function(e){ return e.event==="started"; })[0];
   if (!STOPS.length){ document.getElementById("stops").innerHTML = '<div class="empty">' + (RELEASED ? 'No pickups planned yet.<br>Lauren has not selected this week\'s vendors.' : '⏳ The route is not released yet — Lauren is still reviewing the list.<br>Check back later or call her.') + '</div>'; document.getElementById("next-card").style.display="none"; document.getElementById("finish-card").style.display="none"; return; }
   var html = "", nextV = null;
@@ -196,6 +201,7 @@ function render(){
     html += '<div class="stop ' + cls + '" id="stop-' + esc(v.id) + '"><div class="top"><div class="num">' + (i+1) + '</div><div style="flex:1;min-width:0">' +
       '<div class="name">' + esc(v.name) + (isNext && !st.arrived && !notReady ? '<span class="next-badge">NEXT</span>' : '') + '</div>' +
       (notReady ? '<div class="st" style="color:#92400e">⏳ Not ready yet' + (MbsRoute.readyTime(p, v.id) ? ' — ready from ' + esc(MbsRoute.readyTime(p, v.id)) : '') + '</div>' : '') +
+      checkHtml(v, !!st.picked) +
       '<div class="meta">' + (v.contact?'👤 ' + esc(v.contact) + '<br>':'') + (v.phone?'<div class="phones">📞 ' + v.phone.split("/").map(function(ph){ ph=ph.trim(); return '<a class="tel" href="tel:' + esc(ph.replace(/[^0-9+]/g,"")) + '" onclick="return confirmCall(this,\'' + esc((v.contact||v.name).replace(/'/g,"")) + '\',\'' + esc(ph) + '\')">' + esc(ph) + '</a>'; }).join(" · ") + '</div>':'') + '📍 ' + esc(v.address) + '</div>' +
       (v.notes?'<div class="vnote">📝 ' + esc(v.notes) + '</div>':'') + line + '</div></div>' +
       '<div class="acts">' +
@@ -215,12 +221,12 @@ function render(){
     if (here){
       document.getElementById("next-title").textContent = "";
       document.getElementById("next-body").innerHTML = '<div class="arrived-big" style="font-size:28px">✅ You\'ve arrived</div>' +
-        '<div style="text-align:center;font-weight:900;font-size:19px">' + esc(nextV.name) + '</div>' +
+        '<div style="text-align:center;font-weight:900;font-size:19px">' + esc(nextV.name) + '</div>' + checkHtml(nextV, false) +
         '<button class="btn ok" onclick="go(\'picked\',\'' + esc(nextV.id) + '\')">✅ Picked up</button>';
     } else {
       document.getElementById("next-title").textContent = NEXT_READY ? "➡️ Next stop: " + nextV.name
         : "⏳ No stop is ready yet. First: " + nextV.name + (MbsRoute.readyTime(p, nextV.id) ? " (ready from " + MbsRoute.readyTime(p, nextV.id) + ")" : "");
-      document.getElementById("next-body").innerHTML = '<div class="meta" style="font-size:14px">📍 ' + esc(nextV.address) + (nextV.contact?' · 👤 ' + esc(nextV.contact):'') + '</div>' +
+      document.getElementById("next-body").innerHTML = checkHtml(nextV, false) + '<div class="meta" style="font-size:14px">📍 ' + esc(nextV.address) + (nextV.contact?' · 👤 ' + esc(nextV.contact):'') + '</div>' +
         '<a class="btn" href="' + wazeUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">🧭 Go now — Waze</a>' +
         '<div style="text-align:center;margin-top:6px;font-size:13px"><a href="' + gmapsUrl(nextV) + '" target="_blank" rel="noopener" onclick="report(\'navigate\',\'' + esc(nextV.id) + '\')">Google Maps</a></div>';
     }
@@ -312,7 +318,23 @@ function whBackHome(){
 // a tap on a stop that is not the next one asks first (Lauren 20.10: "אם הוא לוחץ בטעות על מיקום לא נכון
 // ברשימה אז אני רוצה תקפוץ לו הערה"). A stop he already reached is never "wrong". Returning false keeps a
 // Waze / Maps link from opening.
+// 3.11.2026 — the check notice (MbsRoute.hasCheck / checkNote — the one definition, set by Lauren in /pickup/).
+// mbs-route.js is loaded unpinned from the dashboard: a phone holding an older cached copy has no hasCheck,
+// and a missing function must not take the whole route down — hasChk()/chkNote() fall back to plan.checks.
+function hasChk(id){ var p = PLAN && PLAN.plan; if (window.MbsRoute && typeof MbsRoute.hasCheck === "function") return MbsRoute.hasCheck(p, id); return !!(p && p.checks && Object.prototype.hasOwnProperty.call(p.checks, id)); }
+function chkNote(id){ var p = PLAN && PLAN.plan; if (window.MbsRoute && typeof MbsRoute.checkNote === "function") return MbsRoute.checkNote(p, id); return hasChk(id) ? String(p.checks[id] || "").trim() : ""; }
+function checkHtml(v, picked){
+  if (!hasChk(v.id)) return "";
+  var n = chkNote(v.id);
+  if (picked) return '<div class="check-big given">💵 Check for ' + esc(v.name) + ' — given</div>';
+  return '<div class="check-big">💵 GIVE THE CHECK TO ' + esc(v.name).toUpperCase() + (n ? '<small>' + esc(n) + '</small>' : '') + '</div>';
+}
 function go(ev, id){
+  // a stop with a check: "Picked up" asks first, so the check does not stay in the truck
+  if (ev === "picked" && hasChk(id)){
+    var cv = STOPS.find(function(v){ return v.id === id; }), cn = chkNote(id);
+    if (!confirm("💵 Did you give the check to " + (cv ? cv.name : id) + "?" + (cn ? "\n(" + cn + ")" : "") + "\n\nOK = yes, the check was given.")) return false;
+  }
   var st = status(id);
   if (window.MbsRoute && !st.arrived && !MbsRoute.isReady(PLAN.plan, id)){
     var nv = STOPS.find(function(v){ return v.id === id; }), rt = MbsRoute.readyTime(PLAN.plan, id);
