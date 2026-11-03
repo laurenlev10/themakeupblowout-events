@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-11-03T16:42:39Z",
+  "_updated_at": "2026-11-03T16:44:05Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -490,7 +490,8 @@
       "subscribe_url": "/events/lancaster-ca-2027/",
       "_added_by": "sync_event_data.add_signed_events",
       "tz": "America/Los_Angeles",
-      "ig_url": "https://www.instagram.com/reel/DfSVRQzxmQd/?utm_source=ig_web_copy_link&xtok=MWQ1ZGUxMzBkMA==&srtk=MWQ1ZGUxMzBkMA=="
+      "ig_url": "https://www.instagram.com/reel/DfSVRQzxmQd/?utm_source=ig_web_copy_link&xtok=MWQ1ZGUxMzBkMA==&srtk=MWQ1ZGUxMzBkMA==",
+      "fb_url": "https://www.facebook.com/reel/1823485012174614"
     },
     {
       "city": "Mission Valley San Diego",
