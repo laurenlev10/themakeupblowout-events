@@ -512,8 +512,29 @@ _PIXEL_VARS = {
     "__TIKTOK_PIXEL_ID__":    _required_secret("TIKTOK_PIXEL_ID",    "C00000000000000000"),
 }
 
+# 4.11.2026 — the pages' tracking + sign-up form code lives in ONE file, docs/_assets/shared/landing.js
+# (it was pasted into 6 templates and every built page). The page loads it with ?v=<its hash>, so a change
+# to the file reaches every phone at once instead of waiting for a cached copy to expire.
+import hashlib as _hashlib
+LANDING_JS = DOCS / "_assets" / "shared" / "landing.js"
+LANDING_JS_V = _hashlib.sha256(LANDING_JS.read_bytes()).hexdigest()[:10]
+
+
+def lpx_attr(ev):
+    """A page test (landing.js "lpx") runs on an event only when its record in upcoming-events.json carries
+    page_test = {"id": "<test id>"} — set the day Lauren approves the test, removed when it is decided.
+    No page_test → the attribute is empty and the page is exactly the normal page."""
+    pt = ev.get("page_test") or {}
+    tid = str(pt.get("id") or "")
+    if not tid:
+        return ""
+    if not re.fullmatch(r"[a-z0-9-]{3,40}", tid):
+        raise ValueError(f"page_test.id {tid!r} must be lowercase letters, digits and dashes")
+    return f' data-lpx="{tid}"'
+
+
 def fill(template, vars):
-    out = template
+    out = template.replace("{{LANDING_JS_V}}", LANDING_JS_V)
     for k, v in vars.items():
         out = out.replace("{{" + k + "}}", v)
     # Apply pixel substitutions on every render
@@ -534,6 +555,7 @@ def main():
             continue
         try:
             vars, slug, f = render_event(ev)
+            vars = {**vars, "LPX_ATTR": lpx_attr(ev)}
         except UnverifiedZone as e:
             refused.append(str(e))
             print(f"  🛑 refused {e}")
