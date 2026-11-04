@@ -231,7 +231,10 @@
       <label>Odometer at start <span class="req">*</span> · אודומטר בהתחלה — read it from the dashboard</label>
       <input id="h-odo_start" class="odo-big" inputmode="decimal" placeholder="e.g. 119834" oninput="tripChanged()">
       <div id="odo-start-hint" class="odo-hint"></div>
-      <label>Truck no. / plate <span class="req">*</span></label><input id="h-truck" placeholder="plate or unit no." oninput="tripChanged()">
+      <label>Truck <span class="req">*</span> · משאית</label>
+      <select id="h-truck" onchange="truckPicked()"><option value="">pick the truck · בחר משאית</option></select>
+      <input id="h-truck-other" placeholder="unit no. / plate — not in the list" style="display:none" oninput="tripChanged()">
+      <div id="truck-hint" class="odo-hint"></div>
       <label>To — where are you driving? · לאן נוסעים?</label><div class="chips" id="to-chips"></div><input id="h-to" placeholder="or type: city, state · או תקליד" oninput="tripChanged()">
       <label>From — where did you start? · מאיפה יצאת?</label><div class="chips" id="from-chips"></div><input id="h-from" placeholder="or type: city, state · או תקליד" oninput="tripChanged()">
       <label>Load / shipping document</label><input id="h-shipping" readonly tabindex="-1" style="opacity:.8" title="fixed by the carrier">
@@ -240,6 +243,34 @@
       <div id="head-saved" class="note"></div>
     </div>
     <button class="btn" id="btn-trip" onclick="tripAction()">🚛 Start trip · התחל נסיעה</button>
+  </div>
+
+  <!-- 03.11.2026 — ⛽ Fuel: the receipt is photographed at the pump and filed right away (IFTA). The jurisdiction
+       comes from the phone's GPS fix (the Worker cuts it at state borders); the state picker shows only without a fix.
+       No signal → the receipt waits on this phone (its own queue — photos are big) and goes out with the taps. -->
+  <div class="card" id="fuel-card">
+    <h2>⛽ Fuel <span class="es">תדלוק</span></h2>
+    <div class="note">Every fill-up of the truck: gallons, amount, odometer, and a photo of the receipt — right at the pump, before you drive off. The office needs it for the fuel-tax return.<span class="es">בכל תדלוק של המשאית: גלונים, סכום, אודומטר וצילום הקבלה — ליד המשאבה, לפני שנוסעים. המשרד צריך את זה לדוח מס הדלק.</span></div>
+    <button class="btn sec" id="btn-fuel-open" onclick="fuelOpen()">⛽ I filled up · תדלקתי</button>
+    <div id="fuel-form" style="display:none">
+      <label>Gallons <span class="req">*</span> · גלונים (from the pump / receipt)</label>
+      <input id="f-gallons" inputmode="decimal" placeholder="e.g. 48.2">
+      <label>Amount paid $ <span class="req">*</span> · סכום</label>
+      <input id="f-amount" inputmode="decimal" placeholder="e.g. 231.36">
+      <label>Odometer now · אודומטר עכשיו</label>
+      <input id="f-odometer" class="odo-big" inputmode="decimal" placeholder="e.g. 119834">
+      <div id="fuel-odo-hint" class="odo-hint"></div>
+      <label>Station (optional) · תחנה</label>
+      <input id="f-station" placeholder="e.g. Pilot, Kingman">
+      <div id="fuel-state-wrap" style="display:none"><label>State <span class="req">*</span> · מדינה (no GPS fix — pick it)</label>
+        <select id="f-state"><option value="">—</option></select></div>
+      <label>Photo of the receipt <span class="req">*</span> · צילום הקבלה</label>
+      <input id="f-photo" type="file" accept="image/*" capture="environment" onchange="fuelPhotoPicked()">
+      <div id="fuel-photo-line" class="note"></div>
+      <div class="two"><button class="btn sec sm" onclick="fuelCancel()">✕ Cancel</button><button class="btn sm" id="btn-fuel-send" onclick="fuelSend()">💾 Save receipt · שמור קבלה</button></div>
+      <div id="fuel-line" class="note"></div>
+    </div>
+    <div id="fuel-recent" class="note"></div>
   </div>
 
   <div class="card" id="today-card">
@@ -317,6 +348,7 @@ async function loadRoster(){
     if (!S){ S = j; renderDests(); renderChips(); applyPlan(); }
     if (j.settings) ls("hos_settings_cache", JSON.stringify(j.settings));
   }catch(e){ try{ names = JSON.parse(ls("hos_roster") || "[]"); }catch(x){ names = []; } }
+  try{ renderTrucks(); }catch(e){}
   var cur = sharedName() || ls("hos_driver") || "";
   sel.innerHTML = '<option value="">בחר שם · pick your name</option>' + names.map(function(n){ return '<option value="' + esc(n) + '"' + (n===cur?' selected':'') + '>' + esc(n) + '</option>'; }).join("");
   if (!names.length) banner("⚠️ The driver list could not be loaded and this phone has none saved — call Eli.", "warn");
@@ -586,7 +618,21 @@ async function setStatus(st, presetNote, extra){
 // full-screen confirmation that stays until the office really has the tap. While Driving the same
 // button is "Arrived" (On duty, "Arrived: <to>"). The status itself still comes only from a tap.
 var TRIP = null;
-function tv(k){ return (document.getElementById("h-" + k).value || "").trim(); }
+function tv(k){ if (k === "truck") return truckVal(); return (document.getElementById("h-" + k).value || "").trim(); }
+// ── the truck: picked from the trucks Lauren marked on /driver-log/#trucks (each IFTA-qualified or not);
+//    "other" is a free text the Worker accepts and texts the office about once (03.11.2026) ──
+function trucksList(){ return (S && S.settings && S.settings.trucks) || (function(){ try{ return (JSON.parse(ls("hos_settings_cache")||"{}").trucks) || []; }catch(e){ return []; } })(); }
+function truckVal(){ var sel = document.getElementById("h-truck"); if (!sel) return ""; if (sel.value === "__other") return (document.getElementById("h-truck-other").value || "").trim(); return (sel.value || "").trim(); }
+function renderTrucks(){
+  var sel = document.getElementById("h-truck"), cur = truckVal() || ls("hos_truck") || "", list = trucksList();
+  var known = list.some(function(t){ return t && (String(t.id).toLowerCase() === cur.toLowerCase() || (t.aliases||[]).some(function(a){ return String(a).toLowerCase() === cur.toLowerCase(); })); });
+  var canon = cur; list.forEach(function(t){ if (t && (t.aliases||[]).some(function(a){ return String(a).toLowerCase() === cur.toLowerCase(); })) canon = t.id; });
+  sel.innerHTML = '<option value="">pick the truck · בחר משאית</option>' + list.map(function(t){ return '<option value="' + esc(t.id) + '"' + (t.id === canon ? ' selected' : '') + '>' + esc(t.label || t.id) + (t.label && t.label !== t.id ? ' (' + esc(t.id) + ')' : '') + '</option>'; }).join("") + '<option value="__other"' + (cur && !known ? ' selected' : '') + '>Other · אחר (not in the list)</option>';
+  var oth = document.getElementById("h-truck-other"); oth.style.display = sel.value === "__other" ? "" : "none"; if (cur && !known) oth.value = cur;
+  var hint = document.getElementById("truck-hint");
+  if (hint) hint.textContent = sel.value === "__other" ? "A truck not in the list — the office gets a text to mark it." : "";
+}
+function truckPicked(){ var sel = document.getElementById("h-truck"); document.getElementById("h-truck-other").style.display = sel.value === "__other" ? "" : "none"; if (sel.value === "__other") document.getElementById("h-truck-other").focus(); renderTrucks(); tripChanged(); }
 // the dashboard shows tenths (119833.8 MI); the log keeps whole miles
 function odoVal(k){ var v = Number(tv(k).replace(/[^\d.]/g, "")); return isFinite(v) && v > 0 ? Math.round(v) : 0; }
 function truckLast(){ var t = S && S.trip; if (!t || t.truck_last_odometer == null) return null;
@@ -618,7 +664,7 @@ async function startTrip(){
   if (S && S.trip && S.trip.open){ return setStatus("d", ""); }   // the trip is already open (after a fuel stop): just Driving again
   var odo = odoVal("odo_start");
   if (!odo){ document.getElementById("h-odo_start").scrollIntoView({ block:"center" }); document.getElementById("h-odo_start").focus(); alert("Odometer at start first — read it from the dashboard.\nקודם אודומטר בהתחלה — מהשעון במשאית."); return; }
-  if (!tv("truck")){ document.getElementById("h-truck").focus(); alert("Truck no. / plate first.\nקודם מספר משאית."); return; }
+  if (!tv("truck")){ document.getElementById("h-truck").focus(); alert("Pick the truck first.\nקודם לבחור משאית."); return; }
   if (!tv("to")){ alert("Where are you driving? Pick or type the destination first.\nלאן נוסעים? בחר או תקליד יעד."); document.getElementById("h-to").focus(); return; }
   var lastOdo = truckLast();
   if (lastOdo != null && odo < lastOdo){ alert("Odometer " + odo + " is LOWER than this truck's last reading " + lastOdo + ". Check the number.\nהאודומטר נמוך מהקריאה האחרונה של המשאית (" + lastOdo + "). תבדוק את המספר."); document.getElementById("h-odo_start").focus(); return; }
@@ -790,16 +836,17 @@ async function flush(){
 // ── the day's header and the certification ───────────────────────────────
 var HFIELDS = ["truck","odo_start","odo_end","from","to","co_driver"]; // shipping = settings.load, read-only; no trailer
 function fillHeader(h){
-  HFIELDS.forEach(function(k){ var el = document.getElementById("h-" + k); if (document.activeElement !== el && h[k] != null) el.value = h[k]; });
+  HFIELDS.forEach(function(k){ if (k === "truck") return; var el = document.getElementById("h-" + k); if (document.activeElement !== el && h[k] != null) el.value = h[k]; });
+  if (h.truck != null && h.truck !== "") ls("hos_truck", h.truck);
+  renderTrucks();
   document.getElementById("h-shipping").value = (S && S.settings && S.settings.load) || h.shipping || "";
-  if (!document.getElementById("h-truck").value && ls("hos_truck")) document.getElementById("h-truck").value = ls("hos_truck");
   tripChanged();
 }
 async function saveHeader(quiet, dateOverride){
   var d = driverName(); if (!d){ alert("Please type your name first."); return; }
   var body = { kind:"hos_day", driver:d, date: WD_DATE || undefined };
   if (dateOverride) body.date = dateOverride;
-  HFIELDS.forEach(function(k){ body[k] = document.getElementById("h-" + k).value.trim(); });
+  HFIELDS.forEach(function(k){ body[k] = tv(k); });
   ls("hos_truck", body.truck);
   var out = document.getElementById("head-saved");
   try{
@@ -817,6 +864,92 @@ async function saveHeader(quiet, dateOverride){
     return false;
   }
 }
+// ── ⛽ fuel receipts (03.11.2026) — filed at the pump; the Worker (fuel_receipt) is the one writer ──
+var FUEL_Q = [], FUEL_PHOTO = null, FUEL_SENDING = false;
+function loadFuelQ(){ try{ FUEL_Q = JSON.parse(ls("hos_fuel_queue")||"[]"); }catch(e){ FUEL_Q = []; } }
+function saveFuelQ(){ ls("hos_fuel_queue", JSON.stringify(FUEL_Q)); renderFuelRecent(); }
+function fuelOpen(){
+  var d = driverName(); if (!d){ alert("Pick your name first.\nקודם תבחר את השם שלך."); document.getElementById("driver").focus(); return; }
+  if (!truckVal()){ alert("Pick the truck first (Trip card).\nקודם לבחור משאית בכרטיס הנסיעה."); document.getElementById("h-truck").focus(); return; }
+  document.getElementById("fuel-form").style.display = ""; document.getElementById("btn-fuel-open").style.display = "none";
+  var last = truckLast(), o = document.getElementById("f-odometer"); if (!o.value && last) o.placeholder = "last reading " + last;
+  document.getElementById("fuel-odo-hint").textContent = last != null ? "This truck's last reading: " + last : "";
+  var st = document.getElementById("f-state");
+  if (!st.options.length || st.options.length < 10) st.innerHTML = '<option value="">—</option>' + "AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VA VT WA WV WI WY".split(" ").map(function(x){ return '<option>' + x + '</option>'; }).join("");
+  document.getElementById("fuel-state-wrap").style.display = POS ? "none" : "";
+  document.getElementById("f-gallons").focus();
+}
+function fuelCancel(){ document.getElementById("fuel-form").style.display = "none"; document.getElementById("btn-fuel-open").style.display = ""; }
+function fuelPhotoPicked(){
+  var f = document.getElementById("f-photo").files[0], line = document.getElementById("fuel-photo-line");
+  FUEL_PHOTO = null; if (!f) { line.textContent = ""; return; }
+  line.textContent = "⏳ preparing the photo…";
+  var img = new Image(), url = URL.createObjectURL(f);
+  img.onload = function(){
+    try{
+      var max = 1600, w = img.width, h = img.height, k = Math.min(1, max / Math.max(w, h));
+      var c = document.createElement("canvas"); c.width = Math.round(w * k); c.height = Math.round(h * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      FUEL_PHOTO = c.toDataURL("image/jpeg", 0.82);
+      line.textContent = "✓ photo ready (" + Math.round(FUEL_PHOTO.length * 0.75 / 1024) + " KB)";
+    }catch(e){ line.textContent = "✗ could not read the photo — try again"; }
+    URL.revokeObjectURL(url);
+  };
+  img.onerror = function(){ line.textContent = "✗ could not read the photo — try again"; URL.revokeObjectURL(url); };
+  img.src = url;
+}
+async function fuelSend(){
+  var d = driverName(), line = document.getElementById("fuel-line");
+  var gal = Number(document.getElementById("f-gallons").value), amt = Number(document.getElementById("f-amount").value);
+  var odo = Number((document.getElementById("f-odometer").value || "").replace(/[^\d.]/g, "")) || null;
+  if (!(gal > 0)){ alert("Gallons first — from the pump or the receipt.\nקודם גלונים."); document.getElementById("f-gallons").focus(); return; }
+  if (!(amt > 0)){ alert("Amount paid first.\nקודם הסכום."); document.getElementById("f-amount").focus(); return; }
+  if (!FUEL_PHOTO){ alert("A photo of the receipt is required.\nחובה לצלם את הקבלה."); document.getElementById("f-photo").focus(); return; }
+  if (!POS && !document.getElementById("f-state").value){ alert("No GPS fix — pick the state.\nאין GPS — תבחר מדינה."); document.getElementById("f-state").focus(); return; }
+  var body = { kind:"fuel_receipt", driver:d, truck: truckVal(), gallons: gal, amount: amt, odometer: odo, at: new Date().toISOString(),
+    lat: POS ? POS.lat : null, lng: POS ? POS.lng : null, acc: POS ? POS.acc : null, state: document.getElementById("f-state").value || undefined,
+    station: (document.getElementById("f-station").value || "").trim(), place: "", photo: FUEL_PHOTO, device: DEVICE };
+  try{ body.place = await placeName(POS); }catch(e){}
+  var out = await fuelPost(body);
+  if (out === "queued"){ line.textContent = "⏳ No signal — the receipt waits on this phone and is sent when the signal is back · נשמר בטלפון, יישלח כשתחזור קליטה"; }
+  else if (out && out.ok){ line.textContent = "✓ Receipt saved · " + out.state + " · $" + out.price_per_gal + "/gal" + (out.truck_unmarked ? " · (truck not marked yet — the office got a text)" : ""); }
+  else { line.textContent = "✗ " + ((out && out.error) || "not saved") + " — the receipt is NOT saved; keep it."; return; }
+  ["f-gallons","f-amount","f-odometer","f-station"].forEach(function(id){ document.getElementById(id).value = ""; });
+  document.getElementById("f-photo").value = ""; FUEL_PHOTO = null; document.getElementById("fuel-photo-line").textContent = "";
+  setTimeout(fuelCancel, 1500);
+  var rec = { at: body.at, state: out && out.state, gallons: gal, amount: amt, queued: out === "queued" };
+  var recent = []; try{ recent = JSON.parse(ls("hos_fuel_recent")||"[]"); }catch(e){} recent.unshift(rec); ls("hos_fuel_recent", JSON.stringify(recent.slice(0, 5))); renderFuelRecent();
+}
+// one send with the 409 handshake (odometer below the truck's last reading → ask, resend confirmed); no network → queue
+async function fuelPost(body){
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body) });
+    var j = null; try{ j = await r.json(); }catch(e){}
+    if (r.status === 409 && j && j.code === "odometer_below"){
+      if (!confirm("Odometer " + body.odometer + " is lower than this truck's last reading " + j.last + ".\nIs " + body.odometer + " really the number?\nהאודומטר נמוך מהקריאה האחרונה. זה באמת המספר?")) return { error: "check the odometer" };
+      body.odometer_confirmed = true; return fuelPost(body);
+    }
+    if (!r.ok) return j || { error: "server " + r.status };
+    return j;
+  }catch(e){ FUEL_Q.push(body); saveFuelQ(); return "queued"; }
+}
+async function fuelFlush(){
+  if (FUEL_SENDING || !FUEL_Q.length) return; FUEL_SENDING = true;
+  try{ while (FUEL_Q.length){ var b = FUEL_Q[0]; var r = await fetch(WORKER, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(b) });
+    var j = null; try{ j = await r.json(); }catch(e){}
+    if (r.status === 409 && j && j.code === "odometer_below"){ b.odometer_confirmed = true; continue; }   // sent offline: the driver typed it knowingly; the dashboard shows the jump
+    if (r.ok || (r.status >= 400 && r.status < 500)){ FUEL_Q.shift(); saveFuelQ(); if (!r.ok) alert("A fuel receipt from " + fmtTime(b.at) + " was refused: " + ((j && j.error) || r.status) + "\nFile it again."); continue; }
+    break; } }catch(e){} finally{ FUEL_SENDING = false; }
+}
+function renderFuelRecent(){
+  var el = document.getElementById("fuel-recent"); if (!el) return;
+  var recent = []; try{ recent = JSON.parse(ls("hos_fuel_recent")||"[]"); }catch(e){}
+  var q = FUEL_Q.length ? "<b>⏳ " + FUEL_Q.length + " receipt(s) not sent yet</b> — retrying<br>" : "";
+  el.innerHTML = q + recent.slice(0, 3).map(function(r){ return "⛽ " + fmtTime(r.at) + " · " + r.gallons + " gal · $" + r.amount + (r.state ? " · " + r.state : "") + (r.queued ? " (waiting)" : ""); }).join("<br>");
+}
+loadFuelQ(); renderFuelRecent();
+setInterval(fuelFlush, 30000); window.addEventListener("online", fuelFlush); setTimeout(fuelFlush, 3000);
+
 // signature pad
 var PAD = document.getElementById("pad"), PCTX = PAD.getContext("2d"), STROKES = [], CUR = null;
 function padXY(ev){ var r = PAD.getBoundingClientRect(); return [Math.round((ev.clientX - r.left) * 400 / r.width), Math.round((ev.clientY - r.top) * 120 / r.height)]; }
