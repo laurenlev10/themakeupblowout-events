@@ -37,6 +37,9 @@
   .err{background:#fee2e2;border:1.5px solid #dc2626;color:#991b1b;border-radius:14px;padding:14px;text-align:center;font-weight:800}
   .warn{background:#fff7ed;border:1px solid #fdba74;color:#9a3412;border-radius:12px;padding:10px;font-size:13.5px;font-weight:700;margin-top:8px}
   .note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.55}
+  .who-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .who-b{border:1.5px solid #e5e7eb;background:#fff;border-radius:999px;padding:8px 14px;font-weight:800;font-size:14px;cursor:pointer}
+  .who-b.on{border-color:var(--purple);background:#f3e8ff;color:var(--purple)}
   .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:12px;font-weight:800;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
   .toast.show{opacity:1}
 </style>
@@ -65,8 +68,14 @@
    A failed read shows a failure, never an empty page (IRON RULE #18). */
 var ENDPOINT = "https://danielle.laurenlev10.workers.dev/";
 var K = (location.hash || "").replace(/^#/, "").trim().toLowerCase();
+/* No key = the SHARED link (Lauren 04.11.2026 13:05–13:06): one link for every manager, always the
+   CURRENT event only — "it's relevant again every week; make it easy for them to choose, and the
+   choice fair to everyone". The manager taps her own name once (remembered on this phone). */
+var SHARED = !K;
+var BY = ""; try{ BY = localStorage.getItem("mbs_rooms_by") || ""; }catch(e){}
 var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 var GN = { f: "Girls", m: "Boys" };
+var CHOOSERS = [];
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function range(s, e){
   if(!s) return ""; var a=s.split("-"), b=(e||s).split("-");
@@ -82,10 +91,14 @@ async function post(body){
   return j;
 }
 function render(data){
-  document.getElementById("hello").textContent = "Hi " + data.name + " — your coming events";
+  document.getElementById("hello").textContent = SHARED ? "This week's event" : ("Hi " + data.name + " — your coming events");
+  if(SHARED && data.choosers){ CHOOSERS = data.choosers; if(BY && !CHOOSERS.some(function(c){ return c.m===BY; })) BY = ""; }
   var box = document.getElementById("box");
-  if(!data.events.length){ box.innerHTML = '<div class="pairs" style="background:#f3f4f6;color:#374151">No events ahead on your schedule.</div>'; return; }
-  box.className = ""; box.innerHTML = data.events.map(function(e){
+  if(!data.events.length){ box.innerHTML = '<div class="pairs" style="background:#f3f4f6;color:#374151">'+(SHARED?'No event on the schedule right now.':'No events ahead on your schedule.')+'</div>'; return; }
+  var who = SHARED ? '<div class="card"><div class="g-t">Who is choosing?</div><div class="who-row">'+
+      CHOOSERS.map(function(c){ return '<button class="who-b'+(c.m===BY?' on':'')+'" data-by="'+esc(c.m)+'">'+esc(c.name)+'</button>'; }).join("")+'</div>'+
+      (BY?'':'<div class="note" style="text-align:left;margin-top:6px">Tap your name, then choose below.</div>')+'</div>' : '';
+  box.className = ""; box.innerHTML = who + data.events.map(function(e){
     var h = '<div class="card"><div class="ev-h"><b>'+esc(e.city)+(e.state?', '+esc(e.state):'')+'</b><span class="when">'+esc(range(e.start_date, e.end_date))+'</span></div>'+
       '<div class="sum">'+e.rooms+' rooms · '+e.girls+' girls · '+e.boys+' boys'+
       (e.couples.length ? ' · 👫 '+e.couples.map(function(c){ return esc(c.join(" + ")); }).join(", ")+' share a room' : '')+'</div>';
@@ -100,20 +113,24 @@ function render(data){
         return '<div class="opt"><span class="n">'+esc(r.name)+(i===0?'<span class="tag">recommended</span>':'')+'</span>'+
           '<span class="c">alone '+r.alone+' of '+r.worked+'</span>'+
           (on ? '<span class="c" style="color:#7c3aed;font-weight:900">✓ chosen</span>'
-              : '<button class="pick'+(i===0?' rec1':'')+'" data-ev="'+esc(e.evkey)+'" data-m="'+esc(r.m)+'" data-n="'+esc(r.name)+'">Choose</button>')+'</div>';
+              : '<button class="pick'+(i===0?' rec1':'')+'"'+(SHARED&&!BY?' disabled':'')+' data-ev="'+esc(e.evkey)+'" data-m="'+esc(r.m)+'" data-n="'+esc(r.name)+'">Choose</button>')+'</div>';
       }).join("") + '</div>';
     });
     return h + '</div>';
   }).join("");
+  box.querySelectorAll(".who-b").forEach(function(b){ b.onclick = function(){
+    BY = b.dataset.by; try{ localStorage.setItem("mbs_rooms_by", BY); }catch(e){}
+    render(data); }; });
   box.querySelectorAll(".pick").forEach(function(b){
     b.onclick = async function(){
       if(!confirm(b.dataset.n + " sleeps alone at this event?")) return;
       box.querySelectorAll(".pick").forEach(function(x){ x.disabled = true; });
       b.textContent = "Saving…";
       try{
-        var j = await post({ kind:"rooms_choose", k:K, evkey:b.dataset.ev, m:b.dataset.m });
+        var j = await post(SHARED ? { kind:"rooms_choose", by:BY, evkey:b.dataset.ev, m:b.dataset.m }
+                                  : { kind:"rooms_choose", k:K, evkey:b.dataset.ev, m:b.dataset.m });
         toast("✓ Saved — " + b.dataset.n + " sleeps alone" + (j.replaced ? " (instead of " + j.replaced + ")" : ""));
-        render({ name: data.name, events: j.events });
+        render({ name: data.name, events: j.events, choosers: data.choosers });
       }catch(err){
         toast("⚠️ Not saved: " + err.message);
         box.querySelectorAll(".pick").forEach(function(x){ x.disabled = false; });
@@ -123,8 +140,8 @@ function render(data){
   });
 }
 (async function(){
-  if(!/^[0-9a-f]{32}$/.test(K)){ fail("This link is not complete — ask Lauren for your link."); return; }
-  try{ render(await post({ kind:"get_rooms", k:K })); }
+  if(!SHARED && !/^[0-9a-f]{32}$/.test(K)){ fail("This link is not complete — ask Lauren for your link."); return; }
+  try{ render(await post(SHARED ? { kind:"get_rooms" } : { kind:"get_rooms", k:K })); }
   catch(e){ fail(e.message || "Could not load — check your signal and reload."); }
 })();
 </script>
