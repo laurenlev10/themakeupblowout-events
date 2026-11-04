@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="robots" content="noindex">
 <title>Event Manager Report — The Makeup Blowout</title>
-<script src="./form.js?v=8c80dbba2e"></script>
+<script src="./form.js?v=b838ca961d"></script>
 <style>
   :root{
     --pink:#ec4899; --pink-d:#be185d; --ink:#1f2937; --muted:#6b7280;
@@ -384,8 +384,30 @@ function renderForm(){
   document.getElementById("btn-submit").addEventListener("click", onSubmit);
   document.getElementById("btn-textcopy").addEventListener("click", async function(){ var p=collect(); if(!p) return; var ok=await copyText(reportText(p)); flash(this, ok?"✓ Copied":"Copy failed"); });
   document.getElementById("btn-draft").addEventListener("click", onSaveDraft);
-  loadDraftIntoForm();
+  loadDraftIntoForm().then(loadCrew);
+  document.getElementById("f-manager_name").addEventListener("change", loadCrew);
   loadMysteryBox();
+}
+
+/* ── 🛏️ the team this weekend, for "who slept alone" (Lauren 04.11.2026) ──
+   The Worker answers the crew of THIS event from the private schedule, and only to a name on
+   that event's team (nobody may see who works where) — so it loads once the manager has typed
+   hers. Anything but a crew (wrong name, outside the event dates, no signal) is SAID on the
+   field, which then takes typed names: the question is never skipped because a list failed. */
+var CREW_FOR = null;
+async function loadCrew(){
+  var name = (document.getElementById("f-manager_name").value || "").trim();
+  var ek = qp("evkey");
+  if(!name || !ek || !MbsReportForm.setCrew) return;
+  if(CREW_FOR === name && MbsReportForm.crewState() === "ok") return;
+  CREW_FOR = name;
+  try{
+    var r = await postJson(saveEndpoint(), { kind:"get_event_crew", evkey:ek, name:name }, 15000);
+    var j = await r.json().catch(function(){ return {}; });
+    if(CREW_FOR !== name) return;                         // she changed the name meanwhile
+    if(r.ok && j && Array.isArray(j.crew)) MbsReportForm.setCrew(j);
+    else MbsReportForm.setCrew({ error: (j && j.error) || ("HTTP " + r.status) });
+  }catch(e){ MbsReportForm.setCrew({ error: "no connection" }); }
 }
 
 // ── 📦 Mystery Box — collect leftover stock → MARK AS ZERO (zeros OCTOPOS + drops the tag) ──

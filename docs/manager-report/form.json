@@ -37,6 +37,12 @@
         {"key": "sb_matte_powder_missing", "required": true, "label": "Simply Bella Beyond Perfection Matte Powder", "short": "Simply Bella Beyond Perfection Matte Powder — missing shades", "type": "multicheck", "options": ["310", "311", "312", "313", "314", "315", "316", "317", "318", "319"], "hint": "Tick every shade that is MISSING at this event", "supplier": "simply-bella", "product_id": 1324},
         {"key": "sb_matte_lipgloss_missing", "required": true, "label": "Simply Bella Matte Longlasting Lipgloss", "short": "Simply Bella Matte Longlasting Lipgloss — missing numbers", "type": "text", "hint": "Type the shade numbers that are MISSING (e.g. 03, 07, 12)", "supplier": "simply-bella", "product_id": 1325}
       ]
+    },
+    {
+      "title": "🛏️ Rooms — who slept ALONE this weekend",
+      "fields": [
+        {"key": "solo_room", "required": true, "type": "crew", "label": "Who slept alone in a room this weekend? Tick everyone who did — managers too (you included).", "short": "Slept alone", "hint": "Not a supply question — this is how Lauren keeps solo rooms fair across the team.", "none_label": "✓ Nobody slept alone"}
+      ]
     }
   ]
 }
