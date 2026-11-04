@@ -112,36 +112,7 @@ fbq('track', 'PageView');
   ttq.page();
 }(window, document, 'ttq');
 </script>
-<script>
-window.trackEvent = function(name, params) {
-  params = params || {};
-  try { if (window.gtag) gtag('event', name, params); } catch(e){}
-  /* 29.10.2026 — GA4 enhanced measurement sends its OWN form_submit on every submit, so form_submit is counted
-     twice (the funnel showed 125% of taps signing up). signup_done = a NEW sign-up, sent only by us. */
-  try { if (window.gtag && name === 'form_submit' && !params.already_subscribed) gtag('event', 'signup_done', {}); } catch(e){}
-  /* 28.10.2026 (Lauren: "תתקן") — a woman already on the list re-submitting is NOT a sign-up. Meta and TikTok
-     optimise on Lead/SubmitForm (Tucson's Leads campaign learns from it), so she sends a custom event instead.
-     Pueblo 27.10: platforms reported 94 leads, the list grew by 37. GA4 form_submit is unchanged (history). */
-  try { if (window.fbq && name === 'form_submit') { if (params.already_subscribed) fbq('trackCustom', 'AlreadySubscribed', params); else fbq('track', 'Lead', params); } } catch(e){}
-  try { if (window.fbq && name === 'share_click') fbq('track', 'ClickButton', params); } catch(e){}
-  try { if (window.ttq && name === 'form_submit' && !params.already_subscribed) ttq.track('SubmitForm', params); } catch(e){}
-  try { if (window.ttq && name === 'share_click') ttq.track('ClickButton', params); } catch(e){}
-  try { if (window.ttq && name === 'tiktok_arrival') ttq.track('CompleteRegistration', params); } catch(e){}
-};
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('a[href*="instagram.com"]').forEach(function(a){a.addEventListener('click',function(){trackEvent('share_click',{platform:'instagram'});});});
-  document.querySelectorAll('a[href*="facebook.com"], a[href*="fb.watch"]').forEach(function(a){a.addEventListener('click',function(){trackEvent('share_click',{platform:'facebook'});});});
-  document.querySelectorAll('a[href*="tiktok.com"]').forEach(function(a){a.addEventListener('click',function(){trackEvent('share_click',{platform:'tiktok'});});});
-  if (window.location.pathname.indexOf('tiktok') !== -1) { trackEvent('tiktok_arrival', {}); }
-  /* Landing funnel (27.10.2026, Lauren: "לנסות כל מה שאפשר"): where women stop between arriving and
-     submitting. signup_form_seen = the sign-up form came into view; signup_form_tap = first tap into it
-     (not form_start — GA4 enhanced measurement already sends that name on its own). Read daily
-     from GA4 by lauren-agent-hub-data scripts/landing_funnel.py → /experiments/. */
-  (function(){var f=document.querySelector('form.st-signupform');if(!f)return;var v=0,s=0;
-    try{if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting&&!v){v=1;trackEvent('signup_form_seen',{});io.disconnect();}});},{threshold:0.4});io.observe(f);}}catch(e){}
-    f.addEventListener('focusin',function(){if(!s){s=1;trackEvent('signup_form_tap',{});}});})();
-});
-</script>
+<script src="/_assets/shared/landing.js?v=79344ce6e6"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--pink:#ff2d8e;--pink2:#ff5fae;--pink-deep:#c4006b;--ink:#190512;--cream:#fff3e6;--yellow:#ffd23f;--cyan:#16e0e0;}
@@ -276,19 +247,7 @@ footer .ft-h{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:1px;ma
 .testi .vf{font-size:11px;color:#16a34a;font-weight:700;}
 .hero-photo{max-width:520px;width:100%;margin:22px auto 0;border:4px solid var(--ink);border-radius:18px;box-shadow:8px 8px 0 var(--ink);display:block;}
 </style></head>
-<body><div class="topbar"><a href="https://events.themakeupblowout.com/">📅 Todos los Eventos</a><span class="sep">|</span><a  href="index.html">EN</a><span class="sep">|</span><a class="act" href="index-es.html">ES</a></div><section class="hero"><span class="eyebrow">★ August 20th–22nd, 2027 · Stockton, CA · ENTRADA GRATIS ★</span><h1 class="an" style="font-size:clamp(40px,11vw,86px)">Makeup<br>Blowout<br>Sale.</h1><div class="city-tag">Stockton, CA</div><div class="offer">Hasta 75% DESC.<small>Maquillaje · Cuidado de piel · Cabello · Fragancia — marcas de prestigio</small></div><div class="hero-form" id="signup"><div class="hf-h">🎁 Reclama tu Sombra GRATIS</div><div class="hf-sub">Regístrate por SMS y recógela en la puerta — más ENTRADA GRATIS.</div><script>
-    (function joinWebForm(win,doc,formId,A,B,C){var XHR=('onload' in new win.XMLHttpRequest())?win.XMLHttpRequest:win.XDomainRequest;var form,errEl,tEl;
-    function se(m){errEl.innerText=m;}function ta(){return form.querySelector('input[name="terms-agreed"]').checked;}
-    function load(){if(this.status===200){form.querySelector('.step1-form').style.display='none';try{trackEvent('form_submit',{});}catch(e){}document.location.href='share-es.html';form.reset();}else if(this.status===418){var e=null;try{e=win.JSON.parse(this.responseText);}catch(_){}if(e&&(e.code===A||e.code===B)){form.querySelector('.step1-form').style.display='none';try{trackEvent('form_submit',{already_subscribed:1});}catch(ig){}document.location.href='share-es.html';form.reset();}else{se((e&&(e.reason||e.message))||'Validation error.');}}else{se('Internal Error. Please, try later.');}}
-    function err(){se('Internal Error. Please, try later.');}
-    function send(){var d={};Array.prototype.slice.call(form).forEach(function(f){d[f.name]=f.value;});var x=new XHR();x.open(form.method,'https://app2.simpletexting.com/join/joinContact?r='+Date.now());x.onload=load;x.onerror=err;x.ontimeout=err;try{x.setRequestHeader('Content-Type','application/json; charset=UTF-8');}catch(_){}x.send(win.JSON.stringify(d));}
-    function sub(e){e.preventDefault();se('');if(!ta()){tEl.style.display='block';}else{send();}return false;}
-    function fmt(v){var n=v.replace(/\D/g,'');var a=n.substring(0,3),b=n.substring(3,6),c=n.substring(6,10),r='';if(a)r+='('+a;if(b)r+=') '+b;if(c)r+='-'+c;return r;}
-    function pc(e){e.currentTarget.value=fmt(e.currentTarget.value);}
-    function go(){form=doc.getElementById(formId);if(!form)return;errEl=form.querySelector('.st-signupform-server-error-message');tEl=form.querySelector('.st-signupform-terms-agreed-error');form.addEventListener('submit',sub);form.querySelectorAll('input[data-type="phone"]').forEach(function(f){f.addEventListener('input',pc);});}
-    if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',go);}else{go();}
-    })(window,document,'st-join-web-form-6adfc33f00c349367fc28689','DuplicateContactPhoneException','DuplicateContactEmailException','CustomFieldsValidationException');
-    </script><form id="st-join-web-form-6adfc33f00c349367fc28689" class="st-signupform" style="background:transparent;box-shadow:none;padding:0;max-width:none" action="https://app2.simpletexting.com/join/joinContact" method="POST">
+<body><div class="topbar"><a href="https://events.themakeupblowout.com/">📅 Todos los Eventos</a><span class="sep">|</span><a  href="index.html">EN</a><span class="sep">|</span><a class="act" href="index-es.html">ES</a></div><section class="hero"><span class="eyebrow">★ August 20th–22nd, 2027 · Stockton, CA · ENTRADA GRATIS ★</span><h1 class="an" style="font-size:clamp(40px,11vw,86px)">Makeup <br>Blowout <br>Sale.</h1><div class="city-tag">Stockton, CA</div><div class="offer">Hasta 75% DESC.<small>Maquillaje · Cuidado de piel · Cabello · Fragancia — marcas de prestigio</small></div><div class="hero-form" id="signup"><div class="hf-h">🎁 Reclama tu Sombra GRATIS</div><div class="hf-sub">Regístrate por SMS y recógela en la puerta — más ENTRADA GRATIS.</div><script>joinWebForm('st-join-web-form-6adfc33f00c349367fc28689','share-es.html');</script><form id="st-join-web-form-6adfc33f00c349367fc28689" class="st-signupform" style="background:transparent;box-shadow:none;padding:0;max-width:none" action="https://app2.simpletexting.com/join/joinContact" method="POST">
       <div class="step1-form">
         <input type="hidden" name="webFormId" value="6adfc33f00c349367fc28689"><input type="hidden" name="country" value="USA">
         <div class="required" style="text-align:center"><input name="phone" type="text" placeholder="Tu Número de Teléfono" maxlength="1600" data-type="phone" required style="border-color:var(--ink)"></div>
