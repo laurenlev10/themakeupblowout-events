@@ -110,8 +110,8 @@
   /* 👕 the uniform questions — step 1 of the course (Lauren 04.11.2026) */
   .uq{margin:16px 0 4px;font-weight:700;font-size:17px}
   .opts{display:flex;flex-wrap:wrap;gap:8px}
-  .opt{font-family:"Bangers",Impact,sans-serif;font-size:22px;letter-spacing:1px;min-width:58px;border:4px solid var(--ink);border-radius:12px;padding:8px 12px;background:#fff;color:var(--ink);cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
-  .opt.on{background:var(--pink);color:#fff}
+  .uopt{font-family:"Bangers",Impact,sans-serif;font-size:22px;letter-spacing:1px;min-width:58px;border:4px solid var(--ink);border-radius:12px;padding:8px 12px;background:#fff;color:var(--ink);cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+  .uopt.on{background:var(--pink);color:#fff}
   .foot{text-align:center;font-size:12.5px;font-weight:600;margin-top:12px}
   /* stage animation classes (SVG) */
   .popin{animation:popin .55s cubic-bezier(.2,1.6,.4,1) both;transform-box:fill-box;transform-origin:center}
@@ -325,7 +325,7 @@ function renderMap(){
 function renderSurvey(){
   var row = function(field, vals, label){ return '<div class="opts">'+vals.map(function(v,i){
     var lab = label ? label[i] : String(v);
-    return '<button type="button" class="opt'+(SURVEY[field]===v?' on':'')+'" data-f="'+field+'" data-i="'+i+'">'+esc(lab)+'</button>'; }).join("")+'</div>'; };
+    return '<button type="button" class="uopt'+(SURVEY[field]===v?' on':'')+'" data-f="'+field+'" data-i="'+i+'">'+esc(lab)+'</button>'; }).join("")+'</div>'; };
   var shirtN = [0,1,2,3,4];
   document.getElementById("tracks").innerHTML =
     '<div class="panel" id="survey"><h2>STEP 1 — YOUR UNIFORM 👕</h2>'+
@@ -338,9 +338,9 @@ function renderSurvey(){
     '<button class="gobtn" id="survey-go" type="button">SEND ✔</button></div>'+
     '<div class="panel"><h2>🔒 YOUR VIDEOS</h2><p class="lead">They open as soon as you send your answers.</p></div>';
   var vals = {shirts:shirtN, jacket:[true,false], shirt_size:SIZES, jacket_size:SIZES};
-  document.querySelectorAll("#survey .opt").forEach(function(b){ b.onclick=function(){
+  document.querySelectorAll("#survey .uopt").forEach(function(b){ b.onclick=function(){
     SURVEY[b.dataset.f] = vals[b.dataset.f][+b.dataset.i];
-    document.querySelectorAll('#survey .opt[data-f="'+b.dataset.f+'"]').forEach(function(x){ x.classList.toggle("on", x===b); });
+    document.querySelectorAll('#survey .uopt[data-f="'+b.dataset.f+'"]').forEach(function(x){ x.classList.toggle("on", x===b); });
   }; });
   document.getElementById("survey-go").onclick = sendSurvey;
 }
