@@ -53,7 +53,7 @@
   <div id="box" class="card">Loading…</div>
   <div class="note">Two to a room — girls with girls, boys with boys. A room alone happens only when there is an odd one out,
     and it goes to whoever has had it least. Choose here before the event; after the event, tick who
-    <b>actually</b> slept alone on the Manager Report — that is what counts.<br>This page is personal. Questions? Message Lauren on WhatsApp.</div>
+    <b>actually</b> slept alone on the Manager Report — that is what counts.<br><span id="personal">This page is personal. </span>Questions? Message Lauren on WhatsApp.</div>
 </div>
 <div class="toast" id="toast"></div>
 <script>
@@ -72,6 +72,7 @@ var K = (location.hash || "").replace(/^#/, "").trim().toLowerCase();
    CURRENT event only — "it's relevant again every week; make it easy for them to choose, and the
    choice fair to everyone". The manager taps her own name once (remembered on this phone). */
 var SHARED = !K;
+if(SHARED) document.addEventListener("DOMContentLoaded", function(){ var p=document.getElementById("personal"); if(p) p.remove(); });
 var BY = ""; try{ BY = localStorage.getItem("mbs_rooms_by") || ""; }catch(e){}
 var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 var GN = { f: "Girls", m: "Boys" };
