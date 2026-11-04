@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Makeup Blowout — Rooms</title>
+<style>
+  :root{ --pink:#ec4899; --purple:#7c3aed; --ink:#1f2937; --muted:#6b7280; --bg:#f6f7fb; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,sans-serif}
+  .hdr{background:linear-gradient(135deg,#ec4899 0%,#7c3aed 100%);color:#fff;padding:20px 18px;text-align:center}
+  .hdr h1{margin:0;font-size:21px;font-weight:900}
+  .hdr p{margin:6px 0 0;font-size:14px;opacity:.95}
+  .wrap{max-width:540px;margin:0 auto;padding:16px}
+  .card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:14px}
+  .ev-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .ev-h b{font-size:18px}
+  .when{font-weight:800;color:var(--purple);font-size:14px}
+  .sum{font-size:13.5px;color:var(--muted);margin:6px 0 10px;line-height:1.5}
+  .pairs{background:#dcfce7;color:#166534;border-radius:12px;padding:12px;font-weight:800;font-size:14.5px}
+  .g{border-top:1px solid #f1f5f9;padding-top:12px;margin-top:12px}
+  .g-t{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+  .rec{background:linear-gradient(135deg,#ecfdf5,#f0f9ff);border:1px solid #a7f3d0;border-radius:12px;padding:12px;margin:8px 0}
+  .rec .who{font-size:19px;font-weight:900}
+  .why{font-size:13px;color:#374151;margin-top:3px}
+  .chosen{background:#ede9fe;border:1.5px solid var(--purple);border-radius:12px;padding:10px 12px;font-weight:800;font-size:14.5px;margin:8px 0}
+  .opt{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f3f4f6}
+  .opt:last-child{border-bottom:0}
+  .opt .n{flex:1;font-weight:800;font-size:15px}
+  .opt .c{font-size:12.5px;color:var(--muted);white-space:nowrap}
+  .pick{border:0;border-radius:10px;padding:9px 14px;font-weight:900;font-size:14px;cursor:pointer;background:#f3e8ff;color:var(--purple)}
+  .pick.rec1{background:var(--purple);color:#fff}
+  .pick:disabled{opacity:.55}
+  .tag{font-size:11px;font-weight:900;border-radius:999px;padding:2px 8px;background:#dcfce7;color:#166534;margin-left:6px}
+  .err{background:#fee2e2;border:1.5px solid #dc2626;color:#991b1b;border-radius:14px;padding:14px;text-align:center;font-weight:800}
+  .warn{background:#fff7ed;border:1px solid #fdba74;color:#9a3412;border-radius:12px;padding:10px;font-size:13.5px;font-weight:700;margin-top:8px}
+  .note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.55}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:12px;font-weight:800;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>🛏️ Rooms — who sleeps alone</h1>
+  <p id="hello">For event managers</p>
+</div>
+<div class="wrap">
+  <div id="box" class="card">Loading…</div>
+  <div class="note">Two to a room — girls with girls, boys with boys. A room alone happens only when there is an odd one out,
+    and it goes to whoever has had it least. Choose here before the event; after the event, tick who
+    <b>actually</b> slept alone on the Manager Report — that is what counts.<br>This page is personal. Questions? Message Lauren on WhatsApp.</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+/* /rooms/ — the managers' page for solo rooms (Lauren, 04.11.2026).
+   "I want a link the managers can always open: it recommends who deserves to sleep alone at the
+   coming event, with a short reason, so any of them can look and choose; afterwards the manager
+   report says who slept alone and that goes into the calculation."
+   The key after # is the manager's own schedule_key (copied from dashboard /team/ → 🛏️). The Worker
+   (kinds get_rooms · rooms_choose) resolves it against the PRIVATE roster, answers only the events
+   she works, and computes everything with docs/_assets/solo-rooms.js — the same rule /team/ uses.
+   A failed read shows a failure, never an empty page (IRON RULE #18). */
+var ENDPOINT = "https://danielle.laurenlev10.workers.dev/";
+var K = (location.hash || "").replace(/^#/, "").trim().toLowerCase();
+var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var GN = { f: "Girls", m: "Boys" };
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function range(s, e){
+  if(!s) return ""; var a=s.split("-"), b=(e||s).split("-");
+  if(s===(e||s)) return MON[+a[1]-1]+" "+(+a[2]);
+  return a[1]===b[1] ? MON[+a[1]-1]+" "+(+a[2])+"–"+(+b[2]) : MON[+a[1]-1]+" "+(+a[2])+" – "+MON[+b[1]-1]+" "+(+b[2]);
+}
+function toast(m){ var t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); setTimeout(function(){ t.classList.remove("show"); }, 2600); }
+function fail(msg){ document.getElementById("box").innerHTML='<div class="err">⚠️ '+esc(msg)+'</div>'; }
+async function post(body){
+  var r = await fetch(ENDPOINT, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(body) });
+  var j = await r.json().catch(function(){ return {}; });
+  if(!r.ok || !j.ok) throw new Error(j.error || ("HTTP " + r.status));
+  return j;
+}
+function render(data){
+  document.getElementById("hello").textContent = "Hi " + data.name + " — your coming events";
+  var box = document.getElementById("box");
+  if(!data.events.length){ box.innerHTML = '<div class="pairs" style="background:#f3f4f6;color:#374151">No events ahead on your schedule.</div>'; return; }
+  box.className = ""; box.innerHTML = data.events.map(function(e){
+    var h = '<div class="card"><div class="ev-h"><b>'+esc(e.city)+(e.state?', '+esc(e.state):'')+'</b><span class="when">'+esc(range(e.start_date, e.end_date))+'</span></div>'+
+      '<div class="sum">'+e.rooms+' rooms · '+e.girls+' girls · '+e.boys+' boys'+
+      (e.couples.length ? ' · 👫 '+e.couples.map(function(c){ return esc(c.join(" + ")); }).join(", ")+' share a room' : '')+'</div>';
+    if(e.unknown.length) h += '<div class="warn">Not set up yet for rooms: '+e.unknown.map(esc).join(", ")+' — ask Lauren.</div>';
+    if(!e.picks.length && !e.unknown.length) h += '<div class="pairs">✓ Everyone pairs up — no one needs to sleep alone.</div>';
+    e.picks.forEach(function(p){
+      h += '<div class="g"><div class="g-t">'+GN[p.gender]+' — one room alone</div>'+
+        '<div class="rec">💡 Recommended: <span class="who">'+esc(p.pick.name)+'</span><div class="why">'+esc(p.why)+'</div></div>';
+      if(p.chosen) h += '<div class="chosen">✓ Chosen: '+esc(p.chosen.name)+(p.chosen.by ? '' : ' (by Lauren)')+'</div>';
+      h += p.ranked.map(function(r, i){
+        var on = p.chosen && p.chosen.m === r.m;
+        return '<div class="opt"><span class="n">'+esc(r.name)+(i===0?'<span class="tag">recommended</span>':'')+'</span>'+
+          '<span class="c">alone '+r.alone+' of '+r.worked+'</span>'+
+          (on ? '<span class="c" style="color:#7c3aed;font-weight:900">✓ chosen</span>'
+              : '<button class="pick'+(i===0?' rec1':'')+'" data-ev="'+esc(e.evkey)+'" data-m="'+esc(r.m)+'" data-n="'+esc(r.name)+'">Choose</button>')+'</div>';
+      }).join("") + '</div>';
+    });
+    return h + '</div>';
+  }).join("");
+  box.querySelectorAll(".pick").forEach(function(b){
+    b.onclick = async function(){
+      if(!confirm(b.dataset.n + " sleeps alone at this event?")) return;
+      box.querySelectorAll(".pick").forEach(function(x){ x.disabled = true; });
+      b.textContent = "Saving…";
+      try{
+        var j = await post({ kind:"rooms_choose", k:K, evkey:b.dataset.ev, m:b.dataset.m });
+        toast("✓ Saved — " + b.dataset.n + " sleeps alone" + (j.replaced ? " (instead of " + j.replaced + ")" : ""));
+        render({ name: data.name, events: j.events });
+      }catch(err){
+        toast("⚠️ Not saved: " + err.message);
+        box.querySelectorAll(".pick").forEach(function(x){ x.disabled = false; });
+        b.textContent = "Choose";
+      }
+    };
+  });
+}
+(async function(){
+  if(!/^[0-9a-f]{32}$/.test(K)){ fail("This link is not complete — ask Lauren for your link."); return; }
+  try{ render(await post({ kind:"get_rooms", k:K })); }
+  catch(e){ fail(e.message || "Could not load — check your signal and reload."); }
+})();
+</script>
+</body>
+</html>
