@@ -292,11 +292,19 @@ async function begin(typed){
   }
   store("tr_name", typed);
   var b = document.getElementById("me-btn"); b.textContent = "👤 "+typed+" · not you?"; show("me-btn");
+  // Lauren 04.11.2026: a text to her when someone OPENS the questionnaire (and another when they
+  // answer). The Worker texts once per person; a call that did not land is tried again.
+  if(SURVEY_NEEDED) markSeen(typed, 0);
   if(UNIFORM_ONLY){ renderMap(); return; }
   // so /team/ sees who STARTED, not only who finished — once per name, a retry if it did not land
   api({kind:"training_hello", name:typed}).catch(function(){});
   flushQueue().then(renderMap);
   renderMap();
+}
+
+function markSeen(typed, n){
+  api({kind:"uniform_seen", name:typed}).then(function(r){ if(r.status!==200 && n<3) setTimeout(function(){ markSeen(typed, n+1); }, 8000); })
+    .catch(function(){ if(n<3) setTimeout(function(){ markSeen(typed, n+1); }, 8000); });
 }
 
 /* ═══════════ my videos ═══════════ */
@@ -368,6 +376,13 @@ async function sendSurvey(){
   hide("survey-err"); go.disabled = true; go.textContent = "SAVING…";
   var r = null;
   try{ r = await api({kind:"uniform_survey", name:ME.typed, shirts:SURVEY.shirts, jacket:SURVEY.jacket, shirt_size:SURVEY.shirt_size, jacket_size:SURVEY.jacket_size}); }catch(x){ r = null; }
+  if(r && r.json && r.json.saved===true){
+    // saved, only the text to Lauren is missing — let them go on, and resend in the background (the
+    // Worker keeps the answer once and texts once)
+    var body = {kind:"uniform_survey", name:ME.typed, shirts:SURVEY.shirts, jacket:SURVEY.jacket, shirt_size:SURVEY.shirt_size, jacket_size:SURVEY.jacket_size};
+    (function again(n){ setTimeout(function(){ api(body).then(function(x){ if(x.status!==200 && n<3) again(n+1); }).catch(function(){ if(n<3) again(n+1); }); }, 8000); })(0);
+    r = {status:200, json:{ok:true}};
+  }
   if(!r || r.status!==200 || !r.json.ok){
     // not saved is said — the videos stay locked until the Worker has it (IRON RULE #18)
     e.textContent = "⚠️ Not saved — "+((r && r.json && r.json.error) || "no connection")+". Tap SEND again.";
