@@ -162,7 +162,7 @@
   <section id="s-map" class="hide">
     <div class="panel">
       <h1 id="hi">HI!</h1>
-      <p class="lead">Watch each short video <b>to the end</b> and answer one quick question — that unlocks the next one. 🔓</p>
+      <p class="lead" id="hi-lead">Watch each short video <b>to the end</b> and answer one quick question — that unlocks the next one. 🔓</p>
       <div id="qpill" class="pill q hide" style="margin-top:10px"></div>
     </div>
     <div id="certs"></div>
@@ -215,6 +215,10 @@ var COURSE = null, ME = null, DONE = {}, TRACKS_DONE = {};
    or null when it could not read the file — null ASKS (a second answer replaces the first; a
    question skipped on a bad read is an answer lost). Owners are not asked. */
 var SURVEY_NEEDED = false, SURVEY = {};
+/* ?only=uniform — the questionnaire alone, for someone who already finished the videos (Lauren
+   04.11.2026: Daniel watched the course before the questions existed). No videos, no course
+   "started" stamp — only the answers. */
+var UNIFORM_ONLY = false, SURVEY_DONE = false;
 var SIZES = ["XS","S","M","L","XL","2XL","3XL"];   // ME = {typed, key, name, manager, kind} — who the Worker says the typed name is
 var QS = new URLSearchParams(location.search);
 // tests (and only tests: navigator.webdriver) may run the clock faster
@@ -236,6 +240,7 @@ function myTracks(){ return COURSE.tracks.filter(function(t){ return t.for!=="ma
 // 27.10.2026 13:16 — Lauren: no list of names to tap ("אחד ילחץ בטעות על העובד השני"): each person
 // types their own name. The Worker decides who that is (crew member · owner · not on the roster).
 async function boot(){
+  UNIFORM_ONLY = QS.get("only")==="uniform";
   await endpoint();
   var aud = loadAudio();
   var r;
@@ -277,7 +282,8 @@ async function begin(typed){
     ME = r.json.me; ME.typed = typed;
     loadAudio();   // the course may be newer than the manifest this page booted with
     DONE = (r.json.progress && r.json.progress.lessons) || {}; TRACKS_DONE = (r.json.progress && r.json.progress.tracks_done) || {};
-    SURVEY_NEEDED = ME.kind!=="owner" && !(r.json.uniforms && r.json.uniforms.answered===true); SURVEY = {};
+    SURVEY_DONE = !!(r.json.uniforms && r.json.uniforms.answered===true);
+    SURVEY_NEEDED = ME.kind!=="owner" && !SURVEY_DONE; SURVEY = {};
     if(r.json.course) COURSE = r.json.course;
   }catch(e){
     // never "you have done nothing" on a failed read (IRON RULE #18)
@@ -286,6 +292,7 @@ async function begin(typed){
   }
   store("tr_name", typed);
   var b = document.getElementById("me-btn"); b.textContent = "👤 "+typed+" · not you?"; show("me-btn");
+  if(UNIFORM_ONLY){ renderMap(); return; }
   // so /team/ sees who STARTED, not only who finished — once per name, a retry if it did not land
   api({kind:"training_hello", name:typed}).catch(function(){});
   flushQueue().then(renderMap);
@@ -295,6 +302,16 @@ async function begin(typed){
 /* ═══════════ my videos ═══════════ */
 function renderMap(){
   if(!ME || !COURSE) return;
+  if(UNIFORM_ONLY){
+    document.getElementById("hi").textContent = "HI "+String(ME.typed||ME.name).split(" ")[0].toUpperCase()+"! 👋";
+    document.getElementById("hi-lead").textContent = "A few quick questions about your company uniform.";
+    document.getElementById("certs").innerHTML = ""; hide("qpill");
+    if(SURVEY_NEEDED){ renderSurvey(); return; }
+    document.getElementById("tracks").innerHTML = '<div class="panel"><h2>✅ THANK YOU!</h2><p class="lead">We have your uniform answers. Your manager will bring you whatever is missing.</p>'+
+      '<button class="gobtn alt" id="survey-again" type="button">CHANGE MY ANSWERS</button></div>';
+    document.getElementById("survey-again").onclick = function(){ SURVEY_NEEDED = true; renderMap(); };
+    return;
+  }
   document.getElementById("hi").textContent = "HI "+String(ME.typed||ME.name).split(" ")[0].toUpperCase()+"! 👋";
   var q = queue().filter(function(x){ return x.key===ME.key; });
   var qp = document.getElementById("qpill");
@@ -328,15 +345,15 @@ function renderSurvey(){
     return '<button type="button" class="uopt'+(SURVEY[field]===v?' on':'')+'" data-f="'+field+'" data-i="'+i+'">'+esc(lab)+'</button>'; }).join("")+'</div>'; };
   var shirtN = [0,1,2,3,4];
   document.getElementById("tracks").innerHTML =
-    '<div class="panel" id="survey"><h2>STEP 1 — YOUR UNIFORM 👕</h2>'+
-    '<p class="lead">Four quick questions before the videos, so we know what to bring you.</p>'+
+    '<div class="panel" id="survey"><h2>'+(UNIFORM_ONLY ? 'YOUR UNIFORM 👕' : 'STEP 1 — YOUR UNIFORM 👕')+'</h2>'+
+    '<p class="lead">'+(UNIFORM_ONLY ? 'Four quick questions, so we know what to bring you.' : 'Four quick questions before the videos, so we know what to bring you.')+'</p>'+
     '<div class="uq">1. How many company shirts do you have?</div>'+row("shirts", shirtN, ["0","1","2","3","4+"])+
     '<div class="uq">2. Do you have a company jacket?</div>'+row("jacket", [true,false], ["YES","NO"])+
     '<div class="uq">3. What shirt size do you wear?</div>'+row("shirt_size", SIZES)+
     '<div class="uq">4. What jacket size do you wear?</div>'+row("jacket_size", SIZES)+
     '<div id="survey-err" class="err hide"></div>'+
     '<button class="gobtn" id="survey-go" type="button">SEND ✔</button></div>'+
-    '<div class="panel"><h2>🔒 YOUR VIDEOS</h2><p class="lead">They open as soon as you send your answers.</p></div>';
+    (UNIFORM_ONLY ? '' : '<div class="panel"><h2>🔒 YOUR VIDEOS</h2><p class="lead">They open as soon as you send your answers.</p></div>');
   var vals = {shirts:shirtN, jacket:[true,false], shirt_size:SIZES, jacket_size:SIZES};
   document.querySelectorAll("#survey .uopt").forEach(function(b){ b.onclick=function(){
     SURVEY[b.dataset.f] = vals[b.dataset.f][+b.dataset.i];
@@ -356,7 +373,7 @@ async function sendSurvey(){
     e.textContent = "⚠️ Not saved — "+((r && r.json && r.json.error) || "no connection")+". Tap SEND again.";
     show("survey-err"); go.disabled = false; go.textContent = "SEND ✔"; return;
   }
-  SURVEY_NEEDED = false; renderMap(); window.scrollTo(0,0);
+  SURVEY_NEEDED = false; SURVEY_DONE = true; renderMap(); window.scrollTo(0,0);
 }
 
 /* ═══════════ saving ═══════════ */
