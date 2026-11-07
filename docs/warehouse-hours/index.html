@@ -216,7 +216,9 @@ function render(){
     '<div><div class="l">החודש · this month</div><div class="v">' + hm(SUM.month.minutes) + (rate != null ? ' · ' + money(SUM.month.pay) : '') + '</div></div>';
   var days = S.days || [];
   document.getElementById("days").innerHTML = days.length ? days.map(function(d){
-    return '<div class="day"><b>' + esc(fmtDay(d.date)) + '</b> — <b>' + hm(d.minutes) + '</b>' + d.shifts.map(function(s){
+    return '<div class="day"><b>' + esc(fmtDay(d.date)) + '</b> — <b>' + (d.minutes || !d.amount ? hm(d.minutes) : money(d.amount)) + '</b>' + d.shifts.map(function(s){
+      // 07.11.2026 — a day job the office entered: a name (the trip's city) and a flat amount, no clock
+      if (s.day) return '<div class="note">🚗 ' + esc(s.title) + ' · ' + money(s.amount) + (s.paid ? ' <span class="pill" style="background:#dcfce7;color:#166534">שולם</span>' : '') + '</div>';
       var notes = [s.in && s.in.note, s.out && s.out.note].filter(Boolean).map(esc).join(" · ");
       return '<div class="note">' + (TASKS.length > 1 ? esc(taskLabel(s.task)) + ': ' : '') + esc(s.in_hhmm || "?") + ' → ' + (s.open ? '<span class="pill">עדיין בעבודה</span>' : esc(s.out_hhmm || "?")) + (notes ? ' 💬 ' + notes : '') + (s.open ? '' : (s.paid ? ' <span class="pill" style="background:#dcfce7;color:#166534">שולם</span>' : '')) +
         (s.flags.indexOf("no_out") >= 0 ? ' <span class="pill bad">בלי יציאה — לא נספר</span>' : '') + (s.flags.indexOf("no_in") >= 0 ? ' <span class="pill bad">יציאה בלי כניסה</span>' : '') + (s.flags.indexOf("too_long") >= 0 ? ' <span class="pill bad">יותר מ-' + ((S.settings && S.settings.max_shift_h) || 12) + ' שעות?</span>' : '') + '</div>';
