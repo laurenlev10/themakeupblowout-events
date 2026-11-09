@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-11-09T01:44:50Z",
+  "_updated_at": "2026-11-09T01:45:43Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -507,7 +507,8 @@
       "_added_by": "sync_event_data.add_signed_events",
       "tz": "America/Los_Angeles",
       "ig_url": "https://www.instagram.com/reel/DfgKo85xJuU/?utm_source=ig_web_copy_link&srtk=MzRlODBiNWFlZA==",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7705980234742369567"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7705980234742369567",
+      "fb_url": "https://fb.watch/KMTNUveAA3/"
     },
     {
       "city": "Sacramento",
