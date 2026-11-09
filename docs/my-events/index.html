@@ -20,6 +20,8 @@
   .ev .when{font-weight:900;font-size:13.5px;color:var(--purple);min-width:104px}
   .ev .city{font-weight:800;font-size:15.5px;flex:1}
   .sb{font-size:11.5px;font-weight:800;color:#92400e;background:#fef3c7;border-radius:999px;padding:2px 8px;margin-left:6px;white-space:nowrap}
+  .rl{font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 8px;margin-left:6px;white-space:nowrap;color:#374151;background:#f3f4f6}
+  .rl.mgr{color:#fff;background:#6d28d9}
   .ok{font-size:12px;font-weight:800;color:#166534;white-space:nowrap}
   .btn{width:100%;border:0;border-radius:13px;padding:15px;font-size:17px;font-weight:900;cursor:pointer;background:var(--purple);color:#fff}
   .btn:disabled{opacity:.6}
@@ -79,7 +81,7 @@ function render(){
   document.getElementById("box").innerHTML=d.events.map(function(e){
     var ok=conf[e.evkey]===e.status; if(!ok) all=false;
     return '<div class="ev"><span class="when">'+esc(range(e.start_date,e.end_date))+'</span>'+
-      '<span class="city">'+esc(e.city)+(e.state?', '+esc(e.state):'')+(e.status==="standby"?'<span class="sb">standby</span>':'')+'</span>'+
+      '<span class="city">'+esc(e.city)+(e.state?', '+esc(e.state):'')+(e.status==="standby"?'<span class="sb">standby</span>':e.role==="manager"?'<span class="rl mgr">👑 Manager</span>':'<span class="rl">Team</span>')+'</span>'+
       (ok?'<span class="ok">✔ confirmed</span>':'')+'</div>';
   }).join("");
   document.getElementById("act").innerHTML = all
