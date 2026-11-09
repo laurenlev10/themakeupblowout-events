@@ -161,7 +161,7 @@ def _description(f, lang="en"):
     if lang == "es":
         where = f"en {f['venue']}, {f['street']}" if f["venue"] and f["street"] else f"en {f['city_state']}"
         return (f"Venta de maquillaje con hasta 75% de descuento en {f['city_state']} — "
-                f"{f['dates_words']}, viernes a domingo {HOURS_SHORT}, {where}. "
+                f"{dates_es(f['sd'], f['ed'])}, viernes a domingo {HOURS_SHORT}, {where}. "
                 f"Más de 40 marcas de prestigio de maquillaje, cuidado de la piel, cabello y fragancias. "
                 f"Entrada y estacionamiento gratis, no se necesitan boletos.")
     return (f"The Makeup Blowout Sale in {f['city_state']}: a 3-day pop-up beauty sale "
@@ -246,7 +246,7 @@ def head_seo(f, lang="en"):
 
 def page_title(f, lang="en"):
     if lang == "es":
-        return f"Makeup Blowout Sale {f['city_state']} — {f['dates_words']} · Hasta 75% de descuento · Entrada gratis"
+        return f"Makeup Blowout Sale {f['city_state']} — {dates_es(f['sd'], f['ed'])} · Hasta 75% de descuento · Entrada gratis"
     return f"Makeup Blowout Sale {f['city_state']} — {f['dates_words']} · Up to 75% Off · Free Entry"
 
 
@@ -261,10 +261,27 @@ def page_title(f, lang="en"):
 # carry every stop and exactly one marked row, its own.
 # ---------------------------------------------------------------------------
 _MON3 = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"]
+_MON3_ES = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"]
+# 9.11.2026 — the Spanish pages printed their dates in English ("December 4th–6th, 2026", tour "DEC 4–6", "Terms"):
+# the ES templates reused the EN {{MONTH}} {{START_DAY}}–{{END_DAY}} pieces. Spanish pages convert at about half the
+# English (2–6% vs 9–11%, landing_funnel.json 5–9.11). Each language now gets its own whole date string ({{DATES}}),
+# and verify_es_words() refuses a Spanish page that still carries an English month or "Terms".
+MONTH_NAMES_ES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
+
+
+def dates_es(sd, ed):
+    """'4–6 de diciembre de 2026' · '30 de abril – 2 de mayo de 2027'."""
+    if sd.month == ed.month:
+        return f"{sd.day}–{ed.day} de {MONTH_NAMES_ES[sd.month-1]} de {ed.year}"
+    return f"{sd.day} de {MONTH_NAMES_ES[sd.month-1]} – {ed.day} de {MONTH_NAMES_ES[ed.month-1]} de {ed.year}"
 TOUR_BADGE = {"en": "YOU'RE HERE", "es": "AQUÍ"}
 
 
-def _tour_dates(sd, ed):
+def _tour_dates(sd, ed, lang="en"):
+    if lang == "es":
+        if sd.month == ed.month:
+            return f"{sd.day}–{ed.day} {_MON3_ES[sd.month-1]}"
+        return f"{sd.day} {_MON3_ES[sd.month-1]}–{ed.day} {_MON3_ES[ed.month-1]}"
     if sd.month == ed.month:
         return f"{_MON3[sd.month-1]} {sd.day}–{ed.day}"
     return f"{_MON3[sd.month-1]} {sd.day}–{_MON3[ed.month-1]} {ed.day}"
@@ -302,8 +319,22 @@ def tour_rows(current_slug, lang):
             f'<div class="trow{" here" if here else ""}" data-slug="{esc(s["slug"])}">'
             f'<div class="stt">{esc(s["state"])}</div>'
             f'<div class="ci">{esc(s["city_state"])}{badge}</div>'
-            f'<div class="dt">{_tour_dates(s["sd"], s["ed"])}</div></div>')
+            f'<div class="dt">{_tour_dates(s["sd"], s["ed"], lang)}</div></div>')
     return "".join(rows)
+
+
+_ES_ENGLISH_RE = re.compile(r"\b(" + "|".join(MONTH_NAMES) + r"|Terms)\b|\b(" + "|".join(m for m in _MON3 if m not in _MON3_ES) + r") \d")
+
+
+def verify_es_words(path):
+    """A Spanish page carries no English month name and no 'Terms' in what a shopper reads (head/scripts aside)."""
+    src = pathlib.Path(path).read_text(encoding="utf-8")
+    body = src.split("<body", 1)[-1]
+    body = re.sub(r"<script.*?</script>|<style.*?</style>", "", body, flags=re.S)
+    text = re.sub(r"<[^>]+>", " ", body)
+    hits = sorted(set(m.group(0) for m in _ES_ENGLISH_RE.finditer(text)))
+    if hits:
+        raise SystemExit(f"✗ {path}: Spanish page still shows English words {hits} — fix the ES template or build.py")
 
 
 _TROW_RE = re.compile(r'<div class="trow( here)?" data-slug="([^"]+)">')
@@ -336,6 +367,8 @@ def render_event(ev):
         "START_DAY":  f"{sd.day}{ord_suffix(sd.day)}",
         "END_DAY":    f"{ed.day}{ord_suffix(ed.day)}",
         "YEAR":       str(year),
+        "DATES":      f"{MONTH_NAMES[sd.month - 1]} {sd.day}{ord_suffix(sd.day)}–{ed.day}{ord_suffix(ed.day)}, {year}",
+        "_DATES_ES":  dates_es(sd, ed),
         "FORM_ID":    ev.get("form_id",   "TODO_GET_FORM_ID_FROM_LAUREN"),
         "SHARE_URL":  "share.html",  # relative within the event folder
         "IG_URL":     ev.get("ig_url",    "https://www.instagram.com/themakeupblowoutsale/"),
@@ -360,7 +393,7 @@ def fill_lang(template, vars, lang):
     """Same variables, but the Spanish template gets the Spanish head."""
     if lang == "es":
         vars = {**vars, "PAGE_TITLE": vars["_PAGE_TITLE_ES"], "HEAD_SEO": vars["_HEAD_SEO_ES"],
-                "TOUR_ROWS": vars["_TOUR_ROWS_ES"]}
+                "TOUR_ROWS": vars["_TOUR_ROWS_ES"], "DATES": vars["_DATES_ES"]}
     return fill(template, vars)
 
 
@@ -589,6 +622,9 @@ def main():
         verify_written_page(target_dir / "index.html", f, "en")
         if TPL_LANDING_ES:
             verify_written_page(target_dir / "index-es.html", f, "es")
+        for page in ("index-es.html", "share-es.html", "tiktok-es.html"):
+            if (target_dir / page).exists():
+                verify_es_words(target_dir / page)
         for page in ("index.html", "index-es.html", "share.html", "share-es.html",
                      "tiktok.html", "tiktok-es.html"):
             if (target_dir / page).exists():
