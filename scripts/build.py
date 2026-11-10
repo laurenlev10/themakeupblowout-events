@@ -464,6 +464,7 @@ Disallow: /recount-count/
 Disallow: /team-availability/
 Disallow: /manager-report/
 Disallow: /collab/
+Disallow: /unbox/
 Disallow: /scout-plan/
 Disallow: /influencer-brief/
 Disallow: /preview/
