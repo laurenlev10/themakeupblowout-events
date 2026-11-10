@@ -84,6 +84,12 @@
   .foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 12px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
   .foot b{color:var(--ink)}
   .empty{color:var(--muted);font-size:14px;padding:12px;text-align:center}
+  /* 10.11.2026 — Lauren: "צריך לכתוב שם הודעה ליונתן שעדיין לא אישרתי את המסלול ולכן הוא לא רואה את המסלול".
+     Not a gray line — a card he cannot misread. Hebrew first (Yonatan), English under it. */
+  .wait-big{background:#fef3c7;border:3px solid #f59e0b;color:#78350f;border-radius:14px;padding:16px 14px;margin:12px 0;text-align:center;line-height:1.5}
+  .wait-big .he{direction:rtl;font-weight:900;font-size:20px}
+  .wait-big .he small{display:block;font-size:16px;font-weight:700;margin-top:4px}
+  .wait-big .en{font-size:14px;font-weight:700;margin-top:10px;padding-top:8px;border-top:1px dashed #f59e0b}
 </style>
 </head>
 <body>
@@ -134,6 +140,12 @@
 "use strict";
 var WORKER = "https://danielle.laurenlev10.workers.dev/";
 var PLAN = null, EVENTS = [], STOPS = [], DRIVER = "", POS = null, WATCH = null, QUEUE = [], OFFLINE = false, RELEASED = true;
+// 10.11.2026 — the route Lauren has not approved yet: the Worker sends no stops (driver:true), and the
+// driver is told so plainly, in Hebrew, instead of a gray line that reads like "nothing today".
+// The page reloads every 90 s and on every return to it, so the route appears by itself once she approves.
+var WAIT_HTML = '<div class="wait-big"><div class="he">⏳ לורן עוד לא אישרה את המסלול,<br>ולכן אתה עוד לא רואה אותו.' +
+  '<small>המסלול יופיע כאן לבד ברגע שהיא תאשר — אין צורך לעשות כלום.</small></div>' +
+  '<div class="en">Lauren has not approved the route yet, so it is not shown. It will appear here by itself once she approves.</div></div>';
 var NEXT_ID = null;                  // the one stop to go to now (first not picked / skipped)
 var AUTO_ARRIVE_SENT = {};           // vendor_id → true once the geofence fired this session
 var RADIUS = {};                     // auto-arrival radius by geocode precision — served by the Worker (get_pickup_plan.radius), the one definition
@@ -181,11 +193,11 @@ function status(id){
 }
 function render(){
   var p = PLAN.plan, d = p.date ? new Date(p.date + "T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}) : "";
-  document.getElementById("hdr-sub").textContent = (p.title ? p.title + " · " : "") + (d || "no date") + " · " + STOPS.length + " stop" + (STOPS.length===1?"":"s");
+  document.getElementById("hdr-sub").textContent = (p.title ? p.title + " · " : "") + (d || "no date") + " · " + (RELEASED ? STOPS.length + " stop" + (STOPS.length===1?"":"s") : "⏳ waiting for Lauren's approval");
   var CHK = STOPS.filter(function(v){ return hasChk(v.id); });
   banner((CHK.length ? "💵 Checks to give today: " + CHK.map(function(v){ return v.name; }).join(", ") + "\n" : "") + (OFFLINE ? "📵 No connection — showing the route as last loaded " + fmtTime(OFFLINE) + ". Taps are saved on this phone and sent when the signal is back.\n" : "") + (p.driver_note ? "📝 " + p.driver_note : ""));
   var started = EVENTS.filter(function(e){ return e.event==="started"; })[0];
-  if (!STOPS.length){ document.getElementById("stops").innerHTML = '<div class="empty">' + (RELEASED ? 'No pickups planned yet.<br>Lauren has not selected this week\'s vendors.' : '⏳ The route is not released yet — Lauren is still reviewing the list.<br>Check back later or call her.') + '</div>'; document.getElementById("next-card").style.display="none"; document.getElementById("finish-card").style.display="none"; return; }
+  if (!STOPS.length){ document.getElementById("stops").innerHTML = RELEASED ? ('<div class="empty">' + 'No pickups planned yet.<br>Lauren has not selected this week\'s vendors.' + '</div>') : WAIT_HTML; document.getElementById("next-card").style.display="none"; document.getElementById("finish-card").style.display="none"; return; }
   var html = "", nextV = null;
   if (!window.MbsRoute){ banner("❌ Part of this page did not load. Close the page and open it again. If it keeps happening, call Lauren: (424) 354-7625"); }
   // the next stop: first open one that is READY (MbsRoute.nextStop — the one definition, readiness included)
