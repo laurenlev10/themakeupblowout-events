@@ -39,6 +39,7 @@
   th{font-size:12px;color:var(--muted);text-align:right;font-weight:800;padding:6px 4px;border-bottom:2px solid var(--line)}
   td{padding:8px 4px;border-bottom:1px solid var(--line);vertical-align:top}
   td.n,th.n{text-align:left;direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+  .ltr{direction:ltr;unicode-bidi:isolate;white-space:nowrap}
   tr.tot td{font-weight:900;border-top:2px solid var(--ink);border-bottom:0}
   tr.gone td{color:var(--muted);text-decoration:line-through}
   .dow{font-size:12px;color:var(--muted)}
@@ -101,22 +102,23 @@ function render(){
   var x = R.receipt, t = x.totals, labels = R.task_labels;
   document.title = "דוח תשלום — " + x.worker + " — " + dmy(x.paid_on);
   var period = x.from ? (x.from === x.to ? dmy(x.from) : dmy(x.from) + " – " + dmy(x.to)) : "";
+  var periodH = period ? '<span class="ltr">' + esc(period) + '</span>' : '';
   var h = "";
   if (x.voided_at) h += '<div class="card note bad">⚠️ התשלום הזה בוטל · This payment was cancelled</div>';
   // the headline: who, how much, when
   h += '<div class="card big"><div class="who">' + esc(x.worker) + '</div>' +
        '<div class="amt">' + money(t.total) + '</div>' +
-       '<div class="on">שולם ב-' + esc(dmy(x.paid_on)) + (period ? ' · על הימים ' + esc(period) : '') + '</div>' +
+       '<div class="on">שולם ב-' + esc(dmy(x.paid_on)) + (period ? ' · על הימים ' + periodH : '') + '</div>' +
        '<div class="en">Paid ' + esc(dmy(x.paid_on)) + (period ? ' · for ' + esc(period) : '') + '</div>';
   // how it was calculated
   h += '<div class="calc">';
   if (t.hour_rows){
-    h += '<div class="ln"><span>' + t.hour_rows + ' משמרות לפי שעה: ' + hm(t.minutes) + ' שעות (' + hrs(t.minutes) + ') × ' + (x.rate != null ? money(x.rate) : '—') + '</span><b class="n">' + money(t.hours_pay) + '</b></div>';
+    h += '<div class="ln"><span>' + t.hour_rows + ' משמרות לפי שעה · ' + hm(t.minutes) + ' שעות<br><span class="ltr">' + hrs(t.minutes) + ' h × ' + (x.rate != null ? money(x.rate) : '—') + '</span></span><b class="ltr">' + money(t.hours_pay) + '</b></div>';
   }
   if (t.day_rows){
-    h += '<div class="ln"><span>' + t.day_rows + ' ימי עבודה בסכום קבוע</span><b class="n">' + money(t.flat) + '</b></div>';
+    h += '<div class="ln"><span>' + t.day_rows + ' ימי עבודה בסכום קבוע</span><b class="ltr">' + money(t.flat) + '</b></div>';
   }
-  h += '<div class="ln tot"><span>סה״כ לתשלום · Total</span><span class="n">' + money(t.total) + '</span></div></div>';
+  h += '<div class="ln tot"><span>סה״כ לתשלום · Total</span><span class="ltr">' + money(t.total) + '</span></div></div>';
   if (x.matches === false && x.recorded && x.recorded.amount != null){
     h += '<div class="note">השורות תוקנו אחרי שהתשלום נרשם: בזמן התשלום נרשם ' + money(x.recorded.amount) + ', ולפי השורות היום ' + money(t.total) + '.<div class="en">Rows were corrected after the payment was recorded (' + money(x.recorded.amount) + ' then, ' + money(t.total) + ' now).</div></div>';
   }
@@ -125,9 +127,9 @@ function render(){
   var rows = x.rows.map(function(r){
     if (r.missing) return '<tr class="gone"><td colspan="4">שורה שנמחקה אחרי התשלום · row deleted after payment</td></tr>';
     var what = r.day ? '🚗 ' + esc(r.title) + ' <span class="dow">(יום עבודה)</span>'
-                     : '<span class="n">' + esc(r.in_hhmm || "—") + '–' + esc(r.out_hhmm || "—") + '</span>' + (labels && labels[r.task] ? ' <span class="dow">' + esc(labels[r.task]) + '</span>' : '');
+                     : '<span class="ltr">' + esc(r.in_hhmm || "—") + ' – ' + esc(r.out_hhmm || "—") + '</span>' + (labels && labels[r.task] ? ' <span class="dow">' + esc(labels[r.task]) + '</span>' : '');
     var hours = r.day ? '—' : hm(r.minutes);
-    var calc = r.day ? 'סכום קבוע' : hrs(r.minutes) + ' × ' + (x.rate != null ? money(x.rate) : '—');
+    var calc = r.day ? 'סכום קבוע' : '<span class="ltr">' + hrs(r.minutes) + ' h × ' + (x.rate != null ? money(x.rate) : '—') + '</span>';
     return '<tr><td><b>' + esc(dm(r.date)) + '</b><div class="dow">' + esc(dow(r.date)) + '</div></td><td>' + what + '<div class="dow">' + calc + '</div></td><td class="n">' + hours + '</td><td class="n"><b>' + money(r.total) + '</b></td></tr>';
   }).join("");
   h += '<div class="card"><table><thead><tr><th>תאריך</th><th>שעות העבודה</th><th class="n">שעות</th><th class="n">סכום</th></tr></thead><tbody>' + rows +
