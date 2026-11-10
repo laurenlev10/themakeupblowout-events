@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0f766e">
+<title>Makeup Blowout — דוח תשלום · Payment report</title>
+<!--
+  events.themakeupblowout.com/warehouse-hours/receipt/?id=pay_… — one payment, line by line (09.11.2026).
+  Lauren: "אלי הולך עכשיו לשלם ליונתן ולהעביר לו את זה דרך הבנק, איך אלי יכול אחרי שהוא משלם ולוחץ
+  וי לשלוח ריפורט פירוט איך התשלום הזה חושב? דף מסכם את התשלום עם כל הפירוט".
+  Eli marks the rows paid on dashboard.themakeupblowout.com/warehouse-hours/, the dashboard offers
+  "📤 שלח ליונתן" with this link; Yonatan opens it on his phone with no login.
+  Public on purpose, like the clock page next to it: the link carries the payment's random id and
+  nothing else. Everything here — rows, hours, $ — is COMPUTED BY THE WORKER (kind
+  get_warehouse_receipt → docs/_assets/wh.js Wh.receipt, the one engine) and only rendered;
+  the answer carries no GPS, no notes and no login. No credential lives here (IRON RULE #32).
+  Black ink when printed (Lauren's printer has no colour).
+-->
+<style>
+  :root{ --teal:#0f766e; --ink:#111827; --muted:#4b5563; --bg:#f3f5f9; --line:#d1d5db; --bad:#b91c1c; --warn:#92400e; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,"Heebo",Arial,sans-serif;-webkit-text-size-adjust:100%}
+  .hdr{background:linear-gradient(135deg,#134e4a 0%,#0f766e 100%);color:#fff;padding:14px 16px 12px;text-align:center}
+  .hdr h1{margin:0;font-size:19px;font-weight:900}
+  .hdr p{margin:4px 0 0;font-size:12.5px}
+  .wrap{max-width:640px;margin:0 auto;padding:12px 12px 40px}
+  .card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.07);margin-bottom:12px}
+  .big{text-align:center}
+  .big .amt{font-size:40px;font-weight:900;letter-spacing:-.5px}
+  .big .who{font-size:18px;font-weight:900}
+  .big .on{font-size:14px;color:var(--muted);margin-top:2px}
+  .en{font-size:12px;color:var(--muted);direction:ltr;unicode-bidi:isolate}
+  .calc{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;font-size:15px;line-height:1.9}
+  .calc .ln{display:flex;justify-content:space-between;gap:10px}
+  .calc .ln.tot{font-weight:900;font-size:17px;border-top:2px solid var(--ink);margin-top:4px;padding-top:4px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{font-size:12px;color:var(--muted);text-align:right;font-weight:800;padding:6px 4px;border-bottom:2px solid var(--line)}
+  td{padding:8px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+  td.n,th.n{text-align:left;direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+  tr.tot td{font-weight:900;border-top:2px solid var(--ink);border-bottom:0}
+  tr.gone td{color:var(--muted);text-decoration:line-through}
+  .dow{font-size:12px;color:var(--muted)}
+  .note{border-radius:10px;padding:10px 12px;font-size:13.5px;margin-top:10px;border:1px solid var(--line);background:#fffbeb;color:var(--warn)}
+  .note.bad{background:#fef2f2;color:var(--bad);font-weight:800;font-size:15px;text-align:center}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{flex:1;min-width:140px;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:900;cursor:pointer;background:var(--teal);color:#fff;font-family:inherit}
+  .btn.sec{background:#e5e7eb;color:var(--ink)}
+  .empty{text-align:center;color:var(--muted);padding:24px 8px}
+  .foot{font-size:11.5px;color:var(--muted);text-align:center;margin-top:6px}
+  @media print{
+    body{background:#fff;color:#000}
+    .hdr{background:none;color:#000;border-bottom:2px solid #000;padding:6px 0}
+    .card{box-shadow:none;border:1px solid #000;break-inside:avoid}
+    .btns,.noprint{display:none !important}
+    .note,.note.bad{background:none;color:#000;border:1px solid #000}
+    .dow,.en,.big .on,.foot,th{color:#000}
+  }
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>🧾 דוח תשלום</h1>
+  <p>The Makeup Blowout · Payment report</p>
+</div>
+<div class="wrap">
+  <div id="out"><div class="card empty">טוען… · Loading…</div></div>
+  <div class="card btns noprint" id="btns" style="display:none">
+    <button class="btn" onclick="sharePage()">📤 שליחה · Share</button>
+    <button class="btn sec" onclick="window.print()">🖨️ הדפסה / PDF</button>
+  </div>
+  <div class="foot">המספרים מחושבים מהשעות שנרשמו בדף שעות העבודה · Computed from the hours on the work-hours page</div>
+</div>
+<script>
+"use strict";
+var WORKER = "https://danielle.laurenlev10.workers.dev/";
+var R = null;
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]; }); }
+function money(n){ n = Number(n) || 0; return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function hm(min){ min = Math.max(0, Math.round(min || 0)); return Math.floor(min/60) + ":" + String(min%60).padStart(2, "0"); }
+function hrs(min){ return (Math.round((min || 0) / 60 * 100) / 100).toFixed(2); }
+function dmy(d){ return d ? d.slice(8,10) + "." + d.slice(5,7) + "." + d.slice(0,4) : ""; }
+function dm(d){ return d ? d.slice(8,10) + "." + d.slice(5,7) : ""; }
+function dow(d){ try { return new Date(d + "T12:00:00Z").toLocaleDateString("he-IL", { weekday: "long", timeZone: "UTC" }); } catch(e){ return ""; } }
+function fail(msg){ document.getElementById("out").innerHTML = '<div class="card empty">❌ ' + esc(msg) + '</div>'; }
+
+async function load(){
+  var id = new URLSearchParams(location.search).get("id") || "";
+  if (!/^pay_[a-z0-9]{6,40}$/.test(id)){ fail("הקישור לא שלם — חסר מספר התשלום. · The link is incomplete."); return; }
+  try{
+    var r = await fetch(WORKER, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ kind:"get_warehouse_receipt", id: id }) });
+    var j = await r.json();
+    if (r.status === 404){ fail("התשלום הזה לא נמצא. · Payment not found."); return; }
+    if (!r.ok || !j.ok) throw new Error(j.error || ("server " + r.status));
+    R = j; render();
+  }catch(e){ fail("לא הצלחתי לטעון את הדוח (" + (e.message || e) + "). נסו לרענן. · Could not load — please refresh."); }
+}
+
+function render(){
+  var x = R.receipt, t = x.totals, labels = R.task_labels;
+  document.title = "דוח תשלום — " + x.worker + " — " + dmy(x.paid_on);
+  var period = x.from ? (x.from === x.to ? dmy(x.from) : dmy(x.from) + " – " + dmy(x.to)) : "";
+  var h = "";
+  if (x.voided_at) h += '<div class="card note bad">⚠️ התשלום הזה בוטל · This payment was cancelled</div>';
+  // the headline: who, how much, when
+  h += '<div class="card big"><div class="who">' + esc(x.worker) + '</div>' +
+       '<div class="amt">' + money(t.total) + '</div>' +
+       '<div class="on">שולם ב-' + esc(dmy(x.paid_on)) + (period ? ' · על הימים ' + esc(period) : '') + '</div>' +
+       '<div class="en">Paid ' + esc(dmy(x.paid_on)) + (period ? ' · for ' + esc(period) : '') + '</div>';
+  // how it was calculated
+  h += '<div class="calc">';
+  if (t.hour_rows){
+    h += '<div class="ln"><span>' + t.hour_rows + ' משמרות לפי שעה: ' + hm(t.minutes) + ' שעות (' + hrs(t.minutes) + ') × ' + (x.rate != null ? money(x.rate) : '—') + '</span><b class="n">' + money(t.hours_pay) + '</b></div>';
+  }
+  if (t.day_rows){
+    h += '<div class="ln"><span>' + t.day_rows + ' ימי עבודה בסכום קבוע</span><b class="n">' + money(t.flat) + '</b></div>';
+  }
+  h += '<div class="ln tot"><span>סה״כ לתשלום · Total</span><span class="n">' + money(t.total) + '</span></div></div>';
+  if (x.matches === false && x.recorded && x.recorded.amount != null){
+    h += '<div class="note">השורות תוקנו אחרי שהתשלום נרשם: בזמן התשלום נרשם ' + money(x.recorded.amount) + ', ולפי השורות היום ' + money(t.total) + '.<div class="en">Rows were corrected after the payment was recorded (' + money(x.recorded.amount) + ' then, ' + money(t.total) + ' now).</div></div>';
+  }
+  h += '</div>';
+  // line by line
+  var rows = x.rows.map(function(r){
+    if (r.missing) return '<tr class="gone"><td colspan="4">שורה שנמחקה אחרי התשלום · row deleted after payment</td></tr>';
+    var what = r.day ? '🚗 ' + esc(r.title) + ' <span class="dow">(יום עבודה)</span>'
+                     : '<span class="n">' + esc(r.in_hhmm || "—") + '–' + esc(r.out_hhmm || "—") + '</span>' + (labels && labels[r.task] ? ' <span class="dow">' + esc(labels[r.task]) + '</span>' : '');
+    var hours = r.day ? '—' : hm(r.minutes);
+    var calc = r.day ? 'סכום קבוע' : hrs(r.minutes) + ' × ' + (x.rate != null ? money(x.rate) : '—');
+    return '<tr><td><b>' + esc(dm(r.date)) + '</b><div class="dow">' + esc(dow(r.date)) + '</div></td><td>' + what + '<div class="dow">' + calc + '</div></td><td class="n">' + hours + '</td><td class="n"><b>' + money(r.total) + '</b></td></tr>';
+  }).join("");
+  h += '<div class="card"><table><thead><tr><th>תאריך</th><th>שעות העבודה</th><th class="n">שעות</th><th class="n">סכום</th></tr></thead><tbody>' + rows +
+       '<tr class="tot"><td colspan="2">' + t.rows + ' שורות · ' + t.days + ' ימים</td><td class="n">' + (t.minutes ? hm(t.minutes) : '') + '</td><td class="n">' + money(t.total) + '</td></tr></tbody></table>' +
+       '<div class="foot">שעות בפורמט שעות:דקות. סכום שורה = שעות עשרוניות × התעריף, הסה״כ מחושב על כל הדקות יחד (לכן ייתכן הפרש של סנט).</div></div>';
+  document.getElementById("out").innerHTML = h;
+  document.getElementById("btns").style.display = "flex";
+}
+
+async function sharePage(){
+  var x = R && R.receipt; if (!x) return;
+  var text = "דוח תשלום — " + x.worker + " — " + money(x.totals.total) + " (שולם " + dmy(x.paid_on) + ")";
+  if (navigator.share){ try { await navigator.share({ title: text, text: text, url: location.href }); return; } catch(e){ if (e && e.name === "AbortError") return; } }
+  try { await navigator.clipboard.writeText(text + "\n" + location.href); alert("הקישור הועתק · Link copied"); }
+  catch(e){ prompt("העתיקו את הקישור · Copy the link:", location.href); }
+}
+load();
+</script>
+</body>
+</html>
