@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Unboxing = $10 off — The Makeup Blowout Sale</title>
+<meta name="description" content="Filmed your Mystery Box unboxing? Send us the link and get $10 off your next Mystery Box.">
+<!--
+  09.11.2026 — the page behind the QR on the card inside every Mystery Box.
+  Lauren: a card in each box that brings a second online order and customer videos that tag us.
+  The deal, as she set it: one public video that tags us = ONE one-time $10 code for the next
+  Mystery Box, valid a year, e-mailed once after she approves the video. No text messages.
+  The form posts { kind: "unbox_video" } to the danielle Worker (lauren-agent-hub-data
+  scripts/manager-report-worker/worker.js), which writes docs/state/unbox_videos.json.
+  Our handles are per platform — docs/_assets/brand_handles.json in the hub is the source:
+  on TikTok the Instagram spelling is a stranger's account.
+-->
+<style>
+  :root { --pink:#EC4899; --gold:#FFD700; --ink:#111; --muted:#6b7280; --bg:#FFF0F7; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif; color:var(--ink); }
+  .wrap { max-width:520px; margin:0 auto; padding:12px; }
+  .lang { display:flex; justify-content:flex-end; gap:6px; margin-bottom:8px; }
+  .lang button { border:1.5px solid #111; background:#fff; color:#111; border-radius:18px; padding:8px 14px; font-size:13px; font-weight:700; cursor:pointer; min-height:44px; }
+  .lang button[aria-pressed="true"] { background:#111; color:var(--gold); }
+  .hero { background:#111; border:4px solid var(--gold); border-radius:14px; padding:22px 14px; text-align:center; color:#fff; }
+  .hero h1 { margin:0; font-size:26px; color:var(--gold); }
+  .hero .sub { font-size:15px; font-weight:600; margin-top:8px; line-height:1.5; }
+  .card { background:#fff; border-radius:12px; padding:16px 14px; margin-top:12px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+  .card h2 { margin:0 0 10px; font-size:15px; color:#9D174D; letter-spacing:1px; text-transform:uppercase; }
+  .how { font-size:14px; line-height:1.65; }
+  .how b { color:#9D174D; }
+  label { display:block; font-size:13px; font-weight:700; margin:10px 0 4px; }
+  input[type=text], input[type=email], input[type=url] { width:100%; padding:12px 10px; border:1.5px solid #9ca3af; border-radius:8px; font-size:16px; font-family:inherit; }
+  .check { display:flex; gap:10px; align-items:flex-start; margin-top:14px; font-size:13px; line-height:1.5; font-weight:500; }
+  .check input { width:22px; height:22px; flex:none; margin-top:1px; }
+  .btn { display:block; width:100%; background:#000; color:var(--gold); border:none; border-radius:26px; padding:15px; font-size:16px; font-weight:800; cursor:pointer; margin-top:14px; min-height:48px; }
+  .btn[disabled] { opacity:.5; }
+  .small { font-size:12px; color:#4b5563; line-height:1.5; }
+  .err { color:#b91c1c; font-size:13px; font-weight:700; display:none; margin-top:8px; }
+  .hp { position:absolute; left:-9999px; opacity:0; height:0; overflow:hidden; }
+  #done { display:none; text-align:center; padding:40px 16px; }
+  #done h2 { font-size:24px; margin:0 0 10px; }
+  a { color:#9D174D; }
+</style>
+</head>
+<body>
+<div class="wrap" id="form-wrap">
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" id="lang-en" aria-pressed="true">English</button>
+    <button type="button" id="lang-es" aria-pressed="false">Español</button>
+  </div>
+
+  <div class="hero">
+    <h1 data-en="YOUR UNBOXING = $10 OFF" data-es="TU UNBOXING = $10 DE DESCUENTO">YOUR UNBOXING = $10 OFF</h1>
+    <div class="sub" data-en="Filmed yourself opening your Mystery Box? Send us the link and we'll email you $10 off your next one." data-es="¿Grabaste cómo abres tu Mystery Box? Envíanos el enlace y te mandamos por correo $10 de descuento para la próxima.">Filmed yourself opening your Mystery Box? Send us the link and we'll email you $10 off your next one.</div>
+  </div>
+
+  <div class="card">
+    <h2 data-en="How it works" data-es="Cómo funciona">How it works</h2>
+    <div class="how">
+      <span data-en="1. Film yourself opening the box and post it publicly on TikTok or Instagram." data-es="1. Grábate abriendo la caja y publícalo en modo público en TikTok o Instagram.">1. Film yourself opening the box and post it publicly on TikTok or Instagram.</span><br>
+      <span data-en="2. Tag us —" data-es="2. Etiquétanos —">2. Tag us —</span> Instagram <b>@themakeupblowoutsale</b> · TikTok <b>@makeupblowoutsale</b> · <b>#MakeupBlowoutSale</b> <b>#MakeupBlowoutPartner</b><br>
+      <span data-en="3. Paste the link to your video below." data-es="3. Pega abajo el enlace de tu video.">3. Paste the link to your video below.</span><br>
+      <span data-en="4. We check it and email you a one-time $10 code for your next Mystery Box." data-es="4. Lo revisamos y te enviamos por correo un código de $10, de un solo uso, para tu próxima Mystery Box.">4. We check it and email you a one-time $10 code for your next Mystery Box.</span><br><br>
+      <span class="small" data-en="There's a new box every month, and your code is good on any of them for a full year — wait for the next one if you want all-new products." data-es="Cada mes hay una caja nueva y tu código sirve para cualquiera durante un año completo — espera la siguiente si quieres productos totalmente nuevos.">There's a new box every month, and your code is good on any of them for a full year — wait for the next one if you want all-new products.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 data-en="Send your video" data-es="Envía tu video">Send your video</h2>
+    <label for="f-name" data-en="First name *" data-es="Nombre *">First name *</label>
+    <input type="text" id="f-name" autocomplete="given-name">
+    <label for="f-email" data-en="Email — where we send your code *" data-es="Correo — ahí te enviamos tu código *">Email — where we send your code *</label>
+    <input type="email" id="f-email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false">
+    <label for="f-video" data-en="Link to your video *" data-es="Enlace de tu video *">Link to your video *</label>
+    <input type="url" id="f-video" placeholder="https://www.tiktok.com/@you/video/…" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false">
+    <div class="small" data-en="Open your video → Share → Copy link, then paste it here." data-es="Abre tu video → Compartir → Copiar enlace, y pégalo aquí.">Open your video → Share → Copy link, then paste it here.</div>
+    <div class="check">
+      <input type="checkbox" id="f-ok">
+      <label for="f-ok" style="margin:0;font-weight:500" data-en="My video is public and tags The Makeup Blowout Sale, and you may share it on your pages." data-es="Mi video es público y etiqueta a The Makeup Blowout Sale, y pueden compartirlo en sus páginas.">My video is public and tags The Makeup Blowout Sale, and you may share it on your pages.</label>
+    </div>
+    <div class="hp"><label for="f-website">Website</label><input type="text" id="f-website" tabindex="-1" autocomplete="off"></div>
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn" id="submit-btn" data-en="Send my video" data-es="Enviar mi video">Send my video</button>
+    <div class="small" style="margin-top:10px" data-en="One code per video. One-time use on a Mystery Box at shop.themakeupblowout.com, valid 12 months. We only email you about this code." data-es="Un código por video. Un solo uso en una Mystery Box en shop.themakeupblowout.com, válido 12 meses. Solo te escribimos por este código.">One code per video. One-time use on a Mystery Box at shop.themakeupblowout.com, valid 12 months. We only email you about this code.</div>
+  </div>
+</div>
+
+<div id="done" class="wrap">
+  <h2 data-en="Got it — thank you!" data-es="¡Recibido — gracias!">Got it — thank you!</h2>
+  <p style="font-size:15px;line-height:1.6" data-en="We'll watch your video and email your $10 code, usually within a few days. Check your spam folder if you don't see it." data-es="Vamos a ver tu video y te enviamos tu código de $10 por correo, normalmente en unos días. Revisa tu carpeta de spam si no lo ves.">We'll watch your video and email your $10 code, usually within a few days. Check your spam folder if you don't see it.</p>
+  <p class="small"><span data-en="Do you create content regularly?" data-es="¿Creas contenido con frecuencia?">Do you create content regularly?</span> <a href="../collab/" data-en="Apply to collab with us" data-es="Solicita colaborar con nosotros">Apply to collab with us</a></p>
+</div>
+
+<script>
+(function(){
+  var ENDPOINT = "https://danielle.laurenlev10.workers.dev/";
+  var lang = /^es/i.test(navigator.language || "") ? "es" : "en";
+  var MSG = {
+    en: { fill: "Please fill your name, email and video link.", email: "Please enter a valid email.",
+          link: "Please paste the full link to your video on TikTok, Instagram, YouTube or Facebook (Share → Copy link).",
+          ok: "Please confirm your video is public and tags us.", sending: "Sending…", fail: "Could not send", again: "Please try again." },
+    es: { fill: "Escribe tu nombre, tu correo y el enlace de tu video.", email: "Escribe un correo válido.",
+          link: "Pega el enlace completo de tu video en TikTok, Instagram, YouTube o Facebook (Compartir → Copiar enlace).",
+          ok: "Confirma que tu video es público y nos etiqueta.", sending: "Enviando…", fail: "No se pudo enviar", again: "Inténtalo de nuevo." }
+  };
+  function setLang(l){
+    lang = l; document.documentElement.lang = l;
+    var nodes = document.querySelectorAll("[data-en]");
+    for (var i = 0; i < nodes.length; i++) nodes[i].textContent = nodes[i].getAttribute("data-" + l);
+    document.getElementById("lang-en").setAttribute("aria-pressed", String(l === "en"));
+    document.getElementById("lang-es").setAttribute("aria-pressed", String(l === "es"));
+  }
+  document.getElementById("lang-en").addEventListener("click", function(){ setLang("en"); });
+  document.getElementById("lang-es").addEventListener("click", function(){ setLang("es"); });
+  setLang(lang);
+
+  var VIDEO_HOSTS = /(^|\.)(tiktok\.com|instagram\.com|youtube\.com|youtu\.be|facebook\.com|fb\.watch|fb\.com)$/i;
+  var btn = document.getElementById("submit-btn"), errEl = document.getElementById("err");
+  function fail(m){ errEl.textContent = m; errEl.style.display = "block"; }
+  btn.addEventListener("click", function(){
+    errEl.style.display = "none";
+    var T = MSG[lang];
+    var name = document.getElementById("f-name").value.trim();
+    var email = document.getElementById("f-email").value.trim();
+    var video = document.getElementById("f-video").value.trim();
+    if (!name || !email || !video) return fail(T.fill);
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return fail(T.email);
+    if (!/^https?:\/\//i.test(video)) video = "https://" + video;
+    video = video.replace(/^http:\/\//i, "https://");
+    var host = "";
+    try { host = new URL(video).hostname.toLowerCase(); } catch (e) { host = ""; }
+    if (!host || !VIDEO_HOSTS.test(host)) return fail(T.link);
+    if (!document.getElementById("f-ok").checked) return fail(T.ok);
+    btn.disabled = true; btn.textContent = T.sending;
+    var payload = { kind: "unbox_video", name: name, email: email, video_url: video, lang: lang,
+                    website: document.getElementById("f-website").value.trim() };
+    fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (j && j.ok) {
+          document.getElementById("form-wrap").style.display = "none";
+          document.getElementById("done").style.display = "block";
+          window.scrollTo(0,0);
+        } else { throw new Error((j && j.error) || "save failed"); }
+      })
+      .catch(function(er){
+        btn.disabled = false; btn.textContent = btn.getAttribute("data-" + lang);
+        fail(T.fail + " (" + er.message + "). " + T.again);
+      });
+  });
+})();
+</script>
+</body>
+</html>
