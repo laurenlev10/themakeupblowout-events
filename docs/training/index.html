@@ -228,13 +228,25 @@ function queue(){ return store("tr_queue") || []; }
 function lessonTrack(id){ var o=null; (COURSE.tracks||[]).forEach(function(t){ t.lessons.forEach(function(l,i){ if(l.id===id) o={track:t,lesson:l,i:i}; }); }); return o; }
 function isDone(id){ return !!DONE[id] || queue().some(function(q){ return q.key===ME.key && q.lesson===id; }); }
 function trackComplete(t){ return t.lessons.every(function(l){ return isDone(l.id); }); }
+/* 11.11.2026 — Lauren: a course for NEW workers, before their first event. training.json carries it
+   as a track for:"new"; the Worker says who is new (ME.newhire — a roster member added on /team/ as a
+   new worker). They see it first, and the Crew Training it `gates` opens when it is done. Owners may
+   run it; nobody else sees it. */
+function forMe(t){ if(t.for==="manager") return !!ME.manager; if(t.for==="new") return !!ME.newhire || ME.kind==="owner"; return true; }
+function gateOf(t){ return ME.newhire ? (COURSE.tracks.filter(function(x){ return x.for==="new" && x.gates===t.id; })[0] || null) : null; }
+function lockedBy(t){
+  if(t.requires){ var r = COURSE.tracks.filter(function(x){ return x.id===t.requires; })[0]; if(r && !trackComplete(r)) return r; }
+  var g = gateOf(t); if(g && !trackComplete(g)) return g;
+  return null;
+}
 function trackOpen(t){
-  if(t.for==="manager" && !ME.manager) return false;
+  if(!forMe(t)) return false;
+  if(gateOf(t) && !trackComplete(gateOf(t))) return false;
   if(t.requires){ var r = COURSE.tracks.filter(function(x){ return x.id===t.requires; })[0]; if(r && !trackComplete(r)) return false; }
   return true;
 }
 function lessonOpen(t, i){ if(!trackOpen(t)) return false; for(var k=0;k<i;k++) if(!isDone(t.lessons[k].id)) return false; return true; }
-function myTracks(){ return COURSE.tracks.filter(function(t){ return t.for!=="manager" || ME.manager; }); }
+function myTracks(){ return COURSE.tracks.filter(forMe); }
 
 /* ═══════════ boot ═══════════ */
 // 27.10.2026 13:16 — Lauren: no list of names to tap ("אחד ילחץ בטעות על העובד השני"): each person
@@ -312,15 +324,16 @@ function renderMap(){
   if(!ME || !COURSE) return;
   if(UNIFORM_ONLY){
     document.getElementById("hi").textContent = "HI "+String(ME.typed||ME.name).split(" ")[0].toUpperCase()+"! 👋";
-    document.getElementById("hi-lead").textContent = "A few quick questions about your company uniform.";
+    document.getElementById("hi-lead").textContent = ME.newhire ? "Two quick questions about your sizes." : "A few quick questions about your company uniform.";
     document.getElementById("certs").innerHTML = ""; hide("qpill");
     if(SURVEY_NEEDED){ renderSurvey(); return; }
-    document.getElementById("tracks").innerHTML = '<div class="panel"><h2>✅ THANK YOU!</h2><p class="lead">We have your uniform answers. Your manager will bring you whatever is missing.</p>'+
+    document.getElementById("tracks").innerHTML = '<div class="panel"><h2>✅ THANK YOU!</h2><p class="lead">'+(ME.newhire ? 'We have your sizes. Your shirts and jacket will be waiting for you at your first event.' : 'We have your uniform answers. Your manager will bring you whatever is missing.')+'</p>'+
       '<button class="gobtn alt" id="survey-again" type="button">CHANGE MY ANSWERS</button></div>';
     document.getElementById("survey-again").onclick = function(){ SURVEY_NEEDED = true; renderMap(); };
     return;
   }
-  document.getElementById("hi").textContent = "HI "+String(ME.typed||ME.name).split(" ")[0].toUpperCase()+"! 👋";
+  document.getElementById("hi").textContent = (ME.newhire ? "WELCOME " : "HI ")+String(ME.typed||ME.name).split(" ")[0].toUpperCase()+"! 👋";
+  document.getElementById("hi-lead").innerHTML = (ME.newhire ? "We are so happy you joined the team! 💕 " : "")+"Watch each short video <b>to the end</b> and answer one quick question — that unlocks the next one. 🔓"+(ME.newhire ? " Finish them all before your first event." : "");
   var q = queue().filter(function(x){ return x.key===ME.key; });
   var qp = document.getElementById("qpill");
   if(q.length){ qp.textContent = "⏳ "+q.length+" finished video"+(q.length>1?"s":"")+" not saved yet — keep this page open with internet"; show("qpill"); } else hide("qpill");
@@ -339,7 +352,7 @@ function renderMap(){
       return '<button class="tile '+cls+'" '+(cls==="locked"?"disabled":"")+' onclick="openLesson(\''+l.id+'\')"><span class="n">'+(d?"✓":(i+1))+'</span><div class="tt">'+esc(l.title)+'</div><div class="st">'+st+'</div></button>';
     }).join("");
     return '<div class="track"><div class="track-h"><h2>'+esc(t.title)+'</h2><span class="tsub">'+esc(t.subtitle||"")+'</span></div>'+
-      (open ? "" : '<div class="locknote">🔒 Opens when you finish the '+esc((COURSE.tracks.filter(function(x){return x.id===t.requires;})[0]||{}).title||"previous course")+'.</div>')+
+      (open ? "" : '<div class="locknote">🔒 Opens when you finish the '+esc((lockedBy(t)||{}).title||"previous course")+'.</div>')+
       '<div class="bar"><i style="width:'+Math.round(100*n/t.lessons.length)+'%"></i></div>'+
       '<div style="font-weight:700;font-size:13px;margin:-8px 0 10px">'+n+' / '+t.lessons.length+' videos</div>'+
       '<div class="tiles">'+tiles+'</div></div>';
@@ -352,7 +365,19 @@ function renderSurvey(){
     var lab = label ? label[i] : String(v);
     return '<button type="button" class="uopt'+(SURVEY[field]===v?' on':'')+'" data-f="'+field+'" data-i="'+i+'">'+esc(lab)+'</button>'; }).join("")+'</div>'; };
   var shirtN = [0,1,2,3,4];
-  document.getElementById("tracks").innerHTML =
+  /* 11.11.2026 — Lauren: the new worker's course includes "which size shirt and jacket". A new worker
+     owns no uniform yet, so only the two sizes are asked; 0 shirts / no jacket is what is sent. */
+  var NEW = !!ME.newhire;
+  if(NEW){ SURVEY.shirts = 0; SURVEY.jacket = false; }
+  if(NEW) document.getElementById("tracks").innerHTML =
+    '<div class="panel" id="survey"><h2>'+(UNIFORM_ONLY ? 'YOUR SIZES 👕' : 'STEP 1 — YOUR SIZES 👕')+'</h2>'+
+    '<p class="lead">You get <b>two company shirts and a jacket</b> at your first event. Two quick questions'+(UNIFORM_ONLY ? '' : ' before the videos')+', so they are ready for you in the right size.</p>'+
+    '<div class="uq">1. What shirt size do you wear?</div>'+row("shirt_size", SIZES)+
+    '<div class="uq">2. What jacket size do you wear?</div>'+row("jacket_size", SIZES)+
+    '<div id="survey-err" class="err hide"></div>'+
+    '<button class="gobtn" id="survey-go" type="button">SEND ✔</button></div>'+
+    (UNIFORM_ONLY ? '' : '<div class="panel"><h2>🔒 YOUR VIDEOS</h2><p class="lead">They open as soon as you send your sizes.</p></div>');
+  else document.getElementById("tracks").innerHTML =
     '<div class="panel" id="survey"><h2>'+(UNIFORM_ONLY ? 'YOUR UNIFORM 👕' : 'STEP 1 — YOUR UNIFORM 👕')+'</h2>'+
     '<p class="lead">'+(UNIFORM_ONLY ? 'Four quick questions, so we know what to bring you.' : 'Four quick questions before the videos, so we know what to bring you.')+'</p>'+
     '<div class="uq">1. How many company shirts do you have?</div>'+row("shirts", shirtN, ["0","1","2","3","4+"])+
@@ -372,7 +397,7 @@ function renderSurvey(){
 async function sendSurvey(){
   var e = document.getElementById("survey-err"), go = document.getElementById("survey-go");
   var miss = ["shirts","jacket","shirt_size","jacket_size"].filter(function(k){ return SURVEY[k]===undefined; });
-  if(miss.length){ e.textContent = "Please answer all four questions."; show("survey-err"); return; }
+  if(miss.length){ e.textContent = ME.newhire ? "Please pick both sizes." : "Please answer all four questions."; show("survey-err"); return; }
   hide("survey-err"); go.disabled = true; go.textContent = "SAVING…";
   var r = null;
   try{ r = await api({kind:"uniform_survey", name:ME.typed, shirts:SURVEY.shirts, jacket:SURVEY.jacket, shirt_size:SURVEY.shirt_size, jacket_size:SURVEY.jacket_size}); }catch(x){ r = null; }
@@ -458,6 +483,9 @@ var PROPS = {
   register: '<g '+S+'><path d="M-96 0 H96 V80 H-96Z" fill="#FF3EA5"/><path d="M-80 0 L-60 -60 H60 L80 0Z" fill="#fff"/><rect x="-44" y="-100" width="88" height="44" rx="6" fill="#111"/><text x="0" y="-68" text-anchor="middle" font-family="Bangers" font-size="30" fill="#7CFF4F" stroke="none">$24.99</text><g fill="#FFE600" stroke-width="5"><rect x="-56" y="-44" width="22" height="14" rx="3"/><rect x="-22" y="-44" width="22" height="14" rx="3"/><rect x="12" y="-44" width="22" height="14" rx="3"/><rect x="-62" y="-24" width="22" height="14" rx="3"/><rect x="-28" y="-24" width="22" height="14" rx="3"/><rect x="6" y="-24" width="22" height="14" rx="3"/></g><rect x="-60" y="30" width="120" height="24" rx="4" fill="#fff"/></g>',
   clipboard: '<g '+S+'><rect x="-72" y="-86" width="144" height="182" rx="12" fill="#C9874A"/><rect x="-56" y="-62" width="112" height="146" fill="#fff"/><rect x="-32" y="-98" width="64" height="28" rx="8" fill="#9B5CFF"/><path d="M-42 -30 L-34 -22 L-20 -40 M-42 10 L-34 18 L-20 0 M-42 50 L-34 58 L-20 40" fill="none" stroke="#22D36B" stroke-width="7"/><path d="M-6 -30 H40 M-6 10 H40 M-6 50 H40" stroke-width="6"/></g>',
   eye: '<g '+S+'><path d="M-100 0 Q0 -96 100 0 Q0 96 -100 0Z" fill="#fff"/><circle r="40" fill="#21C8FF"/><circle r="20" fill="#111"/><circle cx="-10" cy="-12" r="8" fill="#fff" stroke="none"/><path d="M-80 -34 L-96 -58 M-40 -60 L-48 -86 M0 -68 V-96 M40 -60 L48 -86 M80 -34 L96 -58" stroke-width="7"/></g>',
+  calendar: '<g '+S+'><rect x="-88" y="-76" width="176" height="164" rx="14" fill="#fff"/><path d="M-88 -62 Q-88 -76 -74 -76 H74 Q88 -76 88 -62 V-32 H-88 Z" fill="#FF3B3B"/><path d="M-46 -96 V-58 M46 -96 V-58" stroke-width="12"/><rect x="-66" y="-14" width="34" height="30" rx="5" fill="#FFE600"/><rect x="-17" y="-14" width="34" height="30" rx="5" fill="#FF3EA5"/><rect x="32" y="-14" width="34" height="30" rx="5" fill="#FF3EA5"/><rect x="-66" y="34" width="34" height="30" rx="5" fill="#FF3EA5"/><rect x="-17" y="34" width="34" height="30" rx="5" fill="#eee"/><rect x="32" y="34" width="34" height="30" rx="5" fill="#eee"/></g>',
+  bed: '<g '+S+' transform="scale(.78)"><path d="M-104 -70 V84 M104 -10 V84"/><rect x="-104" y="10" width="208" height="46" rx="8" fill="#21C8FF"/><path d="M-104 10 V-20 Q-104 -34 -90 -34 H-20 Q-6 -34 -6 -20 V10 Z" fill="#fff"/><path d="M-6 10 V-4 Q-6 -16 8 -16 H88 Q104 -16 104 0 V10 Z" fill="#FF3EA5"/><path d="M40 -84 h26 l-26 26 h26" fill="none" stroke-width="6"/><path d="M82 -112 h16 l-16 16 h16" fill="none" stroke-width="5"/></g>',
+  pin: '<g '+S+'><ellipse cx="0" cy="88" rx="46" ry="12" fill="#111" opacity=".25" stroke="none"/><path d="M0 86 C-18 44 -64 12 -64 -36 A64 64 0 0 1 64 -36 C64 12 18 44 0 86 Z" fill="#FF3B3B"/><circle cx="0" cy="-36" r="24" fill="#fff"/></g>',
   card: '<g '+S+' transform="rotate(-10)"><rect x="-100" y="-62" width="200" height="124" rx="14" fill="#9B5CFF"/><rect x="-100" y="-36" width="200" height="24" fill="#111"/><rect x="-74" y="4" width="40" height="30" rx="5" fill="#FFE600"/><text x="40" y="44" text-anchor="middle" font-family="Bangers" font-size="30" fill="#fff" stroke="none">COMPANY</text></g>'
 };
 var COLORS = { pink:["#FF5DB1","#FF8FCB"], yellow:["#FFE14D","#FFF08A"], cyan:["#3DD6FF","#8BE7FF"], red:["#FF5252","#FF8A8A"], purple:["#A779FF","#C6A6FF"] };
