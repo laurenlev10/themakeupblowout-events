@@ -90,6 +90,7 @@
   .startover .pb{width:120px;height:120px;border-radius:50%;background:var(--pink);border:7px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 7px var(--ink)}
   .startover .pb::after{content:"";border-left:46px solid #fff;border-top:28px solid transparent;border-bottom:28px solid transparent;margin-left:12px}
   .startover .lbl{font-family:"Bangers",Impact,sans-serif;color:#fff;font-size:30px;letter-spacing:1.5px;text-shadow:3px 3px 0 #111}
+  body.intro .ph .x, body.intro #me-btn, body.intro #qpill{display:none!important}
   /* quiz */
   .quiz{margin-top:18px}
   .quiz .qq{font-weight:700;font-size:20px;line-height:1.25;margin-bottom:12px}
@@ -148,10 +149,11 @@
   <!-- 1. who are you -->
   <section id="s-who" class="hide">
     <div class="panel">
-      <h1>WHO ARE YOU?</h1>
-      <p class="lead">Type your <b>first and last name</b>, then press START.</p>
+      <h1 id="who-h">WHO ARE YOU?</h1>
+      <p class="lead" id="who-lead">Type your <b>first and last name</b>, then press START.</p>
       <form id="who-form" onsubmit="startWithName();return false;" autocomplete="on">
         <input id="who-name" class="who-in" type="text" name="name" autocomplete="name" maxlength="60" placeholder="e.g. Maria Lopez" required>
+        <input id="who-phone" class="who-in hide" type="tel" name="tel" autocomplete="tel" inputmode="tel" maxlength="24" placeholder="Your phone number" style="margin-top:10px">
         <div id="who-err" class="err hide" style="margin:10px 0 0"></div>
         <button class="gobtn" id="who-go" type="submit">START ▶</button>
       </form>
@@ -187,7 +189,7 @@
       <button class="cbtn" id="btn-voice" onclick="toggleVoice()" title="Voice">🔊</button>
       <button class="cbtn" id="btn-music" onclick="toggleMusic()" title="Music">🎵</button>
     </div>
-    <div class="noskip">No skipping 😉 — the question appears when the video ends.</div>
+    <div class="noskip" id="noskip">No skipping 😉 — the question appears when the video ends.</div>
     <div id="quiz" class="panel quiz hide"></div>
   </section>
 </main>
@@ -232,7 +234,15 @@ function trackComplete(t){ return t.lessons.every(function(l){ return isDone(l.i
    as a track for:"new"; the Worker says who is new (ME.newhire — a roster member added on /team/ as a
    new worker). They see it first, and the Crew Training it `gates` opens when it is done. Owners may
    run it; nobody else sees it. */
-function forMe(t){ if(t.for==="manager") return !!ME.manager; if(t.for==="new") return !!ME.newhire || ME.kind==="owner"; return true; }
+/* 🎬 11.11.2026 — Lauren: ONE video for potential workers, sent BEFORE the screening call. They must
+   confirm they watched it to the end; that texts Lauren and Eli, and only then a call is scheduled.
+   ?intro=1 is that mode: name + phone (nobody here is on the roster, the Worker is not asked who
+   they are), the single lesson of the track for:"candidate", and at its end a confirm button
+   instead of a question (kind candidate_watched). The track is nobody's course: forMe hides it
+   from everyone else, and a candidate sees nothing but it. */
+var INTRO = QS.get("intro")==="1";
+function introTrack(){ return (COURSE.tracks||[]).filter(function(t){ return t.for==="candidate"; })[0] || null; }
+function forMe(t){ if(ME.kind==="candidate") return t.for==="candidate"; if(t.for==="candidate") return false; if(t.for==="manager") return !!ME.manager; if(t.for==="new") return !!ME.newhire || ME.kind==="owner"; return true; }
 function gateOf(t){ return ME.newhire ? (COURSE.tracks.filter(function(x){ return x.for==="new" && x.gates===t.id; })[0] || null) : null; }
 function lockedBy(t){
   if(t.requires){ var r = COURSE.tracks.filter(function(x){ return x.id===t.requires; })[0]; if(r && !trackComplete(r)) return r; }
@@ -260,6 +270,14 @@ async function boot(){
   if(r.status!==200 || !r.json.ok || !r.json.course) return bootErr((r.json && r.json.error) || "The course could not load. Try again in a minute.");
   COURSE = r.json.course;
   hide("boot");
+  if(INTRO){
+    if(!introTrack()) return bootErr("The video could not load. Try again in a minute.");
+    document.body.classList.add("intro");
+    document.getElementById("who-h").textContent = "HI! 👋";
+    document.getElementById("who-lead").innerHTML = "Before we talk, please watch <b>one short video</b> about working with The Makeup Blowout Sale. 📝 Have a <b>pen and paper</b> ready for your questions.<br><br>Type your <b>first and last name</b> and your <b>phone number</b>, then press START.";
+    show("who-phone");
+    return showWho();
+  }
   var want = (QS.get("name")||"").trim() || (store("tr_name")||"");
   if(want) return begin(want); else showWho();
 }
@@ -280,6 +298,14 @@ function startWithName(){
   var v = document.getElementById("who-name").value.replace(/\s+/g," ").trim();
   var e = document.getElementById("who-err");
   if(v.length < 2 || !/[A-Za-z\u0590-\u05FF]{2}/.test(v)){ e.textContent = "Please type your name."; show("who-err"); return; }
+  if(INTRO){
+    var ph = document.getElementById("who-phone").value.trim(), dg = ph.replace(/\D/g,"");
+    if(v.indexOf(" ") < 0){ e.textContent = "Please type your first and last name."; show("who-err"); return; }
+    if(dg.length < 10 || dg.length > 15){ e.textContent = "Please type your phone number with the area code."; show("who-err"); return; }
+    hide("who-err");
+    ME = {kind:"candidate", key:"candidate", name:v, typed:v, phone:ph}; DONE = {}; TRACKS_DONE = {};
+    return openLesson(introTrack().lessons[0].id);
+  }
   hide("who-err");
   begin(v);
 }
@@ -598,14 +624,15 @@ function openLesson(id){
   // the sequence: title card, the beats, the end card
   var seq = [{type:"title", dur:3.2}].concat(L.beats.map(function(b){ return {type:"beat", b:b}; })).concat([{type:"end", dur:2.6}]);
   P = {track:o.track, lesson:L, i:o.i, seq:seq, k:-1, clock:0, playing:false, finished:false, last:0};
-  document.getElementById("pl-title").textContent = "VIDEO "+(o.i+1)+": "+L.title.toUpperCase();
-  document.getElementById("pl-sub").textContent = o.track.title+" · "+(o.i+1)+" of "+o.track.lessons.length;
+  document.getElementById("pl-title").textContent = INTRO ? L.title.toUpperCase() : "VIDEO "+(o.i+1)+": "+L.title.toUpperCase();
+  document.getElementById("pl-sub").textContent = INTRO ? "Watch to the end — then confirm 👇" : o.track.title+" · "+(o.i+1)+" of "+o.track.lessons.length;
   document.getElementById("stage").innerHTML = stageBase(L.color, o.track.for==="manager");
   document.getElementById("stage-wrap").classList.add("paused");
   document.getElementById("subtitle").innerHTML = "&nbsp;";
   document.getElementById("prog").style.width = "0";
   document.getElementById("startlbl").textContent = isDone(id) ? "WATCH AGAIN!" : "PRESS PLAY!";
   show("startover"); hide("quiz");
+  if(INTRO) document.getElementById("noskip").textContent = "No skipping 😉 — the confirm button appears when the video ends.";
   document.getElementById("btn-pp").textContent = "▶";
   syncToggles();
   screen("s-player");
@@ -771,10 +798,36 @@ function finish(){
   document.getElementById("btn-pp").textContent = "✓";
   musicStop();
   var q = P.lesson.quiz, box = document.getElementById("quiz");
+  if(P.track.for==="candidate"){
+    var c = P.lesson.confirm || {};
+    box.innerHTML = '<div class="verdict" style="color:#FF1F8F">'+esc(c.title||"THAT'S IT!")+'</div><div class="qq">'+esc(c.text||"Press the button to tell us you watched the whole video.")+'</div>'+
+      '<button class="gobtn" id="cand-go" type="button" onclick="confirmWatched()">'+esc(c.button||"✔ I WATCHED THE WHOLE VIDEO")+'</button><div id="qres"></div>';
+    show("quiz");
+    setTimeout(function(){ box.scrollIntoView({behavior:"smooth", block:"start"}); }, 50);
+    return;
+  }
   box.innerHTML = '<div class="verdict" style="color:#FF1F8F">QUICK QUESTION!</div><div class="qq">'+esc(q.q)+'</div>'+
     q.options.map(function(o, i){ return '<button class="opt" data-i="'+i+'" onclick="answer('+i+',this)">'+esc(o)+'</button>'; }).join("")+'<div id="qres"></div>';
   show("quiz");
   setTimeout(function(){ box.scrollIntoView({behavior:"smooth", block:"start"}); }, 50);
+}
+/* the candidate's confirmation. "Thank you" is shown ONLY when the Worker said the text to Lauren and
+   Eli is on its way; anything else says so and leaves the button to press again. */
+var CAND_BUSY = false;
+async function confirmWatched(){
+  if(CAND_BUSY || !P || P.track.for!=="candidate" || !P.finished) return;
+  var go = document.getElementById("cand-go"), res = document.getElementById("qres"), c = P.lesson.confirm || {};
+  CAND_BUSY = true; go.disabled = true; res.innerHTML = '<div class="savenote">📨 Sending…</div>';
+  var r = null;
+  try{ r = await api({kind:"candidate_watched", name:ME.name, phone:ME.phone, lesson:P.lesson.id}); }catch(e){ r = null; }
+  CAND_BUSY = false;
+  if(r && r.status===200 && r.json.ok){
+    confetti(); go.classList.add("hide");
+    res.innerHTML = '<div class="cert" style="margin-top:14px"><div class="big">THANK YOU, '+esc(String(ME.name).split(" ")[0].toUpperCase())+'! 💕</div><div style="font-weight:700;font-size:18px;margin-top:8px">'+esc(c.thanks||"We got it! We will contact you soon to schedule a phone call.")+'</div></div>';
+    return;
+  }
+  go.disabled = false;
+  res.innerHTML = '<div class="verdict" style="color:#FF3B3B">NOT SENT YET</div><div class="why">⚠️ '+esc((r && r.json && r.json.error) || "No connection — check your internet and press the button again.")+'</div>';
 }
 async function answer(i, el){
   var q = P.lesson.quiz;
