@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-11-13T16:11:54Z",
+  "_updated_at": "2026-11-13T16:18:36Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -547,7 +547,9 @@
       "form_id": "6abdea39aad5a6366a097b05",
       "subscribe_url": "/events/sacramento-ca-2027/",
       "_added_by": "sync_event_data.add_signed_events",
-      "tz": "America/Los_Angeles"
+      "tz": "America/Los_Angeles",
+      "ig_url": "https://www.instagram.com/reel/DfsCcSmRGtR/?utm_source=ig_web_copy_link&dlrf=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7707690718076226847"
     },
     {
       "city": "Roseville",
