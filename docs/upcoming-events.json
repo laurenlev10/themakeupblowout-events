@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-11-09T01:45:43Z",
+  "_updated_at": "2026-11-13T03:04:23Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -27,7 +27,8 @@
       "venue_name": "Courtyard by Marriott",
       "venue_address": "3301 Lemone Industrial Blvd, Columbia, MO 65201",
       "form_id": "6930ece15c4c2f0a2f7af97d",
-      "ig_url": "https://www.instagram.com/reel/DXxbbJhRHEE/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+      "ig_url": "https://www.instagram.com/reel/DXxbbJhRHEE/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "tz": "America/Chicago"
     },
     {
       "city": "Milwaukee",
@@ -43,7 +44,8 @@
       "form_id": "6930ecf65c4c2f0a2f7afe58",
       "ig_url": "https://www.instagram.com/reel/DXzUUs9xTuz/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/H2q83ao-pe/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7637225913100406046"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7637225913100406046",
+      "tz": "America/Chicago"
     },
     {
       "city": "Roseville",
@@ -59,7 +61,8 @@
       "form_id": "6930ed155c4c2f0a2f7b0414",
       "ig_url": "https://www.instagram.com/reel/DX7z4srxAGk/?utm_source=ig_web_copy_link&igsh=NTc4MTIwNjQ2YQ==",
       "fb_url": "https://fb.watch/H2lW3P7zL9/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7637226321277504798"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7637226321277504798",
+      "tz": "America/Chicago"
     },
     {
       "city": "Cleveland",
@@ -75,7 +78,8 @@
       "form_id": "69406c057e67765257a13998",
       "ig_url": "https://www.instagram.com/reel/DYM18AwRYV7/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://www.facebook.com/reel/2245982816143690/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638839259515981087"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7638839259515981087",
+      "tz": "America/New_York"
     },
     {
       "city": "Omaha",
@@ -149,7 +153,8 @@
       "ig_url": "https://www.instagram.com/reel/DZxaqtnxk3k/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://www.facebook.com/reel/992629633259890",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7645694764909694238",
-      "subscribe_url": "/events/fort-collins-co-2026/"
+      "subscribe_url": "/events/fort-collins-co-2026/",
+      "tz": "America/Denver"
     },
     {
       "city": "Mesa",
@@ -163,7 +168,8 @@
       "subscribe_url": "/events/mesa-az-2026/",
       "ig_url": "https://www.instagram.com/reel/DaA3lARRg8i/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/HD-Pxbvwoa/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7649440155845020958"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7649440155845020958",
+      "tz": "America/Phoenix"
     },
     {
       "city": "Santa Maria",
@@ -177,7 +183,8 @@
       "subscribe_url": "/events/santa-maria-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/DaIt5z0RH-I/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/HR7tJ7eZd2/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7653133635981266206"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7653133635981266206",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Modesto",
@@ -191,7 +198,8 @@
       "subscribe_url": "/events/modesto-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/DabDYPjRwUB/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/HR7BN1563q/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7653134337986071838"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7653134337986071838",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Victorville",
@@ -205,7 +213,8 @@
       "subscribe_url": "/events/victorville-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/Dax2--XRqi5/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/I2ijzBcdz3/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7656839772647836959"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7656839772647836959",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Richmond",
@@ -219,7 +228,8 @@
       "subscribe_url": "/events/richmond-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/DbGdIQ2x0An/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/I2iEV8826W/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7656840843956931871"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7656840843956931871",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Visalia",
@@ -233,7 +243,8 @@
       "subscribe_url": "/events/visalia-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/DbnuEZBxAEl/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7664296987734396190",
-      "fb_url": "https://fb.watch/IsNRUwnvQx/"
+      "fb_url": "https://fb.watch/IsNRUwnvQx/",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Riverside",
@@ -247,7 +258,8 @@
       "subscribe_url": "/events/riverside-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/Db6LxgNR7LJ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7664297668683779358",
-      "fb_url": "https://fb.watch/IsO8l8ULPe/"
+      "fb_url": "https://fb.watch/IsO8l8ULPe/",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "San Jose",
@@ -261,7 +273,8 @@
       "subscribe_url": "/events/san-jose-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/DcMDyg8RNhm/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7665381376849480990",
-      "fb_url": "https://www.facebook.com/reel/1843327326638636"
+      "fb_url": "https://www.facebook.com/reel/1843327326638636",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Portland",
@@ -303,7 +316,8 @@
       "subscribe_url": "/events/salt-lake-city-ut-2026/",
       "ig_url": "https://www.instagram.com/reel/Dc1jbElxMi_/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/J4riLN0I7w/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7675456247054732575?is_from_webapp=1&sender_device=pc"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7675456247054732575?is_from_webapp=1&sender_device=pc",
+      "tz": "America/Denver"
     },
     {
       "city": "Bakersfield",
@@ -317,7 +331,8 @@
       "subscribe_url": "/events/bakersfield-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/DdMp89cxSfE/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/J4rxg-8Dey/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7675457605661117727?is_from_webapp=1&sender_device=pc"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7675457605661117727?is_from_webapp=1&sender_device=pc",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Reno",
@@ -345,7 +360,8 @@
       "subscribe_url": "/events/santa-fe-nm-2026/",
       "ig_url": "https://www.instagram.com/reel/DdphuzwRFrb/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/JmSWWY9s7t/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7679176348019019039"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7679176348019019039",
+      "tz": "America/Denver"
     },
     {
       "city": "Albuquerque",
@@ -359,7 +375,8 @@
       "subscribe_url": "/events/albuquerque-nm-2026/",
       "ig_url": "https://www.instagram.com/reel/Dd6wO8Bxk3T/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7681394009964662047",
-      "fb_url": "https://fb.watch/JpxpAETgtB/"
+      "fb_url": "https://fb.watch/JpxpAETgtB/",
+      "tz": "America/Denver"
     },
     {
       "city": "Pueblo",
@@ -373,7 +390,8 @@
       "subscribe_url": "/events/pueblo-co-2026/",
       "ig_url": "https://www.instagram.com/reel/DeM73DKx3CS/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/v/5fOJu48DL/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7684725272150658334"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7684725272150658334",
+      "tz": "America/Denver"
     },
     {
       "city": "South Denver",
@@ -388,7 +406,8 @@
       "form_id": "6930efcc5c4c2f0a2f7b9eee",
       "ig_url": "https://www.instagram.com/reel/DeXy7fKRwK_/?utm_source=ig_web_copy_link&vrfl=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7686264937672445214?is_from_webapp=1&sender_device=pc",
-      "fb_url": "https://fb.watch/v/acyikbDhF/"
+      "fb_url": "https://fb.watch/v/acyikbDhF/",
+      "tz": "America/Denver"
     },
     {
       "city": "Westminster",
@@ -402,7 +421,8 @@
       "subscribe_url": "/events/westminster-co-2026/",
       "ig_url": "https://www.instagram.com/reel/DekOkJ-x5Ag/?utm_source=ig_web_copy_link&srtk=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/v/5kNJR-fJ8/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7688884025619926302"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7688884025619926302",
+      "tz": "America/Denver"
     },
     {
       "city": "Tucson",
@@ -416,7 +436,8 @@
       "subscribe_url": "/events/tucson-az-2026/",
       "ig_url": "https://www.instagram.com/reel/Der5xrwx79E/?utm_source=ig_web_copy_link&rpxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==",
       "fb_url": "https://www.facebook.com/reel/1060335213493083",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7691366651555515678"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7691366651555515678",
+      "tz": "America/Phoenix"
     },
     {
       "city": "Santa Ana",
@@ -433,7 +454,8 @@
       "subscribe_url": "/events/santa-ana-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/DfSQfijRXvB/?utm_source=ig_web_copy_link&cplk=MWQ1ZGUxMzBkMA==&srtk=MWQ1ZGUxMzBkMA==",
       "fb_url": "https://fb.watch/v/4G1iV3GwR/",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7693987991336914207"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7693987991336914207",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Anaheim",
@@ -447,7 +469,8 @@
       "subscribe_url": "/events/anaheim-ca-2026/",
       "ig_url": "https://www.instagram.com/reel/DeXzYY_RLa8/?utm_source=ig_web_copy_link&vrfl=MWQ1ZGUxMzBkMA==&srtk=MWQ1ZGUxMzBkMA==",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7695552578557431070",
-      "fb_url": "https://fb.watch/v/8o5paNOnF/"
+      "fb_url": "https://fb.watch/v/8o5paNOnF/",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Oxnard / Ventura",
@@ -549,7 +572,8 @@
       "venue_address": "700 N Haven Ave, Ontario, CA 91764",
       "form_id": "6abea00d3b5a8f431a8c176c",
       "subscribe_url": "/events/ontario-ca-2027/",
-      "_added_by": "sync_event_data.add_signed_events"
+      "_added_by": "sync_event_data.add_signed_events",
+      "tz": "America/Los_Angeles"
     },
     {
       "city": "Goodyear",
