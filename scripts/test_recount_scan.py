@@ -87,6 +87,8 @@ def main():
         pages_copy_hits = []
         live_stock_hits = []
         live_stock_down = {"on": False}
+        live_stock_hold = {"on": False}  # 16 — the live answer is still on the wire
+        held = []
         saved = []                       # every recount_set_qty body the page sent
         catalog_hits = []
         late_products = []               # products OCTOPOS gained after the phone loaded its list
@@ -115,6 +117,8 @@ def main():
             if k == "get_live_stock":
                 pids = [int(x) for x in (body.get("pids") or [])]
                 live_stock_hits.append(pids)
+                if live_stock_hold["on"]:
+                    held.append((route, pids)); return
                 if live_stock_down["on"]:
                     return route.fulfill(status=502, content_type="application/json",
                                          body=json.dumps({"error": "octopos down"}))
@@ -377,6 +381,37 @@ def main():
         pg.evaluate("c => window.__scan = c", "1234567890123"); pg.wait_for_timeout(900)
         check("15b. the real barcode right after still finds the product",
               pg.eval_on_selector_all(".sorow .name", "els => els.map(e => e.textContent)") == ["Zoe Lip Gloss Set"])
+
+        # 16 — THE COUNT CARD SHOWS THE LIVE NUMBER TOO (Lauren 14.11.2026, Westminster:
+        # "נמכרו 46, נשלחו 48 — אז למה במערכת זה מופיע כ-48?"). The card's "System stock"
+        # was written once from the snapshot and never repainted when the live read
+        # landed. Here the live answer is held on the wire while the card opens, so the
+        # card MUST first say it is a snapshot, and MUST change when the answer arrives.
+        live_stock_hold["on"] = True
+        pg4 = ctx.new_page()
+        pg4.route("https://danielle.laurenlev10.workers.dev/**", worker)
+        pg4.route("https://*.themakeupblowout.com/**", pages_copy)
+        pg4.add_init_script("localStorage.setItem('recount_employee_name','TestCrew')")
+        pg4.goto(f"http://127.0.0.1:{PORT}/recount-count/?evkey=visalia-2026-08-14&label=Visalia")
+        pg4.wait_for_timeout(700)
+        if pg4.is_visible("#nameInput"):
+            pg4.fill("#nameInput", "TestCrew"); pg4.click("#nameSave"); pg4.wait_for_timeout(400)
+        pg4.click("#list .row .name"); pg4.wait_for_timeout(700)
+        before = pg4.inner_text("#scStock").strip()
+        check("16. the card opened before the live read shows the snapshot AS a snapshot",
+              before.startswith("54") and "⏳" in before
+              and pg4.eval_on_selector("#scStock", "e => e.classList.contains('snapv')"), before)
+        live_stock_hold["on"] = False
+        for route, pids in held:
+            route.fulfill(status=200, content_type="application/json", body=json.dumps(
+                {"ok": True, "kind": "get_live_stock",
+                 "stock": {str(q): LIVE_STOCK[q] for q in pids if q in LIVE_STOCK}, "missing": []}))
+        pg4.wait_for_timeout(2600)
+        after = pg4.inner_text("#scStock").strip()
+        check("16b. …and the LIVE number replaces it on the open card",
+              after == "41" and not pg4.eval_on_selector("#scStock", "e => e.classList.contains('snapv')"),
+              [after, len(held)])
+        pg4.close()
 
         check("8. no page errors", not errs, errs)
         br.close()

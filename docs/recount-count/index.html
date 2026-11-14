@@ -44,6 +44,7 @@
      Grey is not decoration: it is the page refusing to present a stale figure as current
      (IRON RULE #37 — a belief about an external system carries its measurement date). */
   .stockpill.snap{ background:#f1f5f9; color:#64748b; }
+  .fact .v.snapv{ color:#94a3b8; }
   .pricetag{ display:inline-block; font-size:12px; font-weight:800; padding:1px 8px; border-radius:999px; background:#ecfdf5; color:#047857; white-space:nowrap; font-variant-numeric:tabular-nums; }
   .pricetag.none{ background:#f1f5f9; color:#94a3b8; font-weight:600; }
   .sorow .stockline{ margin-top:6px; }
@@ -398,6 +399,35 @@
       el.classList.remove("snap");
       el.title = "Live from OCTOPOS";
     });
+    paintScreenStock();
+  }
+
+  // ═══ The "System stock" fact on the open count card — same rule as the pills ═══════
+  // 🛑 14.11.2026 (Lauren, Westminster: "נמכרו 46, נשלחו 48 — אז למה במערכת זה מופיע כ-48?").
+  // openScreen() wrote the snapshot number into #scStock and queued the live read, but
+  // nothing ever painted the answer back: paintStockPills() walks [data-stockpid] and
+  // the card had none. So the card showed Friday morning's 48 — plain, no ⏳, under the
+  // words "System stock" — on a product that had sold 46 since. The lists were right and
+  // the one screen where the crew actually types the count was the stale one.
+  // The card is now painted from LIVESTOCK by this one function, every time the live
+  // map changes, and a snapshot number is drawn grey with ⏳ exactly like a pill.
+  function paintScreenStock(){
+    var el = $("scStock");
+    if(!el || !CUR) return;
+    var pid = String(CUR.pid);
+    var rec = LIVESTOCK[pid];
+    if(rec){
+      el.textContent = rec.q;
+      el.classList.remove("snapv");
+      el.title = "Live from OCTOPOS";
+      return;
+    }
+    var v = (CUR.stock == null ? "?" : CUR.stock);
+    var gone = (LIVE_MISSES[pid] || 0) >= LIVE_MISS_MAX;
+    el.textContent = v + (gone ? " · not in OCTOPOS" : " ⏳");
+    el.classList.add("snapv");
+    el.title = "Last stock snapshot" + (CATALOG_AS_OF ? " · " + fmtWhen(CATALOG_AS_OF) : "") +
+               (gone ? " — OCTOPOS did not answer for this product" : " — refreshing…");
   }
 
   // OCTOPOS said 404 for this id LIVE_MISS_MAX times: the product is not there to read.
@@ -407,6 +437,7 @@
       el.textContent = el.textContent.replace(" ⏳", " · not in OCTOPOS");
       el.title = "OCTOPOS answered 404 for this product " + LIVE_MISS_MAX + " times — snapshot number; the product may have been deleted";
     });
+    paintScreenStock();
   }
 
   // A pill asks for its live number when it actually reaches the screen — so a search
@@ -723,9 +754,10 @@
     $("scPrice").textContent = priceText(w.pid) || "—";
     // The same number the two lists show — read through the one helper, so the count
     // screen can never disagree with the row the crew just tapped.
+    // Painted by paintScreenStock() — and repainted when the live read lands.
     var scRec = LIVESTOCK[String(w.pid)];
-    $("scStock").textContent = scRec ? scRec.q : (w.stock==null?"?":w.stock);
-    if(!scRec){ LIVE_QUEUE[String(w.pid)] = true; clearTimeout(LIVE_TIMER); LIVE_TIMER = setTimeout(drainLiveStock, 200); }
+    paintScreenStock();
+    if(!scRec || (Date.now() - scRec.at) >= LIVE_STALE_MS){ LIVE_QUEUE[String(w.pid)] = true; clearTimeout(LIVE_TIMER); LIVE_TIMER = setTimeout(drainLiveStock, 200); }
     var c = COUNTS[String(w.pid)];
     if(c){ $("scPrev").style.display="block"; $("scPrev").innerHTML = "Already counted: <b>"+esc(countIsOut(c)?"OUT OF STOCK":c.qty)+"</b> by "+esc(c.employee)+" ("+esc(fmtWhen(c.at))+"). Re-counting will overwrite it."; }
     else { $("scPrev").style.display="none"; }
@@ -758,7 +790,7 @@
         if($("scBarcode").value === "") $("scBarcode").value = it.barcode;
         $("scSku").textContent = skuLine(CUR.sku, it.barcode);
       }
-      if(it.stock != null && CUR.stock == null){ CUR.stock = it.stock; $("scStock").textContent = it.stock; }
+      if(it.stock != null && CUR.stock == null){ CUR.stock = it.stock; paintScreenStock(); }
       renderExtras();
     }catch(e){}
   }
