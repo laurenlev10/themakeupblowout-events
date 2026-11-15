@@ -48,7 +48,8 @@ MIN_MATCH = 0.80
 NUM = {"one hundred twenty": "120", "ciento veinte": "120", "forty-five": "45", "cuarenta y cinco": "45",
        "fifteen": "15", "quince": "15", "seventy-five": "75", "setenta y cinco": "75", "ninety-five": "95", "noventa y cinco": "95",
        "twenty-two": "22", "veintidós": "22", "thirty": "30", "treinta": "30", "five": "5",
-       "cinco": "5", "lip gloss": "lipgloss", "ishadow": "eyeshadow"}
+       "cinco": "5", "lip gloss": "lipgloss", "eye shadow": "eyeshadow"}
+# 🛑 15.11.2026 — "ishadow" was an alias here. It let a mispronounced word pass as a match.
 
 
 def sha256(p):
@@ -167,6 +168,12 @@ def build(models):
             spoken = clip[lang]
             for written, said in spec.get("say", {}).get(lang, {}).items():
                 spoken = spoken.replace(written, said)
+            # 🛑 15.11.2026 — must_sound: check the phonemes of what will be spoken, before rendering
+            ph = k.tokenizer.phonemize(spoken, cfg["lang"])
+            for word, want in spec.get("must_sound", {}).get(lang, {}).items():
+                if word.lower() in clip[lang].lower() and want not in ph:
+                    print(f"LOW {clip['id']}[{lang}] :: '{word}' would sound like {ph!r} — expected {want!r}")
+                    bad.append(f"{clip['id']}.mp3[{lang}] (sound of '{word}')")
             samples, sr = k.create(spoken, voice=voice_of(cfg), speed=cfg["speed"], lang=cfg["lang"])
             raw = tmp / "v.wav"; sf.write(raw, samples, sr)
             flt = f"aresample={SR}"

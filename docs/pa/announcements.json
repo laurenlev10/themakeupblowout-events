@@ -37,11 +37,20 @@
  },
  "_say": "How the voice must pronounce a written phrase, per language. The text keeps the real spelling (for display and the transcription check); only the audio uses this.",
  "say": {
+  "en": {
+   "eyeshadow": "eye shadow"
+  },
   "es": {
    "The Makeup Blowout Sale": "Da Méikap Blóuaut Séil",
    "Makeup Blowout Sale": "Méikap Blóuaut Séil",
    "Mystery Box": "Místeri Box",
    "Best Sellers": "Best Sélers"
+  }
+ },
+ "_must_sound": "How a word must come out of the voice, as phonemes, in every clip whose text contains it. The transcription check cannot catch a swallowed vowel: 15.11.2026 Lauren heard 'eyeshitters'; the voice read 'eyeshadow' as aɪʃɐdoʊ (eye-shuh-doh) and the recogniser still wrote 'iShadow', which an alias then accepted. The build phonemizes what it is about to say and fails when the expected sound is missing.",
+ "must_sound": {
+  "en": {
+   "eyeshadow": "ʃˈædoʊ"
   }
  },
  "_must_hear": "Phrases that must come back word for word when a clip is transcribed, in every clip whose text contains them. The overall match ratio cannot catch a broken brand name inside a long sentence (13.10.2026: 'tema Queub Blowout Sale' scored 0.88 and passed); this can.",

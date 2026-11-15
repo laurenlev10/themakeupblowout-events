@@ -1,5 +1,5 @@
 {
- "source_sha256": "177084689907c898a72ca7bc75b4390e3b2e24bfd5cd96ebe5d8f80d4e3ae3bb",
+ "source_sha256": "f5180fa18c6138b2e3d135f9506210f063598f380b43ffcc39ae96793cbd0f5d",
  "verified_min_match": 0.8,
  "order": [
   "en",
@@ -106,20 +106,20 @@
    "id": "signup_eyeshadow",
    "rotation": "auto",
    "file": "signup_eyeshadow.mp3",
-   "seconds": 16.8,
+   "seconds": 16.9,
    "segments": [
     {
      "lang": "en",
      "start": 1.83,
-     "end": 7.21,
+     "end": 7.36,
      "text": "Did you sign up for our text list? Show your text message at checkout and get a free eyeshadow with your purchase!",
-     "heard": "Did you sign up for our text list?  Show your text message at checkout and get a free iShadow with your purchase.",
+     "heard": "Did you sign up for our text list?  Show your text message at checkout and get a free eye shadow with your purchase.",
      "match": 1.0
     },
     {
      "lang": "es",
-     "start": 7.91,
-     "end": 15.22,
+     "start": 8.06,
+     "end": 15.37,
      "text": "¿Te registraste en nuestra lista de mensajes? Muestra tu mensaje de texto en la caja y recibe una sombra de ojos gratis con tu compra.",
      "heard": "Te registraste en nuestra lista de mensajes, muestra tu mensaje de texto en la caja y recibe  una sombra de ojos gratis con tu compra.",
      "match": 1.0
