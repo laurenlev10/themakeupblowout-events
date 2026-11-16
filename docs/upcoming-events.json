@@ -430,6 +430,9 @@
       "start_date": "2026-11-20",
       "end_date": "2026-11-22",
       "slug": "tucson-az-2026",
+      "page_test": {
+        "id": "page-shows-the-gift"
+      },
       "venue_name": "DoubleTree by Hilton Tucson — Reid Park",
       "venue_address": "445 S Alvernon Way, Tucson, AZ 85711",
       "form_id": "694094eb767a56645e883ed0",
@@ -714,6 +717,9 @@
       "start_date": "2026-12-11",
       "end_date": "2026-12-13",
       "slug": "palm-desert-ca-2026",
+      "page_test": {
+        "id": "page-shows-the-gift"
+      },
       "venue_name": "Residence Inn Palm Desert",
       "venue_address": "38305 Cook St, Palm Desert, CA 92211",
       "form_id": "6adf713e00c349367f872db2",
