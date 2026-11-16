@@ -26,7 +26,7 @@
  * TikTok gets SubmitForm on the same rule.
  *
  * Page test (lpx): a page built with <html data-lpx="<test id>"> puts each browser in arm a or b (50/50,
- * kept for that browser), sets class lpx-b on <html> for arm b, and sends lpx_<arm>_view / lpx_<arm>_done
+ * kept for that browser), sets class lpx-b on <html> for arm b, runs ARM_B[<test id>] for arm b, and sends lpx_<arm>_view / lpx_<arm>_done
  * next to the normal events — so GA4 counts each arm by event name, no custom dimension needed.
  * A page without data-lpx is untouched.
  */
@@ -42,29 +42,29 @@
       arm = Math.random() < 0.5 ? 'a' : 'b';
       try { w.localStorage.setItem(key, arm); } catch (e) {}
     }
-    if (arm === 'b') {
-      html.className += (html.className ? ' ' : '') + 'lpx-b';
-      /* Arm B of test "form-above-fold" (4.11.2026): the same words, a shorter hero — the phone field AND the
-         button inside the first 560px (Meta's in-app browser on an iPhone shows ~560–600px; on the normal page
-         the button starts at 666px, below the first screen). Nothing is removed from the page: the title goes
-         to one line, the category line moves under the form. */
-      var css = d.createElement('style');
-      css.textContent =
-        '.lpx-b .hero{padding-top:54px}' +                               /* the language bar is fixed above it */
-        '.lpx-b .hero .eyebrow{font-size:11px;letter-spacing:1px;padding:5px 12px;margin-bottom:6px}' +
-        /* one line: the <br>s hide; the template carries a space before each one ("Makeup <br>Blowout <br>Sale.") */
-        '.lpx-b .hero h1.an{font-size:clamp(24px,7.4vw,48px)!important;line-height:1;white-space:nowrap;text-shadow:2px 2px 0 var(--ink),-1px -1px 0 var(--ink),1px -1px 0 var(--ink),-1px 1px 0 var(--ink)!important}' +
-        '.lpx-b .hero h1.an br{display:none}' +
-        '.lpx-b .hero .city-tag{margin-top:4px;font-size:clamp(26px,8vw,44px)}' +
-        '.lpx-b .hero .offer{margin-top:2px;font-size:clamp(20px,6vw,34px)}' +
-        '.lpx-b .hero .offer small{display:none}' +
-        '.lpx-b .hero-form{margin-top:10px;padding:14px 16px 12px}' +
-        '.lpx-b .hero-form .hf-sub{margin:4px 0 8px;font-size:13px}' +
-        '.lpx-b .hero-form .st-font-caption{font-size:11px;line-height:1.35}';   /* consent text: same words, smaller */
-      d.head.appendChild(css);
-    }
+    if (arm === 'b') html.className += (html.className ? ' ' : '') + 'lpx-b';
     html.setAttribute('data-lpx-arm', arm);
   }
+
+  /* What arm B changes, per test id. A test id with no entry here changes nothing (both arms see the normal page).
+     "form-above-fold" (9–15.11.2026, Santa Ana) is decided and gone: the whole form inside the first screen brought
+     FEWER sign-ups (17.6% vs 20.2%) — what stops her is not a button she cannot see.
+     "page-shows-the-gift" (15.11.2026): the page asked for a phone number in return for an eyeshadow and showed no
+     eyeshadow anywhere. Arm B puts one small photo of the pots handed out at the door next to the form's headline.
+     No word changes; the big title and the offer stay as they are. */
+  var ARM_B = {
+    'page-shows-the-gift': function () {
+      var c = d.querySelector('.hero-form'), h = c && c.querySelector('.hf-h'), s = c && c.querySelector('.hf-sub');
+      if (!c || !h || !s || c.querySelector('.lpx-gift')) return;
+      var row = d.createElement('div'), img = d.createElement('img'), txt = d.createElement('div');
+      row.className = 'lpx-gift';
+      row.style.cssText = 'display:flex;align-items:center;gap:12px;text-align:left;margin-bottom:12px';
+      img.src = '/_assets/shared/gift-eyeshadow.jpg'; img.alt = ''; img.width = 92; img.height = 92;
+      img.style.cssText = 'width:92px;height:92px;flex:0 0 92px;object-fit:cover;border:3px solid var(--ink);border-radius:14px;box-shadow:3px 3px 0 var(--ink)';
+      c.insertBefore(row, h); txt.appendChild(h); txt.appendChild(s); s.style.margin = '4px 0 0';
+      row.appendChild(img); row.appendChild(txt);
+    }
+  };
 
   var doneSent = false;
   w.trackEvent = function (name, params) {
@@ -105,6 +105,7 @@
     d.querySelectorAll('a[href*="facebook.com"], a[href*="fb.watch"]').forEach(function (a) { a.addEventListener('click', function () { trackEvent('share_click', { platform: 'facebook' }); }); });
     d.querySelectorAll('a[href*="tiktok.com"]').forEach(function (a) { a.addEventListener('click', function () { trackEvent('share_click', { platform: 'tiktok' }); }); });
     if (w.location.pathname.indexOf('tiktok') !== -1) { trackEvent('tiktok_arrival', {}); }
+    if (arm === 'b' && ARM_B[lpx]) { try { ARM_B[lpx](); } catch (e) {} }
     funnel();
   });
 
