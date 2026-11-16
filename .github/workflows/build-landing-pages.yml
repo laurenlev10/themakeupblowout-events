@@ -14,6 +14,9 @@ on:
       - 'docs/upcoming-events.json'
       - 'docs/_template/**'
       - 'scripts/build.py'
+      # 15.11.2026 — every page loads landing.js?v=<hash of the file>. A fix to the file with no rebuild left the
+      # pages asking for the old version until the 03:15 cron; a change to it now rebuilds at once.
+      - 'docs/_assets/shared/landing.js'
       - '.github/workflows/build-landing-pages.yml'
   schedule:
     - cron: '15 3 * * *'   # 03:15 UTC daily — refresh pages even if no recent push

@@ -18,6 +18,10 @@
  *   signup_double_submit   a second submit while the first was still on its way — blocked. 4.11.2026: the
  *                          button had no lock; Tucson GA4 counted 646 new sign-ups 30.10–4.11 while the
  *                          SimpleTexting list grew by 485 (no TikTok there). Two requests both answered 200.
+ *   signup_error_<kind>    the form refused her (15.11.2026) — kind = phone (not 10 digits, stopped before sending) |
+ *                          server (SimpleTexting said no) | network (no answer) | terms (the box was unticked).
+ *                          Until 15.11.2026 a refusal left no trace anywhere: 14–17% of the women who touched the
+ *                          form never finished, and nothing said how many of them were turned away by an error.
  * Meta gets Lead only for a NEW sign-up, once; a woman already on the list gets AlreadySubscribed (28.10.2026).
  * TikTok gets SubmitForm on the same rule.
  *
@@ -108,6 +112,18 @@
   /* 418 DuplicateContactPhone/Email = she is already on the list → treated as success (2.7.2026,
      Santa Maria), sent as already_subscribed (never Lead). */
   var DUP = ['DuplicateContactPhoneException', 'DuplicateContactEmailException'];
+  /* 15.11.2026 — measured on the live Santa Ana page (Playwright): a number that arrives with the US country code
+     ("+1 (714) 555-1234", "17145551234" — what a phone's autofill gives from a contact card) was cut to its first
+     10 digits and shown as "(171) 455-5123": the 1 kept, the last digit dropped. A US area code never starts with
+     1, so a leading 1 is always the country code — digits() drops it. And every refusal on the SPANISH page was
+     written in English ("Internal Error. Please, try later." + SimpleTexting's own English reason): the words a
+     woman reads at the moment she is stuck. MSG is per page language (<html lang>). */
+  var ES = (html.getAttribute('lang') || '').toLowerCase().indexOf('es') === 0;
+  var MSG = ES
+    ? { phone: 'Escribe tu número de teléfono de 10 dígitos.', retry: 'Hubo un problema. Inténtalo de nuevo en un momento.' }
+    : { phone: 'Please enter your 10-digit phone number.', retry: 'Internal Error. Please, try later.' };
+  function digits(v) { var n = String(v || '').replace(/\D/g, ''); return n.charAt(0) === '1' ? n.substring(1) : n; }
+  function oops(kind) { try { trackEvent('signup_error_' + kind, {}); } catch (e) {} }
   w.joinWebForm = function (formId, shareUrl) {
     var XHR = ('onload' in new w.XMLHttpRequest()) ? w.XMLHttpRequest : w.XDomainRequest;
     var form, errEl, tEl, busy = false;
@@ -124,11 +140,12 @@
       if (this.status === 418) {
         var e = null; try { e = w.JSON.parse(this.responseText); } catch (_) {}
         if (e && DUP.indexOf(e.code) !== -1) { leave({ already_subscribed: 1 }); return; }
-        busy = false; se((e && (e.reason || e.message)) || 'Validation error.'); return;
+        /* SimpleTexting's reason is English: shown as it is on the English page, our own words on the Spanish one */
+        busy = false; oops('server'); se(ES ? MSG.phone : ((e && (e.reason || e.message)) || 'Validation error.')); return;
       }
-      busy = false; se('Internal Error. Please, try later.');
+      busy = false; oops('server'); se(MSG.retry);
     }
-    function err() { busy = false; se('Internal Error. Please, try later.'); }
+    function err() { busy = false; oops('network'); se(MSG.retry); }
     function send() {
       var data = {};
       Array.prototype.slice.call(form).forEach(function (f) { data[f.name] = f.value; });
@@ -142,11 +159,16 @@
       e.preventDefault();
       if (busy) { try { trackEvent('signup_double_submit', {}); } catch (_) {} return false; }
       se('');
-      if (!ta()) { tEl.style.display = 'block'; return false; }
+      if (!ta()) { tEl.style.display = 'block'; oops('terms'); return false; }
+      var ph = form.querySelector('input[data-type="phone"]');
+      if (ph) {
+        ph.value = fmt(ph.value);                       /* autofill puts the value in with no input event */
+        if (digits(ph.value).length !== 10) { oops('phone'); se(MSG.phone); return false; }
+      }
       busy = true; send();
       return false;
     }
-    function fmt(v) { var n = v.replace(/\D/g, ''); var a = n.substring(0, 3), b = n.substring(3, 6), c = n.substring(6, 10), r = ''; if (a) r += '(' + a; if (b) r += ') ' + b; if (c) r += '-' + c; return r; }
+    function fmt(v) { var n = digits(v); var a = n.substring(0, 3), b = n.substring(3, 6), c = n.substring(6, 10), r = ''; if (a) r += '(' + a; if (b) r += ') ' + b; if (c) r += '-' + c; return r; }
     function pc(e) { e.currentTarget.value = fmt(e.currentTarget.value); }
     function go() {
       form = d.getElementById(formId);
