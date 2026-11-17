@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-11-17T16:45:41Z",
+  "_updated_at": "2026-11-17T16:46:55Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -568,7 +568,8 @@
       "_added_by": "sync_event_data.add_signed_events",
       "tz": "America/Los_Angeles",
       "ig_url": "https://www.instagram.com/reel/Df2Y0lZxvnw/?utm_source=ig_web_copy_link&cplk=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==",
-      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7709182262431993119"
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7709182262431993119",
+      "fb_url": "https://www.facebook.com/reel/1341608621330591"
     },
     {
       "city": "Ontario",
