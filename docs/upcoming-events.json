@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-11-13T16:20:08Z",
+  "_updated_at": "2026-11-17T16:42:16Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -487,7 +487,7 @@
       "subscribe_url": "/events/oxnard-ventura-ca-2027/",
       "_added_by": "sync_event_data.add_signed_events",
       "tz": "America/Los_Angeles",
-      "ig_url": "https://www.instagram.com/reel/DekKDlZRL9F/?utm_source=ig_web_copy_link&mdxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==",
+      "ig_url": "https://www.instagram.com/reel/Df2Ya3jRRZY/?utm_source=ig_web_copy_link&xtok=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==",
       "fb_url": "https://fb.watch/v/5G9zD5p9C/",
       "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7697337873464364318"
     },
