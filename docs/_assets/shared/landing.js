@@ -121,7 +121,7 @@
      woman reads at the moment she is stuck. MSG is per page language (<html lang>). */
   var ES = (html.getAttribute('lang') || '').toLowerCase().indexOf('es') === 0;
   var MSG = ES
-    ? { phone: 'Escribe tu número de teléfono de 10 dígitos.', retry: 'Hubo un problema. Inténtalo de nuevo en un momento.' }
+    ? { phone: 'Revisa tu número: son 10 dígitos, con el código de área.', retry: 'Algo falló de nuestro lado. Espera un momentito y vuelve a intentarlo.' }
     : { phone: 'Please enter your 10-digit phone number.', retry: 'Internal Error. Please, try later.' };
   function digits(v) { var n = String(v || '').replace(/\D/g, ''); return n.charAt(0) === '1' ? n.substring(1) : n; }
   function oops(kind) { try { trackEvent('signup_error_' + kind, {}); } catch (e) {} }
