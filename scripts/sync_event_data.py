@@ -289,6 +289,36 @@ def missing_fields(ev, form_ids):
     return out
 
 
+def align_dates(events, index_events):
+    """An event's dates come from events_index — the schedule — never from the row that was pasted here.
+
+    23.11.2026 (Lauren: "בנאשוויל היו לנו כל כך הרבה הרשמות אבל הגיעו כל כך הרבה פחות"). Nashville sat here
+    as 2026-04-24 → 04-26 — Louisville's weekend — since the first commit (06.05), copied from the old Google
+    Sites strip. Every reader that keys by city + start date (IRON RULE #17) missed it: conversion_history
+    wrote Nashville with no SimpleTexting list id every six hours, so the channel split, the list overlap and
+    every per-event comparison silently skipped the one event whose show-up rate was the question.
+    A row whose city + state + year has exactly one schedule event takes that event's dates.
+    Returns [(slug, old_start, new_start)]."""
+    by = {}
+    for ix in index_events:
+        if ix.get("start_date") and ix.get("end_date") and ix.get("city") and ix.get("state"):
+            key = (_slugify(_display_city(ix["city"])), ix["state"].upper(), ix["start_date"][:4])
+            by.setdefault(key, []).append(ix)
+    changed = []
+    for ev in events:
+        sd = (ev.get("start_date") or "")[:10]
+        if not (sd and ev.get("city") and ev.get("state")):
+            continue
+        cand = by.get((_slugify(_display_city(ev["city"])), ev["state"].upper(), sd[:4])) or []
+        if len(cand) != 1:
+            continue          # none, or a city twice in one year — not ours to guess
+        ix = cand[0]
+        if sd != ix["start_date"] or (ev.get("end_date") or "")[:10] != ix["end_date"]:
+            changed.append((ev.get("slug") or ev["city"], sd, ix["start_date"]))
+            ev["start_date"], ev["end_date"] = ix["start_date"], ix["end_date"]
+    return changed
+
+
 def add_signed_events(events, index_events, form_ids, today):
     """Append a row for every signed future event that has none yet.
     Returns (added_slugs, skipped[(slug, start_date, [missing])])."""
@@ -351,6 +381,9 @@ def main():
     n_form = n_venue = n_reel = 0
 
     today = datetime.date.today()
+    redated = align_dates(events, index.get("events", []))
+    for slug, old, new in redated:
+        print(f"  ✓ dates:     {slug} {old} → {new} (from events_index)")
     added, skipped = add_signed_events(events, index.get("events", []),
                                        form_ids.get("events", {}), today)
     for slug in added:
@@ -420,7 +453,7 @@ def main():
         # notes.json is the only source for these buttons (IRON RULE #5); an event
         # with no reel pasted yet correctly keeps the generic brand link.
 
-    if n_form + n_venue + n_reel + len(added) + n_tz > 0:
+    if n_form + n_venue + n_reel + len(added) + n_tz + len(redated) > 0:
         data["_updated_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         EVENTS_JSON.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"\n✓ Updated {n_form} form_ids, {n_venue} venues, {n_reel} reel-links, {len(added)} new events")
