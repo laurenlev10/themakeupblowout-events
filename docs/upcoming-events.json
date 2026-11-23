@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-11-17T16:46:55Z",
+  "_updated_at": "2026-11-23T21:17:47Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -12,7 +12,9 @@
       "image_url": "https://lh3.googleusercontent.com/sitesv/AA5AbUCc6MD4VLgAScrPERzakJZwsazAqcl4IxnbNVUJB3ueBtiWwL-frtB4fwjmw0jsH9s2Xkz8rEp_oZbfbYHCQJL9Ob-6z0kA9Eq-8zkqWrZLVBB9Nx2wEX-e_SAgthnh4CqE0Jtzo1tw3fHi09-9KkNd0pN24zAYtVHmikIXUp-X5H4edxoSabgbqiL_nV0s_mq=w16383",
       "subscribe_url": "https://www.themakeupblowout.com/",
       "cta_label": "Subscribe",
-      "ig_url": "https://www.instagram.com/reel/DXcnk6LERPJ/"
+      "ig_url": "https://www.instagram.com/reel/DXcnk6LERPJ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      "venue_name": "Holiday Inn",
+      "venue_address": "2864 Elm Hill Pike, Nashville, TN 37214"
     },
     {
       "city": "Columbia",
