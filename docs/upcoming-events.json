@@ -1,7 +1,7 @@
 {
   "_doc": "Live data for the Upcoming Events strip embedded in https://sites.google.com/themakeupblowoutsale-group.com/events/home. Updated weekly by the site-updater agent every Sunday evening.",
   "_schema_version": 2,
-  "_updated_at": "2026-11-24T02:31:07Z",
+  "_updated_at": "2026-11-24T02:33:41Z",
   "_image_note": "Image URLs sourced directly from Lauren's Google Site.",
   "events": [
     {
@@ -584,7 +584,9 @@
       "subscribe_url": "/events/ontario-ca-2027/",
       "_added_by": "sync_event_data.add_signed_events",
       "tz": "America/Los_Angeles",
-      "ig_url": "https://www.instagram.com/reel/DgG1i4mRKb9/?avpt=MXE2MWphaGc2eHllaQ=="
+      "ig_url": "https://www.instagram.com/reel/DgG1i4mRKb9/?avpt=MXE2MWphaGc2eHllaQ==",
+      "fb_url": "https://www.facebook.com/reel/3059298107747174/",
+      "tiktok_url": "https://www.tiktok.com/@makeupblowoutsale/video/7711558710425849101"
     },
     {
       "city": "Goodyear",
