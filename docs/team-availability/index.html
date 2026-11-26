@@ -76,7 +76,7 @@ async function init(){
   // The dashboards were rerouted through the Worker in that change; this page is another
   // repo on another domain and nothing shimmed it. It has not bitten yet only because
   // the roster last changed in June — which is luck, not a design. The Worker reads it
-  // from git; the published copy stays as a fail-soft fallback.
+  // from git, and projects it (a whitelist) on the way out.
   try{
     var rw=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({kind:"get_team_roster"})});
@@ -85,10 +85,9 @@ async function init(){
     if(!dw||dw.ok!==true||!dw.roster) throw new Error("worker refused");
     ROSTER=dw.roster;
   }catch(e){
-    try{
-      var r=await fetch("https://dashboard.themakeupblowout.com/state/team_roster_public.json?_="+Date.now(),{cache:"no-store"});
-      ROSTER=await r.json();
-    }catch(e2){ document.getElementById("ev-list").textContent="⚠️ Could not load events — please try again later."; return; }
+    // 26.11.2026 — no second copy to fall back to: the Worker projects the private roster itself (whitelist only),
+    // and the published team_roster_public.json is gone. A failed read is said, never guessed (IRON RULE #18).
+    document.getElementById("ev-list").textContent="⚠️ Could not load events — please try again later."; return;
   }
   if(!ROSTER||!ROSTER.members){ document.getElementById("ev-list").textContent="⚠️ Could not load events — please try again later."; return; }
   var today=new Date().toISOString().slice(0,10);
